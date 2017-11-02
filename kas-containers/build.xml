@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="kas-containers" default="Main" basedir=".">
+  
+  <!-- directories -->
+  <property name="src"     location="src"/>
+  <property name="bin"     location="bin"/>
+  <property name="lib"     location="lib"/>
+	
+  <!-- debugging information -->
+  <property name="debug"      value="true" />
+  <property name="debuglevel" value="lines,vars,source" />
+
+  <!-- targets -->
+  <target name="Main" depends="Jar" description="main target (default)">
+    <echo>Done building</echo>
+  </target>
+  
+  <target name="Clean" description="clean up old outputs">
+    <delete dir="${bin}"/>
+    <delete dir="${lib}"/>
+  </target>
+  
+  <target name="Prepare" depends="Clean" description="prepare output directories">
+    <mkdir dir="${bin}"/>
+    <mkdir dir="${lib}"/>
+  </target>
+  
+  <target name="Compile" depends="Clean, Prepare" description="compile sources">
+  	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
+      <exclude name="module-info.java"/>
+      <classpath id="${ant.project.name}-ClassPath">
+        <pathelement location="../kas-infra/lib/kas-infra.jar" />
+      	<pathelement location="../kas-config/lib/kas-config.jar" />
+        <pathelement location="../kas-logging/lib/kas-logging.jar" />
+      </classpath>
+    </javac>
+  </target>
+  
+  <target name="Jar" depends="Compile" description="generate jar file">
+    <jar destfile="${lib}/${ant.project.name}.jar"
+       basedir="${bin}"
+       includes="com/kas/**/*.class"
+       excludes="**/Test*.class" />
+  </target>
+
+</project>
