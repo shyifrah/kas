@@ -5,6 +5,8 @@ import java.net.Socket;
 import com.kas.infra.base.KasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.IMessage;
+import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
 import com.kas.q.server.internal.IHandlerCallback;
 
@@ -22,7 +24,7 @@ public class ClientHandler extends KasObject implements Runnable
   //------------------------------------------------------------------------------------------------------------------
   ClientHandler(Socket socket, IHandlerCallback callback) throws IOException
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger    = LoggerFactory.getLogger(this.getClass());
     mMessenger = Messenger.Factory.create(socket);
     mCallback  = callback;
     
@@ -47,22 +49,27 @@ public class ClientHandler extends KasObject implements Runnable
     try
     {
       mLogger.trace("Awaiting client to send messages..");
-      //IMessage message = mMessenger.recv();
-      //while (message != null)
-      //{
-      //  mLogger.trace("Received from client message: " + message.toPrintableString(0));
-      //  MessageProcessor.enqueue(message);
-      //  
-      //  message = mMessenger.recv();
-      //}
+      IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
+      while (message != null)
+      {
+        mLogger.trace("Received from client message: " + message.toPrintableString(0));
+        //MessageProcessor.enqueue(message);
+        
+        message = null;
+        message = MessageSerializer.deserialize(mMessenger.getInputStream());
+      }
       
-      mLogger.trace("Connection was closed by remote peer...");
       mMessenger.cleanup();
+    }
+    catch (IOException e)
+    {
+      mLogger.trace("I/O Exception caught. Message: "+ e.getMessage());
     }
     catch (Throwable e)
     {
       mLogger.trace("Exception caught while trying to process message from client. ", e);
     }
+    mMessenger.cleanup();
     
     if (mCallback != null) mCallback.onHandlerStop(this);
   }

@@ -13,6 +13,8 @@ public interface IObject
    * Returns the {@link #IObject} string representation.
    * 
    * @param level the required level padding
+   * 
+   * @return the object's printable string representation
    */
   public String toPrintableString(int level);
 }

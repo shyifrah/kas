@@ -1,8 +1,9 @@
 package com.kas.q.ext;
 
+import java.io.Serializable;
 import com.kas.infra.base.IInitializable;
 
-public interface IDestination extends IInitializable
+public interface IDestination extends IInitializable, Serializable
 {
   /***************************************************************************************************************
    * Put {@code IMessage} to destination
@@ -25,6 +26,14 @@ public interface IDestination extends IInitializable
    */
   public abstract IMessage remove();
   
+  /***************************************************************************************************************
+   * Returns the size of the destination.
+   * This method does not synchronize the destination, so the number might not be accurate.
+   * 
+   * @return number of messages in destination
+   */
+  public abstract int getSize();
+
   /***************************************************************************************************************
    * Returns the destination name
    * 

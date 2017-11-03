@@ -1,15 +1,18 @@
 package com.kas.q.ext.impl;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.Queue;
+import javax.jms.Topic;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.ThreadPool;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.ILocator;
 import com.kas.q.impl.KasqConnectionFactory;
 
-public class KasqClient extends KasObject implements IInitializable
+public class KasqClient extends KasObject implements IInitializable, ILocator
 {
   private ILogger   mLogger;
   private boolean   mInitialized;
@@ -32,6 +35,9 @@ public class KasqClient extends KasObject implements IInitializable
     mConnectionFactory = null;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public boolean init()
   {
     if (!mInitialized)
@@ -58,6 +64,9 @@ public class KasqClient extends KasObject implements IInitializable
     return true;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public boolean term()
   {
     if (mInitialized)
@@ -123,6 +132,27 @@ public class KasqClient extends KasObject implements IInitializable
     return verified;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
+  public Queue locateQueue(String name)
+  {
+    Queue queue = null;
+    return queue;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public Topic locateTopic(String name)
+  {
+    Topic topic = null;
+    return topic;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

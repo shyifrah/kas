@@ -7,8 +7,8 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayDeque;
-import java.util.Queue;
-import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.TemporaryQueue;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
@@ -17,40 +17,51 @@ import com.kas.q.ext.IDestination;
 import com.kas.q.ext.IMessage;
 import com.kas.q.ext.impl.MessageSerializer;
 
-public class KasqQueue extends KasObject implements IDestination, Destination 
+public class KasqQueue extends KasObject implements IDestination, TemporaryQueue 
 {
-  private ILogger mLogger;
+  private static final long serialVersionUID = 1L;
+  private static ILogger    sLogger = LoggerFactory.getLogger(KasqQueue.class);
+  
+  /***************************************************************************************************************
+   * 
+   */
   private String  mName;
+  private String  mManagerName;
   private File    mBackupFile;
-  private Queue<IMessage> mQueue;
+  private ArrayDeque<IMessage> mQueue;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqQueue} object, specifying its name
    * 
    * @param name the name associated with this queue
+   * @param managerName the name of the manager of this queue
    */
-  KasqQueue(String name)
+  public KasqQueue(String name, String managerName)
   {
     mName   = name;
+    mManagerName = managerName;
     mQueue  = new ArrayDeque<IMessage>();
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    sLogger = LoggerFactory.getLogger(this.getClass());
     mBackupFile = null;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public boolean init()
   {
-    mLogger.debug("KasqQueue::init() - IN, name=[" + mName + "]");
+    sLogger.debug("KasqQueue::init() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    mLogger.info("Starting initialization for queue " + mName);
+    sLogger.info("Starting initialization for queue " + mName);
     try
     {
       String fileName = RunTimeUtils.getProductHomeDir() + "/repo/" + mName;
-      mLogger.debug("KasqQueue::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
+      sLogger.debug("KasqQueue::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
       mBackupFile = new File(fileName);
       if (mBackupFile.exists())
       {
-        mLogger.trace("Backup file [" + fileName + "] exists; Reading contents...");
+        sLogger.trace("Backup file [" + fileName + "] exists; Reading contents...");
         
         boolean error = false;
         boolean eof   = false;
@@ -70,45 +81,48 @@ public class KasqQueue extends KasObject implements IDestination, Destination
           }
           catch (Throwable e)
           {
-            mLogger.debug("KasqQueue::init() - Exception caught while trying to restore queue contents ", e);
+            sLogger.debug("KasqQueue::init() - Exception caught while trying to restore queue contents ", e);
             error = true;
           }
         }
         
         // delete the file so we won't read the same messages upon next startup
         mBackupFile.delete();
-        mLogger.trace("Queue contents successfully restored; Total read messages [" + mQueue.size() + "]");
+        sLogger.trace("Queue contents successfully restored; Total read messages [" + mQueue.size() + "]");
       }
     }
     catch (Throwable e)
     {
-      mLogger.debug("KasqQueue::init() - Exception caught during queue initialization. QueueName=" + mName + "; Exception: ", e);
+      sLogger.debug("KasqQueue::init() - Exception caught during queue initialization. QueueName=" + mName + "; Exception: ", e);
       success = false;
     }
     
-    mLogger.debug("KasqQueue::init() - OUT, Returns=" + success);
+    sLogger.debug("KasqQueue::init() - OUT, Returns=" + success);
     return success;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public boolean term()
   {
-    mLogger.debug("KasqQueue::term() - IN, name=[" + mName + "]");
+    sLogger.debug("KasqQueue::term() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    mLogger.info("Starting termination for queue " + mName);
+    sLogger.info("Starting termination for queue " + mName);
     try
     {
       if (!mQueue.isEmpty())
       {
         String fileName = RunTimeUtils.getProductHomeDir() + "/repo/" + mName;
-        mLogger.trace("Queue is not empty. Saving messages to backup file=[" + fileName + "]");
+        sLogger.trace("Queue is not empty. Saving messages to backup file=[" + fileName + "]");
         mBackupFile = new File(fileName);
         if (!mBackupFile.exists())
         {
           success = mBackupFile.createNewFile();
           if (!success)
           {
-            mLogger.warn("Failed to create file: " + fileName);
+            sLogger.warn("Failed to create file: " + fileName);
           }
         }
 
@@ -134,40 +148,92 @@ public class KasqQueue extends KasObject implements IDestination, Destination
             fos.close();
           }
           catch (Throwable e) {}
-          mLogger.trace("Total messages saved to file: " + msgCounter);
+          sLogger.trace("Total messages saved to file: " + msgCounter);
         }
       }
     }
     catch (Throwable e)
     {
-      mLogger.debug("KasqQueue::term() - Exception caught during queue termination. QueueName=" + mName + "; Exception: ", e);
+      sLogger.debug("KasqQueue::term() - Exception caught during queue termination. QueueName=" + mName + "; Exception: ", e);
       success = false;
     }
     
-    mLogger.debug("KasqQueue::term() - OUT, Returns=" + success);
+    sLogger.debug("KasqQueue::term() - OUT, Returns=" + success);
     return success;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
+  public String getQueueName() throws JMSException
+  {
+    return mName;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public void delete() throws JMSException
+  {
+    throw new JMSException("Unsupported method: TemporaryQueue.delete()");
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public synchronized void put(IMessage message)
   {
     mQueue.offer(message);
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public synchronized IMessage get()
   {
     return mQueue.peek();
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public synchronized IMessage remove()
   {
     return mQueue.poll();
   }
   
-  public String toDestinationName()
+  /***************************************************************************************************************
+   * 
+   */
+  public int getSize()
   {
-    return "queue://" + mName;
+    return mQueue.size();
   }
   
+  /***************************************************************************************************************
+   * 
+   */
+  public String toDestinationName()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append("queue://")
+      .append(mManagerName)
+      .append('/')
+      .append(mName);
+    return sb.toString();
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public String toString()
+  {
+    return toDestinationName();
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
