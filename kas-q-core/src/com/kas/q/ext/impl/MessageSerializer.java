@@ -21,7 +21,7 @@ public class MessageSerializer
   public static IMessage deserialize(ObjectInputStream istream) throws IOException, ClassNotFoundException
   {
     IMessage message = null;
-    MessageHeader header = (MessageHeader)istream.readObject();
+    MessageHeader header = new MessageHeader(istream);
     switch (header.getType())
     {
       case cMessage:

@@ -20,6 +20,7 @@
   <property name="logging.jar"    location="../kas-logging/lib/kas-logging.jar"/>
   <property name="containers.jar" location="../kas-containers/lib/kas-containers.jar"/>
   <property name="q-core.jar"     location="../kas-q-core/lib/kas-q-core.jar"/>
+  <property name="jms.jar"        location="../kas-q-core/thirdparty/javax.jms-2.0.jar"/>
 	
   <!-- debugging information -->
   <property name="debug"      value="true" />
@@ -28,7 +29,7 @@
   <!-- versioning -->
   <property name="build.major" value="1"/>
   <property name="build.minor" value="0"/>
-  <property name="build.mod"   value="0"/>
+  <property name="build.mod"   value="1"/>
 
   <!-- targets -->
   <target name="Main" depends="CopyRes" description="main target (default)">
@@ -60,6 +61,7 @@
       <fileset file="${logging.jar}"/>
       <fileset file="${containers.jar}"/>
       <fileset file="${q-core.jar}"/>
+      <fileset file="${jms.jar}"/>
     </copy>
   </target>
   
@@ -72,6 +74,7 @@
         <pathelement location="${logging.jar}" />
         <pathelement location="${containers.jar}" />
         <pathelement location="${q-core.jar}" />
+      	<pathelement location="${jms.jar}" />
       </classpath>
     </javac>
   </target>

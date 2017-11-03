@@ -15,14 +15,14 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.server.internal.MessagingConfiguration;
 import com.kas.q.server.internal.ShutdownHook;
 
-public class KasqManager extends KasObject implements IInitializable
+public class KasqRunner extends KasObject implements IInitializable
 {
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
   public static void main(String [] args) throws IOException
   {
-    System.out.println("KAS/Q Manager initialization in progress...");
+    System.out.println("KAS/Q initialization in progress...");
     
     try
     {
@@ -34,7 +34,7 @@ public class KasqManager extends KasObject implements IInitializable
         return;
       }
       
-      KasqManager queueManager = new KasqManager();
+      KasqRunner queueManager = new KasqRunner();
       boolean initialized = queueManager.init();
       
       if (initialized)
@@ -52,7 +52,7 @@ public class KasqManager extends KasObject implements IInitializable
       e.printStackTrace();
     }
     
-    System.out.println("KAS/Q Manager terminated");
+    System.out.println("KAS/Q terminated");
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -63,23 +63,21 @@ public class KasqManager extends KasObject implements IInitializable
   private ILogger                mConsole;
   private boolean                mShouldStop;
   private ClientHandlerManager   mHandlerManager;
+  private KasqRepository         mRepository;
   private ServerSocket           mListenSocket;
-  //private AdminQueueListener mAdminListener;
   private ShutdownHook           mShutdownHook;
   
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  KasqManager() throws IOException
+  KasqRunner() throws IOException
   {
-    mConfig  = new MessagingConfiguration();
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getConsole(this.getClass());
+    mConfig  = new MessagingConfiguration();
     
     mShouldStop    = false;
-    mListenSocket  = new ServerSocket(mConfig.getPort());
-    //mAdminListener = new AdminQueueListener(this);
-    mShutdownHook  = new ShutdownHook(mListenSocket);
+    
     mHandlerManager = new ClientHandlerManager();
   }
   
@@ -88,23 +86,32 @@ public class KasqManager extends KasObject implements IInitializable
   //------------------------------------------------------------------------------------------------------------------
   public boolean init() 
   {
-    mLogger.debug("KasqManager::init() - IN");
+    mLogger.debug("KasqRunner::init() - IN");
     
     mLogger.info("KAS/Q initialization in progress...");
     boolean success = true;
     
-    mConfig.init();                                       // initialize configuration
-    Runtime.getRuntime().addShutdownHook(mShutdownHook);  // registering a shutdown hook
+    mConfig.init();
     
-    //
-    // initialize queue repository
-    // QueueRepository.getInstance().init();
-    // mLogger.info("Initialization completed");
+    // register shutdown hook
+    mShutdownHook  = new ShutdownHook(mListenSocket);
+    Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
-    // initialize admin queue listener
-    // QueueRepository.getInstance().getLocalQueue(mConfig.getAdminQueue()).listen(mAdminListener);
+    // initialize the repository
+    mRepository = new KasqRepository(mConfig);
+    success = mRepository.init();
     
-    mLogger.debug("KasqManager::init() - OUT, Returns=" + success);
+    // establish server socket
+    try
+    {
+      mListenSocket  = new ServerSocket(mConfig.getPort());
+    }
+    catch (IOException e)
+    {
+      success = false;
+    }
+    
+    mLogger.debug("KasqRunner::init() - OUT, Returns=" + success);
     return success;
   }
   
@@ -113,21 +120,27 @@ public class KasqManager extends KasObject implements IInitializable
   //------------------------------------------------------------------------------------------------------------------
   public boolean term()
   {
-    mLogger.debug("KasqManager::term() - IN");
+    mLogger.debug("KasqRunner::term() - IN");
     
     mConsole.info("KAS/Q termination in progress...");
     
+    // close the server socket
     try
     {
       mListenSocket.close();
     }
     catch (Throwable e) {}
+
+    // terminate the repository
+    mRepository.term();
     
-    Runtime.getRuntime().removeShutdownHook(mShutdownHook);  // remote shutdown hook
-    ThreadPool.shutdownNow();                                // shutdown ThreadPool
-    /// QueueRepository.getInstance().term();                    // shutdown queue repository
+    // unregister the shutdown hook
+    Runtime.getRuntime().removeShutdownHook(mShutdownHook);
     
-    mLogger.debug("KasqManager::term() - OUT");
+    // shutdown the thread pool
+    ThreadPool.shutdownNow();
+    
+    mLogger.debug("KasqRunner::term() - OUT");
     return true;
   }
   
@@ -136,27 +149,25 @@ public class KasqManager extends KasObject implements IInitializable
   //------------------------------------------------------------------------------------------------------------------
   void run() 
   {
-    mLogger.debug("KasqManager::run() - IN");
+    mLogger.debug("KasqRunner::run() - IN");
     
     TimeStamp tsStarted = new TimeStamp();
     ProductVersion version = new ProductVersion(this.getClass());
     
-    String msg1 = "KAS/Q Manager " + mConfig.getManagerName() + " V" + version.toPrintableString() + " started on " + tsStarted.getDateString("-");
-    mLogger.info(msg1);
-    mConsole.info(msg1);
-    
-    String msg2 = StringUtils.duplicate("=", msg1.length());
-    mLogger.info(msg2);
-    mConsole.info(msg2);
+    String msg = "KAS/Q " + mConfig.getManagerName() + " V" + version.toPrintableString() + " started on " + tsStarted.getDateString("-");
+    logInfoBoth(msg);
+    logInfoBoth(StringUtils.duplicate("=", msg.length()));
     
     mLogger.trace(MainConfiguration.getInstance().toPrintableString(0));
     
     while (!mShouldStop)
     {
+      mLogger.trace("Awaiting client connections...");
       try
       {
         Socket socket = mListenSocket.accept();
-        mLogger.trace("New connection accepted: " + socket.toString());
+        logInfoBoth("New connection accepted: " + socket.toString());
+        
         mHandlerManager.newClient(socket);
       }
       catch (Throwable e)
@@ -165,7 +176,16 @@ public class KasqManager extends KasObject implements IInitializable
       }
     }
     
-    mLogger.debug("KasqManager::run() - OUT");
+    mLogger.debug("KasqRunner::run() - OUT");
+  }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  private void logInfoBoth(String msg)
+  {
+    mLogger.info(msg);
+    mConsole.info(msg);
   }
   
   //------------------------------------------------------------------------------------------------------------------

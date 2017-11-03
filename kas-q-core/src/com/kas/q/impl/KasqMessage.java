@@ -11,6 +11,7 @@ import javax.jms.Message;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.Properties;
+import com.kas.infra.utils.StringUtils;
 import com.kas.q.ext.IMessage;
 import com.kas.q.ext.MessageType;
 import com.kas.q.ext.impl.JmsUtils;
@@ -53,6 +54,8 @@ public class KasqMessage extends KasObject implements IMessage, Message
   
   /***************************************************************************************************************
    * Constructs a {@code KasqMessage} object from {@code ObjectInputStream}
+   * 
+   * @param istream the {@code ObjectInputStream}
    * 
    * @throws IOException 
    * @throws ClassNotFoundException 
@@ -692,8 +695,8 @@ public class KasqMessage extends KasObject implements IMessage, Message
       .append(pad).append("  CorrelationId=").append(mCorrelationId).append("\n")
       .append(pad).append("  DeliveryMode=").append(JmsUtils.toString(mDeliveryMode)).append("\n")
       .append(pad).append("  DeliveryTime=").append(mDeliveryTime).append("\n")
-      .append(pad).append("  Destination=").append(mDestination.toString()).append("\n")
-      .append(pad).append("  ReplyTo=").append(mReplyTo.toString()).append("\n")
+      .append(pad).append("  Destination=").append(StringUtils.asString(mDestination)).append("\n")
+      .append(pad).append("  ReplyTo=").append(StringUtils.asString(mReplyTo)).append("\n")
       .append(pad).append("  Redelivered=").append(mRedelivered).append("\n")
       .append(pad).append("  Expiration=").append(mExpiration).append("\n")
       .append(pad).append("  TimeStamp=").append(mTimestamp).append("\n")

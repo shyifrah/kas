@@ -1,5 +1,6 @@
 package com.kas.q.ext.impl;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -112,6 +113,11 @@ public class Messenger extends KasObject
     try
     {
       result = mInputStream.readObject();
+    }
+    catch (EOFException e)
+    {
+      mLogger.info("Client disconnected...");
+      mConnected = false;
     }
     catch (Throwable e) {}
     

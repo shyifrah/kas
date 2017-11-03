@@ -4,6 +4,7 @@ import java.io.Serializable;
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -20,6 +21,7 @@ import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 import com.kas.infra.base.KasObject;
+import com.kas.infra.base.UniqueId;
 
 public class KasqSession extends KasObject implements Session
 {
@@ -83,7 +85,7 @@ public class KasqSession extends KasObject implements Session
   
   public Message createMessage() throws JMSException
   {
-    return null;
+    return new KasqMessage();
   }
 
   public BytesMessage createBytesMessage() throws JMSException
@@ -202,14 +204,32 @@ public class KasqSession extends KasObject implements Session
     throw new JMSException("Unsupported method: Session.createSharedConsumer(Topic, String, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Queue createQueue(String queueName) throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createQueue(String)");
+    return internalCreateQueue(queueName);
   }
 
   public Topic createTopic(String topicName) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createTopic(String)");
+  }
+
+  /***************************************************************************************************************
+   * 
+   */
+  public TemporaryQueue createTemporaryQueue() throws JMSException
+  {
+    UniqueId uniqueId = new UniqueId();
+    String queueName = "KAS.TEMP.Q" + uniqueId.toString();
+    return internalCreateQueue(queueName);
+  }
+
+  public TemporaryTopic createTemporaryTopic() throws JMSException
+  {
+    throw new JMSException("Unsupported method: Session.createTemporaryTopic()");
   }
 
   public TopicSubscriber createDurableSubscriber(Topic topic, String name) throws JMSException
@@ -252,21 +272,37 @@ public class KasqSession extends KasObject implements Session
     throw new JMSException("Unsupported method: Session.createBrowser(Queue, String)");
   }
 
-  public TemporaryQueue createTemporaryQueue() throws JMSException
-  {
-    throw new JMSException("Unsupported method: Session.createTemporaryQueue()");
-  }
-
-  public TemporaryTopic createTemporaryTopic() throws JMSException
-  {
-    throw new JMSException("Unsupported method: Session.createTemporaryTopic()");
-  }
-
   public void unsubscribe(String name) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.unsubscribe(String)");
   }
   
+  /***************************************************************************************************************
+   * 
+   */
+  private TemporaryQueue internalCreateQueue(String name)
+  {
+    if (name == null)
+    {
+      throw new JMSRuntimeException("Failed to create queue", "Null name");
+    }
+    
+    TemporaryQueue result = null;
+    try
+    {
+      result = new KasqQueue(name, "");
+    }
+    catch (Throwable e)
+    {
+      throw new JMSRuntimeException("Failed to create queue with name=[" + (name == null ? "null" : name) + "]", "Exception caught: ", e);
+    }
+    
+    return result;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

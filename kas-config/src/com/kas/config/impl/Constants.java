@@ -26,4 +26,8 @@ public interface Constants
   
   static final long     cDefaultDispatchDelay    = 10000L;
   static final long     cDefaultDispatchInterval = 10000L;
+  
+  static final String   cMessagingLocatorConfigPrefix = cMessagingConfigPrefix + "locator.";
+  
+  static final int      cDefaultLocatorListenPort = 14580;
 }

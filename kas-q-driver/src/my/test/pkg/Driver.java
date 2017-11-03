@@ -2,9 +2,9 @@ package my.test.pkg;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
+import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
@@ -12,6 +12,10 @@ import com.kas.q.ext.impl.KasqClient;
 
 public class Driver
 {
+  private final static String cQueueName = "shy.local.queue";
+  private final static String cHostname  = "localhost";
+  private final static int    cPort      = 14560;
+  
   //============================================================================================================================================
   //
   //
@@ -46,7 +50,7 @@ public class Driver
     String userName = "kas";
     String password = "kas";
     
-    KasqClient client = new KasqClient("localhost", 14560);
+    KasqClient client = new KasqClient(cHostname, cPort);
     
     if (client != null)
     {
@@ -61,14 +65,19 @@ public class Driver
         Connection conn = factory.createConnection(userName, password);
         Session    sess = conn.createSession();
         
-        Destination dest = null;
+        Queue queue = client.locateQueue(cQueueName);
+        if (queue == null)
+        {
+          queue = sess.createQueue(cQueueName);
+        }
         
-        MessageProducer producer = sess.createProducer(dest);
-        TextMessage     msg  = sess.createTextMessage();
+        MessageProducer producer = sess.createProducer(queue);
+        TextMessage msg  = sess.createTextMessage("shyifrah");
         
         System.out.println("Driver::run() - Message: " + msg.toString());
         
-        producer.send(dest, msg);
+        producer.send(queue, msg);
+        sleepForSeconds(60);
       }
       catch (JMSException e)
       {
@@ -80,5 +89,14 @@ public class Driver
     }
 
     System.out.println("Driver::run() - OUT");
+  }
+  
+  private void sleepForSeconds(int seconds)
+  {
+    try
+    {
+      Thread.sleep((long)(seconds * 1000));
+    }
+    catch (Throwable e) {}
   }
 }
