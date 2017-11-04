@@ -1,7 +1,7 @@
 package com.kas.infra.utils;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 public class StringUtils
 {
@@ -37,8 +37,8 @@ public class StringUtils
   }
   
   /***************************************************************************************************************
-   * Return the String value for a Map, just as if it had the {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)}
-   * method as part of it.
+   * Return the printable String value for a Map object, just as if it had the 
+   * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
    * @param map the {@code Map}
    * @param level padding level
@@ -56,8 +56,8 @@ public class StringUtils
     for (Map.Entry<?, ?> entry : map.entrySet())
     {
       ++i;
-      sb.append(pad);
-      sb.append(asString(entry.getKey(), entry.getValue()));
+      sb.append(pad)
+        .append(asString(entry.getKey(), entry.getValue()));
       
       if (i + 1 <= size)
         sb.append("\n");
@@ -67,39 +67,27 @@ public class StringUtils
   }
   
   /***************************************************************************************************************
-   * Return the String value for a Set, just as if it had the {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)}
-   * method as part of it.
+   * Return the printable String value for a Collection object, just as if it had the 
+   * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
-   * @param set the {@code Set}
+   * @param collection the {@code Collection}
    * @param level padding level
    * 
    * @return the object's printable string representation 
    */
-  public static String asPrintableString(Set<?> set, int level)
+  public static String asPrintableString(Collection<?> collection, int level)
   {
     String pad = getPadding(level);
     StringBuilder sb = new StringBuilder();
     
-    int size = set.size();
+    int size = collection.size();
     int i    = 0;
     
-    for (Object entry : set)
+    for (Object entry : collection)
     {
       ++i;
-      sb.append(pad);
-      
-      
-      String val; // = entry == null ? "null" : entry.toString();
-      if (entry == null)
-      {
-        val = "null";
-      }
-      else
-      {
-        val = entry.toString();
-      }
-      
-      sb.append(val);
+      sb.append(pad)
+        .append(asString(entry));
       
       if (i + 1 <= size)
         sb.append("\n");

@@ -213,6 +213,14 @@ public class KasqQueue extends KasObject implements IDestination, TemporaryQueue
   /***************************************************************************************************************
    * 
    */
+  public String getName()
+  {
+    return mName;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String toDestinationName()
   {
     StringBuffer sb = new StringBuffer();

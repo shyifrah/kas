@@ -15,11 +15,13 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.server.internal.MessagingConfiguration;
 import com.kas.q.server.internal.ShutdownHook;
 
-public class KasqRunner extends KasObject implements IInitializable
+public class KasqServer extends KasObject implements IInitializable
 {
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * Main function.
+   * 
+   * @param args arguments passed to the main function 
+   */
   public static void main(String [] args) throws IOException
   {
     System.out.println("KAS/Q initialization in progress...");
@@ -34,15 +36,15 @@ public class KasqRunner extends KasObject implements IInitializable
         return;
       }
       
-      KasqRunner queueManager = new KasqRunner();
-      boolean initialized = queueManager.init();
+      KasqServer server = getInstance();
+      boolean initialized = server.init();
       
       if (initialized)
       {
-        queueManager.run();
+        server.run();
       }
       
-      queueManager.term();
+      server.term();
       
       mainConfig.term();
     }
@@ -55,9 +57,14 @@ public class KasqRunner extends KasObject implements IInitializable
     System.out.println("KAS/Q terminated");
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * 
+   */
+  private static KasqServer sInstance = null;
+  
+  /***************************************************************************************************************
+   * 
+   */
   private MessagingConfiguration mConfig;
   private ILogger                mLogger;
   private ILogger                mConsole;
@@ -67,23 +74,35 @@ public class KasqRunner extends KasObject implements IInitializable
   private ServerSocket           mListenSocket;
   private ShutdownHook           mShutdownHook;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  KasqRunner() throws IOException
+  /***************************************************************************************************************
+   * Gets the singleton instance of {@code KasqServer}
+   * 
+   * @return the single instance of the {@code KasqServer}
+   */
+  public static KasqServer getInstance()
+  {
+    if (sInstance == null)
+      sInstance = new KasqServer();
+    
+    return sInstance;
+  }
+  
+  /***************************************************************************************************************
+   * Constructs a {@code KasqServer} object
+   */
+  private KasqServer()
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getConsole(this.getClass());
-    mConfig  = new MessagingConfiguration();
     
-    mShouldStop    = false;
-    
+    mConfig = new MessagingConfiguration();
     mHandlerManager = new ClientHandlerManager();
+    mShouldStop = false;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * 
+   */
   public boolean init() 
   {
     mLogger.debug("KasqRunner::init() - IN");
@@ -98,7 +117,7 @@ public class KasqRunner extends KasObject implements IInitializable
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
     // initialize the repository
-    mRepository = new KasqRepository(mConfig);
+    mRepository = new KasqRepository();
     success = mRepository.init();
     
     // establish server socket
@@ -115,9 +134,9 @@ public class KasqRunner extends KasObject implements IInitializable
     return success;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * 
+   */
   public boolean term()
   {
     mLogger.debug("KasqRunner::term() - IN");
@@ -144,9 +163,12 @@ public class KasqRunner extends KasObject implements IInitializable
     return true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * Main function of the {@code KasqServer}.
+   * Essentially, this function prints the startup messages, accepts new connections from clients
+   * and hands them over to the {@code ClientHandlerManager} to create a {@code ClientHandler} to handle the
+   * connection.
+   */
   void run() 
   {
     mLogger.debug("KasqRunner::run() - IN");
@@ -179,24 +201,49 @@ public class KasqRunner extends KasObject implements IInitializable
     mLogger.debug("KasqRunner::run() - OUT");
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * Gets the configuration object associated with this {@code KasqServer}
+   * 
+   * @return the {@code MessagingConfiguration}
+   */
+  public MessagingConfiguration getConfiguration()
+  {
+    return mConfig;
+  }
+  
+  /***************************************************************************************************************
+   * Gets the repository object associated with this {@code KasqServer}
+   * 
+   * @return the {@code KasqRepository}
+   */
+  public KasqRepository getRepository()
+  {
+    return mRepository;
+  }
+  
+  /***************************************************************************************************************
+   * Log a message to both Console and Log file.
+   * 
+   * @param the message to log
+   */
   private void logInfoBoth(String msg)
   {
     mLogger.info(msg);
     mConsole.info(msg);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     
     sb.append(name()).append("(\n")
+      .append(pad).append("  Configuration=(").append(mConfig.toPrintableString(level+1)).append(")\n")
+      .append(pad).append("  Repository=(").append(mRepository.toPrintableString(level+1)).append(")\n")
+      .append(pad).append("  HandlerManager=(").append(mHandlerManager.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     
     return sb.toString();

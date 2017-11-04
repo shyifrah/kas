@@ -33,6 +33,13 @@ public interface IDestination extends IInitializable, Serializable
    * @return number of messages in destination
    */
   public abstract int getSize();
+  
+  /***************************************************************************************************************
+   * Returns the name of the destination.
+   * 
+   * @return the name of the destination
+   */
+  public abstract String getName();
 
   /***************************************************************************************************************
    * Returns the destination name

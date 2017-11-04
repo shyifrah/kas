@@ -2,17 +2,19 @@ package com.kas.q.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import javax.jms.Queue;
-import javax.jms.Topic;
+import javax.jms.JMSException;
 import com.kas.containers.CappedContainerProxy;
 import com.kas.containers.CappedContainersFactory;
 import com.kas.containers.CappedHashMap;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.KasObject;
+import com.kas.infra.base.WeakRef;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.IDestination;
 import com.kas.q.ext.ILocator;
 import com.kas.q.impl.KasqQueue;
+import com.kas.q.impl.KasqTopic;
 import com.kas.q.server.internal.MessagingConfiguration;
 
 public class KasqRepository extends KasObject implements IInitializable, ILocator
@@ -26,9 +28,11 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
   
   private CappedContainerProxy mQueuesMapProxy;
   private CappedHashMap<String, KasqQueue> mQueuesMap;
+  private CappedContainerProxy mTopicsMapProxy;
+  private CappedHashMap<String, KasqTopic> mTopicsMap;
   
-  //private CappedContainerProxy mManagersMapProxy;
-  //private CappedHashMap<String, KasqManager> mManagersMap;
+  private WeakRef<KasqQueue> mDeadQueue;
+  private WeakRef<KasqQueue> mAdminQueue;
   
   /***************************************************************************************************************
    * Construct the repository, specifying the Messaging configuration object.
@@ -36,13 +40,16 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
    * @param config the {@code MessagingConfiguration} object
    */
   @SuppressWarnings("unchecked")
-  KasqRepository(MessagingConfiguration config)
+  KasqRepository()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mConfig = config;
+    mConfig = KasqServer.getInstance().getConfiguration();
     
     mQueuesMapProxy = new CappedContainerProxy("messaging.queues.map", mLogger);
     mQueuesMap = (CappedHashMap<String, KasqQueue>)CappedContainersFactory.createMap(mQueuesMapProxy);
+    
+    mTopicsMapProxy = new CappedContainerProxy("messaging.topics.map", mLogger);
+    mTopicsMap = (CappedHashMap<String, KasqTopic>)CappedContainersFactory.createMap(mTopicsMapProxy);
   }
   
   /***************************************************************************************************************
@@ -54,10 +61,14 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
     boolean success = true;
     
     // define deadq
-    defineQueue(mConfig.getDeadQueue());
+    String deadq = mConfig.getDeadQueue();
+    defineQueue(deadq);
+    mDeadQueue = new WeakRef<KasqQueue>(mQueuesMap.get(deadq));
     
     // define adminq
-    defineQueue(mConfig.getAdminQueue());
+    String adminq = mConfig.getAdminQueue();
+    defineQueue(adminq);
+    mAdminQueue = new WeakRef<KasqQueue>(mQueuesMap.get(adminq));
     
     try
     {
@@ -91,6 +102,18 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
       queue.term();
     }
     
+    for (KasqTopic topic : mTopicsMap.values())
+    {
+      String tname = "unknown-topic";
+      try
+      {
+        tname = topic.getTopicName();
+      }
+      catch (Throwable e) {}
+      mLogger.debug("KasqRepository::term() - Writting topic contents. Topic=[" + tname + "]; Messages=[" + topic.getSize() + "]");
+      topic.term();
+    }
+    
     try
     {
       mLocatorSocket.close();
@@ -108,7 +131,7 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
    * 
    * @return true if queue definition was successful
    */
-  private boolean defineQueue(String name)
+  public boolean defineQueue(String name)
   {
     return defineQueue(name, mConfig.getManagerName());
   }
@@ -117,42 +140,111 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
    * Define and initialize a queue in the repository, specifying the name of the queue and the its manager
    * 
    * @param name the name of the queue
-   * @param name of the manager in which this queue is defined
+   * @param managerName of the manager in which this queue is defined
    * 
    * @return true if queue definition was successful
    */
-  private boolean defineQueue(String name, String managerName)
+  public boolean defineQueue(String name, String managerName)
   {
-    mLogger.debug("KasqRepository::defineQueue() - IN");
+    return define(name, managerName, false);
+  }
+  
+  /***************************************************************************************************************
+   * Define and initialize a topic in the repository, specifying the name of the topic
+   * 
+   * @param name the name of the topic
+   * 
+   * @return true if topic definition was successful
+   */
+  public boolean defineTopic(String name)
+  {
+    return defineTopic(name, mConfig.getManagerName());
+  }
+  
+  /***************************************************************************************************************
+   * Define and initialize a topic in the repository, specifying the name of the topic and the its manager
+   * 
+   * @param name the name of the topic
+   * @param managerName of the manager in which this topic defined
+   * 
+   * @return true if topic definition was successful
+   */
+  public boolean defineTopic(String name, String managerName)
+  {
+    return define(name, managerName, true);
+  }
+  
+  /***************************************************************************************************************
+   * Define and initialize a topic/queue in the repository, specifying the name of the topic/queue and the its manager
+   * 
+   * @param name the name of the topic/queue
+   * @param managerName of the manager in which this topic/queue defined
+   * @param isTopic true if the defined object is a Topic, false if it's a Queue
+   * 
+   * @return true if topic/queue definition was successful
+   */
+  private boolean define(String name, String managerName, boolean isTopic)
+  {
+    mLogger.debug("KasqRepository::define() - IN");
     boolean success = true;
     
-    mLogger.info("Define queue with name=[" + name + "] at manager=[" + managerName + "]");
+    mLogger.info("Define " + (isTopic ? "topic" : "queue") + " with name=[" + name + "] at manager=[" + managerName + "]");
     
-    KasqQueue queue = mQueuesMap.get(name);
-    if (queue == null)
+    IDestination dest = (isTopic ? mTopicsMap.get(name) : mQueuesMap.get(name));
+    if (dest == null)
     {
       try
       {
-        queue = new KasqQueue(name, managerName);
-        success = queue.init();
+        if (isTopic)
+        {
+          KasqTopic topic = new KasqTopic(name, managerName);
+          success = topic.init();
         
-        if (success) mQueuesMap.put(name, queue);
+          if (success) mTopicsMap.put(name, topic);
+        }
+        else
+        {
+          KasqQueue queue = new KasqQueue(name, managerName);
+          success = queue.init();
+          
+          if (success) mQueuesMap.put(name, queue);
+        }
       }
       catch (Throwable e)
       {
-        mLogger.error("Failed to define local queue [" + name + "] at manager=[" + managerName + "]. Exception caught: ", e);
+        mLogger.error("Failed to define local topic [" + name + "] at manager=[" + managerName + "]. Exception caught: ", e);
         success = false;
       }
     }
     
-    mLogger.debug("KasqRepository::defineLocalQueue() - OUT, Returns=" + success);
+    mLogger.debug("KasqRepository::define() - OUT, Returns=" + success);
     return success;
+  }
+  
+  /***************************************************************************************************************
+   * Gets the dead queue
+   * 
+   * @return the {@code KasqQueue} object of the dead queue
+   */
+  public KasqQueue getDeadQueue()
+  {
+    return mDeadQueue.get();
+  }
+  
+  /***************************************************************************************************************
+   * Gets the admin queue
+   * 
+   * @return the {@code KasqQueue} object of the admin queue
+   */
+  public KasqQueue getAdminQueue()
+  {
+    return mAdminQueue.get();
   }
   
   /***************************************************************************************************************
    * 
    */
-  public synchronized Queue locateQueue(String name)
+  public synchronized KasqQueue locateQueue(String name)
   {
     return mQueuesMap.get(name);
   }
@@ -160,11 +252,20 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
   /***************************************************************************************************************
    * 
    */
-  public synchronized Topic locateTopic(String name)
+  public synchronized KasqTopic locateTopic(String name)
   {
-    return null;
+    return mTopicsMap.get(name);
   }
-
+  
+  /***************************************************************************************************************
+   * @throws JMSException 
+   * 
+   */
+  public IDestination locate(String name) throws JMSException
+  {
+    IDestination iDest = locateQueue(name);
+    return (iDest != null ? iDest : locateTopic(name));
+  }
   
   /***************************************************************************************************************
    * 
@@ -175,6 +276,8 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
     StringBuffer sb = new StringBuffer();
     
     sb.append(name()).append("(\n")
+      .append(pad).append("  Queues=(").append(mQueuesMap.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  Topics=(").append(mTopicsMap.toPrintableString(level + 1)).append(")\n")
       .append(pad).append(")");
     
     return sb.toString();

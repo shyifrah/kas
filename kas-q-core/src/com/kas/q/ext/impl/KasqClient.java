@@ -1,8 +1,6 @@
 package com.kas.q.ext.impl;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
-import javax.jms.Topic;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.KasObject;
@@ -11,6 +9,8 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.ILocator;
 import com.kas.q.impl.KasqConnectionFactory;
+import com.kas.q.impl.KasqQueue;
+import com.kas.q.impl.KasqTopic;
 
 public class KasqClient extends KasObject implements IInitializable, ILocator
 {
@@ -135,18 +135,18 @@ public class KasqClient extends KasObject implements IInitializable, ILocator
   /***************************************************************************************************************
    * 
    */
-  public Queue locateQueue(String name)
+  public KasqQueue locateQueue(String name)
   {
-    Queue queue = null;
+    KasqQueue queue = null;
     return queue;
   }
   
   /***************************************************************************************************************
    * 
    */
-  public Topic locateTopic(String name)
+  public KasqTopic locateTopic(String name)
   {
-    Topic topic = null;
+    KasqTopic topic = null;
     return topic;
   }
   

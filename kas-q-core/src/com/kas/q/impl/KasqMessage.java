@@ -7,7 +7,7 @@ import java.util.Enumeration;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;
-import javax.jms.Message;
+//import javax.jms.Message;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.Properties;
@@ -16,7 +16,7 @@ import com.kas.q.ext.IMessage;
 import com.kas.q.ext.MessageType;
 import com.kas.q.ext.impl.JmsUtils;
 
-public class KasqMessage extends KasObject implements IMessage, Message
+public class KasqMessage extends KasObject implements IMessage
 {
   static final String cKasQEyeCatcher = "KasQ_EyeCatcher";
   
@@ -702,7 +702,7 @@ public class KasqMessage extends KasObject implements IMessage, Message
       .append(pad).append("  TimeStamp=").append(mTimestamp).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  Type=").append(mType).append("\n")
-      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level + 2)).append(")\n")
+      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level + 1)).append(")\n")
       .append(pad).append(")");
     
     return sb.toString();

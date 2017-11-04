@@ -62,21 +62,14 @@ public class Driver
       
       try
       {
+        
         Connection conn = factory.createConnection(userName, password);
         Session    sess = conn.createSession();
+        Queue queue = sess.createQueue(cQueueName);
         
-        Queue queue = client.locateQueue(cQueueName);
-        if (queue == null)
-        {
-          queue = sess.createQueue(cQueueName);
-        }
+        sendThreeMessages(sess, queue);
+        sendThreeMessages(sess, queue);
         
-        MessageProducer producer = sess.createProducer(queue);
-        TextMessage msg  = sess.createTextMessage("shyifrah");
-        
-        System.out.println("Driver::run() - Message: " + msg.toString());
-        
-        producer.send(queue, msg);
         sleepForSeconds(60);
       }
       catch (JMSException e)
@@ -89,6 +82,17 @@ public class Driver
     }
 
     System.out.println("Driver::run() - OUT");
+  }
+  
+  private void sendThreeMessages(Session session, Queue queue) throws JMSException
+  {
+    MessageProducer producer = session.createProducer(queue);
+    
+    for (int i = 0; i < 10; i++)
+    {
+      TextMessage msg = session.createTextMessage("shyifrah-" + Integer.toString(i));
+      producer.send(queue, msg);
+    }
   }
   
   private void sleepForSeconds(int seconds)

@@ -1,18 +1,18 @@
 package com.kas.q.ext;
 
-import javax.jms.Queue;
-import javax.jms.Topic;
+import com.kas.q.impl.KasqQueue;
+import com.kas.q.impl.KasqTopic;
 
 public interface ILocator
 {
   /***************************************************************************************************************
-   * Locate a queue Destination by its name
+   * Locate a {@code KasqQueue} by its name
    * 
-   * @param name the name of the {@code Queue} to be located
+   * @param name the name of the {@code KasqQueue} to be located
    * 
-   * @return the located {@code Queue}, or null if it was not found 
+   * @return the located {@code KasqQueue}, or null if it was not found 
    */
-  public abstract Queue locateQueue(String name);
+  public abstract KasqQueue locateQueue(String name);
   
   /***************************************************************************************************************
    * Locate a topic Destination by its name
@@ -21,5 +21,5 @@ public interface ILocator
    * 
    * @return the located {@code Topic}, or null if it was not found 
    */
-  public abstract Topic locateTopic(String name);
+  public abstract KasqTopic locateTopic(String name);
 }
