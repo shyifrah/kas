@@ -1,0 +1,106 @@
+package com.kas.q.server;
+
+import java.io.IOException;
+import java.net.Socket;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import com.kas.infra.base.KasObject;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.IDestination;
+import com.kas.q.ext.IMessage;
+import com.kas.q.ext.impl.MessageSerializer;
+import com.kas.q.ext.impl.Messenger;
+import com.kas.q.server.internal.IHandlerCallback;
+
+public class ClientHandler extends KasObject implements Runnable
+{
+  private ILogger                mLogger;
+  private Messenger              mMessenger;
+  private IHandlerCallback       mCallback;
+  private KasqRepository         mRepository;
+  
+  ClientHandler(Socket socket, IHandlerCallback callback) throws IOException
+  {
+    mLogger     = LoggerFactory.getLogger(this.getClass());
+    mMessenger  = Messenger.Factory.create(socket);
+    mCallback   = callback;
+    mRepository = KasqServer.getInstance().getRepository();
+    
+    if (mCallback != null) mCallback.onHandlerStart(this);
+  }
+  
+  public void run()
+  {
+    mLogger.trace("Handling client connection from: " + mMessenger.toPrintableString(0));
+    
+    try
+    {
+      mLogger.trace("Awaiting client to send messages..");
+      IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
+      while (message != null)
+      {
+        mLogger.trace("Received from client message: " + message.toPrintableString(0));
+        process(message);
+        
+        message = MessageSerializer.deserialize(mMessenger.getInputStream());
+      }
+      
+      mMessenger.cleanup();
+    }
+    catch (IOException e)
+    {
+      mLogger.trace("I/O Exception caught. Message: "+ e.getMessage());
+    }
+    catch (Throwable e)
+    {
+      mLogger.trace("Exception caught while trying to process message from client. ", e);
+    }
+    mMessenger.cleanup();
+    
+    if (mCallback != null) mCallback.onHandlerStop(this);
+  }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  private void process(IMessage message) throws JMSException
+  {
+    // the message carries a Destination object in its JMS-Destination header
+    // if it's NOT an instance of a IDestination, then we don't really have what to do with the message,
+    // so we'll send it to our dead-queue.
+    // if it's a IDestination, then we should try and locate it in our repository.
+    // > if we found it, then it is defined there, and we just put there the message.
+    // > if we didn't find it, then we need to define it and then put there the message.
+    Destination jmsDestination = message.getJMSDestination();
+    IDestination iDest;
+    if (!(jmsDestination instanceof IDestination))
+    {
+      iDest = mRepository.getDeadQueue();
+    }
+    else
+    {
+      iDest = (IDestination)jmsDestination;
+      
+      String destName = iDest.getName();
+      IDestination iDestFromRepo = mRepository.locate(destName);
+      if (iDestFromRepo == null)
+      {
+        // need to define the destination
+      }
+      
+      iDestFromRepo.put(message);
+    }
+    
+    iDest.put(message);
+  }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  public String toPrintableString(int level)
+  {
+    return null;
+  }
+}
+

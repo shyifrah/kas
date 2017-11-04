@@ -1,0 +1,13 @@
+package com.kas.infra.base;
+
+public abstract class KasSingleton extends KasObject
+{
+
+  @Override
+  public String toPrintableString(int level)
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+}

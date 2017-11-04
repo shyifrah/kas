@@ -1,0 +1,6 @@
+package com.kas.infra.base;
+
+public interface ISingleton
+{
+
+}

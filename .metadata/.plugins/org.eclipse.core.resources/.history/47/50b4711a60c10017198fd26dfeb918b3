@@ -1,0 +1,13 @@
+package com.kas.infra.base;
+
+public abstract class KasSingleton<T> extends KasObject
+{
+  private static <T> T sInstance = null;
+  
+  public static <T> T getInstance()
+  {
+    
+  }
+  
+  public abstract String toPrintableString(int level);
+}
