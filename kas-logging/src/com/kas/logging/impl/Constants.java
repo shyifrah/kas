@@ -4,8 +4,9 @@ public interface Constants
 {
   static final String cAppenderMessageFormat = "%s %d:%d %-5s [%s] %s%n";
   
-  static final String cConsoleAppenderName = "console";
-  static final String cFileAppenderName    = "file";
+  static final String cStdoutAppenderName = "stdout";
+  static final String cStderrAppenderName = "stderr";
+  static final String cFileAppenderName   = "file";
   
   static final int      cBytesPerMB = 1024 * 1024;
   

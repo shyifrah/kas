@@ -73,14 +73,21 @@ public class AppenderManager extends KasObject
     sConfig.register(fac);
     FileAppender fa = new FileAppender(fac);
     fa.init();
-    mAppenders.put("file", fa);
+    mAppenders.put(Constants.cFileAppenderName, fa);
     
-    // Console appender
-    ConsoleAppenderConfiguration cac = new ConsoleAppenderConfiguration(sConfig);
-    sConfig.register(cac);
-    ConsoleAppender ca = new ConsoleAppender(cac);
-    ca.init();
-    mAppenders.put("console", ca);
+    // stdout
+    ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(sConfig);
+    sConfig.register(soac);
+    ConsoleAppender stdout = new StdoutAppender(soac);
+    stdout.init();
+    mAppenders.put(Constants.cStdoutAppenderName, stdout);
+    
+    // stderr
+    ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(sConfig);
+    sConfig.register(seac);
+    ConsoleAppender stderr = new StderrAppender(seac);
+    stderr.init();
+    mAppenders.put(Constants.cStderrAppenderName, stderr);
     
     mAppendersLoaded = true;
   }

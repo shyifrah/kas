@@ -5,9 +5,9 @@ public class ConsoleAppenderConfiguration extends AbstractAppenderConfiguration
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public ConsoleAppenderConfiguration(LoggingConfiguration loggingConfig)
+  public ConsoleAppenderConfiguration(String appenderName, LoggingConfiguration loggingConfig)
   {
-    super(Constants.cConsoleAppenderName, loggingConfig);
+    super(appenderName, loggingConfig);
   }
   
   //------------------------------------------------------------------------------------------------------------------

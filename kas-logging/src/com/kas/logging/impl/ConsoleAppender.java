@@ -1,5 +1,6 @@
 package com.kas.logging.impl;
 
+import java.io.PrintStream;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.RunTimeUtils;
 
@@ -9,13 +10,15 @@ public class ConsoleAppender extends AbstractAppender
   //
   //------------------------------------------------------------------------------------------------------------------
   private ConsoleAppenderConfiguration mConfig = null;
+  private PrintStream                  mPrintStream = null;
   
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public ConsoleAppender(ConsoleAppenderConfiguration cac)
+  protected ConsoleAppender(ConsoleAppenderConfiguration cac, PrintStream pstream)
   {
-    mConfig = cac;
+    mConfig      = cac;
+    mPrintStream = pstream;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -44,7 +47,7 @@ public class ConsoleAppender extends AbstractAppender
       if (mConfig.getLogLevel().isGreaterOrEqual(messageLevel))
       {
         TimeStamp ts = new TimeStamp();
-        System.out.print(String.format(Constants.cAppenderMessageFormat,
+        mPrintStream.print(String.format(Constants.cAppenderMessageFormat,
           ts.toString(),
           RunTimeUtils.getProcessId(),
           RunTimeUtils.getThreadId(),
