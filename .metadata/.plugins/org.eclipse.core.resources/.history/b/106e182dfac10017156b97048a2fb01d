@@ -1,0 +1,16 @@
+package com.kas.logging.impl;
+
+import java.io.PrintStream;
+import com.kas.infra.base.TimeStamp;
+import com.kas.infra.utils.RunTimeUtils;
+
+public abstract class StdoutAppender extends ConsoleAppender
+{
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  protected StdoutAppender(ConsoleAppenderConfiguration cac)
+  {
+    super(cac, System.out);
+  }
+}
