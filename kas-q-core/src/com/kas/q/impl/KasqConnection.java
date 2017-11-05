@@ -12,6 +12,7 @@ import javax.jms.ServerSessionPool;
 import javax.jms.Session;
 import javax.jms.Topic;
 import com.kas.infra.base.KasObject;
+import com.kas.q.ext.IDestination;
 import com.kas.q.ext.IMessage;
 import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
@@ -136,11 +137,36 @@ public class KasqConnection extends KasObject implements Connection
    * of the Messenger.
    * 
    * @param message the message to be sent
+   * 
    * @throws IOException 
    */
   synchronized void send(IMessage message) throws IOException
   {
     MessageSerializer.serialize(mMessenger.getOutputStream(), message);
+  }
+  
+  /***************************************************************************************************************
+   * Receives a {@code IMessage}.
+   * 
+   * Since a {@code Connection} object must support concurrent use, we must synchronize the use
+   * of the Messenger.
+   * 
+   * @param message the message to be sent
+   * 
+   * @throws IOException 
+   * @throws ClassNotFoundException 
+   */
+  synchronized IMessage recv(IDestination destination) throws IOException, ClassNotFoundException
+  {
+    if (mStarted)
+    {
+      // send a message to the KasqServer requesting to listen on messages for the Destination
+      // call a recv() on the messenger to wait for the arrival of a message
+      // note: this means that it is possible the recv() call will block, meaning preventing the Connection
+      //       from serving other consumers/producers at the same time...
+      //       the more "correct" way is that each consumer/producer has its own messenger.
+    }
+    return null;
   }
   
   public String toPrintableString(int level)

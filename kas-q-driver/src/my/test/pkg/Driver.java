@@ -62,7 +62,6 @@ public class Driver
       
       try
       {
-        
         Connection conn = factory.createConnection(userName, password);
         Session    sess = conn.createSession();
         Queue queue = sess.createQueue(cQueueName);

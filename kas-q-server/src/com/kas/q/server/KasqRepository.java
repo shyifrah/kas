@@ -2,7 +2,6 @@ package com.kas.q.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import javax.jms.JMSException;
 import com.kas.containers.CappedContainerProxy;
 import com.kas.containers.CappedContainersFactory;
 import com.kas.containers.CappedHashMap;
