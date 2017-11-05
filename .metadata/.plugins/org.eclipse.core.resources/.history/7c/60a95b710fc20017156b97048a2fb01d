@@ -1,0 +1,54 @@
+package com.kas.q.impl;
+
+import javax.jms.CompletionListener;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import com.kas.infra.base.KasObject;
+import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IMessage;
+
+public class KasqMessageConsumer extends KasObject implements MessageConsumer
+{
+  protected KasqSession mSession = null;
+  //protected Destination mDestination = null;
+  //private boolean     mDisableMessageId = false;
+  //private boolean     mDisableMessageTimestamp = false;
+  //private int         mDeliveryMode = DeliveryMode.PERSISTENT;
+  //private int         mPriority = 0;
+  //private long        mTimeToLive = 0;
+  //private long        mDeliveryDelay = 0;
+  
+  /***************************************************************************************************************
+   * Constructs a {@code KasqMessageProducer} object with a default {@code Destination}
+   * 
+   * @param session the session associated with this {@code MessageProducer}
+   * @param destination a default destination associated with the {@code MessageProducer}
+   */
+  KasqMessageConsumer(KasqSession session, Destination destination)
+  {
+    mSession = session;
+    mDestination = destination;
+  }
+  
+  public String toPrintableString(int level)
+  {
+    String pad = pad(level);
+    StringBuffer sb = new StringBuffer();
+    
+    sb.append(name()).append("(\n")
+      .append(pad).append("  Destination=").append(mDestination).append("\n")
+      .append(pad).append("  MessageId disabled=").append(mDisableMessageId).append("\n")
+      .append(pad).append("  Timestamp disabled=").append(mDisableMessageTimestamp).append("\n")
+      .append(pad).append("  Default DeliveryMode=").append(mDeliveryMode).append("\n")
+      .append(pad).append("  Default Priority=").append(mPriority).append("\n")
+      .append(pad).append("  Default TTL=").append(mTimeToLive).append("\n")
+      .append(pad).append("  Default DeliveryDelay=").append(mDeliveryDelay).append("\n")
+      .append(pad).append(")");
+    
+    return sb.toString();
+  }
+}
