@@ -2,6 +2,7 @@ package com.kas.q.impl;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -13,7 +14,7 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
   protected KasqSession     mSession         = null;
   protected String          mMessageSelector = null;
   protected MessageListener mMessageListener = null;
-  protected Destination     mDestination     = null;
+  protected IDestination    mDestination     = null;
   protected boolean         mNoLocal         = false;
   
   /***************************************************************************************************************
@@ -65,7 +66,7 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
     if (!(destination instanceof IDestination))
       throw new JMSException("Unsupported destination", "Destination is not managed by KAS/Q");
     
-    mDestination = destination;
+    mDestination = (IDestination)destination;
     
     if ((messageSelector == null) || (messageSelector.length() == 0))
       mMessageSelector = null;
@@ -75,6 +76,9 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
     mNoLocal = noLocal;
   }
   
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
@@ -89,40 +93,66 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
     return sb.toString();
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public void close() throws JMSException
   {
-    //
-    //
-    //
+    throw new JMSException("Unsupported method: MessageConsumer.close()");
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public MessageListener getMessageListener() throws JMSException
   {
     return mMessageListener;
   }
   
+  /***************************************************************************************************************
+   *  
+   */
   public void setMessageListener(MessageListener listener) throws JMSException
   {
     mMessageListener = listener;
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public String getMessageSelector() throws JMSException
   {
     return mMessageSelector;
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public Message receive() throws JMSException
   {
-    return null;
+    try
+    {
+      return mSession.mConnection.recv(mDestination);
+    }
+    catch (Throwable e)
+    {
+      throw new JMSRuntimeException("Receive failed", "Exception caught. ", e);
+    }
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public Message receive(long timeout) throws JMSException
   {
-    return null;
+    throw new JMSException("Unsupported method: MessageConsumer.receive(long)");
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public Message receiveNoWait() throws JMSException
   {
-    return null;
+    throw new JMSException("Unsupported method: MessageConsumer.receiveNoWait()");
   }
 }

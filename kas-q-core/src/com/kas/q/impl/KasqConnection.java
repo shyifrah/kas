@@ -105,9 +105,7 @@ public class KasqConnection extends KasObject implements Connection
 
   public void close() throws JMSException
   {
-    //
-    //
-    //
+    throw new JMSException("Unsupported method: Connection.close()");
   }
 
   public ConnectionConsumer createConnectionConsumer(Destination destination, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
@@ -169,6 +167,9 @@ public class KasqConnection extends KasObject implements Connection
     return null;
   }
   
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

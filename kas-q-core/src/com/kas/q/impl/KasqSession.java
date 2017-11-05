@@ -145,16 +145,12 @@ public class KasqSession extends KasObject implements Session
 
   public void close() throws JMSException
   {
-    //
-    //
-    //
+    throw new JMSException("Unsupported method: Session.close()");
   }
 
   public void recover() throws JMSException
   {
-    //
-    //
-    //
+    throw new JMSException("Unsupported method: Session.recover()");
   }
 
   public MessageListener getMessageListener() throws JMSException
@@ -169,9 +165,7 @@ public class KasqSession extends KasObject implements Session
 
   public void run()
   {
-    //
-    //
-    //
+    // Unsupported method: Session.run()
   }
 
   public MessageProducer createProducer(Destination destination) throws JMSException
@@ -212,9 +206,12 @@ public class KasqSession extends KasObject implements Session
     return internalCreateQueue(queueName);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Topic createTopic(String topicName) throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createTopic(String)");
+    return internalCreateTopic(topicName);
   }
 
   /***************************************************************************************************************
@@ -227,9 +224,14 @@ public class KasqSession extends KasObject implements Session
     return internalCreateQueue(queueName);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public TemporaryTopic createTemporaryTopic() throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createTemporaryTopic()");
+    UniqueId uniqueId = new UniqueId();
+    String topicName = "KAS.TEMP.T" + uniqueId.toString();
+    return internalCreateTopic(topicName);
   }
 
   public TopicSubscriber createDurableSubscriber(Topic topic, String name) throws JMSException
@@ -278,7 +280,13 @@ public class KasqSession extends KasObject implements Session
   }
   
   /***************************************************************************************************************
+   * Create a queue with the specified name
    * 
+   * @param name the name of the queue
+   * 
+   * @return a {@code KasqQueue} object
+   * 
+   * @throws JMSRuntimeException if creation failed for some reason
    */
   private TemporaryQueue internalCreateQueue(String name)
   {
@@ -301,6 +309,35 @@ public class KasqSession extends KasObject implements Session
   }
   
   /***************************************************************************************************************
+   * Create a topic with the specified name
+   * 
+   * @param name the name of the topic
+   * 
+   * @return a {@code KasqTopic} object
+   * 
+   * @throws JMSRuntimeException if creation failed for some reason
+   */
+  private TemporaryTopic internalCreateTopic(String name)
+  {
+    if (name == null)
+    {
+      throw new JMSRuntimeException("Failed to create topic", "Null name");
+    }
+    
+    TemporaryTopic result = null;
+    try
+    {
+      result = new KasqTopic(name, "");
+    }
+    catch (Throwable e)
+    {
+      throw new JMSRuntimeException("Failed to create topic with name=[" + (name == null ? "null" : name) + "]", "Exception caught: ", e);
+    }
+    
+    return result;
+  }
+  
+  /***************************************************************************************************************
    * 
    */
   public String toPrintableString(int level)
@@ -312,7 +349,7 @@ public class KasqSession extends KasObject implements Session
       .append(pad).append("  Transacted=").append(mTransacted).append("\n")
       .append(pad).append("  AcknowledgeMode=").append(mAcknowledgeMode).append("\n")
       .append(pad).append("  SessionMode=").append(mSessionMode).append("\n")
-      .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level + 2)).append(")\n")
+      .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level + 1)).append(")\n")
       .append(pad).append(")");
     
     return sb.toString();

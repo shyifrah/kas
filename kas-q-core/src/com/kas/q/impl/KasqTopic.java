@@ -31,10 +31,10 @@ public class KasqTopic extends KasObject implements IDestination, TemporaryTopic
   private ArrayDeque<IMessage> mQueue;
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqQueue} object, specifying its name
+   * Constructs a {@code KasqTopic} object, specifying its name
    * 
-   * @param name the name associated with this queue
-   * @param managerName the name of the manager of this queue
+   * @param name the name associated with this topic
+   * @param managerName the name of the manager of this topic
    */
   public KasqTopic(String name, String managerName)
   {
@@ -93,7 +93,7 @@ public class KasqTopic extends KasObject implements IDestination, TemporaryTopic
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqTopic::init() - Exception caught during queue initialization. TopicName=" + mName + "; Exception: ", e);
+      sLogger.debug("KasqTopic::init() - Exception caught during topic initialization. TopicName=" + mName + "; Exception: ", e);
       success = false;
     }
     
@@ -154,7 +154,7 @@ public class KasqTopic extends KasObject implements IDestination, TemporaryTopic
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqTopic::term() - Exception caught during queue termination. TopicName=" + mName + "; Exception: ", e);
+      sLogger.debug("KasqTopic::term() - Exception caught during topic termination. TopicName=" + mName + "; Exception: ", e);
       success = false;
     }
     
