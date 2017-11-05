@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Copy element &apos;KasqQueue.java&apos; to &apos;kas-q-core/src/com.kas.q.impl&apos;&#x0D;&#x0A;- Original project: &apos;kas-q-core&apos;&#x0D;&#x0A;- Destination element: &apos;kas-q-core/src/com.kas.q.impl&apos;&#x0D;&#x0A;- Original element: &apos;com.kas.q.impl.KasqQueue.java&apos;" description="Copy compilation unit" destination="/src&lt;com.kas.q.impl" element1="/src&lt;com.kas.q.impl{KasqQueue.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1509815778457" units="1" version="1.0"/>
-</session>
