@@ -258,10 +258,14 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
   }
   
   /***************************************************************************************************************
-   * @throws JMSException 
+   * Locate a {@code IDestination} object based on it's name. First we look in the queues map,
+   * then in the topics map.
    * 
+   * @param name the name of the destination
+   * 
+   * @return {@code IDestination} that was located, or null if none was found. 
    */
-  public IDestination locate(String name) throws JMSException
+  public IDestination locate(String name)
   {
     IDestination iDest = locateQueue(name);
     return (iDest != null ? iDest : locateTopic(name));

@@ -1,12 +1,10 @@
 package com.kas.q.impl;
 
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.QueueReceiver;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
-import javax.jms.TextMessage;
 
 public class KasqQueueSession extends KasqSession implements QueueSession
 {
@@ -32,36 +30,33 @@ public class KasqQueueSession extends KasqSession implements QueueSession
     super(connection, transacted, acknowledgeMode);
   }
 
-  public Message createMessage() throws JMSException
-  {
-    return new KasqMessage();
-  }
-
-  public TextMessage createTextMessage() throws JMSException
-  {
-    return new KasqTextMessage();
-  }
-
-  public TextMessage createTextMessage(String text) throws JMSException
-  {
-    return new KasqTextMessage(text);
-  }
-
+  /***************************************************************************************************************
+   * 
+   */
   public QueueReceiver createReceiver(Queue queue) throws JMSException
   {
     throw new JMSException("Unsupported method: QueueSession.createReceiver(Queue)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public QueueReceiver createReceiver(Queue queue, String messageSelector) throws JMSException
   {
     throw new JMSException("Unsupported method: QueueSession.createReceiver(Queue, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public QueueSender createSender(Queue queue) throws JMSException
   {
-    throw new JMSException("Unsupported method: QueueSession.createSender(Queue)");
+    return new KasqQueueSender(this, queue);
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     return super.toPrintableString(level);

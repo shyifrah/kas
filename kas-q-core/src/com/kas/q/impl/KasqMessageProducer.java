@@ -13,8 +13,8 @@ import com.kas.q.ext.IMessage;
 
 public class KasqMessageProducer extends KasObject implements MessageProducer
 {
-  private KasqSession mSession = null;
-  private Destination mDestination = null;
+  protected KasqSession mSession = null;
+  protected Destination mDestination = null;
   private boolean     mDisableMessageId = false;
   private boolean     mDisableMessageTimestamp = false;
   private int         mDeliveryMode = DeliveryMode.PERSISTENT;

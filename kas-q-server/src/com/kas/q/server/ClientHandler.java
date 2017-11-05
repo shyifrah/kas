@@ -38,6 +38,12 @@ public class ClientHandler extends KasObject implements Runnable
     if (mCallback != null) mCallback.onHandlerStart(this);
   }
   
+  /***************************************************************************************************************
+   * Main function of {@code ClientHandler}.
+   * It consisting of a while-loop in which the {@code ClientHandler} awaits for new messages from the client
+   * until the communication is broken.
+   * Each received message is then processed by calling the {@code process(IMessage)} method.
+   */
   public void run()
   {
     mLogger.debug("ClientHandler::run() - IN");
@@ -124,7 +130,14 @@ public class ClientHandler extends KasObject implements Runnable
   //------------------------------------------------------------------------------------------------------------------
   public String toPrintableString(int level)
   {
-    return null;
+    String pad = pad(level);
+    StringBuffer sb = new StringBuffer();
+    
+    sb.append(name()).append("(\n")
+      .append(pad).append("  Messenger=(").append(mMessenger.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append(")");
+    
+    return sb.toString();
   }
 }
 

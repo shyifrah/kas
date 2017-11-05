@@ -93,7 +93,7 @@ public class KasqServer extends KasObject implements IInitializable
   private KasqServer()
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
-    mConsole = LoggerFactory.getConsole(this.getClass());
+    mConsole = LoggerFactory.getStdout(this.getClass());
     
     mConfig = new MessagingConfiguration();
     mHandlerManager = new ClientHandlerManager();
@@ -123,7 +123,7 @@ public class KasqServer extends KasObject implements IInitializable
     // establish server socket
     try
     {
-      mListenSocket  = new ServerSocket(mConfig.getPort());
+      mListenSocket = new ServerSocket(mConfig.getPort());
     }
     catch (IOException e)
     {
