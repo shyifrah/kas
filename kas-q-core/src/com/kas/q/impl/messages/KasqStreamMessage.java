@@ -5,30 +5,29 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;
 import javax.jms.MessageFormatException;
+import javax.jms.StreamMessage;
 import com.kas.q.ext.MessageType;
 
-public class KasqBytesMessage extends KasqMessage implements BytesMessage
+public class KasqStreamMessage extends KasqMessage implements StreamMessage
 {
-  private byte [] mBody;
+  private byte [] mBody = null;
   private ByteArrayOutputStream mOutputArray  = null;
   private ByteArrayInputStream  mInputArray   = null;
   private ObjectOutputStream    mOutputStream = null;
   private ObjectInputStream     mInputStream  = null;
   
   /***************************************************************************************************************
-   * Constructs a default {@code KasqBytesMessage} object
+   * Constructs a default {@code KasqStreamMessage} object
    * 
    * @throws IOException 
    */
-  public KasqBytesMessage() throws IOException
+  public KasqStreamMessage() throws IOException
   {
     super();
-    mMessageType = MessageType.cBytesMessage;
-    mBody = null;
+    mMessageType = MessageType.cStreamMessage;
     mBodyMode = ReadWriteMode.cWriteOnly;
     
     mOutputArray  = new ByteArrayOutputStream();
@@ -43,10 +42,10 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    * @throws IOException 
    * @throws ClassNotFoundException 
    */
-  public KasqBytesMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public KasqStreamMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
   {
     super(istream);
-    mBody = (byte [])istream.readObject();
+    mInputStream = istream;
   }
   
   /***************************************************************************************************************
@@ -149,24 +148,6 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
     {
       throw new JMSRuntimeException("writeBytes failed", "Exception caught. ", e);
     }
-  }
-
-  /***************************************************************************************************************
-   *  
-   */
-  public int readBytes(byte[] value, int length) throws JMSException
-  {
-    assertBodyReadable();
-    int result;
-    try
-    {
-      result = mInputStream.read(value, 0, length);
-    }
-    catch (Throwable e)
-    {
-      throw new JMSRuntimeException("readBytes failed", "Exception caught. ", e);
-    }
-    return result;
   }
 
   /***************************************************************************************************************
@@ -392,7 +373,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   /***************************************************************************************************************
    *  
    */
-  public String readUTF() throws JMSException
+  public String readString() throws JMSException
   {
     assertBodyReadable();
     String result;
@@ -410,7 +391,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   /***************************************************************************************************************
    *  
    */
-  public void writeUTF(String value) throws JMSException
+  public void writeString(String value) throws JMSException
   {
     assertBodyWriteable();
     try
@@ -426,35 +407,17 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   /***************************************************************************************************************
    *  
    */
-  public int readUnsignedByte() throws JMSException
+  public Object readObject() throws JMSException
   {
     assertBodyReadable();
-    int result;
+    Object result;
     try
     {
-      result = mInputStream.readUnsignedByte();
+      result = mInputStream.readObject();
     }
     catch (Throwable e)
     {
-      throw new JMSRuntimeException("readUnsignedByte failed", "Exception caught. ", e);
-    }
-    return result;
-  }
-
-  /***************************************************************************************************************
-   *  
-   */
-  public int readUnsignedShort() throws JMSException
-  {
-    assertBodyReadable();
-    int result;
-    try
-    {
-      result = mInputStream.readUnsignedShort();
-    }
-    catch (Throwable e)
-    {
-      throw new JMSRuntimeException("readUnsignedShort failed", "Exception caught. ", e);
+      throw new JMSRuntimeException("readObject failed", "Exception caught. ", e);
     }
     return result;
   }
@@ -496,15 +459,6 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
     {
       throw new JMSRuntimeException("Message reset failed", "Exception caught. ", e);
     }
-  }
-
-  /***************************************************************************************************************
-   *  
-   */
-  public long getBodyLength() throws JMSException
-  {
-    assertBodyReadable();
-    return mBody.length;
   }
 
   /***************************************************************************************************************
@@ -553,18 +507,9 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   /***************************************************************************************************************
    *  
    */
-  @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
-    assertBodyReadable();
-    
-    if (mBody == null)
-      return null;
-    
-    if (isBodyAssignableTo(c))
-      return (T)mBody;
-    
-    throw new MessageFormatException("Body not assignable to type: " + c.getName());
+    throw new MessageFormatException("getBody is not applicable for StreamMessage");
   }
 
   /***************************************************************************************************************
@@ -573,7 +518,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   @SuppressWarnings("rawtypes")
   public boolean isBodyAssignableTo(Class c) throws JMSException
   {
-    return byte[].class.isAssignableFrom(c);
+    return false;
   }
 
   /***************************************************************************************************************

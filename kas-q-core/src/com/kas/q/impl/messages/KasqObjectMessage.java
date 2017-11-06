@@ -54,6 +54,7 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
    */
   public Serializable getObject() throws JMSException
   {
+    assertBodyReadable();
     return mBody;
   }
 
@@ -62,6 +63,7 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
    */
   public void setObject(Serializable serializable) throws JMSException
   {
+    assertBodyWriteable();
     mBody = serializable;
   }
   
@@ -88,6 +90,7 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   public void clearBody() throws JMSException
   {
     mBody = null;
+    mBodyMode = ReadWriteMode.cReadWrite;
   }
 
   /***************************************************************************************************************
@@ -96,6 +99,8 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
+    assertBodyReadable();
+    
     if (mBody == null)
       return null;
     

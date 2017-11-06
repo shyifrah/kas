@@ -51,6 +51,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
    */
   public String getText() throws JMSException
   {
+    assertBodyReadable();
     return mBody;
   }
 
@@ -59,6 +60,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
    */
   public void setText(String text) throws JMSException
   {
+    assertBodyWriteable();
     mBody = text;
   }
   
@@ -85,6 +87,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
   public void clearBody() throws JMSException
   {
     mBody = null;
+    mBodyMode = ReadWriteMode.cReadWrite;
   }
 
   /***************************************************************************************************************
@@ -93,6 +96,8 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
+    assertBodyReadable();
+    
     if (mBody == null)
       return null;
     

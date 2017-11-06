@@ -7,6 +7,8 @@ import java.util.Enumeration;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;
+import javax.jms.MessageNotReadableException;
+import javax.jms.MessageNotWriteableException;
 //import javax.jms.Message;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.KasObject;
@@ -18,9 +20,26 @@ import com.kas.q.ext.impl.JmsUtils;
 
 public class KasqMessage extends KasObject implements IMessage
 {
+  static enum ReadWriteMode {
+    cReadOnly("read only"),
+    cWriteOnly("write only"),
+    cReadWrite("read/write");
+    
+    protected String mDesc;
+    private ReadWriteMode(String desc)
+    {
+      mDesc = desc;
+    }
+    public String toString()
+    {
+      return mDesc;
+    }
+  };
+  
   public static final String cKasQEyeCatcher = "KasQ_EyeCatcher";
   
   protected MessageType mMessageType   = MessageType.cMessage;
+  
   protected String      mMessageId     = null;
   protected String      mCorrelationId = null;
   protected int         mDeliveryMode  = 0;
@@ -33,6 +52,9 @@ public class KasqMessage extends KasObject implements IMessage
   protected int         mPriority      = 0;
   protected String      mType          = null;
   protected Properties  mProperties    = new Properties();
+  
+  protected ReadWriteMode  mPropsMode = ReadWriteMode.cReadWrite;
+  protected ReadWriteMode  mBodyMode  = ReadWriteMode.cReadWrite;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqMessage} object, specifying no parameters
@@ -80,11 +102,19 @@ public class KasqMessage extends KasObject implements IMessage
     mProperties    = (Properties)istream.readObject();
   }
   
+  /***************************************************************************************************************
+   * Gets the message's type
+   * 
+   * @return The {@code MessageType} of the message
+   */
   public MessageType getMessageType()
   {
     return mMessageType;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public void serialize(ObjectOutputStream ostream)
   {
     try
@@ -125,8 +155,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public boolean getBooleanProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getBoolProperty(key);
@@ -137,8 +171,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setBooleanProperty(String key, boolean value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setBoolProperty(key, value);
@@ -149,8 +187,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public byte getByteProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getByteProperty(key);
@@ -161,8 +203,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setByteProperty(String key, byte value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setByteProperty(key, value);
@@ -173,8 +219,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public double getDoubleProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getDoubleProperty(key);
@@ -185,8 +235,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setDoubleProperty(String key, double value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setDoubleProperty(key, value);
@@ -197,8 +251,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public float getFloatProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getFloatProperty(key);
@@ -209,8 +267,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setFloatProperty(String key, float value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setFloatProperty(key, value);
@@ -221,8 +283,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public int getIntProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getIntProperty(key);
@@ -233,8 +299,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setIntProperty(String key, int value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setIntProperty(key, value);
@@ -245,8 +315,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public long getLongProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getLongProperty(key);
@@ -257,8 +331,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setLongProperty(String key, long value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setLongProperty(key, value);
@@ -269,8 +347,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Object getObjectProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getObjectProperty(key);
@@ -281,8 +363,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setObjectProperty(String key, Object value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setObjectProperty(key, value);
@@ -293,8 +379,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public short getShortProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getShortProperty(key);
@@ -305,8 +395,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setShortProperty(String key, short value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setShortProperty(key, value);
@@ -317,8 +411,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public String getStringProperty(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.getStringProperty(key);
@@ -329,8 +427,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setStringProperty(String key, String value) throws JMSException
   {
+    assertPropertiesWriteable();
     try
     {
       mProperties.setStringProperty(key, value);
@@ -341,8 +443,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Enumeration<?> getPropertyNames() throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.keys();
@@ -353,8 +459,12 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public boolean propertyExists(String key) throws JMSException
   {
+    assertPropertiesReadable();
     try
     {
       return mProperties.containsKey(key);
@@ -365,6 +475,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void acknowledge() throws JMSException
   {
     throw new JMSException("Unsupported method: Message.acknowledge()");
@@ -374,22 +487,32 @@ public class KasqMessage extends KasObject implements IMessage
   {
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public <T> T getBody(Class<T> c) throws JMSException
   {
     return null;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   @SuppressWarnings("rawtypes")
   public boolean isBodyAssignableTo(Class c) throws JMSException
   {
     return true;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void clearProperties() throws JMSException
   {
     try
     {
       mProperties.clear();
+      mPropsMode = ReadWriteMode.cReadWrite;
     }
     catch (Exception e)
     {
@@ -397,6 +520,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public String getJMSCorrelationID() throws JMSException
   {
     try
@@ -409,6 +535,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSCorrelationID(String correlationId) throws JMSException
   {
     try
@@ -421,6 +550,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public byte[] getJMSCorrelationIDAsBytes() throws JMSException
   {
     try
@@ -433,6 +565,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSCorrelationIDAsBytes(byte[] correlationId) throws JMSException
   {
     try
@@ -445,6 +580,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public int getJMSDeliveryMode() throws JMSException
   {
     try
@@ -457,6 +595,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSDeliveryMode(int deliveryMode) throws JMSException
   {
     try
@@ -469,6 +610,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public long getJMSDeliveryTime() throws JMSException
   {
     try
@@ -481,6 +625,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSDeliveryTime(long deliveryTime) throws JMSException
   {
     try
@@ -493,6 +640,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Destination getJMSDestination() throws JMSException
   {
     try
@@ -505,6 +655,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSDestination(Destination destination) throws JMSException
   {
     try
@@ -517,6 +670,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public long getJMSExpiration() throws JMSException
   {
     try
@@ -529,6 +685,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSExpiration(long expiration) throws JMSException
   {
     try
@@ -541,6 +700,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public String getJMSMessageID() throws JMSException
   {
     try
@@ -553,6 +715,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSMessageID(String messageId) throws JMSException
   {
     try
@@ -565,6 +730,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public int getJMSPriority() throws JMSException
   {
     try
@@ -577,6 +745,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSPriority(int priority) throws JMSException
   {
     try
@@ -589,6 +760,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public boolean getJMSRedelivered() throws JMSException
   {
     try
@@ -601,6 +775,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSRedelivered(boolean redelivered) throws JMSException
   {
     try
@@ -613,6 +790,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Destination getJMSReplyTo() throws JMSException
   {
     try
@@ -625,6 +805,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSReplyTo(Destination replyTo) throws JMSException
   {
     try
@@ -637,6 +820,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public long getJMSTimestamp() throws JMSException
   {
     try
@@ -649,6 +835,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSTimestamp(long timestamp) throws JMSException
   {
     try
@@ -661,6 +850,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public String getJMSType() throws JMSException
   {
     try
@@ -673,6 +865,9 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setJMSType(String type) throws JMSException
   {
     try
@@ -685,6 +880,53 @@ public class KasqMessage extends KasObject implements IMessage
     }
   }
   
+  /***************************************************************************************************************
+   * Throws {@code MessageNotReadableException} if message body is not in read-only or read-write mode
+   * 
+   * @throws JMSException if message body is not readable
+   */
+  protected void assertBodyReadable() throws JMSException
+  {
+    if (mBodyMode == ReadWriteMode.cWriteOnly)
+      throw new MessageNotReadableException("Message body is in " + mBodyMode.toString() + " mode");
+  }
+  
+  /***************************************************************************************************************
+   * Throws {@code MessageNotReadableException} if message properties are not in read-only or read-write mode
+   * 
+   * @throws JMSException if message properties are not readable
+   */
+  protected void assertPropertiesReadable() throws JMSException
+  {
+    if (mPropsMode == ReadWriteMode.cWriteOnly)
+      throw new MessageNotReadableException("Message properties are in " + mBodyMode.toString() + " mode");
+  }
+  
+  /***************************************************************************************************************
+   * Throws {@code MessageNotWriteableException} if message body is not in write-only or read-write mode
+   * 
+   * @throws JMSException if message body is not writeable
+   */
+  protected void assertBodyWriteable() throws JMSException
+  {
+    if (mBodyMode == ReadWriteMode.cReadOnly)
+      throw new MessageNotWriteableException("Message body is in " + mBodyMode.toString() + " mode");
+  }
+  
+  /***************************************************************************************************************
+   * Throws {@code MessageNotWriteableException} if message properties are not in write-only or read-write mode
+   * 
+   * @throws JMSException if message properties are not writeable
+   */
+  protected void assertPropertiesWriteable() throws JMSException
+  {
+    if (mPropsMode == ReadWriteMode.cReadOnly)
+      throw new MessageNotWriteableException("Message properties are in " + mBodyMode.toString() + " mode");
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
@@ -708,6 +950,9 @@ public class KasqMessage extends KasObject implements IMessage
     return sb.toString();
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public String toString()
   {
     return new StringBuffer()
