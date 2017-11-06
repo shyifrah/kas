@@ -7,7 +7,7 @@ import com.kas.infra.config.IConfiguration;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
-public class Properties extends java.util.Properties implements IConfiguration
+public class Properties extends java.util.Properties implements IConfiguration, Map<Object, Object>
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -28,6 +28,14 @@ public class Properties extends java.util.Properties implements IConfiguration
   public Properties(java.util.Properties props)
   {
     super.putAll(props);
+  }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  public Properties(Map<Object, Object> map)
+  {
+    super.putAll(map);
   }
   
   //------------------------------------------------------------------------------------------------------------------
