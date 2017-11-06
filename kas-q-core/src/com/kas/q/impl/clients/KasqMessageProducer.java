@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.clients;
 
 import javax.jms.CompletionListener;
 import javax.jms.DeliveryMode;
@@ -10,6 +10,8 @@ import javax.jms.MessageProducer;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.IMessage;
+import com.kas.q.impl.KasqSession;
+import com.kas.q.impl.messages.KasqMessage;
 
 public class KasqMessageProducer extends KasObject implements MessageProducer
 {
@@ -34,36 +36,57 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
     mDestination = destination;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public Destination getDestination()
   {
     return mDestination;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public boolean getDisableMessageID() throws JMSException
   {
     return mDisableMessageId;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setDisableMessageID(boolean value) throws JMSException
   {
     mDisableMessageId = value;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public boolean getDisableMessageTimestamp() throws JMSException
   {
     return mDisableMessageTimestamp;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setDisableMessageTimestamp(boolean value) throws JMSException
   {
     mDisableMessageTimestamp = value;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public int getDeliveryMode() throws JMSException
   {
     return mDeliveryMode;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setDeliveryMode(int deliveryMode) throws JMSException
   {
     if ((deliveryMode != DeliveryMode.PERSISTENT) && (deliveryMode != DeliveryMode.NON_PERSISTENT))
@@ -72,11 +95,17 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
     mDeliveryMode = deliveryMode;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public int getPriority() throws JMSException
   {
     return mPriority;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public void setPriority(int defaultPriority) throws JMSException
   {
     if ((defaultPriority < 0) || (defaultPriority > 9))
@@ -85,11 +114,17 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
     mPriority = defaultPriority;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public long getTimeToLive() throws JMSException
   {
     return mTimeToLive;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public void setTimeToLive(long timeToLive) throws JMSException
   {
     if (timeToLive < 0)
@@ -98,11 +133,17 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
     mTimeToLive = timeToLive;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public long getDeliveryDelay() throws JMSException
   {
     return mDeliveryDelay;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public void setDeliveryDelay(long deliveryDelay) throws JMSException
   {
     if (deliveryDelay < 0)
@@ -111,48 +152,73 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
     mDeliveryDelay = deliveryDelay;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public void close() throws JMSException
   {
-    //
-    //
-    //
+    throw new JMSException("Unsupported method: MessageProducer.close()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Message message) throws JMSException
   {
     send(mDestination, message, mDeliveryMode, mPriority, mTimeToLive);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Destination destination, Message message) throws JMSException
   {
     send(destination, message, mDeliveryMode, mPriority, mTimeToLive);
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
     send(mDestination, message, deliveryMode, priority, timeToLive);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
     send(destination, message, deliveryMode, priority, timeToLive, null);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Message message, CompletionListener completionListener) throws JMSException
   {
     send(mDestination, message, mDeliveryMode, mPriority, mTimeToLive, completionListener);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Message message, int deliveryMode, int priority, long timeToLive, CompletionListener completionListener) throws JMSException
   {
     send(mDestination, message, deliveryMode, priority, timeToLive, completionListener);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException
   {
     send(destination, message, mDeliveryMode, mPriority, mTimeToLive, completionListener);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void send(Destination destination, Message message, int deliveryMode, int priority, long timeToLive, CompletionListener completionListener) throws JMSException
   {
     try
@@ -240,7 +306,7 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
       if (eyeCatcher)
       {
         IMessage iMessage = (IMessage)message;
-        mSession.mConnection.send(iMessage);
+        mSession.send(iMessage);
       }
     }
     catch (Throwable e)
@@ -249,6 +315,9 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
     }
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

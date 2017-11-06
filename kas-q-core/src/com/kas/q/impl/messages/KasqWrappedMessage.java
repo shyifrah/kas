@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.messages;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

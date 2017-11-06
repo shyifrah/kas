@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.clients;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -8,6 +8,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import com.kas.infra.base.KasObject;
 import com.kas.q.ext.IDestination;
+import com.kas.q.impl.KasqSession;
 
 public class KasqMessageConsumer extends KasObject implements MessageConsumer
 {
@@ -132,7 +133,7 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
   {
     try
     {
-      return mSession.mConnection.recv(mDestination);
+      return mSession.recv(mDestination);
     }
     catch (Throwable e)
     {

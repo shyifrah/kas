@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.messages;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -18,7 +18,7 @@ import com.kas.q.ext.impl.JmsUtils;
 
 public class KasqMessage extends KasObject implements IMessage
 {
-  static final String cKasQEyeCatcher = "KasQ_EyeCatcher";
+  public static final String cKasQEyeCatcher = "KasQ_EyeCatcher";
   
   protected MessageType mMessageType   = MessageType.cMessage;
   protected String      mMessageId     = null;
@@ -37,7 +37,7 @@ public class KasqMessage extends KasObject implements IMessage
   /***************************************************************************************************************
    * Constructs a {@code KasqMessage} object, specifying no parameters
    */
-  KasqMessage()
+  public KasqMessage()
   {
     this(MessageType.cMessage);
     mProperties.setBoolProperty(cKasQEyeCatcher, true);
@@ -46,7 +46,7 @@ public class KasqMessage extends KasObject implements IMessage
   /***************************************************************************************************************
    * Constructs a {@code KasqMessage} object, specifying the message type
    */
-  KasqMessage(MessageType messageType)
+  public KasqMessage(MessageType messageType)
   {
     mMessageType = messageType;
     mProperties.setBoolProperty(cKasQEyeCatcher, true);

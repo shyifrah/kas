@@ -1,58 +1,55 @@
-package com.kas.q.impl;
+package com.kas.q.impl.messages;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
-import javax.jms.ObjectMessage;
+import javax.jms.TextMessage;
 import com.kas.q.ext.MessageType;
 
-public class KasqObjectMessage extends KasqMessage implements ObjectMessage
+public class KasqTextMessage extends KasqMessage implements TextMessage
 {
-  protected Serializable mBody;
+  protected String mBody;
   
   /***************************************************************************************************************
-   * Constructs a default {@code KasqObjectMessage} object
+   * Constructs a default {@code KasqTextMessage} object
    */
-  public KasqObjectMessage()
+  public KasqTextMessage()
   {
-    super();
-    mMessageType = MessageType.cObjectMessage;
-    mBody = null;
+    this("");
   }
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqObjectMessage} object and initialize its body
+   * Constructs a {@code KasqTextMessage} object and initialize its body
    * 
-   * @param serializable message body
+   * @param text message body
    */
-  public KasqObjectMessage(Serializable serializable)
+  public KasqTextMessage(String text)
   {
     super();
-    mMessageType = MessageType.cObjectMessage;
-    mBody = serializable;
+    mMessageType = MessageType.cTextMessage;
+    mBody = text;
   }
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqObjectMessage} object from {@code ObjectInputStream}
+   * Constructs a {@code KasqTextMessage} object from {@code ObjectInputStream}
    * 
    * @param istream the {@code ObjectInputStream} from which the message will be deserialized
    * 
    * @throws IOException 
    * @throws ClassNotFoundException 
    */
-  public KasqObjectMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public KasqTextMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
   {
     super(istream);
-    mBody = (Serializable)istream.readObject();
+    mBody = (String)istream.readObject();
   }
   
   /***************************************************************************************************************
    *  
    */
-  public Serializable getObject() throws JMSException
+  public String getText() throws JMSException
   {
     return mBody;
   }
@@ -60,9 +57,9 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   /***************************************************************************************************************
    *  
    */
-  public void setObject(Serializable serializable) throws JMSException
+  public void setText(String text) throws JMSException
   {
-    mBody = serializable;
+    mBody = text;
   }
   
   /***************************************************************************************************************
@@ -96,6 +93,9 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
+    if (mBody == null)
+      return null;
+    
     if (isBodyAssignableTo(c))
       return (T)mBody;
     
@@ -108,7 +108,7 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   @SuppressWarnings("rawtypes")
   public boolean isBodyAssignableTo(Class c) throws JMSException
   {
-    return Serializable.class.isAssignableFrom(c);
+    return String.class.isAssignableFrom(c);
   }
 
   /***************************************************************************************************************

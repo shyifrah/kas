@@ -14,7 +14,7 @@ import com.kas.q.ext.IMessage;
 import com.kas.q.ext.MessageType;
 import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
-import com.kas.q.impl.KasqTextMessage;
+import com.kas.q.impl.messages.KasqTextMessage;
 
 public class LocatorTask extends KasObject implements Runnable
 {

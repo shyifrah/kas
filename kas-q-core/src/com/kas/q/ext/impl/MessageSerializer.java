@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.q.ext.IMessage;
 import com.kas.q.ext.MessageHeader;
-import com.kas.q.impl.KasqMessage;
-import com.kas.q.impl.KasqTextMessage;
-import com.kas.q.impl.KasqWrappedMessage;
+import com.kas.q.impl.messages.KasqMessage;
+import com.kas.q.impl.messages.KasqTextMessage;
+import com.kas.q.impl.messages.KasqWrappedMessage;
 
 public class MessageSerializer
 {

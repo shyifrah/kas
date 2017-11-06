@@ -1,10 +1,11 @@
-package com.kas.q.impl;
+package com.kas.q.impl.clients;
 
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.QueueSender;
+import com.kas.q.impl.KasqQueueSession;
 
 public class KasqQueueSender extends KasqMessageProducer implements QueueSender
 {

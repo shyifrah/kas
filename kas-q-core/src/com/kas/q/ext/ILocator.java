@@ -1,7 +1,7 @@
 package com.kas.q.ext;
 
-import com.kas.q.impl.KasqQueue;
-import com.kas.q.impl.KasqTopic;
+import com.kas.q.impl.dest.KasqQueue;
+import com.kas.q.impl.dest.KasqTopic;
 
 public interface ILocator
 {

@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.dest;
 
 import java.io.EOFException;
 import java.io.File;

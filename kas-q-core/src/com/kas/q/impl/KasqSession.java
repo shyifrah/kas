@@ -1,5 +1,6 @@
 package com.kas.q.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -22,6 +23,13 @@ import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IDestination;
+import com.kas.q.ext.IMessage;
+import com.kas.q.impl.clients.KasqClientsFactory;
+import com.kas.q.impl.dest.KasqQueue;
+import com.kas.q.impl.dest.KasqTopic;
+import com.kas.q.impl.messages.KasqMessage;
+import com.kas.q.impl.messages.KasqTextMessage;
 
 public class KasqSession extends KasObject implements Session
 {
@@ -83,81 +91,129 @@ public class KasqSession extends KasObject implements Session
     mSessionMode     = sessionMode;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public Message createMessage() throws JMSException
   {
     return new KasqMessage();
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public BytesMessage createBytesMessage() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createBytesMessage()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MapMessage createMapMessage() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createMapMessage()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public ObjectMessage createObjectMessage() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createObjectMessage()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public ObjectMessage createObjectMessage(Serializable object) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createObjectMessage(Serializable)");
   }
-
+  
+  /***************************************************************************************************************
+   * 
+   */
   public StreamMessage createStreamMessage() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createStreamMessage()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public TextMessage createTextMessage() throws JMSException
   {
     return new KasqTextMessage();
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public TextMessage createTextMessage(String text) throws JMSException
   {
     return new KasqTextMessage(text);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public boolean getTransacted() throws JMSException
   {
     return mTransacted;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public int getAcknowledgeMode() throws JMSException
   {
     return mAcknowledgeMode;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void commit() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.commit()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void rollback() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.rollback()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void close() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.close()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void recover() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.recover()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageListener getMessageListener() throws JMSException
   {
     throw new JMSException("Unsupported method: Session.getMessageListener()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void setMessageListener(MessageListener listener) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.setMessageListener(MessageListener)");
@@ -168,31 +224,49 @@ public class KasqSession extends KasObject implements Session
     // Unsupported method: Session.run()
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageProducer createProducer(Destination destination) throws JMSException
   {
-    return new KasqMessageProducer(this, destination);
+    return KasqClientsFactory.createProducer(this, destination);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createConsumer(Destination destination) throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createConsumer(Destination)");
+    return KasqClientsFactory.createConsumer(this, destination);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createConsumer(Destination destination, String messageSelector) throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createConsumer(Destination, String)");
+    return KasqClientsFactory.createConsumer(this, destination, messageSelector);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createConsumer(Destination destination, String messageSelector, boolean noLocal) throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createConsumer(Destination, String, boolean)");
+    return KasqClientsFactory.createConsumer(this, destination, messageSelector, noLocal);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createSharedConsumer(Topic, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName, String messageSelector) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createSharedConsumer(Topic, String, String)");
@@ -234,46 +308,73 @@ public class KasqSession extends KasObject implements Session
     return internalCreateTopic(topicName);
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public TopicSubscriber createDurableSubscriber(Topic topic, String name) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createDurableSubscriber(Topic, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public TopicSubscriber createDurableSubscriber(Topic topic, String name, String messageSelector, boolean noLocal) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createDurableSubscriber(Topic, String, String, boolean)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createDurableConsumer(Topic topic, String name) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createDurableConsumer(Topic, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createDurableConsumer(Topic topic, String name, String messageSelector, boolean noLocal) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createDurableConsumer(Topic, String, String, boolean)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createSharedDurableConsumer(Topic topic, String name) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createSharedDurableConsumer(Topic, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public MessageConsumer createSharedDurableConsumer(Topic topic, String name, String messageSelector) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createSharedDurableConsumer(Topic, String, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public QueueBrowser createBrowser(Queue queue) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createBrowser(Queue)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public QueueBrowser createBrowser(Queue queue, String messageSelector) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.createBrowser(Queue, String)");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void unsubscribe(String name) throws JMSException
   {
     throw new JMSException("Unsupported method: Session.unsubscribe(String)");
@@ -335,6 +436,33 @@ public class KasqSession extends KasObject implements Session
     }
     
     return result;
+  }
+  
+  /***************************************************************************************************************
+   * Send a {@code IMessage} object
+   * 
+   * @param message message to be sent
+   * 
+   * @throws IOException 
+   */
+  public void send(IMessage message) throws IOException
+  {
+    mConnection.send(message);
+  }
+  
+  /***************************************************************************************************************
+   * Receives a {@code IMessage} object targeted to the specified {@code IDestination} 
+   * 
+   * @param message message to be sent
+   * 
+   * @return {@code IMessage} object
+   * 
+   * @throws IOException
+   * @throws ClassNotFoundException 
+   */
+  public IMessage recv(IDestination destination) throws IOException, ClassNotFoundException
+  {
+    return mConnection.recv(destination);
   }
   
   /***************************************************************************************************************

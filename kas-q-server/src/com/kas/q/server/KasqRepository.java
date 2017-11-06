@@ -12,8 +12,8 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IDestination;
 import com.kas.q.ext.ILocator;
-import com.kas.q.impl.KasqQueue;
-import com.kas.q.impl.KasqTopic;
+import com.kas.q.impl.dest.KasqQueue;
+import com.kas.q.impl.dest.KasqTopic;
 import com.kas.q.server.internal.MessagingConfiguration;
 
 public class KasqRepository extends KasObject implements IInitializable, ILocator

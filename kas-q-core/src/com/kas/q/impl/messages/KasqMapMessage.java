@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.messages;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -518,6 +518,9 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
+    if (mBody == null)
+      return null;
+    
     if (isBodyAssignableTo(c))
       return (T)mBody;
     
