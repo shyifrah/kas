@@ -2,13 +2,12 @@ package com.kas.q.impl.clients;
 
 import javax.jms.Destination;
 import javax.jms.JMSException;
-import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import com.kas.infra.base.KasObject;
 import com.kas.q.ext.IDestination;
-import com.kas.q.impl.KasqSession;
+import com.kas.q.impl.conn.KasqSession;
 
 public class KasqMessageConsumer extends KasObject implements MessageConsumer
 {
@@ -131,14 +130,7 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
    */
   public Message receive() throws JMSException
   {
-    try
-    {
-      return mSession.recv(mDestination);
-    }
-    catch (Throwable e)
-    {
-      throw new JMSRuntimeException("Receive failed", "Exception caught. ", e);
-    }
+    throw new JMSException("Unsupported method: MessageConsumer.receive()");
   }
 
   /***************************************************************************************************************

@@ -9,8 +9,7 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.q.ext.IMessage;
-import com.kas.q.impl.KasqSession;
+import com.kas.q.impl.conn.KasqSession;
 import com.kas.q.impl.messages.KasqMessage;
 
 public class KasqMessageProducer extends KasObject implements MessageProducer
@@ -305,8 +304,9 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
       boolean eyeCatcher = message.getBooleanProperty(KasqMessage.cKasQEyeCatcher);
       if (eyeCatcher)
       {
-        IMessage iMessage = (IMessage)message;
-        mSession.send(iMessage);
+        //
+        // TODO: need to send the message
+        //
       }
     }
     catch (Throwable e)

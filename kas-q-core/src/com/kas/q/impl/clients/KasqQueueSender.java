@@ -5,7 +5,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
 import javax.jms.QueueSender;
-import com.kas.q.impl.KasqQueueSession;
+import com.kas.q.impl.conn.KasqQueueSession;
 
 public class KasqQueueSender extends KasqMessageProducer implements QueueSender
 {

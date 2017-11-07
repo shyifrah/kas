@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.conn;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -20,8 +20,9 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    * 
    * @throws UnknownHostException
    * @throws IOException
+   * @throws JMSException 
    */
-  KasqQueueConnection(String host, int port) throws UnknownHostException, IOException
+  KasqQueueConnection(String host, int port) throws UnknownHostException, IOException, JMSException
   {
     super(host, port);
   }
@@ -36,8 +37,9 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    * 
    * @throws UnknownHostException
    * @throws IOException
+   * @throws JMSException 
    */
-  KasqQueueConnection(String host, int port, String userName, String password) throws UnknownHostException, IOException
+  KasqQueueConnection(String host, int port, String userName, String password) throws UnknownHostException, IOException, JMSException
   {
     super(host, port, userName, password);
   }

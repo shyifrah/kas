@@ -64,11 +64,11 @@ public class Driver
       {
         Connection conn = factory.createConnection(userName, password);
         Session    sess = conn.createSession();
-        Queue queue = sess.createQueue(cQueueName);
-        
-        sendThreeMessages(sess, queue);
-        sendThreeMessages(sess, queue);
-        
+        //Queue queue = sess.createQueue(cQueueName);
+        //
+        //sendThreeMessages(sess, queue);
+        //sendThreeMessages(sess, queue);
+        //
         sleepForSeconds(60);
       }
       catch (JMSException e)

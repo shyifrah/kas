@@ -9,8 +9,11 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IDestination;
 import com.kas.q.ext.IMessage;
+import com.kas.q.ext.MessageType;
 import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
+import com.kas.q.impl.messages.KasqTextMessage;
+import com.kas.q.server.internal.CommandProcessor;
 import com.kas.q.server.internal.IHandlerCallback;
 
 public class ClientHandler extends KasObject implements Runnable
@@ -51,14 +54,23 @@ public class ClientHandler extends KasObject implements Runnable
     
     try
     {
-      mLogger.trace("Awaiting client to send messages..");
-      IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
-      while (message != null)
+      boolean auth = authenticate();
+      if (!auth)
       {
-        mLogger.trace("Received from client message: " + message.toPrintableString(0));
-        process(message);
+        mLogger.trace("Client failed authentication...");
+      }
+      else
+      {
+        mLogger.trace("Awaiting client to send messages..");
         
-        message = MessageSerializer.deserialize(mMessenger.getInputStream());
+        IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
+        while (message != null)
+        {
+          mLogger.trace("Received from client message: " + message.toPrintableString(0));
+          process(message);
+          
+          message = MessageSerializer.deserialize(mMessenger.getInputStream());
+        }
       }
       
       mMessenger.cleanup();
@@ -75,6 +87,42 @@ public class ClientHandler extends KasObject implements Runnable
     
     if (mCallback != null) mCallback.onHandlerStop(this);
     mLogger.debug("ClientHandler::run() - OUT");
+  }
+  
+  /***************************************************************************************************************
+   * Authenticate client.
+   *  
+   * @return true if client authenticated successfully, false otherwise
+   * 
+   * @throws IOException 
+   * @throws ClassNotFoundException 
+   */
+  private boolean authenticate() throws JMSException, ClassNotFoundException, IOException
+  {
+    mLogger.debug("ClientHandler::authenticate() - IN");
+    boolean authenticated = false;
+    
+    IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
+    
+    if (message.getMessageType() == MessageType.cTextMessage)
+    {
+      KasqTextMessage textMessage = (KasqTextMessage)message;
+      
+      String requestBody  = textMessage.getText();
+      String responseBody = CommandProcessor.process(requestBody);
+      
+      mLogger.trace("Command request body...: " + requestBody);
+      mLogger.trace("Command response body..: " + responseBody);
+      
+      IMessage response = new KasqTextMessage(responseBody);
+      MessageSerializer.serialize(mMessenger.getOutputStream(), response);
+      
+      if (responseBody.indexOf("Resp:Okay") > 0)
+        authenticated = true;
+    }
+    
+    mLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
+    return authenticated;
   }
   
   /***************************************************************************************************************

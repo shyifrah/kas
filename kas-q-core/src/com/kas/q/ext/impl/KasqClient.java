@@ -8,7 +8,7 @@ import com.kas.infra.base.ThreadPool;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.ILocator;
-import com.kas.q.impl.KasqConnectionFactory;
+import com.kas.q.impl.conn.KasqConnectionFactory;
 import com.kas.q.impl.dest.KasqQueue;
 import com.kas.q.impl.dest.KasqTopic;
 

@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.conn;
 
 import javax.jms.JMSException;
 import javax.jms.JMSRuntimeException;

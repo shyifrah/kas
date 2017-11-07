@@ -1,4 +1,4 @@
-package com.kas.q.impl;
+package com.kas.q.impl.conn;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -24,6 +24,9 @@ public class KasqConnectionFactory extends KasObject implements ConnectionFactor
     mPort = port;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public Connection createConnection() throws JMSException
   {
     try
@@ -36,6 +39,9 @@ public class KasqConnectionFactory extends KasObject implements ConnectionFactor
     }
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public Connection createConnection(String userName, String password) throws JMSException
   {
     try
@@ -48,6 +54,9 @@ public class KasqConnectionFactory extends KasObject implements ConnectionFactor
     }
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public JMSContext createContext()
   {
     return null;
@@ -59,18 +68,27 @@ public class KasqConnectionFactory extends KasObject implements ConnectionFactor
     return null;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public JMSContext createContext(String userName, String password, int sessionMode)
   {
     // Unsupported method: ConnectionFactory.createContext(String, String, int)
     return null;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public JMSContext createContext(int sessionMode)
   {
     // Unsupported method: ConnectionFactory.createContext(int)
     return null;
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

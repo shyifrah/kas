@@ -45,7 +45,6 @@ public class KasqServer extends KasObject implements IInitializable
       }
       
       server.term();
-      
       mainConfig.term();
     }
     catch (Throwable e)

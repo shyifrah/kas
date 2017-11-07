@@ -1,6 +1,5 @@
-package com.kas.q.impl;
+package com.kas.q.impl.conn;
 
-import java.io.IOException;
 import java.io.Serializable;
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -23,8 +22,6 @@ import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.q.ext.IDestination;
-import com.kas.q.ext.IMessage;
 import com.kas.q.impl.clients.KasqClientsFactory;
 import com.kas.q.impl.dest.KasqQueue;
 import com.kas.q.impl.dest.KasqTopic;
@@ -37,6 +34,7 @@ public class KasqSession extends KasObject implements Session
   boolean    mTransacted;
   int        mAcknowledgeMode;
   int        mSessionMode;
+  String     mSessionId;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
@@ -81,14 +79,17 @@ public class KasqSession extends KasObject implements Session
    * Parameters transacted, acknowledgeMode and sessionMode are not supported.
    * 
    * @param connection the associated {@code Connection}
+   * @param transacted indicates whether the session will use a local transaction
+   * @param acknowledgeMode when transacted is false, indicates how messages received by the session will be acknowledged
    * @param sessionMode the session mode that will be used
    */
-  private KasqSession(KasqConnection connection, boolean transacted, int acknowledgeMode, int sessionMode)
+  KasqSession(KasqConnection connection, boolean transacted, int acknowledgeMode, int sessionMode)
   {
     mConnection      = connection;
     mTransacted      = transacted;
     mAcknowledgeMode = acknowledgeMode;
     mSessionMode     = sessionMode;
+    mSessionId       = new UniqueId().toString();
   }
   
   /***************************************************************************************************************
@@ -436,33 +437,6 @@ public class KasqSession extends KasObject implements Session
     }
     
     return result;
-  }
-  
-  /***************************************************************************************************************
-   * Send a {@code IMessage} object
-   * 
-   * @param message message to be sent
-   * 
-   * @throws IOException 
-   */
-  public void send(IMessage message) throws IOException
-  {
-    mConnection.send(message);
-  }
-  
-  /***************************************************************************************************************
-   * Receives a {@code IMessage} object targeted to the specified {@code IDestination} 
-   * 
-   * @param message message to be sent
-   * 
-   * @return {@code IMessage} object
-   * 
-   * @throws IOException
-   * @throws ClassNotFoundException 
-   */
-  public IMessage recv(IDestination destination) throws IOException, ClassNotFoundException
-  {
-    return mConnection.recv(destination);
   }
   
   /***************************************************************************************************************

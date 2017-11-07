@@ -6,8 +6,8 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.QueueSender;
-import com.kas.q.impl.KasqQueueSession;
-import com.kas.q.impl.KasqSession;
+import com.kas.q.impl.conn.KasqQueueSession;
+import com.kas.q.impl.conn.KasqSession;
 
 public class KasqClientsFactory
 {
