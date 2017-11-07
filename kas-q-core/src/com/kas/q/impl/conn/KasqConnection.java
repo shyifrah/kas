@@ -1,5 +1,6 @@
 package com.kas.q.impl.conn;
 
+import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
@@ -21,46 +22,11 @@ import com.kas.q.ext.IMessage;
 import com.kas.q.ext.MessageType;
 import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
+import com.kas.q.impl.conn.internal.DeliveryTask;
 import com.kas.q.impl.messages.KasqTextMessage;
 
 public class KasqConnection extends KasObject implements Connection
 {
-  /***************************************************************************************************************
-   *  
-   */
-  static class ConnectionReader implements Runnable
-  {
-    Messenger mMessenger = null;
-    
-    ConnectionReader(Messenger messenger)
-    {
-      mMessenger = messenger;
-    }
-    
-    public void run()
-    {
-      try
-      {
-        IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
-        while (message != null)
-        {
-          deliver(message);
-          message = MessageSerializer.deserialize(mMessenger.getInputStream());
-        }
-      }
-      catch (Throwable e) {}
-    }
-    
-    public void deliver(IMessage message)
-    {
-      //
-      // TODO: need to find out which session has the message consumer
-      //       that listens to the Destination (getJMSDestination())
-      //       and put the message in the awaiting messages queue for that session.
-      //
-    }
-  }
-  
   /***************************************************************************************************************
    *  
    */
@@ -76,10 +42,13 @@ public class KasqConnection extends KasObject implements Connection
   protected boolean   mStarted   = false;
   protected String    mClientId  = null;
   
-  protected Runnable  mReader = null;
+  protected Runnable  mDeliveryTask = null;
   
   private CappedContainerProxy mSessionsMapProxy;
   private CappedHashMap<String, KasqSession> mSessionsMap;
+  
+  private CappedContainerProxy mAwaitingMessagesProxy;
+  private CappedHashMap<String, List<IMessage>> mAwaitingMessages;
   
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
@@ -112,12 +81,15 @@ public class KasqConnection extends KasObject implements Connection
       mOutgoingMessenger = Messenger.Factory.create(host, port);
       mIncomingMessenger = Messenger.Factory.create(host, port);
       
-      mReader = new ConnectionReader(mIncomingMessenger);
-      
       mSessionsMapProxy = new CappedContainerProxy("messaging.sessions.map", mLogger);
       mSessionsMap = (CappedHashMap<String, KasqSession>)CappedContainersFactory.createMap(mSessionsMapProxy);
       
+      mAwaitingMessagesProxy = new CappedContainerProxy("messaging.queues.map", mLogger);
+      mAwaitingMessages = (CappedHashMap<String, List<IMessage>>)CappedContainersFactory.createMap(mAwaitingMessagesProxy);
+      
       mClientId = "CLNT" + new UniqueId().toString();
+      
+      mDeliveryTask = new DeliveryTask(mIncomingMessenger, mAwaitingMessages);
     }
     catch (Throwable e)
     {
@@ -135,7 +107,7 @@ public class KasqConnection extends KasObject implements Connection
   public void start()
   {
     mStarted = true;
-    ThreadPool.submit(mReader);
+    ThreadPool.submit(mDeliveryTask);
   }
 
   /***************************************************************************************************************
@@ -144,7 +116,7 @@ public class KasqConnection extends KasObject implements Connection
   public void stop()
   {
     mStarted = false;
-    ThreadPool.remove(mReader);
+    ThreadPool.remove(mDeliveryTask);
   }
   
   /***************************************************************************************************************
@@ -346,6 +318,7 @@ public class KasqConnection extends KasObject implements Connection
       .append(pad).append("  OutgoingMessenger=(").append(mOutgoingMessenger.toPrintableString(level + 1)).append(")\n")
       .append(pad).append("  IncomingMessenger=(").append(mIncomingMessenger.toPrintableString(level + 1)).append(")\n")
       .append(pad).append("  Sessions=(").append(mSessionsMap.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  AwaitingMessages=(").append(mAwaitingMessages.toPrintableString(level + 1)).append(")\n")
       .append(pad).append(")");
     
     return sb.toString();

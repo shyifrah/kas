@@ -1,7 +1,6 @@
 package com.kas.q.server.internal;
 
 import com.kas.infra.base.IObject;
-import com.kas.q.server.ClientHandler;
 
 public interface IHandlerCallback extends IObject
 {

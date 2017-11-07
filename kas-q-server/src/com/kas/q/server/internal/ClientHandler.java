@@ -1,4 +1,4 @@
-package com.kas.q.server;
+package com.kas.q.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -13,8 +13,8 @@ import com.kas.q.ext.MessageType;
 import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
 import com.kas.q.impl.messages.KasqTextMessage;
-import com.kas.q.server.internal.CommandProcessor;
-import com.kas.q.server.internal.IHandlerCallback;
+import com.kas.q.server.KasqRepository;
+import com.kas.q.server.KasqServer;
 
 public class ClientHandler extends KasObject implements Runnable
 {

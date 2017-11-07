@@ -1,4 +1,4 @@
-package com.kas.q.server;
+package com.kas.q.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -9,7 +9,6 @@ import com.kas.infra.base.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.server.internal.IHandlerCallback;
 
 public class ClientHandlerManager extends KasObject implements IHandlerCallback
 {

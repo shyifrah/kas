@@ -47,6 +47,7 @@
   <target name="Prepare" depends="Clean" description="prepare output directories">
     <mkdir dir="${bin}"/>
     <mkdir dir="${lib}"/>
+  	<mkdir dir="${logs}"/>
     <buildnumber file="${res}/buildnumber.txt"/>
     <subant target="Main">
       <fileset dir="${infra}"      includes="build.xml"/>

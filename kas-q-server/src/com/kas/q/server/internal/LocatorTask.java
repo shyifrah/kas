@@ -1,4 +1,4 @@
-package com.kas.q.server;
+package com.kas.q.server.internal;
 
 import java.io.IOException;
 import java.net.ServerSocket;
