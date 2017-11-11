@@ -33,6 +33,7 @@
         <pathelement location="../kas-config/lib/kas-config.jar" />
         <pathelement location="../kas-logging/lib/kas-logging.jar" />
         <pathelement location="../kas-containers/lib/kas-containers.jar" />
+        <pathelement location="../kas-comm/lib/kas-comm.jar" />
       	<pathelement location="thirdparty/javax.jms-2.0.jar" />
       </classpath>
     </javac>

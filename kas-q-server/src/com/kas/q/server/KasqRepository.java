@@ -10,13 +10,12 @@ import com.kas.infra.base.KasObject;
 import com.kas.infra.base.WeakRef;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.ext.IDestination;
-import com.kas.q.ext.ILocator;
-import com.kas.q.impl.dest.KasqQueue;
-import com.kas.q.impl.dest.KasqTopic;
+import com.kas.q.KasqQueue;
+import com.kas.q.KasqTopic;
+import com.kas.q.ext.IKasqDestination;
 import com.kas.q.server.internal.MessagingConfiguration;
 
-public class KasqRepository extends KasObject implements IInitializable, ILocator
+public class KasqRepository extends KasObject implements IInitializable
 {
   /***************************************************************************************************************
    * 
@@ -97,7 +96,7 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
         qname = queue.getQueueName();
       }
       catch (Throwable e) {}
-      mLogger.debug("KasqRepository::term() - Writting queue contents. Queue=[" + qname + "]; Messages=[" + queue.getSize() + "]");
+      mLogger.debug("KasqRepository::term() - Writting queue contents. Queue=[" + qname + "]; Messages=[" + queue.size() + "]");
       queue.term();
     }
     
@@ -109,7 +108,7 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
         tname = topic.getTopicName();
       }
       catch (Throwable e) {}
-      mLogger.debug("KasqRepository::term() - Writting topic contents. Topic=[" + tname + "]; Messages=[" + topic.getSize() + "]");
+      mLogger.debug("KasqRepository::term() - Writting topic contents. Topic=[" + tname + "]; Messages=[" + topic.size() + "]");
       topic.term();
     }
     
@@ -189,7 +188,7 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
     
     mLogger.info("Define " + (isTopic ? "topic" : "queue") + " with name=[" + name + "] at manager=[" + managerName + "]");
     
-    IDestination dest = (isTopic ? mTopicsMap.get(name) : mQueuesMap.get(name));
+    IKasqDestination dest = (isTopic ? mTopicsMap.get(name) : mQueuesMap.get(name));
     if (dest == null)
     {
       try
@@ -257,16 +256,16 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
   }
   
   /***************************************************************************************************************
-   * Locate a {@code IDestination} object based on it's name. First we look in the queues map,
+   * Locate a {@code IKasqDestination} object based on it's name. First we look in the queues map,
    * then in the topics map.
    * 
    * @param name the name of the destination
    * 
-   * @return {@code IDestination} that was located, or null if none was found. 
+   * @return {@code IKasqDestination} that was located, or null if none was found. 
    */
-  public IDestination locate(String name)
+  public IKasqDestination locate(String name)
   {
-    IDestination iDest = locateQueue(name);
+    IKasqDestination iDest = locateQueue(name);
     return (iDest != null ? iDest : locateTopic(name));
   }
   
@@ -277,12 +276,10 @@ public class KasqRepository extends KasObject implements IInitializable, ILocato
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Queues=(").append(mQueuesMap.toPrintableString(level + 1)).append(")\n")
       .append(pad).append("  Topics=(").append(mTopicsMap.toPrintableString(level + 1)).append(")\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

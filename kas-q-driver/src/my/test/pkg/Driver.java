@@ -8,7 +8,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
-import com.kas.q.ext.impl.KasqClient;
+import com.kas.q.ext.KasqClient;
 
 public class Driver
 {
@@ -63,7 +63,7 @@ public class Driver
       try
       {
         Connection conn = factory.createConnection(userName, password);
-        Session    sess = conn.createSession();
+        //Session    sess = conn.createSession();
         //Queue queue = sess.createQueue(cQueueName);
         //
         //sendThreeMessages(sess, queue);

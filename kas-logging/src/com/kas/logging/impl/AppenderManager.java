@@ -99,13 +99,11 @@ public class AppenderManager extends KasObject
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Appenders=(\n")
       .append(StringUtils.asPrintableString(mAppenders, level + 2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

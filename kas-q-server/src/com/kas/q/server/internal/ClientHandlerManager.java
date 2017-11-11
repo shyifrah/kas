@@ -45,6 +45,9 @@ public class ClientHandlerManager extends KasObject implements IHandlerCallback
     }
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public synchronized void onHandlerStart(ClientHandler handler)
   {
     mLogger.debug("ClientHandlerManager::onHandlerStart() - IN");
@@ -54,6 +57,9 @@ public class ClientHandlerManager extends KasObject implements IHandlerCallback
     mLogger.debug("ClientHandlerManager::onHandlerStart() - OUT");
   }
   
+  /***************************************************************************************************************
+   * 
+   */
   public synchronized void onHandlerStop(ClientHandler handler)
   {
     mLogger.debug("ClientHandlerManager::onHandlerStop() - IN");
@@ -63,15 +69,16 @@ public class ClientHandlerManager extends KasObject implements IHandlerCallback
     mLogger.debug("ClientHandlerManager::onHandlerStop() - OUT");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  HandlerList=(").append(StringUtils.asPrintableString(mHandlers, level+2)).append(")\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 
 public class FileAppender extends AbstractAppender
@@ -35,7 +36,7 @@ public class FileAppender extends AbstractAppender
   {
     TimeStamp ts = new TimeStamp();
     
-    mFileName = RunTimeUtils.getProductHomeDir() + "/logs/" + mConfig.getFileNamePattern()
+    mFileName = RunTimeUtils.getProductHomeDir() + File.separator + "logs" + File.separator + mConfig.getFileNamePattern()
       .replaceAll("%p", Integer.toString(RunTimeUtils.getProcessId()))
       .replaceAll("%u", RunTimeUtils.getUserId())
       .replaceAll("%d", ts.getSortableDateString())
@@ -77,21 +78,8 @@ public class FileAppender extends AbstractAppender
   private File initLogFile()
   {
     mLogFile = new File(mFileName);
+    FileUtils.verifyExists(mLogFile);
 
-    if (!mLogFile.exists())
-    {
-      try
-      {
-        mLogFile.createNewFile();
-      }
-      catch (IOException e)
-      {
-        System.out.println("Failed to create file " + mLogFile.getAbsolutePath());
-        e.printStackTrace();
-        mLogFile = null;
-      }
-    }
-    
     if ((mLogFile != null) && (mLogFile.canWrite()))
     {
       try
@@ -111,7 +99,7 @@ public class FileAppender extends AbstractAppender
     
     return mLogFile;
   }
-
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------

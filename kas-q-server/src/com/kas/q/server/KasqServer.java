@@ -239,13 +239,11 @@ public class KasqServer extends KasObject implements IInitializable
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Configuration=(").append(mConfig.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  Repository=(").append(mRepository.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  HandlerManager=(").append(mHandlerManager.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

@@ -46,4 +46,35 @@ public class FileUtils
     
     return result;
   }
+  
+  //----------------------------------------------------------------------------------------------------
+  //
+  //----------------------------------------------------------------------------------------------------
+  public static boolean verifyExists(File file)
+  {
+    boolean exists = false;
+    String path = file.getAbsolutePath();
+    System.out.println("File full path: " + path);
+    if (file.exists())
+    {
+      exists = true;
+    }
+    else
+    {
+      String dirPath = path.substring(0, path.lastIndexOf(File.separator));
+      File dir = new File(dirPath);
+      if (!dir.exists())
+      {
+        dir.mkdirs();
+      }
+      
+      try
+      {
+        file.createNewFile();
+        exists = true;
+      }
+      catch (Throwable e) {}
+    }
+    return exists;
+  }
 }

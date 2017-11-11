@@ -2,26 +2,31 @@ package com.kas.q.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
-import javax.jms.Destination;
 import javax.jms.JMSException;
+import com.kas.comm.IMessage;
+import com.kas.comm.impl.MessageSerializer;
+import com.kas.comm.impl.MessageType;
+import com.kas.comm.impl.Messenger;
+import com.kas.comm.impl.MessengerFactory;
+import com.kas.comm.messages.AuthenticateRequestMessage;
+import com.kas.comm.messages.ResponseMessage;
 import com.kas.infra.base.KasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.ext.IDestination;
-import com.kas.q.ext.IMessage;
-import com.kas.q.ext.MessageType;
-import com.kas.q.ext.impl.MessageSerializer;
-import com.kas.q.ext.impl.Messenger;
-import com.kas.q.impl.messages.KasqTextMessage;
+import com.kas.q.ext.IKasqDestination;
+import com.kas.q.ext.IKasqMessage;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
 
 public class ClientHandler extends KasObject implements Runnable
 {
-  private ILogger                mLogger;
-  private Messenger              mMessenger;
-  private IHandlerCallback       mCallback;
-  private KasqRepository         mRepository;
+  /***************************************************************************************************************
+   * 
+   */
+  private ILogger          mLogger;
+  private Messenger        mMessenger;
+  private IHandlerCallback mCallback;
+  private KasqRepository   mRepository;
   
   /***************************************************************************************************************
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
@@ -34,7 +39,7 @@ public class ClientHandler extends KasObject implements Runnable
   ClientHandler(Socket socket, IHandlerCallback callback) throws IOException
   {
     mLogger     = LoggerFactory.getLogger(this.getClass());
-    mMessenger  = Messenger.Factory.create(socket);
+    mMessenger  = MessengerFactory.create(socket);
     mCallback   = callback;
     mRepository = KasqServer.getInstance().getRepository();
     
@@ -104,21 +109,28 @@ public class ClientHandler extends KasObject implements Runnable
     
     IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
     
-    if (message.getMessageType() == MessageType.cTextMessage)
+    if (message.getMessageType() == MessageType.cAuthenticateRequestMessage)
     {
-      KasqTextMessage textMessage = (KasqTextMessage)message;
+      AuthenticateRequestMessage request = (AuthenticateRequestMessage)message;
+      String userName = request.getUserName();
+      String password = request.getPassword();
       
-      String requestBody  = textMessage.getText();
-      String responseBody = CommandProcessor.process(requestBody);
-      
-      mLogger.trace("Command request body...: " + requestBody);
-      mLogger.trace("Command response body..: " + responseBody);
-      
-      IMessage response = new KasqTextMessage(responseBody);
-      MessageSerializer.serialize(mMessenger.getOutputStream(), response);
-      
-      if (responseBody.indexOf("Resp:Okay") > 0)
+      String error = null;
+      ResponseMessage response;
+      if ((userName != null) && (userName.length() > 0) && (password != null))
+      {
+        //
+        // TODO: address some security manager and find out if the credentials are okay
+        //
         authenticated = true;
+        response = ResponseMessage.generateSuccessResponse(request);
+      }
+      else
+      {
+        error = "User name or password are incorrect";
+        response = ResponseMessage.generateFailureResponse(request, error);
+      }
+      MessageSerializer.serialize(mMessenger.getOutputStream(), response);
     }
     
     mLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
@@ -143,48 +155,72 @@ public class ClientHandler extends KasObject implements Runnable
   {
     mLogger.debug("ClientHandler::process() - IN");
     
-    Destination jmsDestination = message.getJMSDestination();
-    IDestination iDest;
-    if (!(jmsDestination instanceof IDestination))
+    if (message.getMessageType() == MessageType.cDataMessage)
     {
-      mLogger.debug("ClientHandler::process() - message destination is managed by external provider, sending to dead queue");
-      iDest = mRepository.getDeadQueue();
-      iDest.put(message);
-    }
-    else
-    {
-      iDest = (IDestination)jmsDestination;
-      mLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + iDest.toDestinationName() + "]");
-      
-      String destName = iDest.getName();
-      IDestination iDestFromRepo = mRepository.locate(destName);
-      if (iDestFromRepo == null)
+      IKasqMessage kqMessage = (IKasqMessage)message;
+      IKasqDestination kqDestination;
+      if (!(kqMessage.getJMSDestination() instanceof IKasqDestination))
       {
-        mLogger.debug("ClientHandler::process() - Destination is not defined, define it now...");
-        boolean defined = mRepository.defineQueue(destName);
-        if (defined)
-        {
-          iDestFromRepo = mRepository.locate(destName);
-          iDestFromRepo.put(message);
-        }
+        mLogger.debug("ClientHandler::process() - message destination is NOT managed by KAS/Q. send to deadq");
+        kqDestination = mRepository.getDeadQueue();
       }
+      else
+      {
+        kqDestination = (IKasqDestination)kqMessage.getJMSDestination();
+      }
+      
+      put(kqDestination, kqMessage);
     }
     
     mLogger.debug("ClientHandler::process() - OUT");
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /***************************************************************************************************************
+   * Put a {@code IKasqMessagee} into a {@code IKasqDestination}
+   * 
+   * @param destination message target
+   * @param message message to put
+   * 
+   * @throws JMSException if for some reason we fail to get the Destination from the message. 
+   */
+  private void put(IKasqDestination destination, IKasqMessage message)
+  {
+    mLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + destination.getDestinationName() + "]");
+    
+    String destinationName = destination.getName();
+    IKasqDestination destinationFromRepo = mRepository.locate(destinationName);
+    if (destinationFromRepo != null)
+    {
+      destinationFromRepo.put(message);
+    }
+    else
+    {
+      mLogger.debug("ClientHandler::process() - Destination is not defined, define it now...");
+      boolean defined = mRepository.defineQueue(destinationName);
+      if (defined)
+      {
+        destinationFromRepo = mRepository.locate(destinationName);
+        destinationFromRepo.put(message);
+      }
+      else
+      {
+        IKasqDestination deadq = mRepository.getDeadQueue();
+        deadq.put(message);
+        mLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
+      }
+    }
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Messenger=(").append(mMessenger.toPrintableString(level + 1)).append(")\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }
