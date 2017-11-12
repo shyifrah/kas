@@ -1,6 +1,8 @@
 package com.kas.q;
 
 import java.io.Serializable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -19,11 +21,8 @@ import javax.jms.TemporaryTopic;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
-import com.kas.containers.CappedHashMap;
-import com.kas.containers.CappedHashSet;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 
 public class KasqSession extends KasObject implements Session
@@ -35,8 +34,8 @@ public class KasqSession extends KasObject implements Session
   boolean        mTransacted;
   int            mAcknowledgeMode;
   int            mSessionMode;
-  String         mSessionId;
-  private        CappedHashSet<IKasqDestination> mDestinations;
+  UniqueId       mSessionId;
+  private Map<UniqueId, KasqMessageConsumer> mOpenConsumers;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
@@ -91,7 +90,9 @@ public class KasqSession extends KasObject implements Session
     mTransacted      = transacted;
     mAcknowledgeMode = acknowledgeMode;
     mSessionMode     = sessionMode;
-    mSessionId       = UniqueId.generate().toString();
+    mSessionId       = UniqueId.generate();
+    
+    mOpenConsumers = new ConcurrentHashMap<UniqueId, KasqMessageConsumer>();
   }
   
   /***************************************************************************************************************
@@ -235,8 +236,7 @@ public class KasqSession extends KasObject implements Session
    */
   public MessageProducer createProducer(Destination destination) throws JMSException
   {
-    //return KasqClientsFactory.createProducer(this, destination);
-    throw new JMSException("Unsupported method: Session.createProducer(Destination)");
+    return new KasqMessageProducer(this, destination);
   }
 
   /***************************************************************************************************************
@@ -244,8 +244,9 @@ public class KasqSession extends KasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination) throws JMSException
   {
-    //return KasqClientsFactory.createConsumer(this, destination);
-    throw new JMSException("Unsupported method: Session.createConsumer(Destination)");
+    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination);
+    mOpenConsumers.put(consumer.getConsumerId(), consumer);
+    return consumer;
   }
 
   /***************************************************************************************************************
@@ -253,8 +254,9 @@ public class KasqSession extends KasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination, String messageSelector) throws JMSException
   {
-    //return KasqClientsFactory.createConsumer(this, destination, messageSelector);
-    throw new JMSException("Unsupported method: Session.createConsumer(Destination, String)");
+    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination, messageSelector);
+    mOpenConsumers.put(consumer.getConsumerId(), consumer);
+    return consumer;
   }
 
   /***************************************************************************************************************
@@ -262,8 +264,9 @@ public class KasqSession extends KasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination, String messageSelector, boolean noLocal) throws JMSException
   {
-    //return KasqClientsFactory.createConsumer(this, destination, messageSelector, noLocal);
-    throw new JMSException("Unsupported method: Session.createConsumer(Destination, String, boolean)");
+    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination, messageSelector, noLocal);
+    mOpenConsumers.put(consumer.getConsumerId(), consumer);
+    return consumer;
   }
 
   /***************************************************************************************************************
@@ -425,6 +428,31 @@ public class KasqSession extends KasObject implements Session
   }
   
   /***************************************************************************************************************
+   * Send a message to the KAS/Q server
+   * 
+   * @param message the message to be sent
+   * 
+   * @throws JMSException
+   */
+  synchronized void internalSend(IKasqMessage message) throws JMSException
+  {
+    if (message != null)
+    {
+      mConnection.internalSend(message);
+    }
+  }
+  
+  /***************************************************************************************************************
+   * Get the session's identifier
+   * 
+   * @return The session's identifier
+   */
+  public UniqueId getSessionId()
+  {
+    return mSessionId;
+  }
+  
+  /***************************************************************************************************************
    * 
    */
   public String toPrintableString(int level)
@@ -432,6 +460,7 @@ public class KasqSession extends KasObject implements Session
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
+      .append(pad).append("  SessionId=").append(mSessionId).append("\n")
       .append(pad).append("  Transacted=").append(mTransacted).append("\n")
       .append(pad).append("  AcknowledgeMode=").append(mAcknowledgeMode).append("\n")
       .append(pad).append("  SessionMode=").append(mSessionMode).append("\n")

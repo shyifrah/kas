@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import com.kas.comm.IMessage;
 import com.kas.comm.IMessenger;
+import com.kas.comm.MessageFactory;
 import com.kas.infra.base.KasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -101,7 +102,9 @@ public class Messenger extends KasObject implements IMessenger
    */
   public void send(IMessage message) throws IOException
   {
-    MessageSerializer.serialize(mOutputStream, message);
+    MessageHeader header = new MessageHeader(message.getMessageType());
+    header.serialize(mOutputStream);
+    message.serialize(mOutputStream);
   }
 
   /***************************************************************************************************************
@@ -110,7 +113,7 @@ public class Messenger extends KasObject implements IMessenger
   public IMessage receive() throws StreamCorruptedException, SocketException
   {
     mSocket.setSoTimeout(0);
-    IMessage message = MessageSerializer.deserialize(mInputStream);
+    IMessage message = MessageFactory.createFromStream(mInputStream);
     return message;
   }
 
@@ -123,7 +126,7 @@ public class Messenger extends KasObject implements IMessenger
     mSocket.setSoTimeout(timeout);
     try
     {
-      message = MessageSerializer.deserialize(mInputStream);
+      message = MessageFactory.createFromStream(mInputStream);
     }
     catch (Throwable e) {}
     

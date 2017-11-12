@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.LinkedBlockingDeque;
-import com.kas.comm.impl.MessageSerializer;
+import com.kas.comm.MessageFactory;
+import com.kas.comm.impl.MessageHeader;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
@@ -69,7 +70,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
         {
           try
           {
-            IKasqMessage message = (IKasqMessage)MessageSerializer.deserialize(istream);
+            IKasqMessage message = (IKasqMessage)MessageFactory.createFromStream(istream);
             put(message);
           }
           catch (IOException e)
@@ -132,7 +133,11 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
           while (!mQueue.isEmpty())
           {
             IKasqMessage msg = mQueue.poll();
-            MessageSerializer.serialize(ostream, msg);
+            
+            MessageHeader header = new MessageHeader(msg.getMessageType());
+            header.serialize(ostream);
+            msg.serialize(ostream);
+            
             ++msgCounter;
           }
           

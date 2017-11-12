@@ -131,6 +131,7 @@ public class KasqMessage extends Message implements IKasqMessage
     }
     catch (Throwable e)
     {
+      e.printStackTrace();
       throw new RuntimeException(e);
     }
   }

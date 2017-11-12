@@ -1,20 +1,24 @@
 package com.kas.q;
 
 import javax.jms.Destination;
+import javax.jms.InvalidDestinationException;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import com.kas.infra.base.KasObject;
-import com.kas.q.ext.IDestination;
+import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IKasqDestination;
 
 public class KasqMessageConsumer extends KasObject implements MessageConsumer
 {
-  protected KasqSession     mSession         = null;
-  protected String          mMessageSelector = null;
-  protected MessageListener mMessageListener = null;
-  protected IDestination    mDestination     = null;
-  protected boolean         mNoLocal         = false;
+  protected KasqSession      mSession         = null;
+  protected IKasqDestination mDestination     = null;
+  protected String           mMessageSelector = null;
+  protected MessageListener  mMessageListener = null;
+  protected boolean          mNoLocal         = false;
+  
+  private   UniqueId         mConsumerId; 
   
   /***************************************************************************************************************
    * Constructs a {@code KasqMessageConsumer} object for the specified {@code Destination}
@@ -62,10 +66,13 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
   {
     mSession = session;
     
-    if (!(destination instanceof IDestination))
-      throw new JMSException("Unsupported destination", "Destination is not managed by KAS/Q");
+    if (destination == null)
+      throw new InvalidDestinationException("Unsupported destination", "Null destination");
     
-    mDestination = (IDestination)destination;
+    if (!(destination instanceof IKasqDestination))
+      throw new InvalidDestinationException("Unsupported destination", "Destination is not managed by KAS/Q");
+    
+    mDestination = (IKasqDestination)destination;
     
     if ((messageSelector == null) || (messageSelector.length() == 0))
       mMessageSelector = null;
@@ -73,25 +80,10 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
       mMessageSelector = messageSelector;
     
     mNoLocal = noLocal;
+    
+    mConsumerId = UniqueId.generate();
   }
   
-  /***************************************************************************************************************
-   *  
-   */
-  public String toPrintableString(int level)
-  {
-    String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
-    
-    sb.append(name()).append("(\n")
-      .append(pad).append("  Destination=").append(mDestination).append("\n")
-      .append(pad).append("  MessageSelector=").append(mMessageSelector).append("\n")
-      .append(pad).append("  NoLocal=").append(mNoLocal).append("\n")
-      .append(pad).append(")");
-    
-    return sb.toString();
-  }
-
   /***************************************************************************************************************
    *  
    */
@@ -147,4 +139,30 @@ public class KasqMessageConsumer extends KasObject implements MessageConsumer
   {
     throw new JMSException("Unsupported method: MessageConsumer.receiveNoWait()");
   }
+  
+  /***************************************************************************************************************
+   * Get the consumer's identifier
+   * 
+   * @return The consumer's identifier 
+   */
+  public UniqueId getConsumerId()
+  {
+    return mConsumerId;
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public String toPrintableString(int level)
+  {
+    String pad = pad(level);
+    StringBuffer sb = new StringBuffer();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  ConsumerId=").append(mConsumerId).append("\n")
+      .append(pad).append("  Destination=").append(mDestination).append("\n")
+      .append(pad).append("  MessageSelector=").append(mMessageSelector).append("\n")
+      .append(pad).append("  NoLocal=").append(mNoLocal).append("\n")
+      .append(pad).append(")");
+    return sb.toString();
+  }  
 }

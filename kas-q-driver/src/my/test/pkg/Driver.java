@@ -92,13 +92,13 @@ public class Driver
         }
         */
         
-        //Session    sess = conn.createSession();
-        //Queue queue = sess.createQueue(cQueueName);
-        //
+        Queue queue = sess.createQueue(cQueueName);
+        
+        
+        sendThreeMessages(sess, queue);
         //sendThreeMessages(sess, queue);
-        //sendThreeMessages(sess, queue);
         //
-        //sleepForSeconds(30);
+        sleepForSeconds(30);
       }
       catch (JMSException e)
       {

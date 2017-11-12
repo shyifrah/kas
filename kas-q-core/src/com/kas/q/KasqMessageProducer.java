@@ -3,18 +3,19 @@ package com.kas.q;
 import javax.jms.CompletionListener;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
+import javax.jms.InvalidDestinationException;
 import javax.jms.JMSException;
-import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.q.ext.IMessage;
+import com.kas.q.ext.IKasqDestination;
+import com.kas.q.ext.IKasqMessage;
 
 public class KasqMessageProducer extends KasObject implements MessageProducer
 {
   protected KasqSession mSession = null;
-  protected Destination mDestination = null;
+  protected IKasqDestination mDestination = null;
   private boolean mDisableMessageId = false;
   private boolean mDisableMessageTimestamp = false;
   private int     mDeliveryMode = DeliveryMode.PERSISTENT;
@@ -28,10 +29,13 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
    * @param session the session associated with this {@code MessageProducer}
    * @param destination a default destination associated with the {@code MessageProducer}
    */
-  KasqMessageProducer(KasqSession session, Destination destination)
+  KasqMessageProducer(KasqSession session, Destination destination) throws JMSException
   {
+    if ((destination != null) && (!(destination instanceof IKasqDestination)))
+      throw new InvalidDestinationException("Unsupported destination", "Destination is not managed by KAS/Q");
+    
     mSession = session;
-    mDestination = destination;
+    mDestination = (IKasqDestination)destination;
   }
   
   /***************************************************************************************************************
@@ -284,32 +288,25 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
    */
   private void internalSend(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
-    try
+    String messageId = null;
+    if (!mDisableMessageId)
+      messageId = UniqueId.generate().toString();
+    message.setJMSMessageID(messageId);
+    
+    long timestamp = System.currentTimeMillis();
+    if (!mDisableMessageTimestamp)
+      message.setJMSTimestamp(timestamp);
+    
+    message.setJMSDestination(destination);
+    message.setJMSPriority(priority);
+    message.setJMSDeliveryMode(deliveryMode);
+    message.setJMSExpiration(timeToLive);
+    
+    boolean eyeCatcher = message.getBooleanProperty(KasqMessage.cKasQEyeCatcher);
+    if (eyeCatcher)
     {
-      String messageId = null;
-      if (!mDisableMessageId)
-        messageId = UniqueId.generate().toString();
-      message.setJMSMessageID(messageId);
-      
-      long timestamp = System.currentTimeMillis();
-      if (!mDisableMessageTimestamp)
-        message.setJMSTimestamp(timestamp);
-      
-      message.setJMSDestination(destination);
-      message.setJMSPriority(priority);
-      message.setJMSDeliveryMode(deliveryMode);
-      message.setJMSExpiration(timeToLive);
-      
-      boolean eyeCatcher = message.getBooleanProperty(KasqMessage.cKasQEyeCatcher);
-      if (eyeCatcher)
-      {
-        IMessage iMessage = (IMessage)message;
-        mSession.sendMessage(iMessage);
-      }
-    }
-    catch (Throwable e)
-    {
-      throw new JMSRuntimeException("Error while sending message", "Exception caught: " + e.getClass().getName(), e);
+      IKasqMessage iMessage = (IKasqMessage)message;
+      mSession.internalSend(iMessage);
     }
   }
   
@@ -320,7 +317,6 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Destination=").append(mDestination).append("\n")
       .append(pad).append("  MessageId disabled=").append(mDisableMessageId).append("\n")
@@ -330,7 +326,6 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
       .append(pad).append("  Default TTL=").append(mTimeToLive).append("\n")
       .append(pad).append("  Default DeliveryDelay=").append(mDeliveryDelay).append("\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

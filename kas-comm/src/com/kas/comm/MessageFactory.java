@@ -39,6 +39,9 @@ public class MessageFactory
         case cAuthenticateRequestMessage:
           message = new AuthenticateRequestMessage(istream);
           break;
+        case cDataMessage:
+          message = new AuthenticateRequestMessage(istream);
+          break;
         default:
           break;
       }

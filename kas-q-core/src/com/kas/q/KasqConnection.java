@@ -1,5 +1,7 @@
 package com.kas.q;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
@@ -15,12 +17,10 @@ import com.kas.comm.impl.MessageType;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.messages.AuthenticateRequestMessage;
 import com.kas.comm.messages.ResponseMessage;
-import com.kas.containers.CappedContainerProxy;
-import com.kas.containers.CappedContainersFactory;
-import com.kas.containers.CappedHashMap;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
+import com.kas.q.ext.IKasqMessage;
 
 public class KasqConnection extends KasObject implements Connection
 {
@@ -38,9 +38,8 @@ public class KasqConnection extends KasObject implements Connection
   protected String  mClientId = null;
   
   protected IMessenger mMessenger;
-
-  private CappedContainerProxy mSessionsMapProxy;
-  private CappedHashMap<String, KasqSession> mSessionsMap;
+  
+  private Map<UniqueId, KasqSession> mOpenSessions;
   
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
@@ -65,13 +64,11 @@ public class KasqConnection extends KasObject implements Connection
    * 
    * @throws JMSException  
    */
-  @SuppressWarnings("unchecked")
   KasqConnection(String host, int port, String userName, String password) throws JMSException
   {
     try
     {
-      mSessionsMapProxy = new CappedContainerProxy("messaging.sessions.map", mLogger);
-      mSessionsMap = (CappedHashMap<String, KasqSession>)CappedContainersFactory.createMap(mSessionsMapProxy);
+      mOpenSessions = new ConcurrentHashMap<UniqueId, KasqSession>();
       
       mMessenger = MessengerFactory.create(host, port);
       
@@ -109,7 +106,7 @@ public class KasqConnection extends KasObject implements Connection
   public Session createSession() throws JMSException
   {
     KasqSession session = new KasqSession(this);
-    addSession(session);
+    mOpenSessions.put(session.getSessionId(), session);
     return session;
   }
 
@@ -119,7 +116,7 @@ public class KasqConnection extends KasObject implements Connection
   public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException
   {
     KasqSession session = new KasqSession(this, transacted, acknowledgeMode);
-    addSession(session);
+    mOpenSessions.put(session.getSessionId(), session);
     return session;
   }
 
@@ -129,7 +126,7 @@ public class KasqConnection extends KasObject implements Connection
   public Session createSession(int sessionMode) throws JMSException
   {
     KasqSession session = new KasqSession(this, sessionMode);
-    addSession(session);
+    mOpenSessions.put(session.getSessionId(), session);
     return session;
   }
 
@@ -242,37 +239,23 @@ public class KasqConnection extends KasObject implements Connection
   }
   
   /***************************************************************************************************************
-   * Add a session to the sessions map.
+   * Send a message to the KAS/Q server by calling the messenger's send() message.
    * 
-   * @param session session to add
+   * @param message the message to be sent
+   * 
+   * @throws JMSException if an I/O exception occurs 
    */
-  private synchronized void addSession(KasqSession session)
+  synchronized void internalSend(IKasqMessage message) throws JMSException
   {
-    mSessionsMap.put(session.mSessionId, session);
-  }
-  
-  /***************************************************************************************************************
-   * Get a session from the sessions map.
-   * 
-   * @param id session-id to retrieve
-   * 
-   * @return the session associated with the specified id, or {@code null} if not found
-   */
-  private synchronized KasqSession getSession(String id)
-  {
-    return mSessionsMap.get(id);
-  }
-  
-  /***************************************************************************************************************
-   * Delete a session from the sessions map.
-   * 
-   * @param id session-id to delete
-   * 
-   * @return the session associated with the specified id, or {@code null} if not found
-   */
-  private synchronized KasqSession delSession(String id)
-  {
-    return mSessionsMap.remove(id);
+    try
+    {
+      mMessenger.send(message);
+    }
+    catch (Throwable e)
+    {
+      e.printStackTrace();
+      throw new JMSException("Failed to send message", e.getMessage());
+    }
   }
   
   /***************************************************************************************************************
@@ -285,7 +268,6 @@ public class KasqConnection extends KasObject implements Connection
     sb.append(name()).append("(\n")
       .append(pad).append("  Started=").append(mStarted).append("\n")
       .append(pad).append("  ClientId=").append(mClientId).append("\n")
-      .append(pad).append("  Sessions=(").append(mSessionsMap.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

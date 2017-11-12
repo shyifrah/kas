@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.Socket;
 import javax.jms.JMSException;
 import com.kas.comm.IMessage;
-import com.kas.comm.impl.MessageSerializer;
 import com.kas.comm.impl.MessageType;
 import com.kas.comm.impl.Messenger;
 import com.kas.comm.impl.MessengerFactory;
@@ -68,17 +67,15 @@ public class ClientHandler extends KasObject implements Runnable
       {
         mLogger.trace("Awaiting client to send messages..");
         
-        IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
+        IMessage message = mMessenger.receive();
         while (message != null)
         {
           mLogger.trace("Received from client message: " + message.toPrintableString(0));
           process(message);
-          
-          message = MessageSerializer.deserialize(mMessenger.getInputStream());
+        
+          message = mMessenger.receive();
         }
       }
-      
-      mMessenger.cleanup();
     }
     catch (IOException e)
     {
@@ -107,9 +104,9 @@ public class ClientHandler extends KasObject implements Runnable
     mLogger.debug("ClientHandler::authenticate() - IN");
     boolean authenticated = false;
     
-    IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
-    
+    IMessage message = mMessenger.receive();
     mLogger.debug("ClientHandler::authenticate() - Got a message: " + message.toPrintableString(0));
+    
     if (message.getMessageType() == MessageType.cAuthenticateRequestMessage)
     {
       AuthenticateRequestMessage request = (AuthenticateRequestMessage)message;
@@ -133,7 +130,7 @@ public class ClientHandler extends KasObject implements Runnable
       }
       
       mLogger.debug("ClientHandler::authenticate() - Send message: " + response.toPrintableString(0));
-      MessageSerializer.serialize(mMessenger.getOutputStream(), response);
+      mMessenger.send(response);
     }
     
     mLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
