@@ -1,5 +1,7 @@
 package my.test.pkg;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -8,6 +10,9 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
+import com.kas.q.KasqQueue;
+import com.kas.q.KasqTextMessage;
+import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqClient;
 
 public class Driver
@@ -63,13 +68,37 @@ public class Driver
       try
       {
         Connection conn = factory.createConnection(userName, password);
+        System.out.println("connection created: " + conn.toString());
+        
+        Session sess = conn.createSession();
+        
+        /*
+        KasqTextMessage textMessage1 = (KasqTextMessage)sess.createTextMessage("shy1");
+        KasqTextMessage textMessage2 = (KasqTextMessage)sess.createTextMessage("shy2");
+        KasqTextMessage textMessage3 = (KasqTextMessage)sess.createTextMessage("shy3");
+        
+        KasqQueue q = new KasqQueue("shyq", "shyQmgr");
+        q.put(textMessage1);
+        q.put(textMessage2);
+        q.put(textMessage3);
+        
+        System.out.println("queue: " + q.toPrintableString(0));
+        
+        IKasqMessage msg = q.get();
+        while (msg != null)
+        {
+          System.out.println("read msg: " + msg.toPrintableString(0));
+          msg = q.get();
+        }
+        */
+        
         //Session    sess = conn.createSession();
         //Queue queue = sess.createQueue(cQueueName);
         //
         //sendThreeMessages(sess, queue);
         //sendThreeMessages(sess, queue);
         //
-        sleepForSeconds(60);
+        //sleepForSeconds(30);
       }
       catch (JMSException e)
       {
@@ -83,6 +112,11 @@ public class Driver
     System.out.println("Driver::run() - OUT");
   }
   
+  //============================================================================================================================================
+  //
+  //
+  //
+  //============================================================================================================================================
   private void sendThreeMessages(Session session, Queue queue) throws JMSException
   {
     MessageProducer producer = session.createProducer(queue);
@@ -94,6 +128,11 @@ public class Driver
     }
   }
   
+  //============================================================================================================================================
+  //
+  //
+  //
+  //============================================================================================================================================
   private void sleepForSeconds(int seconds)
   {
     try

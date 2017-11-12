@@ -285,7 +285,7 @@ public class KasqConnection extends KasObject implements Connection
     sb.append(name()).append("(\n")
       .append(pad).append("  Started=").append(mStarted).append("\n")
       .append(pad).append("  ClientId=").append(mClientId).append("\n")
-      .append(pad).append("  Sessions=(").append(mSessionsMap.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  Sessions=(").append(mSessionsMap.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

@@ -19,8 +19,12 @@ import javax.jms.TemporaryTopic;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
+import com.kas.containers.CappedHashMap;
+import com.kas.containers.CappedHashSet;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IKasqDestination;
+import com.kas.q.ext.IKasqMessage;
 
 public class KasqSession extends KasObject implements Session
 {
@@ -32,6 +36,7 @@ public class KasqSession extends KasObject implements Session
   int            mAcknowledgeMode;
   int            mSessionMode;
   String         mSessionId;
+  private        CappedHashSet<IKasqDestination> mDestinations;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}

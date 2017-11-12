@@ -54,7 +54,6 @@ public class FileUtils
   {
     boolean exists = false;
     String path = file.getAbsolutePath();
-    System.out.println("File full path: " + path);
     if (file.exists())
     {
       exists = true;

@@ -110,7 +110,8 @@ public class Messenger extends KasObject implements IMessenger
   public IMessage receive() throws StreamCorruptedException, SocketException
   {
     mSocket.setSoTimeout(0);
-    return MessageSerializer.deserialize(mInputStream);
+    IMessage message = MessageSerializer.deserialize(mInputStream);
+    return message;
   }
 
   /***************************************************************************************************************

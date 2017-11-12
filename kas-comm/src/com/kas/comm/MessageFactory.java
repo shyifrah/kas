@@ -6,6 +6,7 @@ import java.io.StreamCorruptedException;
 import com.kas.comm.impl.MessageHeader;
 import com.kas.comm.messages.AuthenticateRequestMessage;
 import com.kas.comm.messages.Message;
+import com.kas.comm.messages.ResponseMessage;
 
 public class MessageFactory
 {
@@ -31,6 +32,9 @@ public class MessageFactory
       {
         case cMessage:
           message = new Message(istream);
+          break;
+        case cResponseMessage:
+          message = new ResponseMessage(istream);
           break;
         case cAuthenticateRequestMessage:
           message = new AuthenticateRequestMessage(istream);

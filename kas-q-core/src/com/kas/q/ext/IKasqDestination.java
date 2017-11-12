@@ -62,16 +62,16 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
   public abstract String getType();
   
   /***************************************************************************************************************
-   * Returns the name of the destination.
+   * Returns the name of the destination (the name of the queue/topic).
    * 
    * @return the name of the destination
    */
   public abstract String getName();
 
   /***************************************************************************************************************
-   * Returns the destination name
+   * Returns the destination formatted name
    * 
-   * @return a string representing this destination
+   * @return a string representing the full destination path
    */
-  public abstract String getDestinationName();
+  public abstract String getFormattedName();
 }

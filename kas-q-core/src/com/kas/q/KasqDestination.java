@@ -193,15 +193,12 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
    */
   public IKasqMessage get() 
   {
-    boolean keepWaiting = true;
     IKasqMessage message = null;
-    while (keepWaiting)
+    while (message == null)
     {
       try
       {
         message = mQueue.take();
-        if (message != null)
-          keepWaiting = false;
       }
       catch (InterruptedException e) {}
     }
@@ -247,7 +244,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
   /***************************************************************************************************************
    * 
    */
-  public String getDestinationName()
+  public String getFormattedName()
   {
     StringBuffer sb = new StringBuffer();
     sb.append(getType())
@@ -274,7 +271,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
    */
   public String toString()
   {
-    return getDestinationName();
+    return getFormattedName();
   }
   
   /***************************************************************************************************************
@@ -284,13 +281,11 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append("  Type=").append(getType()).append("\n")
       .append(pad).append("  Size=").append(mQueue.size()).append("\n")
       .append(pad).append(")\n");
-    
     return sb.toString();
   }
 }

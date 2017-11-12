@@ -109,6 +109,7 @@ public class ClientHandler extends KasObject implements Runnable
     
     IMessage message = MessageSerializer.deserialize(mMessenger.getInputStream());
     
+    mLogger.debug("ClientHandler::authenticate() - Got a message: " + message.toPrintableString(0));
     if (message.getMessageType() == MessageType.cAuthenticateRequestMessage)
     {
       AuthenticateRequestMessage request = (AuthenticateRequestMessage)message;
@@ -130,6 +131,8 @@ public class ClientHandler extends KasObject implements Runnable
         error = "User name or password are incorrect";
         response = ResponseMessage.generateFailureResponse(request, error);
       }
+      
+      mLogger.debug("ClientHandler::authenticate() - Send message: " + response.toPrintableString(0));
       MessageSerializer.serialize(mMessenger.getOutputStream(), response);
     }
     
@@ -185,7 +188,7 @@ public class ClientHandler extends KasObject implements Runnable
    */
   private void put(IKasqDestination destination, IKasqMessage message)
   {
-    mLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + destination.getDestinationName() + "]");
+    mLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + destination.getFormattedName() + "]");
     
     String destinationName = destination.getName();
     IKasqDestination destinationFromRepo = mRepository.locate(destinationName);
