@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.MessageFormatException;
+import com.kas.comm.impl.MessageClass;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
-import com.kas.q.ext.MessageClass;
 import com.kas.q.ext.ReadWriteMode;
 
 public class KasqMapMessage extends KasqMessage implements MapMessage
@@ -61,7 +61,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
    */
   public MessageClass getMessageClass()
   {
-    return MessageClass.cMapMessage;
+    return MessageClass.cKasqMapMessage;
   }
   
   /***************************************************************************************************************

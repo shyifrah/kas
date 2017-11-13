@@ -98,7 +98,7 @@ public class Driver
         sendThreeMessages(sess, queue);
         //sendThreeMessages(sess, queue);
         //
-        sleepForSeconds(30);
+        sleepForSeconds(300);
       }
       catch (JMSException e)
       {

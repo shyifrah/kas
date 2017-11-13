@@ -70,7 +70,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
         {
           try
           {
-            IKasqMessage message = (IKasqMessage)MessageFactory.createFromStream(istream);
+            IKasqMessage message = (IKasqMessage)MessageFactory.getInstance().createFromStream(istream);
             put(message);
           }
           catch (IOException e)

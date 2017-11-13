@@ -3,6 +3,11 @@ package com.kas.q.ext;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
+import com.kas.comm.IMessage;
+import com.kas.comm.IMessageFactory;
+import com.kas.comm.MessageFactory;
+import com.kas.comm.impl.MessageClass;
+import com.kas.comm.impl.MessageHeader;
 import com.kas.q.KasqBytesMessage;
 import com.kas.q.KasqMapMessage;
 import com.kas.q.KasqMessage;
@@ -10,44 +15,41 @@ import com.kas.q.KasqObjectMessage;
 import com.kas.q.KasqStreamMessage;
 import com.kas.q.KasqTextMessage;
 
-public class KasqMessageFactory
+public class KasqMessageFactory implements IMessageFactory
 {
-  /***************************************************************************************************************
-   * Constructs a {@code IKasqMessage} object from {@code ObjectInputStream}
-   * Each serialized {@code IKasqMessage} is prefixed with a {@link KasqMessageHeader}, so we read it first and
-   * according to the {@code MessageClass}, call the appropriate constructor.
-   * 
-   * @param istream the {@code ObjectInputStream} from which the message will be deserialized
-   * 
-   * @throws StreamCorruptedException
-   */
-  public static IKasqMessage createFromStream(ObjectInputStream istream) throws StreamCorruptedException
+  public KasqMessageFactory()
   {
-    IKasqMessage message = null;
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cUnknownMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqTextMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqObjectMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqBytesMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqStreamMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqMapMessage.ordinal());
+  }
+  
+  public IMessage createFromStream(ObjectInputStream istream, MessageHeader header) throws StreamCorruptedException
+  {
+    IMessage message = null;
     try
     {
-      KasqMessageHeader header = new KasqMessageHeader(istream);
-      if (!header.verify())
-        throw new StreamCorruptedException("Invalid header. Expected: [" + KasqMessageHeader.cEyeCatcher + "]; Got: [" + header.getEyeCatcher() + "]");
-      
       switch (header.getMessageClass())
       {
-        case cMessage:
+        case cKasqMessage:
           message = new KasqMessage(istream);
           break;
-        case cTextMessage:
+        case cKasqTextMessage:
           message = new KasqTextMessage(istream);
           break;
-        case cObjectMessage:
+        case cKasqObjectMessage:
           message = new KasqObjectMessage(istream);
           break;
-        case cBytesMessage:
+        case cKasqBytesMessage:
           message = new KasqBytesMessage(istream);
           break;
-        case cStreamMessage:
+        case cKasqStreamMessage:
           message = new KasqStreamMessage(istream);
           break;
-        case cMapMessage:
+        case cKasqMapMessage:
           message = new KasqMapMessage(istream);
           break;
         default:

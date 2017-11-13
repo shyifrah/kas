@@ -18,7 +18,12 @@ public class Messenger extends KasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  protected ILogger  mLogger;
+  private static MessageFactory sMessageFactory = MessageFactory.getInstance();
+  private static ILogger sLogger = LoggerFactory.getLogger(Messenger.class);
+  
+  /***************************************************************************************************************
+   * 
+   */
   protected Socket   mSocket;
   protected ObjectOutputStream mOutputStream;
   protected ObjectInputStream  mInputStream;
@@ -37,7 +42,6 @@ public class Messenger extends KasObject implements IMessenger
    */
   Messenger(Socket socket, String host, int port) throws IOException
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
     mHost = host;
     mPort = port;
     mSocket = socket;
@@ -52,7 +56,7 @@ public class Messenger extends KasObject implements IMessenger
    */
   public void cleanup()
   {
-    mLogger.debug("Messenger::cleanup() - IN");
+    sLogger.debug("Messenger::cleanup() - IN");
     
     try
     {
@@ -64,7 +68,7 @@ public class Messenger extends KasObject implements IMessenger
     }
     catch (IOException e) {}
     
-    mLogger.debug("Messenger::cleanup() - OUT");
+    sLogger.debug("Messenger::cleanup() - OUT");
   }
   
   /***************************************************************************************************************
@@ -102,7 +106,7 @@ public class Messenger extends KasObject implements IMessenger
    */
   public void send(IMessage message) throws IOException
   {
-    MessageHeader header = new MessageHeader(message.getMessageType());
+    MessageHeader header = new MessageHeader(message.getMessageType(), message.getMessageClass());
     header.serialize(mOutputStream);
     message.serialize(mOutputStream);
   }
@@ -113,7 +117,7 @@ public class Messenger extends KasObject implements IMessenger
   public IMessage receive() throws StreamCorruptedException, SocketException
   {
     mSocket.setSoTimeout(0);
-    IMessage message = MessageFactory.createFromStream(mInputStream);
+    IMessage message = sMessageFactory.createFromStream(mInputStream);
     return message;
   }
 
@@ -126,7 +130,7 @@ public class Messenger extends KasObject implements IMessenger
     mSocket.setSoTimeout(timeout);
     try
     {
-      message = MessageFactory.createFromStream(mInputStream);
+      message = sMessageFactory.createFromStream(mInputStream);
     }
     catch (Throwable e) {}
     

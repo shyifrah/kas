@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.IMessage;
+import com.kas.comm.impl.MessageClass;
 import com.kas.comm.impl.MessageType;
 import com.kas.infra.base.KasObject;
 import com.kas.infra.base.UniqueId;
@@ -72,6 +73,14 @@ public class Message extends KasObject implements IMessage
   public MessageType getMessageType()
   {
     return MessageType.cMessage;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public MessageClass getMessageClass()
+  {
+    return MessageClass.cUnknownMessage;
   }
 
   /***************************************************************************************************************

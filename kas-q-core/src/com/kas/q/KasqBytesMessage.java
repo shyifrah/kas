@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
-import com.kas.q.ext.MessageClass;
+import com.kas.comm.impl.MessageClass;
 import com.kas.q.ext.ReadWriteMode;
 
 public class KasqBytesMessage extends KasqMessage implements BytesMessage
@@ -53,7 +53,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public MessageClass getMessageClass()
   {
-    return MessageClass.cBytesMessage;
+    return MessageClass.cKasqBytesMessage;
   }
   
   /***************************************************************************************************************

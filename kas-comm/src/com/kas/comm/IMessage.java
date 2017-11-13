@@ -2,6 +2,7 @@ package com.kas.comm;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import com.kas.comm.impl.MessageClass;
 import com.kas.comm.impl.MessageType;
 import com.kas.infra.base.IObject;
 
@@ -22,4 +23,11 @@ public interface IMessage extends IObject
    * @return the message's {@code MessageType}
    */
   public abstract MessageType getMessageType();
+  
+  /***************************************************************************************************************
+   * Get the {@code MessageClass}
+   * 
+   * @return the message's {@code MessageClass}
+   */
+  public abstract MessageClass getMessageClass();
 }

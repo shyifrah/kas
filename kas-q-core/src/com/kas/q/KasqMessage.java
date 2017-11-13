@@ -8,6 +8,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageNotReadableException;
 import javax.jms.MessageNotWriteableException;
+import com.kas.comm.impl.MessageClass;
 import com.kas.comm.impl.MessageType;
 import com.kas.comm.messages.Message;
 import com.kas.infra.base.KasException;
@@ -16,7 +17,6 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqUtils;
-import com.kas.q.ext.MessageClass;
 import com.kas.q.ext.ReadWriteMode;
 
 public class KasqMessage extends Message implements IKasqMessage
@@ -93,7 +93,7 @@ public class KasqMessage extends Message implements IKasqMessage
    */
   public MessageClass getMessageClass()
   {
-    return MessageClass.cMessage;
+    return MessageClass.cKasqMessage;
   }
   
   /***************************************************************************************************************

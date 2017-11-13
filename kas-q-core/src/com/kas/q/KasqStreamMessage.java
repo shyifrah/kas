@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
 import javax.jms.StreamMessage;
-import com.kas.q.ext.MessageClass;
+import com.kas.comm.impl.MessageClass;
 import com.kas.q.ext.ReadWriteMode;
 
 public class KasqStreamMessage extends KasqMessage implements StreamMessage
@@ -52,7 +52,7 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
    */
   public MessageClass getMessageClass()
   {
-    return MessageClass.cStreamMessage;
+    return MessageClass.cKasqStreamMessage;
   }
   
   /***************************************************************************************************************

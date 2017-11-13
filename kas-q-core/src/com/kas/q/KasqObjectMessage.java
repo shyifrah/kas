@@ -7,7 +7,7 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
 import javax.jms.ObjectMessage;
-import com.kas.q.ext.MessageClass;
+import com.kas.comm.impl.MessageClass;
 import com.kas.q.ext.ReadWriteMode;
 
 public class KasqObjectMessage extends KasqMessage implements ObjectMessage
@@ -53,7 +53,7 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
    */
   public MessageClass getMessageClass()
   {
-    return MessageClass.cObjectMessage;
+    return MessageClass.cKasqObjectMessage;
   }
   
   /***************************************************************************************************************

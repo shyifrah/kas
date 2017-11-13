@@ -6,7 +6,7 @@ import java.io.ObjectOutputStream;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
 import javax.jms.TextMessage;
-import com.kas.q.ext.MessageClass;
+import com.kas.comm.impl.MessageClass;
 import com.kas.q.ext.ReadWriteMode;
 
 public class KasqTextMessage extends KasqMessage implements TextMessage
@@ -51,7 +51,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
    */
   public MessageClass getMessageClass()
   {
-    return MessageClass.cTextMessage;
+    return MessageClass.cKasqTextMessage;
   }
   
   /***************************************************************************************************************

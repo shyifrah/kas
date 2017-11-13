@@ -3,23 +3,44 @@ package com.kas.comm;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
+import com.kas.comm.impl.MessageClass;
 import com.kas.comm.impl.MessageHeader;
 import com.kas.comm.messages.AuthenticateRequestMessage;
 import com.kas.comm.messages.Message;
 import com.kas.comm.messages.ResponseMessage;
 
-public class MessageFactory
+public class MessageFactory implements IMessageFactory
 {
-  /***************************************************************************************************************
-   * Constructs a {@code IMessage} object from {@code ObjectInputStream}
-   * Each serialized {@code IMessage} is prefixed with a {@link MessageHeader}, so we read it first and
-   * according to the {@code MessageType}, call the appropriate constructor.
-   * 
-   * @param istream the {@code ObjectInputStream} from which the message will be deserialized
-   * 
-   * @throws StreamCorruptedException
-   */
-  public static IMessage createFromStream(ObjectInputStream istream) throws StreamCorruptedException
+  private static MessageFactory sInstance = new MessageFactory();
+  
+  private IMessageFactory [] mSecondaryFactories;
+  
+  private MessageFactory()
+  {
+    mSecondaryFactories = new IMessageFactory [10];
+  }
+  
+  public static MessageFactory getInstance()
+  {
+    return sInstance;
+  }
+  
+  public void registerSecondaryFactory(IMessageFactory factory, int classId)
+  {
+    synchronized(mSecondaryFactories)
+    {
+      if (classId > mSecondaryFactories.length)
+      {
+        IMessageFactory [] temp = new IMessageFactory [classId];
+        System.arraycopy(mSecondaryFactories, 0, temp, 0, mSecondaryFactories.length);
+        mSecondaryFactories = temp;
+      }
+      
+      mSecondaryFactories[classId] = factory;
+    }
+  }
+  
+  public IMessage createFromStream(ObjectInputStream istream) throws StreamCorruptedException
   {
     IMessage message = null;
     try
@@ -40,7 +61,7 @@ public class MessageFactory
           message = new AuthenticateRequestMessage(istream);
           break;
         case cDataMessage:
-          message = new AuthenticateRequestMessage(istream);
+          message = createFromStream(istream, header);
           break;
         default:
           break;
@@ -55,6 +76,27 @@ public class MessageFactory
       throw new StreamCorruptedException("IOException caught, Message: " + e.getMessage());
     }
     
+    return message;
+  }
+  
+  public IMessage createFromStream(ObjectInputStream istream, MessageHeader header) throws StreamCorruptedException
+  {
+    IMessage message = null;
+    MessageClass msgClass = header.getMessageClass();
+    int ord = msgClass.ordinal();
+    if (ord > MessageClass.cUnknownMessage.ordinal())
+    {
+      IMessageFactory factory = null;
+      synchronized (mSecondaryFactories)
+      {
+        factory = mSecondaryFactories[ord];
+      }
+      
+      if (factory != null)
+      {
+        message = factory.createFromStream(istream, header);
+      }
+    }
     return message;
   }
 }

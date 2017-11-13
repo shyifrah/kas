@@ -79,7 +79,7 @@ public class ClientHandler extends KasObject implements Runnable
     }
     catch (IOException e)
     {
-      mLogger.trace("I/O Exception caught. Message: "+ e.getMessage());
+      mLogger.trace("I/O Exception caught. Message: " + e.getMessage());
     }
     catch (Throwable e)
     {
