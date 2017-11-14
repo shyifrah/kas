@@ -17,4 +17,11 @@ public interface IHandlerCallback extends IObject
    * @param handler the {@code ClientHandler} that was stopped.
    */
   public void onHandlerStop(ClientHandler handler);
+  
+  /***************************************************************************************************************
+   * This callback is called when a request to shutdown was received by a ClientHandler.
+   * 
+   * @param handler the {@code ClientHandler} that was stopped.
+   */
+  public void onShutdownRequest();
 }

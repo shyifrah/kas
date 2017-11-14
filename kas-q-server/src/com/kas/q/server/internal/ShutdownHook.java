@@ -14,6 +14,7 @@ public class ShutdownHook extends Thread
    */
   public ShutdownHook(ServerSocket socket)
   {
+    super("KAS/Q shutdown hook");
     mServerSocket = socket;
     mLogger = LoggerFactory.getLogger(this.getClass());
   }

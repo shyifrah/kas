@@ -5,5 +5,6 @@ public enum MessageType
   cMessage,
   cDataMessage,
   cResponseMessage,
-  cAuthenticateRequestMessage
+  cAuthenticateRequestMessage,
+  cShutdownMessage
 }

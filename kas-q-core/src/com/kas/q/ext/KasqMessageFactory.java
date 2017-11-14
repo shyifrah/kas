@@ -6,7 +6,7 @@ import java.io.StreamCorruptedException;
 import com.kas.comm.IMessage;
 import com.kas.comm.IMessageFactory;
 import com.kas.comm.MessageFactory;
-import com.kas.comm.impl.MessageClass;
+import com.kas.comm.impl.MessageSubType;
 import com.kas.comm.impl.MessageHeader;
 import com.kas.q.KasqBytesMessage;
 import com.kas.q.KasqMapMessage;
@@ -19,12 +19,12 @@ public class KasqMessageFactory implements IMessageFactory
 {
   public KasqMessageFactory()
   {
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cUnknownMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqTextMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqObjectMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqBytesMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqStreamMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageClass.cKasqMapMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cUnknownMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqTextMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqObjectMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqBytesMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqStreamMessage.ordinal());
+    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqMapMessage.ordinal());
   }
   
   public IMessage createFromStream(ObjectInputStream istream, MessageHeader header) throws StreamCorruptedException

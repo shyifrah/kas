@@ -5,37 +5,33 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.MessageType;
 
-public class AuthenticateRequestMessage extends Message
+public class ShutdownRequestMessage extends Message
 {
-  private String mUserName;
-  private String mPassword;
+  private String mMode;
   
   /***************************************************************************************************************
-   * Constructs a {@code AuthenticateRequestMessage} object, specifying the user name and password
+   * Constructs a {@code ShutdownRequestMessage} object, specifying the shutdown mode
    * 
-   * @param userName the caller's user's name
-   * @param password the caller's user's password
+   * @param mode the shutdown mode
    */
-  public AuthenticateRequestMessage(String userName, String password)
+  public ShutdownRequestMessage(String mode)
   {
     super();
-    mUserName = userName;
-    mPassword = password;
+    mMode = mode;
   }
   
   /***************************************************************************************************************
-   * Constructs a {@code AuthenticateRequestMessage} object from {@code ObjectInputStream}
+   * Constructs a {@code ShutdownRequestMessage} object from {@code ObjectInputStream}
    * 
    * @param istream the {@code ObjectInputStream} from which the message will be deserialized
    *  
    * @throws ClassNotFoundException
    * @throws IOException
    */
-  public AuthenticateRequestMessage(ObjectInputStream istream) throws IOException, ClassNotFoundException
+  public ShutdownRequestMessage(ObjectInputStream istream) throws IOException, ClassNotFoundException
   {
     super(istream);
-    mUserName = (String)istream.readObject();
-    mPassword = (String)istream.readObject();
+    mMode = (String)istream.readObject();
   }
   
   /***************************************************************************************************************
@@ -44,9 +40,7 @@ public class AuthenticateRequestMessage extends Message
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
     super.serialize(ostream);
-    ostream.writeObject(mUserName);
-    ostream.reset();
-    ostream.writeObject(mPassword);
+    ostream.writeObject(mMode);
     ostream.reset();
   }
 
@@ -55,25 +49,17 @@ public class AuthenticateRequestMessage extends Message
    */
   public MessageType getMessageType()
   {
-    return MessageType.cAuthenticateRequestMessage;
+    return MessageType.cShutdownMessage;
   }
   
   /***************************************************************************************************************
    * 
    */
-  public String getUserName()
+  public String getMode()
   {
-    return mUserName;
+    return mMode;
   }
   
-  /***************************************************************************************************************
-   * 
-   */
-  public String getPassword()
-  {
-    return mPassword;
-  }
-
   /***************************************************************************************************************
    * 
    */
@@ -83,8 +69,7 @@ public class AuthenticateRequestMessage extends Message
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(super.toPrintableString(level))
-      .append(pad).append("  UserName=").append(mUserName).append("\n")
-      .append(pad).append("  Password=").append(mPassword).append("\n")
+      .append(pad).append("  Mode=").append(mMode).append("\n")
       .append(pad).append(")\n");
     return sb.toString();
   }

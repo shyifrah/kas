@@ -8,7 +8,7 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageNotReadableException;
 import javax.jms.MessageNotWriteableException;
-import com.kas.comm.impl.MessageClass;
+import com.kas.comm.impl.MessageSubType;
 import com.kas.comm.impl.MessageType;
 import com.kas.comm.messages.Message;
 import com.kas.infra.base.KasException;
@@ -89,11 +89,11 @@ public class KasqMessage extends Message implements IKasqMessage
   /***************************************************************************************************************
    * Gets the message's class
    * 
-   * @return The {@code MessageClass} of the message
+   * @return The {@code tMessageSubType} of the message
    */
-  public MessageClass getMessageClass()
+  public MessageSubType getMessageSubType()
   {
-    return MessageClass.cKasqMessage;
+    return MessageSubType.cKasqMessage;
   }
   
   /***************************************************************************************************************

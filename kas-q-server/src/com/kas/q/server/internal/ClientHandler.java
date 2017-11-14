@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import javax.jms.JMSException;
 import com.kas.comm.IMessage;
+import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessageType;
-import com.kas.comm.impl.Messenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.messages.AuthenticateRequestMessage;
 import com.kas.comm.messages.ResponseMessage;
@@ -19,13 +19,15 @@ import com.kas.q.server.KasqServer;
 
 public class ClientHandler extends KasObject implements Runnable
 {
+  private static ILogger sLogger = LoggerFactory.getLogger(ClientHandler.class);
+  
   /***************************************************************************************************************
    * 
    */
-  private ILogger          mLogger;
-  private Messenger        mMessenger;
+  private IMessenger       mMessenger;
   private IHandlerCallback mCallback;
   private KasqRepository   mRepository;
+  private boolean          mAdminHandler;
   
   /***************************************************************************************************************
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
@@ -35,14 +37,24 @@ public class ClientHandler extends KasObject implements Runnable
    * 
    * @throws IOException if for some reason we fail to wrap the client socket with a {@code Messenger} object 
    */
-  ClientHandler(Socket socket, IHandlerCallback callback) throws IOException
+  public ClientHandler(Socket socket, IHandlerCallback callback) throws IOException
   {
-    mLogger     = LoggerFactory.getLogger(this.getClass());
     mMessenger  = MessengerFactory.create(socket);
     mCallback   = callback;
     mRepository = KasqServer.getInstance().getRepository();
+    mAdminHandler = false;
     
     if (mCallback != null) mCallback.onHandlerStart(this);
+  }
+  
+  /***************************************************************************************************************
+   * Gets the {@code ClientHandler}'s {@code Messenger}
+   * 
+   * @return this handler's {@code Messenger} 
+   */
+  public IMessenger getMessenger()
+  {
+    return mMessenger;
   }
   
   /***************************************************************************************************************
@@ -53,24 +65,24 @@ public class ClientHandler extends KasObject implements Runnable
    */
   public void run()
   {
-    mLogger.debug("ClientHandler::run() - IN");
-    mLogger.trace("Handling client connection from: " + mMessenger.toPrintableString(0));
+    sLogger.debug("ClientHandler::run() - IN");
+    sLogger.trace("Handling client connection from: " + mMessenger.toPrintableString(0));
     
     try
     {
       boolean auth = authenticate();
       if (!auth)
       {
-        mLogger.trace("Client failed authentication...");
+        sLogger.trace("Client failed authentication...");
       }
       else
       {
-        mLogger.trace("Awaiting client to send messages..");
+        sLogger.trace("Awaiting client to send messages..");
         
         IMessage message = mMessenger.receive();
         while (message != null)
         {
-          mLogger.trace("Received from client message: " + message.toPrintableString(0));
+          sLogger.trace("Received from client message: " + message.toPrintableString(0));
           process(message);
         
           message = mMessenger.receive();
@@ -79,16 +91,16 @@ public class ClientHandler extends KasObject implements Runnable
     }
     catch (IOException e)
     {
-      mLogger.trace("I/O Exception caught. Message: " + e.getMessage());
+      sLogger.trace("I/O Exception caught. Message: " + e.getMessage());
     }
     catch (Throwable e)
     {
-      mLogger.trace("Exception caught while trying to process message from client. ", e);
+      sLogger.trace("Exception caught while trying to process message from client. ", e);
     }
     mMessenger.cleanup();
     
     if (mCallback != null) mCallback.onHandlerStop(this);
-    mLogger.debug("ClientHandler::run() - OUT");
+    sLogger.debug("ClientHandler::run() - OUT");
   }
   
   /***************************************************************************************************************
@@ -101,11 +113,11 @@ public class ClientHandler extends KasObject implements Runnable
    */
   private boolean authenticate() throws JMSException, ClassNotFoundException, IOException
   {
-    mLogger.debug("ClientHandler::authenticate() - IN");
+    sLogger.debug("ClientHandler::authenticate() - IN");
     boolean authenticated = false;
     
     IMessage message = mMessenger.receive();
-    mLogger.debug("ClientHandler::authenticate() - Got a message: " + message.toPrintableString(0));
+    sLogger.debug("ClientHandler::authenticate() - Got a message: " + message.toPrintableString(0));
     
     if (message.getMessageType() == MessageType.cAuthenticateRequestMessage)
     {
@@ -121,6 +133,11 @@ public class ClientHandler extends KasObject implements Runnable
         // TODO: address some security manager and find out if the credentials are okay
         //
         authenticated = true;
+        
+        if (userName.equals("admin"))
+        {
+          mAdminHandler = true;
+        }
         response = ResponseMessage.generateSuccessResponse(request);
       }
       else
@@ -129,11 +146,11 @@ public class ClientHandler extends KasObject implements Runnable
         response = ResponseMessage.generateFailureResponse(request, error);
       }
       
-      mLogger.debug("ClientHandler::authenticate() - Send message: " + response.toPrintableString(0));
+      sLogger.debug("ClientHandler::authenticate() - Send message: " + response.toPrintableString(0));
       mMessenger.send(response);
     }
     
-    mLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
+    sLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
     return authenticated;
   }
   
@@ -153,7 +170,7 @@ public class ClientHandler extends KasObject implements Runnable
    */
   private void process(IMessage message) throws JMSException
   {
-    mLogger.debug("ClientHandler::process() - IN");
+    sLogger.debug("ClientHandler::process() - IN");
     
     if (message.getMessageType() == MessageType.cDataMessage)
     {
@@ -161,7 +178,7 @@ public class ClientHandler extends KasObject implements Runnable
       IKasqDestination kqDestination;
       if (!(kqMessage.getJMSDestination() instanceof IKasqDestination))
       {
-        mLogger.debug("ClientHandler::process() - message destination is NOT managed by KAS/Q. send to deadq");
+        sLogger.debug("ClientHandler::process() - message destination is NOT managed by KAS/Q. send to deadq");
         kqDestination = mRepository.getDeadQueue();
       }
       else
@@ -171,8 +188,21 @@ public class ClientHandler extends KasObject implements Runnable
       
       put(kqDestination, kqMessage);
     }
+    else
+    if (message.getMessageType() == MessageType.cShutdownMessage)
+    {
+      if (!mAdminHandler)
+      {
+        sLogger.debug("ClientHandler::process() - request for shutdown from an unauthorized client ignored");
+      }
+      else
+      {
+        sLogger.debug("ClientHandler::process() - request for shutdown accepted");
+        mCallback.onShutdownRequest();
+      }
+    }
     
-    mLogger.debug("ClientHandler::process() - OUT");
+    sLogger.debug("ClientHandler::process() - OUT");
   }
   
   /***************************************************************************************************************
@@ -185,7 +215,7 @@ public class ClientHandler extends KasObject implements Runnable
    */
   private void put(IKasqDestination destination, IKasqMessage message)
   {
-    mLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + destination.getFormattedName() + "]");
+    sLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + destination.getFormattedName() + "]");
     
     String destinationName = destination.getName();
     IKasqDestination destinationFromRepo = mRepository.locate(destinationName);
@@ -195,7 +225,7 @@ public class ClientHandler extends KasObject implements Runnable
     }
     else
     {
-      mLogger.debug("ClientHandler::process() - Destination is not defined, define it now...");
+      sLogger.debug("ClientHandler::process() - Destination is not defined, define it now...");
       boolean defined = mRepository.defineQueue(destinationName);
       if (defined)
       {
@@ -206,7 +236,7 @@ public class ClientHandler extends KasObject implements Runnable
       {
         IKasqDestination deadq = mRepository.getDeadQueue();
         deadq.put(message);
-        mLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
+        sLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
       }
     }
   }

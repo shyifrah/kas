@@ -3,7 +3,7 @@ package com.kas.comm;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
-import com.kas.comm.impl.MessageClass;
+import com.kas.comm.impl.MessageSubType;
 import com.kas.comm.impl.MessageHeader;
 import com.kas.comm.messages.AuthenticateRequestMessage;
 import com.kas.comm.messages.Message;
@@ -82,9 +82,9 @@ public class MessageFactory implements IMessageFactory
   public IMessage createFromStream(ObjectInputStream istream, MessageHeader header) throws StreamCorruptedException
   {
     IMessage message = null;
-    MessageClass msgClass = header.getMessageClass();
+    MessageSubType msgClass = header.getMessageClass();
     int ord = msgClass.ordinal();
-    if (ord > MessageClass.cUnknownMessage.ordinal())
+    if (ord > MessageSubType.cUnknownMessage.ordinal())
     {
       IMessageFactory factory = null;
       synchronized (mSecondaryFactories)

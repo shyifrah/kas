@@ -13,7 +13,6 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.KasqMessageFactory;
-import com.kas.q.server.internal.ClientHandlerManager;
 import com.kas.q.server.internal.MessagingConfiguration;
 import com.kas.q.server.internal.ShutdownHook;
 
@@ -70,7 +69,7 @@ public class KasqServer extends KasObject implements IInitializable
   private ILogger                mLogger;
   private ILogger                mConsole;
   private boolean                mShouldStop;
-  private ClientHandlerManager   mHandlerManager;
+  private KasqController   mHandlerManager;
   private KasqRepository         mRepository;
   private ServerSocket           mListenSocket;
   private ShutdownHook           mShutdownHook;
@@ -97,7 +96,7 @@ public class KasqServer extends KasObject implements IInitializable
     mConsole = LoggerFactory.getStdout(this.getClass());
     
     mConfig = new MessagingConfiguration();
-    mHandlerManager = new ClientHandlerManager();
+    mHandlerManager = new KasqController();
     mShouldStop = false;
     
     new KasqMessageFactory();

@@ -49,7 +49,7 @@ public class KasqClient extends KasObject implements IInitializable
       }
       
       mLogger = LoggerFactory.getLogger(this.getClass());
-      mLogger.info("QueueClient initialized successfully");
+      mLogger.info("KasqClient initialized successfully");
       
       boolean verified = verify(mHost, mPort);
       if (!verified)
@@ -73,7 +73,7 @@ public class KasqClient extends KasObject implements IInitializable
       MainConfiguration.getInstance().term();
       ThreadPool.shutdownNow();
       
-      mLogger.info("QueueClient terminated");
+      mLogger.info("KasqClient terminated");
     }
     
     return true;
@@ -109,7 +109,7 @@ public class KasqClient extends KasObject implements IInitializable
    */
   private boolean verify(String host, int port)
   {
-    mLogger.debug("QueueClient::setup() - IN, Host=[" + (host == null ? "null" : host) + "]; Port=[" + port + "]");
+    mLogger.debug("KasqClient::setup() - IN, Host=[" + (host == null ? "null" : host) + "]; Port=[" + port + "]");
     
     boolean verified = true;
     
@@ -127,7 +127,7 @@ public class KasqClient extends KasObject implements IInitializable
       verified = false;
     }
     
-    mLogger.debug("QueueClient::setup() - OUT, Result=" + verified);
+    mLogger.debug("KasqClient::setup() - OUT, Result=" + verified);
     return verified;
   }
   

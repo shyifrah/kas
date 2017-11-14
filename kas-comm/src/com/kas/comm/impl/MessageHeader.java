@@ -16,9 +16,9 @@ public class MessageHeader extends KasObject implements ISerializable
   /***************************************************************************************************************
    * 
    */
-  private MessageType  mType;
-  private MessageClass mClass;
-  private String       mEyeCatcher;
+  private MessageType    mType;
+  private MessageSubType mSubType;
+  private String         mEyeCatcher;
   
   /***************************************************************************************************************
    * Construct a {@code MessageHeader}
@@ -27,20 +27,20 @@ public class MessageHeader extends KasObject implements ISerializable
    */
   public MessageHeader(MessageType type)
   {
-    this(type, MessageClass.cUnknownMessage);
+    this(type, MessageSubType.cUnknownMessage);
   }
   
   /***************************************************************************************************************
    * Construct a {@code MessageHeader}
    *  
-   * @param type {@code MessageType} of the accompanied message
-   * @param mclass {@code MessageClass} used to identify the MessageFactory to be used for deserializing messages
+   * @param type {@code tMessageSubType} of the accompanied message
+   * @param mclass {@code tMessageSubType} used to identify the MessageFactory to be used for deserializing messages
    *    from the specified type.
    */
-  public MessageHeader(MessageType type, MessageClass mclass)
+  public MessageHeader(MessageType type, MessageSubType subtype)
   {
     mType = type;
-    mClass = mclass;
+    mSubType = subtype;
     mEyeCatcher = cEyeCatcher;
   }
   
@@ -55,7 +55,7 @@ public class MessageHeader extends KasObject implements ISerializable
   public MessageHeader(ObjectInputStream istream) throws ClassNotFoundException, IOException
   {
     mType = (MessageType)istream.readObject();
-    mClass = MessageClass.fromInt(istream.readInt());
+    mSubType = MessageSubType.fromInt(istream.readInt());
     mEyeCatcher = (String)istream.readObject();
   }
   
@@ -70,13 +70,13 @@ public class MessageHeader extends KasObject implements ISerializable
   }
   
   /***************************************************************************************************************
-   * Return the {@code MessageClass}
+   * Return the {@code tMessageSubType}
    *  
-   * @return {@code MessageClass} of the accompanied message
+   * @return {@code tMessageSubType} of the accompanied message
    */
-  public MessageClass getMessageClass()
+  public MessageSubType getMessageClass()
   {
-    return mClass;
+    return mSubType;
   }
   
   /***************************************************************************************************************
@@ -107,7 +107,7 @@ public class MessageHeader extends KasObject implements ISerializable
   {
     ostream.writeObject(mType);
     ostream.reset();
-    ostream.writeInt(mClass.ordinal());
+    ostream.writeInt(mSubType.ordinal());
     ostream.reset();
     ostream.writeObject(mEyeCatcher);
     ostream.reset();
@@ -123,7 +123,7 @@ public class MessageHeader extends KasObject implements ISerializable
       .append('(')
       .append(mType.toString())
       .append(':')
-      .append(mClass.toString())
+      .append(mSubType.toString())
       .append(')');
     return sb.toString();
   }

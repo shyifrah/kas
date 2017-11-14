@@ -3,9 +3,16 @@ package com.kas.comm;
 import java.io.IOException;
 import java.io.StreamCorruptedException;
 import java.net.SocketException;
+import com.kas.infra.base.IObject;
 
-public interface IMessenger
+public interface IMessenger extends IObject
 {
+  /***************************************************************************************************************
+   * Perform cleanup: flush stream, close them, close the socket etc.
+   * 
+   */
+  public abstract void cleanup();
+  
   /***************************************************************************************************************
    * Sends a {@code IMessage} object.
    * 

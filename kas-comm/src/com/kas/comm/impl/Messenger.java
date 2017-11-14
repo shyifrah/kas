@@ -51,7 +51,6 @@ public class Messenger extends KasObject implements IMessenger
   }
   
   /***************************************************************************************************************
-   * Do cleanup before destroying this object
    * 
    */
   public void cleanup()
@@ -106,7 +105,7 @@ public class Messenger extends KasObject implements IMessenger
    */
   public void send(IMessage message) throws IOException
   {
-    MessageHeader header = new MessageHeader(message.getMessageType(), message.getMessageClass());
+    MessageHeader header = new MessageHeader(message.getMessageType(), message.getMessageSubType());
     header.serialize(mOutputStream);
     message.serialize(mOutputStream);
   }

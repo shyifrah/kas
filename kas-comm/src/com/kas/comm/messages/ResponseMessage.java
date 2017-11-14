@@ -3,7 +3,6 @@ package com.kas.comm.messages;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import com.kas.comm.impl.MessageClass;
 import com.kas.comm.impl.MessageType;
 import com.kas.infra.base.UniqueId;
 
