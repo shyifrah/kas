@@ -4,7 +4,7 @@ import java.io.PrintStream;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.RunTimeUtils;
 
-public class ConsoleAppender extends AbstractAppender
+public class ConsoleAppender extends AAppender
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -40,7 +40,7 @@ public class ConsoleAppender extends AbstractAppender
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  protected void write(String logger, String message, LogLevel messageLevel)
+  protected void write(String logger, String message, ELogLevel messageLevel)
   {
     if (mConfig.isEnabled())
     {

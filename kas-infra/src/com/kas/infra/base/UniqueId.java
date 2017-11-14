@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
-public class UniqueId extends KasObject implements Serializable
+public class UniqueId extends AKasObject implements Serializable
 {
   private static final long    serialVersionUID = 1L;
   private static final byte [] cZeroArray = ByteBuffer.wrap(new byte [16]).putLong(0L).putLong(0L).array();

@@ -3,7 +3,7 @@ package com.kas.q.ext.impl;
 import javax.jms.ConnectionFactory;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ThreadPool;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -12,7 +12,7 @@ import com.kas.q.KasqQueue;
 import com.kas.q.KasqTopic;
 import com.kas.q.ext.ILocator;
 
-public class KasqClient extends KasObject implements IInitializable, ILocator
+public class KasqClient extends AKasObject implements IInitializable, ILocator
 {
   private ILogger   mLogger;
   private boolean   mInitialized;

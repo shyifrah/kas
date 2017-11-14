@@ -1,6 +1,6 @@
 package com.kas.logging.impl;
 
-public enum LogLevel
+public enum ELogLevel
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -21,7 +21,7 @@ public enum LogLevel
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public boolean isGreaterOrEqual(LogLevel other)
+  public boolean isGreaterOrEqual(ELogLevel other)
   {
     return this.compareTo(other) >= 0;
   }

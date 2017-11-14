@@ -6,19 +6,18 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.net.SocketException;
-import com.kas.comm.IMessage;
+import com.kas.comm.IPacket;
+import com.kas.comm.IPacketFactory;
 import com.kas.comm.IMessenger;
-import com.kas.comm.MessageFactory;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
-public class Messenger extends KasObject implements IMessenger
+public class Messenger extends AKasObject implements IMessenger
 {
   /***************************************************************************************************************
    * 
    */
-  private static MessageFactory sMessageFactory = MessageFactory.getInstance();
   private static ILogger sLogger = LoggerFactory.getLogger(Messenger.class);
   
   /***************************************************************************************************************
@@ -27,6 +26,9 @@ public class Messenger extends KasObject implements IMessenger
   protected Socket   mSocket;
   protected ObjectOutputStream mOutputStream;
   protected ObjectInputStream  mInputStream;
+  
+  protected IPacketFactory    mPacketFactory;
+  
   protected boolean  mConnected;
   protected String   mHost;
   protected int      mPort;
@@ -37,15 +39,17 @@ public class Messenger extends KasObject implements IMessenger
    * @param socket the socket that will serve this {@code Messenger} object
    * @param host the remote host
    * @param port remote host listening port
+   * @param factory the packet factory used to deserialize packets 
    * 
    * @throws IOException
    */
-  Messenger(Socket socket, String host, int port) throws IOException
+  Messenger(Socket socket, String host, int port, IPacketFactory factory) throws IOException
   {
     mHost = host;
     mPort = port;
     mSocket = socket;
     mConnected = true;
+    mPacketFactory = factory;
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
   }
@@ -103,43 +107,43 @@ public class Messenger extends KasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public void send(IMessage message) throws IOException
+  public void send(IPacket packet) throws IOException
   {
-    MessageHeader header = new MessageHeader(message.getMessageType(), message.getMessageSubType());
+    PacketHeader header = packet.createHeader();
     header.serialize(mOutputStream);
-    message.serialize(mOutputStream);
+    packet.serialize(mOutputStream);
   }
 
   /***************************************************************************************************************
    * 
    */
-  public IMessage receive() throws StreamCorruptedException, SocketException
+  public IPacket receive() throws StreamCorruptedException, SocketException
   {
     mSocket.setSoTimeout(0);
-    IMessage message = sMessageFactory.createFromStream(mInputStream);
-    return message;
+    IPacket packet = mPacketFactory.createFromStream(mInputStream);
+    return packet;
   }
 
   /***************************************************************************************************************
    * 
    */
-  public IMessage receive(int timeout) throws StreamCorruptedException, SocketException
+  public IPacket receive(int timeout) throws StreamCorruptedException, SocketException
   {
-    IMessage message = null;
+    IPacket packet = null;
     mSocket.setSoTimeout(timeout);
     try
     {
-      message = sMessageFactory.createFromStream(mInputStream);
+      packet= mPacketFactory.createFromStream(mInputStream);
     }
     catch (Throwable e) {}
     
-    return message;
+    return packet;
   }
 
   /***************************************************************************************************************
    * 
    */
-  public IMessage sendAndReceive(IMessage request) throws IOException, StreamCorruptedException
+  public IPacket sendAndReceive(IPacket request) throws IOException, StreamCorruptedException
   {
     send(request);
     return receive();
@@ -148,7 +152,7 @@ public class Messenger extends KasObject implements IMessenger
   /***************************************************************************************************************
    *  
    */
-  public IMessage sendAndReceive(IMessage request, int timeout) throws IOException, StreamCorruptedException
+  public IPacket sendAndReceive(IPacket request, int timeout) throws IOException, StreamCorruptedException
   {
     send(request);
     return receive(timeout);

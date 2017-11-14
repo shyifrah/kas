@@ -4,9 +4,9 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 
-public class KasqConnectionFactory extends KasObject implements ConnectionFactory
+public class KasqConnectionFactory extends AKasObject implements ConnectionFactory
 {
   protected String mHost;
   protected int    mPort;

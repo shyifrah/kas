@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 
-public class MessageHeader extends KasObject implements ISerializable
+public class MessageHeader extends AKasObject implements ISerializable
 {
   private MessageType mType;
   

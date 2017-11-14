@@ -2,7 +2,7 @@ package com.kas.infra.base;
 
 import com.kas.infra.utils.StringUtils;
 
-public abstract class KasObject implements IObject
+public abstract class AKasObject implements IObject
 {
   /***************************************************************************************************************
    * Override Object's toString() method with the {@link #name()} method.

@@ -7,19 +7,21 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.concurrent.LinkedBlockingDeque;
-import com.kas.comm.MessageFactory;
-import com.kas.comm.impl.MessageHeader;
-import com.kas.infra.base.KasObject;
+import com.kas.comm.IPacketFactory;
+import com.kas.comm.impl.PacketHeader;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.KasqMessageFactory;
 
-public abstract class KasqDestination extends KasObject implements IKasqDestination
+public abstract class AKasqDestination extends AKasObject implements IKasqDestination
 {
   private static final long serialVersionUID = 1L;
-  private static ILogger sLogger = LoggerFactory.getLogger(KasqDestination.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(AKasqDestination.class);
+  private static IPacketFactory sMessageFactory = new KasqMessageFactory();
   
   /***************************************************************************************************************
    * 
@@ -35,7 +37,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
    * @param name the name associated with this destination
    * @param managerName the name of the manager of this destination
    */
-  protected KasqDestination(String name, String managerName)
+  protected AKasqDestination(String name, String managerName)
   {
     mName   = name;
     mManagerName = managerName;
@@ -70,7 +72,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
         {
           try
           {
-            IKasqMessage message = (IKasqMessage)MessageFactory.getInstance().createFromStream(istream);
+            IKasqMessage message = (IKasqMessage)sMessageFactory.createFromStream(istream);
             put(message);
           }
           catch (IOException e)
@@ -134,7 +136,7 @@ public abstract class KasqDestination extends KasObject implements IKasqDestinat
           {
             IKasqMessage msg = mQueue.poll();
             
-            MessageHeader header = new MessageHeader(msg.getMessageType());
+            PacketHeader header = msg.createHeader();
             header.serialize(ostream);
             msg.serialize(ostream);
             

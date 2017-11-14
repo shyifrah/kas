@@ -3,11 +3,9 @@ package com.kas.q.ext;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
-import com.kas.comm.IMessage;
-import com.kas.comm.IMessageFactory;
-import com.kas.comm.MessageFactory;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.comm.impl.MessageHeader;
+import com.kas.comm.IPacket;
+import com.kas.comm.IPacketFactory;
+import com.kas.comm.impl.PacketHeader;
 import com.kas.q.KasqBytesMessage;
 import com.kas.q.KasqMapMessage;
 import com.kas.q.KasqMessage;
@@ -15,45 +13,44 @@ import com.kas.q.KasqObjectMessage;
 import com.kas.q.KasqStreamMessage;
 import com.kas.q.KasqTextMessage;
 
-public class KasqMessageFactory implements IMessageFactory
+public class KasqMessageFactory implements IPacketFactory
 {
-  public KasqMessageFactory()
+  public IPacket createFromStream(ObjectInputStream istream) throws StreamCorruptedException
   {
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cUnknownMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqTextMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqObjectMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqBytesMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqStreamMessage.ordinal());
-    MessageFactory.getInstance().registerSecondaryFactory(this, MessageSubType.cKasqMapMessage.ordinal());
-  }
-  
-  public IMessage createFromStream(ObjectInputStream istream, MessageHeader header) throws StreamCorruptedException
-  {
-    IMessage message = null;
+    IPacket message = null;
     try
     {
-      switch (header.getMessageClass())
+      PacketHeader header = new PacketHeader(istream);
+      
+      int id = header.getClassId();
+      if (id == PacketHeader.cClassIdKasq)
       {
-        case cKasqMessage:
-          message = new KasqMessage(istream);
-          break;
-        case cKasqTextMessage:
-          message = new KasqTextMessage(istream);
-          break;
-        case cKasqObjectMessage:
-          message = new KasqObjectMessage(istream);
-          break;
-        case cKasqBytesMessage:
-          message = new KasqBytesMessage(istream);
-          break;
-        case cKasqStreamMessage:
-          message = new KasqStreamMessage(istream);
-          break;
-        case cKasqMapMessage:
-          message = new KasqMapMessage(istream);
-          break;
-        default:
-          break;
+        int type = header.getType();
+        EMessageType messageType = EMessageType.fromInt(type);
+        
+        switch (messageType)
+        {
+          case cKasqMessage:
+            message = new KasqMessage(istream);
+            break;
+          case cKasqMessageText:
+            message = new KasqTextMessage(istream);
+            break;
+          case cKasqMessageObject:  
+            message = new KasqObjectMessage(istream);
+            break;
+          case cKasqMessageBytes:
+            message = new KasqBytesMessage(istream);
+            break;
+          case cKasqMessageStream:
+            message = new KasqStreamMessage(istream);
+            break;
+          case cKasqMessageMap:
+            message = new KasqMapMessage(istream);
+            break;
+          default:
+            break;
+        }
       }
     }
     catch (ClassNotFoundException e)
@@ -64,7 +61,7 @@ public class KasqMessageFactory implements IMessageFactory
     {
       throw new StreamCorruptedException("IOException caught, Message: " + e.getMessage());
     }
-    
+     
     return message;
   }
 }

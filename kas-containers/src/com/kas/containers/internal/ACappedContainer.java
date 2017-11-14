@@ -1,9 +1,9 @@
 package com.kas.containers.internal;
 
 import com.kas.containers.ICappedContainerListener;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 
-public abstract class AbstractCappedContainer extends KasObject
+public abstract class ACappedContainer extends AKasObject
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -16,7 +16,7 @@ public abstract class AbstractCappedContainer extends KasObject
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  protected AbstractCappedContainer(String path, int threshold, ICappedContainerListener listener)
+  protected ACappedContainer(String path, int threshold, ICappedContainerListener listener)
   {
     mPath      = path;
     mThreshold = threshold;

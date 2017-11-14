@@ -1,10 +1,10 @@
 package com.kas.containers.internal;
 
-import com.kas.config.impl.AbstractConfiguration;
+import com.kas.config.impl.AConfiguration;
 import com.kas.config.impl.Constants;
 import com.kas.infra.config.IConfiguration;
 
-public class ContainersConfiguration extends AbstractConfiguration
+public class ContainersConfiguration extends AConfiguration
 {
   private IConfiguration mConfig = null;
   

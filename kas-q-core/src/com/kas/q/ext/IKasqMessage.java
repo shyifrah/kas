@@ -1,16 +1,14 @@
 package com.kas.q.ext;
 
 import javax.jms.Message;
-import com.kas.comm.IMessage;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.infra.base.ISerializable;
+import com.kas.comm.IPacket;
 
-public interface IKasqMessage extends ISerializable, IMessage, Message
+public interface IKasqMessage extends IPacket, Message
 {
   /***************************************************************************************************************
-   * Get {@code MessageClass} of the object
+   * Get the message's type
    * 
-   * @return {@code MessageClass} of the object
+   * @return the message's type
    */
-  public abstract MessageSubType getMessageSubType();
+  public abstract EMessageType getType();
 }

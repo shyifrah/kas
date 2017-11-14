@@ -1,14 +1,14 @@
 package com.kas.logging.impl;
 
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ThrowableFormatter;
 
-public abstract class AbstractAppender extends KasObject implements IAppender
+public abstract class AAppender extends AKasObject implements IAppender
 {
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public synchronized void write(String logger, String message, Throwable ex, LogLevel messageLevel)
+  public synchronized void write(String logger, String message, Throwable ex, ELogLevel messageLevel)
   {
     String msgText = message;
     if (ex != null)
@@ -41,6 +41,6 @@ public abstract class AbstractAppender extends KasObject implements IAppender
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  protected abstract void write(String logger, String message, LogLevel level);
+  protected abstract void write(String logger, String message, ELogLevel level);
   public abstract String toPrintableString(int level);
 }

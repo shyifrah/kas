@@ -4,7 +4,11 @@ import java.io.IOException;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import com.kas.config.MainConfiguration;
+import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqClient;
 
 public class KasqShutdown extends KasqClient
@@ -73,8 +77,12 @@ public class KasqShutdown extends KasqClient
     
     ConnectionFactory factory = getFactory();
     Connection        conn    = factory.createConnection(userName, password);
+    Session           sess    = conn.createSession();
+    MessageProducer   prod    = sess.createProducer(null);
+    Message           msg     = sess.createMessage();
+    msg.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
+    msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Shutdown);
     
-    
-    
+    prod.send(msg);
   }
 }

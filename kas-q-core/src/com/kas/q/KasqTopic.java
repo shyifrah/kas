@@ -3,7 +3,7 @@ package com.kas.q;
 import javax.jms.JMSException;
 import javax.jms.TemporaryTopic;
 
-public class KasqTopic extends KasqDestination implements TemporaryTopic
+public class KasqTopic extends AKasqDestination implements TemporaryTopic
 {
   private static final long serialVersionUID = 1L;
   

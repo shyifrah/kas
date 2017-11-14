@@ -1,9 +1,9 @@
 package com.kas.logging.impl;
 
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 
-public class Logger extends KasObject implements ILogger
+public class Logger extends AKasObject implements ILogger
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -23,7 +23,7 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private void write(String message, Throwable ex, LogLevel level)
+  private void write(String message, Throwable ex, ELogLevel level)
   {
     if (mAppender != null) mAppender.write(mName, message, ex, level);
   }
@@ -33,12 +33,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void diag(String message)
   {
-    write(message, null, LogLevel.DIAG);
+    write(message, null, ELogLevel.DIAG);
   }
   
   public void diag(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.DIAG);
+    write(message, ex, ELogLevel.DIAG);
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -46,12 +46,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void debug(String message)
   {
-    write(message, null, LogLevel.DEBUG);
+    write(message, null, ELogLevel.DEBUG);
   }
   
   public void debug(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.DEBUG);
+    write(message, ex, ELogLevel.DEBUG);
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -59,12 +59,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void trace(String message)
   {
-    write(message, null, LogLevel.TRACE);
+    write(message, null, ELogLevel.TRACE);
   }
   
   public void trace(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.TRACE);
+    write(message, ex, ELogLevel.TRACE);
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -72,12 +72,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void info(String message)
   {
-    write(message, null, LogLevel.INFO);
+    write(message, null, ELogLevel.INFO);
   }
   
   public void info(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.INFO);
+    write(message, ex, ELogLevel.INFO);
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -85,12 +85,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void warn(String message)
   {
-    write(message, null, LogLevel.WARN);
+    write(message, null, ELogLevel.WARN);
   }
   
   public void warn(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.WARN);
+    write(message, ex, ELogLevel.WARN);
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -98,12 +98,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void error(String message)
   {
-    write(message, null, LogLevel.ERROR);
+    write(message, null, ELogLevel.ERROR);
   }
   
   public void error(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.ERROR);
+    write(message, ex, ELogLevel.ERROR);
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -111,12 +111,12 @@ public class Logger extends KasObject implements ILogger
   //------------------------------------------------------------------------------------------------------------------
   public void fatal(String message)
   {
-    write(message, null, LogLevel.FATAL);
+    write(message, null, ELogLevel.FATAL);
   }
   
   public void fatal(String message, Throwable ex)
   {
-    write(message, ex, LogLevel.FATAL);
+    write(message, ex, ELogLevel.FATAL);
   }
   
   //------------------------------------------------------------------------------------------------------------------

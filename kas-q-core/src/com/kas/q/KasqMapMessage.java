@@ -8,10 +8,10 @@ import java.util.Map;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.MessageFormatException;
-import com.kas.comm.impl.MessageSubType;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
-import com.kas.q.ext.ReadWriteMode;
+import com.kas.q.ext.EMessageType;
+import com.kas.q.ext.EReadWriteMode;
 
 public class KasqMapMessage extends KasqMessage implements MapMessage
 {
@@ -41,27 +41,11 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   }
   
   /***************************************************************************************************************
-   * Verify a mapped name is valid
-   * 
-   * @param name the mapped name
-   * 
-   * @throws JMSException if name is null or an empty string
-   */
-  private void internalVerify(String name) throws JMSException
-  {
-    if (name == null)
-      throw new JMSException("Invalid name - null");
-    
-    if (name.length() == 0)
-      throw new JMSException("Invalid name - empty string");
-  }
-  
-  /***************************************************************************************************************
    * 
    */
-  public MessageSubType getMessageSubType()
+  public EMessageType getType()
   {
-    return MessageSubType.cKasqMapMessage;
+    return EMessageType.cKasqMessageMap;
   }
   
   /***************************************************************************************************************
@@ -530,7 +514,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void clearBody() throws JMSException
   {
     mBody = null;
-    mBodyMode = ReadWriteMode.cReadWrite;
+    mBodyMode = EReadWriteMode.cReadWrite;
   }
 
   /***************************************************************************************************************
@@ -559,6 +543,22 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
     return Map.class.isAssignableFrom(c);
   }
 
+  /***************************************************************************************************************
+   * Verify a mapped name is valid
+   * 
+   * @param name the mapped name
+   * 
+   * @throws JMSException if name is null or an empty string
+   */
+  private void internalVerify(String name) throws JMSException
+  {
+    if (name == null)
+      throw new JMSException("Invalid name - null");
+    
+    if (name.length() == 0)
+      throw new JMSException("Invalid name - empty string");
+  }
+  
   /***************************************************************************************************************
    *  
    */

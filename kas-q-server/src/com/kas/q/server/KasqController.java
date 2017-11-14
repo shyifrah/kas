@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -12,7 +12,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.server.internal.ClientHandler;
 import com.kas.q.server.internal.IHandlerCallback;
 
-public class KasqController extends KasObject implements IHandlerCallback
+public class KasqController extends AKasObject implements IHandlerCallback
 {
   private ILogger mLogger;
   private List<ClientHandler> mHandlers;

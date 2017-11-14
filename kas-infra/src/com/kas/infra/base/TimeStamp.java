@@ -2,7 +2,7 @@ package com.kas.infra.base;
 
 import java.util.Calendar;
 
-public class TimeStamp extends KasObject
+public class TimeStamp extends AKasObject
 {
   //------------------------------------------------------------------------------------------------------------------
   //

@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import javax.jms.JMSException;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.ILocator;
@@ -16,7 +16,7 @@ import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
 import com.kas.q.impl.messages.KasqTextMessage;
 
-public class LocatorTask extends KasObject implements Runnable
+public class LocatorTask extends AKasObject implements Runnable
 {
   private static final String cLocateCommandPrefix = "locate:";
   private static final int    cQueueId = 1;
@@ -78,7 +78,7 @@ public class LocatorTask extends KasObject implements Runnable
     mLogger.debug("LocatorTask::handleRequest() - IN");
     
     IMessage message = MessageSerializer.deserialize(messenger.getInputStream());
-    if (message.getMessageType() == MessageType.cTextMessage)
+    if (message.getPacketClassId() == MessageType.cTextMessage)
     {
       KasqTextMessage textMessage = (KasqTextMessage)message;
       String text = textMessage.getText();

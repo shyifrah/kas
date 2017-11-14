@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import com.kas.config.impl.ConfigTask;
 import com.kas.config.impl.Constants;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.ThreadPool;
 import com.kas.infra.config.IListener;
@@ -13,7 +13,7 @@ import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.config.IRegistrar;
 import com.kas.infra.utils.RunTimeUtils;
 
-final public class MainConfiguration extends KasObject implements IMainConfiguration, IRegistrar 
+final public class MainConfiguration extends AKasObject implements IMainConfiguration, IRegistrar 
 {
   //------------------------------------------------------------------------------------------------------------------
   //

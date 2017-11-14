@@ -11,18 +11,18 @@ import javax.jms.JMSException;
 import javax.jms.ServerSessionPool;
 import javax.jms.Session;
 import javax.jms.Topic;
-import com.kas.comm.IMessage;
+import com.kas.comm.IPacket;
 import com.kas.comm.IMessenger;
-import com.kas.comm.impl.MessageType;
 import com.kas.comm.impl.MessengerFactory;
-import com.kas.comm.messages.AuthenticateRequestMessage;
-import com.kas.comm.messages.ResponseMessage;
-import com.kas.infra.base.KasObject;
+import com.kas.comm.impl.PacketHeader;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.IKasqConstants;
+import com.kas.q.ext.KasqMessageFactory;
 
-public class KasqConnection extends KasObject implements Connection
+public class KasqConnection extends AKasObject implements Connection
 {
   /***************************************************************************************************************
    *  
@@ -70,7 +70,7 @@ public class KasqConnection extends KasObject implements Connection
     {
       mOpenSessions = new ConcurrentHashMap<UniqueId, KasqSession>();
       
-      mMessenger = MessengerFactory.create(host, port);
+      mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       
       mClientId = "CLNT" + UniqueId.generate().toString();
     }
@@ -225,13 +225,22 @@ public class KasqConnection extends KasObject implements Connection
     boolean result = false;
     try
     {
-      AuthenticateRequestMessage authRequest = new AuthenticateRequestMessage(userName, password);
-      IMessage response = mMessenger.sendAndReceive(authRequest);
+      KasqMessage authRequest = new KasqMessage();
+      authRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Authenticate);
       
-      if (response.getMessageType() == MessageType.cResponseMessage)
+      authRequest.setStringProperty(IKasqConstants.cPropertyUserName, userName);
+      authRequest.setStringProperty(IKasqConstants.cPropertyPassword, password);
+      
+      IPacket response = mMessenger.sendAndReceive(authRequest);
+      
+      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
       {
-        ResponseMessage authResponse = (ResponseMessage)response;
-        result = authResponse.succeeded();
+        IKasqMessage authResponse = (IKasqMessage)response;
+        int responseCode = authResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+        {
+          result = true;
+        }
       }
     }
     catch (Throwable e) {}

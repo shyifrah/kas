@@ -7,12 +7,13 @@ import javax.jms.InvalidDestinationException;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 
-public class KasqMessageProducer extends KasObject implements MessageProducer
+public class KasqMessageProducer extends AKasObject implements MessageProducer
 {
   protected KasqSession mSession = null;
   protected IKasqDestination mDestination = null;
@@ -248,6 +249,7 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
 
   /***************************************************************************************************************
    * Verifies the validity of message headers prior to send operation
+   * Admin messages are processed on the spot by the KAS/Q server, so we allow null destination
    * 
    * @param destination message destination
    * @param message message to be sent
@@ -259,11 +261,21 @@ public class KasqMessageProducer extends KasObject implements MessageProducer
    */
   private void internalVerify(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
-    if (destination == null)
-      throw new JMSException("Cannot send message. Null destination");
-    
     if (message == null)
       throw new JMSException("Cannot send a null message");
+    
+    boolean admin = false;
+    try
+    {
+      admin = message.getBooleanProperty(IKasqConstants.cPropertyAdminMessage);
+    }
+    catch (Throwable e) {}
+    
+    if (!admin)
+    {
+      if (destination == null)
+        throw new JMSException("Cannot send message. Null destination");
+    }
     
     if ((deliveryMode != DeliveryMode.PERSISTENT) && (deliveryMode != DeliveryMode.NON_PERSISTENT))
       throw new JMSException("Invalid DeliveryMode: " + deliveryMode);

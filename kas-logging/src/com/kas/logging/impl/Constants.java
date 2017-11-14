@@ -14,7 +14,7 @@ public interface Constants
   static final String   cConfigAppenderPrefix = cLoggingConfigPrefix + "appender."; 
   
   static final boolean  cDefaultEnabled  = true;
-  static final LogLevel cDefaultLogLevel = LogLevel.INFO;
+  static final ELogLevel cDefaultLogLevel = ELogLevel.INFO;
   
   static final String cDefaultLogFileName           = "kas-%u-%d.log";
   static final int    cDefaultMaxWriteErrors        = 10;

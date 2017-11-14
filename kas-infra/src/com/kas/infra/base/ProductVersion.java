@@ -7,7 +7,7 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class ProductVersion extends KasObject
+public class ProductVersion extends AKasObject
 {
   //------------------------------------------------------------------------------------------------------------------
   //

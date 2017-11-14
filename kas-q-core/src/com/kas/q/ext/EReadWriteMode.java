@@ -1,6 +1,6 @@
 package com.kas.q.ext;
 
-public enum ReadWriteMode
+public enum EReadWriteMode
 {
   /***************************************************************************************************************
    *  
@@ -18,7 +18,7 @@ public enum ReadWriteMode
    * Constructs an enumeration value with a specific description
    *  
    */
-  private ReadWriteMode(String desc)
+  private EReadWriteMode(String desc)
   {
     mDesc = desc;
   }

@@ -21,11 +21,11 @@ import javax.jms.TemporaryTopic;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.IKasqMessage;
 
-public class KasqSession extends KasObject implements Session
+public class KasqSession extends AKasObject implements Session
 {
   /***************************************************************************************************************
    * 

@@ -1,6 +1,6 @@
 package com.kas.logging.impl;
 
-public class ConsoleAppenderConfiguration extends AbstractAppenderConfiguration
+public class ConsoleAppenderConfiguration extends AAppenderConfiguration
 {
   //------------------------------------------------------------------------------------------------------------------
   //

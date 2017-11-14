@@ -5,7 +5,7 @@ import java.util.List;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import com.kas.containers.CappedHashMap;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IDestination;
@@ -13,7 +13,7 @@ import com.kas.q.ext.IMessage;
 import com.kas.q.ext.impl.MessageSerializer;
 import com.kas.q.ext.impl.Messenger;
 
-public class DeliveryTask extends KasObject implements Runnable
+public class DeliveryTask extends AKasObject implements Runnable
 {
   /***************************************************************************************************************
    * 

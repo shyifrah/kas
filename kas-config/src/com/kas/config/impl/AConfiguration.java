@@ -1,10 +1,10 @@
 package com.kas.config.impl;
 
 import com.kas.config.MainConfiguration;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.config.IListener;
 
-public abstract class AbstractConfiguration extends KasObject implements IListener
+public abstract class AConfiguration extends AKasObject implements IListener
 {
   protected MainConfiguration mMainConfig = null;
   private   boolean           mInitialized = false;

@@ -1,9 +1,9 @@
 package com.kas.containers;
 
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 
-public class CappedContainerProxy extends KasObject implements ICappedContainerListener
+public class CappedContainerProxy extends AKasObject implements ICappedContainerListener
 {
   //------------------------------------------------------------------------------------------------------------------
   //

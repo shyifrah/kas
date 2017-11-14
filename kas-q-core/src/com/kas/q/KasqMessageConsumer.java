@@ -6,11 +6,11 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.IKasqDestination;
 
-public class KasqMessageConsumer extends KasObject implements MessageConsumer
+public class KasqMessageConsumer extends AKasObject implements MessageConsumer
 {
   protected KasqSession      mSession         = null;
   protected IKasqDestination mDestination     = null;

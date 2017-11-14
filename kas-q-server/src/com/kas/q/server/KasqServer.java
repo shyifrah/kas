@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.ThreadPool;
 import com.kas.infra.base.TimeStamp;
@@ -16,7 +16,7 @@ import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.server.internal.MessagingConfiguration;
 import com.kas.q.server.internal.ShutdownHook;
 
-public class KasqServer extends KasObject implements IInitializable
+public class KasqServer extends AKasObject implements IInitializable
 {
   /***************************************************************************************************************
    * Main function.

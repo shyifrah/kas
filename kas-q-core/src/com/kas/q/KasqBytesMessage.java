@@ -8,8 +8,8 @@ import java.io.ObjectOutputStream;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.q.ext.ReadWriteMode;
+import com.kas.q.ext.EMessageType;
+import com.kas.q.ext.EReadWriteMode;
 
 public class KasqBytesMessage extends KasqMessage implements BytesMessage
 {
@@ -28,7 +28,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   {
     super();
     mBody = null;
-    mBodyMode = ReadWriteMode.cWriteOnly;
+    mBodyMode = EReadWriteMode.cWriteOnly;
     
     mOutputArray  = new ByteArrayOutputStream();
     mOutputStream = new ObjectOutputStream(mOutputArray);
@@ -51,9 +51,9 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   /***************************************************************************************************************
    * 
    */
-  public MessageSubType getMessageSubType()
+  public EMessageType getType()
   {
-    return MessageSubType.cKasqBytesMessage;
+    return EMessageType.cKasqMessageBytes;
   }
   
   /***************************************************************************************************************
@@ -549,7 +549,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
       
       mBody = null;
       
-      mBodyMode = ReadWriteMode.cWriteOnly;
+      mBodyMode = EReadWriteMode.cWriteOnly;
     }
     catch (Throwable e)
     {

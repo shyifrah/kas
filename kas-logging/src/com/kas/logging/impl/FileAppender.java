@@ -8,7 +8,7 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 
-public class FileAppender extends AbstractAppender
+public class FileAppender extends AAppender
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -103,7 +103,7 @@ public class FileAppender extends AbstractAppender
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  protected synchronized void write(String logger, String message, LogLevel messageLevel)
+  protected synchronized void write(String logger, String message, ELogLevel messageLevel)
   {
     if (mConfig.isEnabled())
     {

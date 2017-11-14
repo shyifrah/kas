@@ -1,14 +1,14 @@
 package com.kas.q.server.internal;
 
 import java.util.HashSet;
-import com.kas.config.impl.AbstractConfiguration;
+import com.kas.config.impl.AConfiguration;
 import com.kas.config.impl.Constants;
 import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IRegistrar;
 import com.kas.infra.utils.StringUtils;
 
-public class MessagingConfiguration extends AbstractConfiguration implements IRegistrar
+public class MessagingConfiguration extends AConfiguration implements IRegistrar
 {
   /***************************************************************************************************************
    * 

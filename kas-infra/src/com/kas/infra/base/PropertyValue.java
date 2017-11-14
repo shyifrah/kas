@@ -2,7 +2,7 @@ package com.kas.infra.base;
 
 import com.kas.infra.utils.RunTimeUtils;
 
-class PropertyValue extends KasObject
+class PropertyValue extends AKasObject
 {
   //------------------------------------------------------------------------------------------------------------------
   //

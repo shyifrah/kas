@@ -8,8 +8,8 @@ import java.io.ObjectOutputStream;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
 import javax.jms.StreamMessage;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.q.ext.ReadWriteMode;
+import com.kas.q.ext.EMessageType;
+import com.kas.q.ext.EReadWriteMode;
 
 public class KasqStreamMessage extends KasqMessage implements StreamMessage
 {
@@ -27,7 +27,7 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
   public KasqStreamMessage() throws IOException
   {
     super();
-    mBodyMode = ReadWriteMode.cWriteOnly;
+    mBodyMode = EReadWriteMode.cWriteOnly;
     
     mOutputArray  = new ByteArrayOutputStream();
     mOutputStream = new ObjectOutputStream(mOutputArray);
@@ -48,12 +48,30 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
   }
   
   /***************************************************************************************************************
+   *  
+   */
+  public void serialize(ObjectOutputStream ostream)
+  {
+    super.serialize(ostream);
+    try
+    {
+      reset();
+      ostream.writeObject(mBody);
+      ostream.reset();
+    }
+    catch (Throwable e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  /***************************************************************************************************************
    * 
    */
-  public MessageSubType getMessageSubType()
+  public EMessageType getType()
   {
-    return MessageSubType.cKasqStreamMessage;
-  }
+    return EMessageType.cKasqMessageStream;
+  }  
   
   /***************************************************************************************************************
    *  
@@ -471,24 +489,6 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
   /***************************************************************************************************************
    *  
    */
-  public void serialize(ObjectOutputStream ostream)
-  {
-    super.serialize(ostream);
-    try
-    {
-      reset();
-      ostream.writeObject(mBody);
-      ostream.reset();
-    }
-    catch (Throwable e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public void clearBody() throws JMSException
   {
     try
@@ -503,7 +503,7 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
       
       mBody = null;
       
-      mBodyMode = ReadWriteMode.cWriteOnly;
+      mBodyMode = EReadWriteMode.cWriteOnly;
     }
     catch (Throwable e)
     {

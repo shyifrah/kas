@@ -4,79 +4,76 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 
-public class MessageHeader extends KasObject implements ISerializable
+public class PacketHeader extends AKasObject implements ISerializable
 {
   /***************************************************************************************************************
    * 
    */
   public static final String cEyeCatcher = "KAS";
   
+  public static final int cTypeUnknown    = -1;
+  
+  public static final int cClassIdUnknown = 0;
+  public static final int cClassIdKasq    = 1;
+  
   /***************************************************************************************************************
    * 
    */
-  private MessageType    mType;
-  private MessageSubType mSubType;
-  private String         mEyeCatcher;
+  private String  mEyeCatcher;
+  private int     mClassId;
+  private int     mType;
   
   /***************************************************************************************************************
-   * Construct a {@code MessageHeader}
+   * Construct a {@code PacketHeader}, specifying only the class ID
    *  
-   * @param type {@code MessageType} of the accompanied message
+   * @param id the class ID of the packet
    */
-  public MessageHeader(MessageType type)
+  protected PacketHeader(int id)
   {
-    this(type, MessageSubType.cUnknownMessage);
+    this(id, cTypeUnknown);
   }
   
   /***************************************************************************************************************
-   * Construct a {@code MessageHeader}
+   * Construct a {@code PacketHeader}
    *  
-   * @param type {@code tMessageSubType} of the accompanied message
-   * @param mclass {@code tMessageSubType} used to identify the MessageFactory to be used for deserializing messages
-   *    from the specified type.
+   * @param id the class ID of the packet
+   * @param type the message type. this is an integer which is managed outside of the messenger
    */
-  public MessageHeader(MessageType type, MessageSubType subtype)
+  protected PacketHeader(int id, int type)
   {
-    mType = type;
-    mSubType = subtype;
     mEyeCatcher = cEyeCatcher;
+    mClassId = id;
+    mType    = type;
   }
   
   /***************************************************************************************************************
-   * Constructs a {@code MessageHeader} object from {@code ObjectInputStream}
+   * Constructs a {@code PacketHeader} object from {@code ObjectInputStream}
    * 
    * @param istream the {@code ObjectInputStream}
    * 
    * @throws IOException 
    * @throws ClassNotFoundException 
    */
-  public MessageHeader(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public PacketHeader(ObjectInputStream istream) throws ClassNotFoundException, IOException
   {
-    mType = (MessageType)istream.readObject();
-    mSubType = MessageSubType.fromInt(istream.readInt());
     mEyeCatcher = (String)istream.readObject();
+    mClassId = istream.readInt();
+    mType    = istream.readInt();
   }
   
   /***************************************************************************************************************
-   * Return the {@code MessageType}
-   *  
-   * @return {@code MessageType} of the accompanied message
+   * 
    */
-  public MessageType getMessageType()
+  public void serialize(ObjectOutputStream ostream) throws IOException
   {
-    return mType;
-  }
-  
-  /***************************************************************************************************************
-   * Return the {@code tMessageSubType}
-   *  
-   * @return {@code tMessageSubType} of the accompanied message
-   */
-  public MessageSubType getMessageClass()
-  {
-    return mSubType;
+    ostream.writeObject(mEyeCatcher);
+    ostream.reset();
+    ostream.writeInt(mClassId);
+    ostream.reset();
+    ostream.writeInt(mType);
+    ostream.reset();
   }
   
   /***************************************************************************************************************
@@ -90,7 +87,28 @@ public class MessageHeader extends KasObject implements ISerializable
   }
   
   /***************************************************************************************************************
-   * Verify this {@code MessageHeader} is a valid header.
+   * Return the class ID of the appended packet
+   *  
+   * @return the class ID
+   */
+  public int getClassId()
+  {
+    return mClassId;
+  }
+  
+  /***************************************************************************************************************
+   * Return the type of the appended packet
+   * The type of a packet is used by various factories to determine the specific type of the packet.
+   *  
+   * @return the type
+   */
+  public int getType()
+  {
+    return mType;
+  }
+  
+  /***************************************************************************************************************
+   * Verify this {@code PacketHeader} is a valid header.
    * Verification is done by comparing the eye-catcher.
    * 
    * @return true if this header is valid, false otherwise
@@ -103,27 +121,14 @@ public class MessageHeader extends KasObject implements ISerializable
   /***************************************************************************************************************
    * 
    */
-  public void serialize(ObjectOutputStream ostream) throws IOException
-  {
-    ostream.writeObject(mType);
-    ostream.reset();
-    ostream.writeInt(mSubType.ordinal());
-    ostream.reset();
-    ostream.writeObject(mEyeCatcher);
-    ostream.reset();
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
   public String toPrintableString(int level)
   {
     StringBuffer sb = new StringBuffer();
     sb.append(name())
       .append('(')
-      .append(mType.toString())
+      .append(mClassId)
       .append(':')
-      .append(mSubType.toString())
+      .append(mType)
       .append(')');
     return sb.toString();
   }

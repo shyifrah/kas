@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import com.kas.containers.internal.AbstractCappedContainer;
+import com.kas.containers.internal.ACappedContainer;
 import com.kas.infra.utils.StringUtils;
 
-public class CappedHashMap<K,V> extends AbstractCappedContainer implements Map<K, V>
+public class CappedHashMap<K,V> extends ACappedContainer implements Map<K, V>
 {
   //------------------------------------------------------------------------------------------------------------------
   //

@@ -7,8 +7,8 @@ import java.io.Serializable;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
 import javax.jms.ObjectMessage;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.q.ext.ReadWriteMode;
+import com.kas.q.ext.EMessageType;
+import com.kas.q.ext.EReadWriteMode;
 
 public class KasqObjectMessage extends KasqMessage implements ObjectMessage
 {
@@ -49,12 +49,29 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   }
   
   /***************************************************************************************************************
+   *  
+   */
+  public void serialize(ObjectOutputStream ostream)
+  {
+    super.serialize(ostream);
+    try
+    {
+      ostream.writeObject(mBody);
+      ostream.reset();
+    }
+    catch (Throwable e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  /***************************************************************************************************************
    * 
    */
-  public MessageSubType getMessageSubType()
+  public EMessageType getType()
   {
-    return MessageSubType.cKasqObjectMessage;
-  }
+    return EMessageType.cKasqMessageObject;
+  }  
   
   /***************************************************************************************************************
    *  
@@ -77,27 +94,10 @@ public class KasqObjectMessage extends KasqMessage implements ObjectMessage
   /***************************************************************************************************************
    *  
    */
-  public void serialize(ObjectOutputStream ostream)
-  {
-    super.serialize(ostream);
-    try
-    {
-      ostream.writeObject(mBody);
-      ostream.reset();
-    }
-    catch (Throwable e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public void clearBody() throws JMSException
   {
     mBody = null;
-    mBodyMode = ReadWriteMode.cReadWrite;
+    mBodyMode = EReadWriteMode.cReadWrite;
   }
 
   /***************************************************************************************************************

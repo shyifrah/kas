@@ -6,7 +6,7 @@ import com.kas.containers.CappedContainerProxy;
 import com.kas.containers.CappedContainersFactory;
 import com.kas.containers.CappedHashMap;
 import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.WeakRef;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -15,7 +15,7 @@ import com.kas.q.KasqTopic;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.server.internal.MessagingConfiguration;
 
-public class KasqRepository extends KasObject implements IInitializable
+public class KasqRepository extends AKasObject implements IInitializable
 {
   /***************************************************************************************************************
    * 

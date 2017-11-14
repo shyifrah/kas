@@ -3,11 +3,11 @@ package com.kas.config.impl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.utils.StringUtils;
 
-final public class ConfigTask extends KasObject implements Runnable
+final public class ConfigTask extends AKasObject implements Runnable
 {
   private IMainConfiguration mMainConfig;
   private Map<String, Long>  mMonitoredFilesLastModTimeStampMap;

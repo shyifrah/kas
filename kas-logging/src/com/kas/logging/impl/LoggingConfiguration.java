@@ -1,13 +1,13 @@
 package com.kas.logging.impl;
 
 import java.util.HashSet;
-import com.kas.config.impl.AbstractConfiguration;
+import com.kas.config.impl.AConfiguration;
 import com.kas.config.impl.Constants;
 import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IRegistrar;
 
-public class LoggingConfiguration extends AbstractConfiguration implements IRegistrar
+public class LoggingConfiguration extends AConfiguration implements IRegistrar
 {
   //------------------------------------------------------------------------------------------------------------------
   //

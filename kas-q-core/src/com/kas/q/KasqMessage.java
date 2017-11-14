@@ -8,18 +8,19 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageNotReadableException;
 import javax.jms.MessageNotWriteableException;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.comm.impl.MessageType;
-import com.kas.comm.messages.Message;
+import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.KasException;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.KasqMessageHeader;
+import com.kas.q.ext.EMessageType;
 import com.kas.q.ext.KasqUtils;
-import com.kas.q.ext.ReadWriteMode;
+import com.kas.q.ext.EReadWriteMode;
 
-public class KasqMessage extends Message implements IKasqMessage
+public class KasqMessage extends AKasObject implements IKasqMessage
 {
   /***************************************************************************************************************
    * 
@@ -29,6 +30,8 @@ public class KasqMessage extends Message implements IKasqMessage
   /***************************************************************************************************************
    * 
    */
+  protected UniqueId    mMessageId     = null;
+  protected UniqueId    mCorrelationId = null;
   protected int         mDeliveryMode  = 0;
   protected long        mDeliveryTime  = 0L;
   protected Destination mDestination   = null;
@@ -40,14 +43,17 @@ public class KasqMessage extends Message implements IKasqMessage
   protected String      mType          = null;
   protected Properties  mProperties    = new Properties();
   
-  protected ReadWriteMode  mPropsMode = ReadWriteMode.cReadWrite;
-  protected ReadWriteMode  mBodyMode  = ReadWriteMode.cReadWrite;
+  protected EReadWriteMode  mPropsMode = EReadWriteMode.cReadWrite;
+  protected EReadWriteMode  mBodyMode  = EReadWriteMode.cReadWrite;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqMessage} object, specifying no parameters
+   * This will generate a simple {@code KasqMessage} with a null correlation ID
    */
   public KasqMessage()
   {
+    mMessageId = UniqueId.generate();
+    mCorrelationId = UniqueId.cNullUniqueId;
     mProperties.setBoolProperty(cKasQEyeCatcher, true);
   }
   
@@ -61,9 +67,14 @@ public class KasqMessage extends Message implements IKasqMessage
    */
   public KasqMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
   {
-    super(istream);
-    
     // headers
+    byte [] idBytes = new byte [16];
+    istream.read(idBytes);
+    mMessageId     = UniqueId.fromByteArray(idBytes);
+    
+    istream.read(idBytes);
+    mCorrelationId = UniqueId.fromByteArray(idBytes);     
+    
     mDestination   = (Destination)istream.readObject();
     mReplyTo       = (Destination)istream.readObject();
     mDeliveryMode  = istream.readInt();
@@ -81,31 +92,15 @@ public class KasqMessage extends Message implements IKasqMessage
   /***************************************************************************************************************
    * 
    */
-  public MessageType getMessageType()
-  {
-    return MessageType.cDataMessage;
-  }  
-  
-  /***************************************************************************************************************
-   * Gets the message's class
-   * 
-   * @return The {@code tMessageSubType} of the message
-   */
-  public MessageSubType getMessageSubType()
-  {
-    return MessageSubType.cKasqMessage;
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
   public void serialize(ObjectOutputStream ostream)
   {
     try
     {
-      super.serialize(ostream);
-      
       // headers
+      ostream.write(mMessageId.toByteArray());
+      ostream.reset();
+      ostream.write(mCorrelationId.toByteArray());
+      ostream.reset();
       ostream.writeObject(mDestination);
       ostream.reset();
       ostream.writeObject(mReplyTo);
@@ -134,6 +129,30 @@ public class KasqMessage extends Message implements IKasqMessage
       e.printStackTrace();
       throw new RuntimeException(e);
     }
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public int getPacketClassId()
+  {
+    return PacketHeader.cClassIdKasq;
+  }  
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public EMessageType getType()
+  {
+    return EMessageType.cKasqMessage;
+  }  
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public PacketHeader createHeader()
+  {
+    return new KasqMessageHeader(getType().ordinal());
   }
   
   /***************************************************************************************************************
@@ -493,7 +512,7 @@ public class KasqMessage extends Message implements IKasqMessage
     try
     {
       mProperties.clear();
-      mPropsMode = ReadWriteMode.cReadWrite;
+      mPropsMode = EReadWriteMode.cReadWrite;
     }
     catch (Exception e)
     {
@@ -868,7 +887,7 @@ public class KasqMessage extends Message implements IKasqMessage
    */
   protected void assertBodyReadable() throws JMSException
   {
-    if (mBodyMode == ReadWriteMode.cWriteOnly)
+    if (mBodyMode == EReadWriteMode.cWriteOnly)
       throw new MessageNotReadableException("Message body is in " + mBodyMode.toString() + " mode");
   }
   
@@ -879,7 +898,7 @@ public class KasqMessage extends Message implements IKasqMessage
    */
   protected void assertPropertiesReadable() throws JMSException
   {
-    if (mPropsMode == ReadWriteMode.cWriteOnly)
+    if (mPropsMode == EReadWriteMode.cWriteOnly)
       throw new MessageNotReadableException("Message properties are in " + mBodyMode.toString() + " mode");
   }
   
@@ -890,7 +909,7 @@ public class KasqMessage extends Message implements IKasqMessage
    */
   protected void assertBodyWriteable() throws JMSException
   {
-    if (mBodyMode == ReadWriteMode.cReadOnly)
+    if (mBodyMode == EReadWriteMode.cReadOnly)
       throw new MessageNotWriteableException("Message body is in " + mBodyMode.toString() + " mode");
   }
   
@@ -901,7 +920,7 @@ public class KasqMessage extends Message implements IKasqMessage
    */
   protected void assertPropertiesWriteable() throws JMSException
   {
-    if (mPropsMode == ReadWriteMode.cReadOnly)
+    if (mPropsMode == EReadWriteMode.cReadOnly)
       throw new MessageNotWriteableException("Message properties are in " + mBodyMode.toString() + " mode");
   }
   
@@ -913,7 +932,8 @@ public class KasqMessage extends Message implements IKasqMessage
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(super.toPrintableString(level))
+      .append(pad).append("  MessageId=").append(mMessageId.toString()).append("\n")
+      .append(pad).append("  CorrelationId=").append(mCorrelationId.toString()).append("\n")
       .append(pad).append("  DeliveryMode=").append(KasqUtils.getFormattedDeliveryMode(mDeliveryMode)).append("\n")
       .append(pad).append("  DeliveryTime=").append(mDeliveryTime).append("\n")
       .append(pad).append("  Destination=").append(StringUtils.asString(mDestination)).append("\n")
@@ -923,7 +943,7 @@ public class KasqMessage extends Message implements IKasqMessage
       .append(pad).append("  TimeStamp=").append(mTimestamp).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  Type=").append(mType).append("\n")
-      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

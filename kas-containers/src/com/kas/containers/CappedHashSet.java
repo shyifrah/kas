@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import com.kas.containers.internal.AbstractCappedContainer;
+import com.kas.containers.internal.ACappedContainer;
 import com.kas.infra.utils.StringUtils;
 
-public class CappedHashSet<E> extends AbstractCappedContainer implements Set<E>
+public class CappedHashSet<E> extends ACappedContainer implements Set<E>
 {
   //------------------------------------------------------------------------------------------------------------------
   //

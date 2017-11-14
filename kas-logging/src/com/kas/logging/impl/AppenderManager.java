@@ -1,10 +1,10 @@
 package com.kas.logging.impl;
 
 import java.util.HashMap;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 
-public class AppenderManager extends KasObject
+public class AppenderManager extends AKasObject
 {
   //------------------------------------------------------------------------------------------------------------------
   //

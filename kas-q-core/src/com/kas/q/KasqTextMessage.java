@@ -6,8 +6,8 @@ import java.io.ObjectOutputStream;
 import javax.jms.JMSException;
 import javax.jms.MessageFormatException;
 import javax.jms.TextMessage;
-import com.kas.comm.impl.MessageSubType;
-import com.kas.q.ext.ReadWriteMode;
+import com.kas.q.ext.EMessageType;
+import com.kas.q.ext.EReadWriteMode;
 
 public class KasqTextMessage extends KasqMessage implements TextMessage
 {
@@ -47,12 +47,29 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
   }
   
   /***************************************************************************************************************
+   *  
+   */
+  public void serialize(ObjectOutputStream ostream)
+  {
+    super.serialize(ostream);
+    try
+    {
+      ostream.writeObject(mBody);
+      ostream.reset();
+    }
+    catch (Throwable e)
+    {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  /***************************************************************************************************************
    * 
    */
-  public MessageSubType getMessageSubType()
+  public EMessageType getType()
   {
-    return MessageSubType.cKasqTextMessage;
-  }
+    return EMessageType.cKasqMessageText;
+  }  
   
   /***************************************************************************************************************
    *  
@@ -75,27 +92,10 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
   /***************************************************************************************************************
    *  
    */
-  public void serialize(ObjectOutputStream ostream)
-  {
-    super.serialize(ostream);
-    try
-    {
-      ostream.writeObject(mBody);
-      ostream.reset();
-    }
-    catch (Throwable e)
-    {
-      throw new RuntimeException(e);
-    }
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public void clearBody() throws JMSException
   {
     mBody = null;
-    mBodyMode = ReadWriteMode.cReadWrite;
+    mBodyMode = EReadWriteMode.cReadWrite;
   }
 
   /***************************************************************************************************************

@@ -1,6 +1,6 @@
 package com.kas.logging.impl;
 
-public class FileAppenderConfiguration extends AbstractAppenderConfiguration
+public class FileAppenderConfiguration extends AAppenderConfiguration
 {
   //------------------------------------------------------------------------------------------------------------------
   //

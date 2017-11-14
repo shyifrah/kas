@@ -1,11 +1,11 @@
 package com.kas.logging.impl;
 
 import com.kas.config.MainConfiguration;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IMainConfiguration;
 
-public abstract class AbstractAppenderConfiguration extends KasObject implements IListener
+public abstract class AAppenderConfiguration extends AKasObject implements IListener
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -18,12 +18,12 @@ public abstract class AbstractAppenderConfiguration extends KasObject implements
   protected LoggingConfiguration mLoggingConfig = null;
   protected String   mName;
   protected boolean  mEnabled  = Constants.cDefaultEnabled;
-  protected LogLevel mLogLevel = Constants.cDefaultLogLevel;
+  protected ELogLevel mLogLevel = Constants.cDefaultLogLevel;
   
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public AbstractAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
+  public AAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
     mName = name;
     mLoggingConfig = loggingConfig;
@@ -38,7 +38,7 @@ public abstract class AbstractAppenderConfiguration extends KasObject implements
     String logLevel = sMainConfig.getStringProperty( Constants.cLoggingConfigPrefix + "appender." + mName + ".logLevel", mLogLevel.name());
     
     try {
-      mLogLevel = LogLevel.valueOf(LogLevel.class, logLevel);
+      mLogLevel = ELogLevel.valueOf(ELogLevel.class, logLevel);
     } catch(IllegalArgumentException e) {}
   }
 
@@ -58,7 +58,7 @@ public abstract class AbstractAppenderConfiguration extends KasObject implements
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public LogLevel getLogLevel()
+  public ELogLevel getLogLevel()
   {
     return mLogLevel;
   }

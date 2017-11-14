@@ -7,11 +7,11 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import com.kas.infra.base.ISerializable;
-import com.kas.infra.base.KasObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
-public class Messenger extends KasObject
+public class Messenger extends AKasObject
 {
   public static class Factory
   {
