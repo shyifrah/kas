@@ -82,7 +82,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   {
     if (mInitialized)
     {
-      ThreadPool.remove(mConfigTask);
+      ThreadPool.removeSchedule(mConfigTask);
       
       mConfigTask = null;
       mProperties = null;
