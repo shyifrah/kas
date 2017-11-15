@@ -5,7 +5,6 @@ import javax.jms.Queue;
 import javax.jms.QueueReceiver;
 import javax.jms.QueueSender;
 import javax.jms.QueueSession;
-import com.kas.q.impl.clients.KasqClientsFactory;
 
 public class KasqQueueSession extends KasqSession implements QueueSession
 {
@@ -52,7 +51,7 @@ public class KasqQueueSession extends KasqSession implements QueueSession
    */
   public QueueSender createSender(Queue queue) throws JMSException
   {
-    return KasqClientsFactory.createQueueSender(this, queue);
+    throw new JMSException("Unsupported method: QueueSession.createQueueSender(Queue)");
   }
   
   /***************************************************************************************************************

@@ -101,6 +101,16 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
+   * Returns the connection status.
+   * 
+   * @return true if the connection is started, false otherwise
+   */
+  boolean isStarted()
+  {
+    return mStarted;
+  }
+  
+  /***************************************************************************************************************
    *  
    */
   public Session createSession() throws JMSException

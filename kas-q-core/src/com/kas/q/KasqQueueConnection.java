@@ -44,28 +44,35 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
     super(host, port, userName, password);
   }
 
-  boolean isStarted()
-  {
-    return mStarted;
-  }
-  
-  public String toPrintableString(int level)
-  {
-    return super.toPrintableString(level);
-  }
-
+  /***************************************************************************************************************
+   *  
+   */
   public Session createSession() throws JMSException
   {
     return new KasqSession(this);
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public QueueSession createQueueSession(boolean transacted, int acknowledgeMode) throws JMSException
   {
     return new KasqQueueSession(this, transacted, acknowledgeMode);
   }
 
+  /***************************************************************************************************************
+   *  
+   */
   public ConnectionConsumer createConnectionConsumer(Queue queue, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
   {
     throw new JMSException("Unsupported method: QueueConnection.createConnectionConsumer(Queue, String, ServerSessionPool, int)");
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public String toPrintableString(int level)
+  {
+    return super.toPrintableString(level);
   }
 }

@@ -23,8 +23,10 @@ public class KasqQueueSender extends KasqMessageProducer implements QueueSender
    * 
    * @param session the session associated with this {@code MessageProducer}
    * @param destination a default destination associated with the {@code MessageProducer}
+   * 
+   * @throws JMSException 
    */
-  KasqQueueSender(KasqQueueSession qsession, Queue queue)
+  KasqQueueSender(KasqQueueSession qsession, Queue queue) throws JMSException
   {
     super(qsession, queue);
   }
@@ -60,7 +62,6 @@ public class KasqQueueSender extends KasqMessageProducer implements QueueSender
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Destination=").append(mDestination).append("\n")
       .append(pad).append("  MessageId disabled=").append(mDisableMessageId).append("\n")
@@ -70,7 +71,6 @@ public class KasqQueueSender extends KasqMessageProducer implements QueueSender
       .append(pad).append("  Default TTL=").append(mTimeToLive).append("\n")
       .append(pad).append("  Default DeliveryDelay=").append(mDeliveryDelay).append("\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }
