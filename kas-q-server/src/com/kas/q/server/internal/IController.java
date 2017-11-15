@@ -2,7 +2,7 @@ package com.kas.q.server.internal;
 
 import com.kas.infra.base.IObject;
 
-public interface IHandlerCallback extends IObject
+public interface IController extends IObject
 {
   /***************************************************************************************************************
    * This callback is called whenever a {@code ClientHandler} is started.

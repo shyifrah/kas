@@ -13,6 +13,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.KasqMessageFactory;
+import com.kas.q.server.internal.ClientController;
 import com.kas.q.server.internal.MessagingConfiguration;
 import com.kas.q.server.internal.ShutdownHook;
 
@@ -69,7 +70,7 @@ public class KasqServer extends AKasObject implements IInitializable
   private ILogger                mLogger;
   private ILogger                mConsole;
   private boolean                mShouldStop;
-  private KasqController   mHandlerManager;
+  private ClientController         mController;
   private KasqRepository         mRepository;
   private ServerSocket           mListenSocket;
   private ShutdownHook           mShutdownHook;
@@ -96,7 +97,6 @@ public class KasqServer extends AKasObject implements IInitializable
     mConsole = LoggerFactory.getStdout(this.getClass());
     
     mConfig = new MessagingConfiguration();
-    mHandlerManager = new KasqController();
     mShouldStop = false;
     
     new KasqMessageFactory();
@@ -107,7 +107,7 @@ public class KasqServer extends AKasObject implements IInitializable
    */
   public boolean init() 
   {
-    mLogger.debug("KasqRunner::init() - IN");
+    mLogger.debug("KasqServer::init() - IN");
     
     mLogger.info("KAS/Q initialization in progress...");
     boolean success = true;
@@ -132,7 +132,9 @@ public class KasqServer extends AKasObject implements IInitializable
       success = false;
     }
     
-    mLogger.debug("KasqRunner::init() - OUT, Returns=" + success);
+    mController = new ClientController(mListenSocket);
+    
+    mLogger.debug("KasqServer::init() - OUT, Returns=" + success);
     return success;
   }
   
@@ -141,7 +143,7 @@ public class KasqServer extends AKasObject implements IInitializable
    */
   public boolean term()
   {
-    mLogger.debug("KasqRunner::term() - IN");
+    mLogger.debug("KasqServer::term() - IN");
     
     mConsole.info("KAS/Q termination in progress...");
     
@@ -151,6 +153,8 @@ public class KasqServer extends AKasObject implements IInitializable
       mListenSocket.close();
     }
     catch (Throwable e) {}
+    
+    mController.closeAll();
 
     // terminate the repository
     mRepository.term();
@@ -161,7 +165,7 @@ public class KasqServer extends AKasObject implements IInitializable
     // shutdown the thread pool
     ThreadPool.shutdownNow();
     
-    mLogger.debug("KasqRunner::term() - OUT");
+    mLogger.debug("KasqServer::term() - OUT");
     return true;
   }
   
@@ -173,7 +177,7 @@ public class KasqServer extends AKasObject implements IInitializable
    */
   void run() 
   {
-    mLogger.debug("KasqRunner::run() - IN");
+    mLogger.debug("KasqServer::run() - IN");
     
     TimeStamp tsStarted = new TimeStamp();
     ProductVersion version = new ProductVersion(this.getClass());
@@ -183,6 +187,7 @@ public class KasqServer extends AKasObject implements IInitializable
     logInfoBoth(StringUtils.duplicate("=", msg.length()));
     
     mLogger.trace(MainConfiguration.getInstance().toPrintableString(0));
+    mLogger.trace(toPrintableString(0));
     
     while (!mShouldStop)
     {
@@ -192,7 +197,7 @@ public class KasqServer extends AKasObject implements IInitializable
         Socket socket = mListenSocket.accept();
         logInfoBoth("New connection accepted: " + socket.toString());
         
-        mHandlerManager.newClient(socket);
+        mController.startClient(socket);
       }
       catch (Throwable e)
       {
@@ -200,7 +205,7 @@ public class KasqServer extends AKasObject implements IInitializable
       }
     }
     
-    mLogger.debug("KasqRunner::run() - OUT");
+    mLogger.debug("KasqServer::run() - OUT");
   }
   
   /***************************************************************************************************************
@@ -244,7 +249,7 @@ public class KasqServer extends AKasObject implements IInitializable
     sb.append(name()).append("(\n")
       .append(pad).append("  Configuration=(").append(mConfig.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  Repository=(").append(mRepository.toPrintableString(level+1)).append(")\n")
-      .append(pad).append("  HandlerManager=(").append(mHandlerManager.toPrintableString(level+1)).append(")\n")
+      .append(pad).append("  Controller=(").append(mController.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

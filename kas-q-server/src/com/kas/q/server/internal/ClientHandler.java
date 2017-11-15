@@ -26,7 +26,7 @@ public class ClientHandler extends AKasObject implements Runnable
    * 
    */
   private IMessenger       mMessenger;
-  private IHandlerCallback mCallback;
+  private IController      mController;
   private KasqRepository   mRepository;
   private boolean          mAdminHandler;
   
@@ -34,28 +34,30 @@ public class ClientHandler extends AKasObject implements Runnable
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
    * 
    * @param socket the client socket
-   * @param callback a callback that is invoked upon {@code ClientHandler} start and stop.
+   * @param controller a callback that is invoked upon {@code ClientHandler} start and stop.
    * 
    * @throws IOException if for some reason we fail to wrap the client socket with a {@code Messenger} object 
    */
-  public ClientHandler(Socket socket, IHandlerCallback callback) throws IOException
+  public ClientHandler(Socket socket, IController controller) throws IOException
   {
     mMessenger  = MessengerFactory.create(socket, new KasqMessageFactory());
-    mCallback   = callback;
+    mController = controller;
     mRepository = KasqServer.getInstance().getRepository();
     mAdminHandler = false;
     
-    if (mCallback != null) mCallback.onHandlerStart(this);
+    if (mController != null) mController.onHandlerStart(this);
   }
   
   /***************************************************************************************************************
-   * Gets the {@code ClientHandler}'s {@code Messenger}
-   * 
-   * @return this handler's {@code Messenger} 
+   * Terminate this handler
    */
-  public IMessenger getMessenger()
+  public void term()
   {
-    return mMessenger;
+    try
+    {
+      mMessenger.cleanup();
+    }
+    catch (Throwable e) {}
   }
   
   /***************************************************************************************************************
@@ -100,7 +102,7 @@ public class ClientHandler extends AKasObject implements Runnable
     }
     mMessenger.cleanup();
     
-    if (mCallback != null) mCallback.onHandlerStop(this);
+    if (mController != null) mController.onHandlerStop(this);
     sLogger.debug("ClientHandler::run() - OUT");
   }
   
@@ -196,7 +198,8 @@ public class ClientHandler extends AKasObject implements Runnable
       {
         if (mAdminHandler)
         {
-          mCallback.onShutdownRequest();
+          //mMainThread.interrupt(); --> not working for some reason...
+          mController.onShutdownRequest();
         }
         else
         {
@@ -267,7 +270,7 @@ public class ClientHandler extends AKasObject implements Runnable
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Messenger=(").append(mMessenger.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  Messenger=(").append(mMessenger.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

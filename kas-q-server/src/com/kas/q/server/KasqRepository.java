@@ -96,7 +96,7 @@ public class KasqRepository extends AKasObject implements IInitializable
         qname = queue.getQueueName();
       }
       catch (Throwable e) {}
-      mLogger.debug("KasqRepository::term() - Writting queue contents. Queue=[" + qname + "]; Messages=[" + queue.size() + "]");
+      mLogger.debug("KasqRepository::term() - Writing queue contents. Queue=[" + qname + "]; Messages=[" + queue.size() + "]");
       queue.term();
     }
     
@@ -108,7 +108,7 @@ public class KasqRepository extends AKasObject implements IInitializable
         tname = topic.getTopicName();
       }
       catch (Throwable e) {}
-      mLogger.debug("KasqRepository::term() - Writting topic contents. Topic=[" + tname + "]; Messages=[" + topic.size() + "]");
+      mLogger.debug("KasqRepository::term() - Writing topic contents. Topic=[" + tname + "]; Messages=[" + topic.size() + "]");
       topic.term();
     }
     

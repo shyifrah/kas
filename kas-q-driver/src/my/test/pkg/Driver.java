@@ -78,7 +78,7 @@ public class Driver
         sendTenMessages(sess, queue);
         
         System.out.println("Driver::run() - Waiting 10 seconds before terminating...");
-        sleepForSeconds(10);
+        sleepForSeconds(60);
       }
       catch (JMSException e)
       {

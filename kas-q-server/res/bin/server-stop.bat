@@ -5,17 +5,12 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Arguments
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-set "KAS_QMGR=%~1"
-if "%KAS_QMGR%" == "" (
-  set "KAS_QMGR=qmgr"
-)
-
-set "KAS_HOST=%~2"
+set "KAS_HOST=%~1"
 if "%KAS_HOST%" == "" (
   set "KAS_HOST=localhost"
 )
 
-set "KAS_PORT=%~3"
+set "KAS_PORT=%~2"
 if "%KAS_PORT%" == "" (
   set "KAS_PORT=14560"
 )
@@ -92,7 +87,7 @@ echo ===========================================================================
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Run command
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.messaging.server.QueueManagerShutdown %KAS_QMGR% %KAS_HOST% %KAS_PORT%
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.q.server.KasqShutdown %KAS_HOST% %KAS_PORT%
 
 popd
 exit /b

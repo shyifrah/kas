@@ -1,14 +1,19 @@
 package com.kas.infra.base;
 
 import java.util.List;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 public class ThreadPool
 {
-  private static ScheduledThreadPoolExecutor sExecutor = new ScheduledThreadPoolExecutor(1);
+  private static ScheduledThreadPoolExecutor sExecutor;
+  static {
+    sExecutor = new ScheduledThreadPoolExecutor(1);
+    sExecutor.setMaximumPoolSize(20);
+    sExecutor.setKeepAliveTime(60, TimeUnit.SECONDS);
+    sExecutor.allowCoreThreadTimeOut(true);
+  }
     
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -21,9 +26,9 @@ public class ThreadPool
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public static Future<?> submit(Runnable command)
+  public static void execute(Runnable command)
   {
-    return sExecutor.submit(command);
+    sExecutor.execute(command);
   }
   
   //------------------------------------------------------------------------------------------------------------------
