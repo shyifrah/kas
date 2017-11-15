@@ -1,4 +1,4 @@
-package com.kas.q;
+package com.kas.q.ext;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,9 +13,6 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.ext.IKasqDestination;
-import com.kas.q.ext.IKasqMessage;
-import com.kas.q.ext.KasqMessageFactory;
 
 public abstract class AKasqDestination extends AKasObject implements IKasqDestination
 {

@@ -2,6 +2,7 @@ package com.kas.q;
 
 import javax.jms.JMSException;
 import javax.jms.TemporaryQueue;
+import com.kas.q.ext.AKasqDestination;
 
 public class KasqQueue extends AKasqDestination implements TemporaryQueue
 {

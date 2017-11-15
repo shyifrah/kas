@@ -2,6 +2,7 @@ package com.kas.q;
 
 import javax.jms.JMSException;
 import javax.jms.TemporaryTopic;
+import com.kas.q.ext.AKasqDestination;
 
 public class KasqTopic extends AKasqDestination implements TemporaryTopic
 {

@@ -1,7 +1,5 @@
 package my.test.pkg;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
@@ -10,9 +8,6 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
-import com.kas.q.KasqQueue;
-import com.kas.q.KasqTextMessage;
-import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqClient;
 
 public class Driver

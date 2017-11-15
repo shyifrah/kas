@@ -8,6 +8,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 
 public class KasqMessageConsumer extends AKasObject implements MessageConsumer
@@ -121,7 +122,21 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive() throws JMSException
   {
-    throw new JMSException("Unsupported method: MessageConsumer.receive()");
+    KasqQueue queue = (KasqQueue)mSession.createTemporaryQueue();
+    KasqMessage msg = new KasqMessage();
+    
+    // send a request for message consuming
+    msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Consume);
+    
+    msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
+    msg.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(mDestination.getType()) ? 
+        IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
+    
+    msg.setStringProperty(IKasqConstants.cPropertyMessageSelector, mMessageSelector);
+    msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
+    
+    mSession.internalSend(msg);
+    return queue.get();
   }
 
   /***************************************************************************************************************
