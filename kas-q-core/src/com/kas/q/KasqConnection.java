@@ -230,6 +230,8 @@ public class KasqConnection extends AKasObject implements Connection
       
       authRequest.setStringProperty(IKasqConstants.cPropertyUserName, userName);
       authRequest.setStringProperty(IKasqConstants.cPropertyPassword, password);
+      if (userName.equals("admin"))
+        authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
       
       IPacket response = mMessenger.sendAndReceive(authRequest);
       

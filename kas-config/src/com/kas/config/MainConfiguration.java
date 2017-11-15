@@ -88,6 +88,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
       mProperties = null;
       
       mInitialized = false;
+      
+      ThreadPool.shutdownNow();
     }
     return mInitialized;
   }

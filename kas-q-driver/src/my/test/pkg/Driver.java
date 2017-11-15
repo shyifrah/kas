@@ -72,33 +72,13 @@ public class Driver
         
         Session sess = conn.createSession();
         
-        /*
-        KasqTextMessage textMessage1 = (KasqTextMessage)sess.createTextMessage("shy1");
-        KasqTextMessage textMessage2 = (KasqTextMessage)sess.createTextMessage("shy2");
-        KasqTextMessage textMessage3 = (KasqTextMessage)sess.createTextMessage("shy3");
-        
-        KasqQueue q = new KasqQueue("shyq", "shyQmgr");
-        q.put(textMessage1);
-        q.put(textMessage2);
-        q.put(textMessage3);
-        
-        System.out.println("queue: " + q.toPrintableString(0));
-        
-        IKasqMessage msg = q.get();
-        while (msg != null)
-        {
-          System.out.println("read msg: " + msg.toPrintableString(0));
-          msg = q.get();
-        }
-        */
-        
         Queue queue = sess.createQueue(cQueueName);
         
         
-        sendThreeMessages(sess, queue);
-        //sendThreeMessages(sess, queue);
-        //
-        sleepForSeconds(300);
+        sendTenMessages(sess, queue);
+        
+        System.out.println("Driver::run() - Waiting 10 seconds before terminating...");
+        sleepForSeconds(10);
       }
       catch (JMSException e)
       {
@@ -117,7 +97,7 @@ public class Driver
   //
   //
   //============================================================================================================================================
-  private void sendThreeMessages(Session session, Queue queue) throws JMSException
+  private void sendTenMessages(Session session, Queue queue) throws JMSException
   {
     MessageProducer producer = session.createProducer(queue);
     

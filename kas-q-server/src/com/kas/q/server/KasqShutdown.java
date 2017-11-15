@@ -7,7 +7,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import com.kas.config.MainConfiguration;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqClient;
 
@@ -22,13 +21,16 @@ public class KasqShutdown extends KasqClient
   {
     System.out.println("KAS/Q Terminator started");
     
+    KasqShutdown shutdown = null;
+    
     try
     {
-      MainConfiguration mainConfig = new MainConfiguration();
-      mainConfig.init();
-      
-      KasqShutdown shutdown = null;
-      if (args.length == 2)
+      if (args.length != 2)
+      {
+        System.out.println("Invalid number of arguments");
+        System.out.println("Usage: java -cp <...> com.kas.q.server.KasqShutdown <hostname> <port>");
+      }
+      else
       {
         String host = args[0];
         int    port = -1;
@@ -41,35 +43,43 @@ public class KasqShutdown extends KasqClient
         shutdown = new KasqShutdown(host, port);
         shutdown.init();
         
+        
         shutdown.shutdown();
+        
         
         shutdown.term();
       }
-      
-      mainConfig.term();
     }
-    catch (Throwable e) {}
+    catch (Throwable e)
+    {
+      System.out.println("KAS/Q Terminator ended unexpectedly. Exception caught:");
+      e.printStackTrace();
+    }
+    finally
+    {
+      if (shutdown != null)
+        shutdown.term();
+    }
     
     System.out.println("KAS/Q Terminator ended");
   }
   
   /***************************************************************************************************************
-   * Construct a {@code KasqShutdown} objcet
+   * Construct a {@code KasqShutdown} object
    * 
    * @param host hostname or IP-address of remote KasQ server
    * @param port port number on which the KasQ server listens for new connections
    */
-  
   private KasqShutdown(String host, int port)
   {
     super(host, port);
   }
   
-  //============================================================================================================================================
-  //
-  //
-  //
-  //============================================================================================================================================
+  /***************************************************************************************************************
+   * Shutting down: 
+   * KAS/Q server shutdown is actually a process in which we send a simple message with a specific set
+   * of properties which the KAS/Q server interprets to shutdown itself.
+   */
   private void shutdown() throws JMSException
   {
     String userName = "admin";
@@ -80,6 +90,7 @@ public class KasqShutdown extends KasqClient
     Session           sess    = conn.createSession();
     MessageProducer   prod    = sess.createProducer(null);
     Message           msg     = sess.createMessage();
+    
     msg.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
     msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Shutdown);
     

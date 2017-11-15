@@ -185,7 +185,14 @@ public class ClientHandler extends AKasObject implements Runnable
     if (packet.getPacketClassId() == PacketHeader.cClassIdKasq)
     {
       IKasqMessage request = (IKasqMessage)packet;
-      if (request.getIntProperty(IKasqConstants.cPropertyRequestType) == IKasqConstants.cPropertyRequestType_Shutdown)
+      int requestType = 0;
+      try
+      {
+        requestType = request.getIntProperty(IKasqConstants.cPropertyRequestType);
+      }
+      catch (Throwable e) {}
+      
+      if (requestType == IKasqConstants.cPropertyRequestType_Shutdown)
       {
         if (mAdminHandler)
         {
