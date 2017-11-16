@@ -44,18 +44,14 @@ public class KasqClient extends AKasObject implements IInitializable
       MainConfiguration mainConfig = MainConfiguration.getInstance();
       mainConfig.init();
       if (!mainConfig.isInitialized())
-      {
         return false;
-      }
       
       mLogger = LoggerFactory.getLogger(this.getClass());
       mLogger.info("KasqClient initialized successfully");
       
       boolean verified = verify(mHost, mPort);
       if (!verified)
-      {
         return false;
-      }
       
       mInitialized = true;
     }
@@ -91,9 +87,8 @@ public class KasqClient extends AKasObject implements IInitializable
     if (mInitialized)
     {
       if (mConnectionFactory == null)
-      {
         mConnectionFactory = new KasqConnectionFactory(mHost, mPort);
-      }
+      
       factory = mConnectionFactory;
     }
     return factory;

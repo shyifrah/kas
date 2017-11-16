@@ -59,6 +59,9 @@ public class ThreadPool
   //------------------------------------------------------------------------------------------------------------------
   public static void shutdownNow()
   {
+    sExecutor.purge();
+    sSchedExecutor.purge();
+    
     sExecutor.shutdownNow();
     sSchedExecutor.shutdownNow();
   }

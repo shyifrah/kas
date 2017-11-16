@@ -10,7 +10,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
-import com.kas.q.KasqMessage;
+import com.kas.q.KasqTextMessage;
 import com.kas.q.ext.KasqClient;
 
 public class Driver
@@ -76,11 +76,15 @@ public class Driver
         
         sendTenMessages(sess, queue);
         
+        conn.start();
         System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
         sleepForSeconds(10);
         
-        conn.start();
-        receiveFiveMessages(sess, queue);
+        
+        receiveTenMessages(sess, queue);
+        System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
+        sleepForSeconds(10);
+        conn.close();
       }
       catch (JMSException e)
       {
@@ -116,15 +120,15 @@ public class Driver
   //
   //
   //============================================================================================================================================
-  private void receiveFiveMessages(Session session, Queue queue) throws JMSException
+  private void receiveTenMessages(Session session, Queue queue) throws JMSException
   {
     MessageConsumer consumer = session.createConsumer(queue);
     
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 10; i++)
     {
       Message msg = consumer.receive();
-      KasqMessage kmsg = (KasqMessage)msg;
-      kmsg.toPrintableString();
+      KasqTextMessage kmsg = (KasqTextMessage)msg;
+      System.out.println("Driver::run() - message: " + kmsg.toPrintableString());
     }
   }
   

@@ -192,7 +192,12 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void close() throws JMSException
   {
-    throw new JMSException("Unsupported method: Connection.close()");
+    try
+    {
+      stop();
+      mMessenger.cleanup();
+    }
+    catch (Throwable e) {}
   }
 
   /***************************************************************************************************************
