@@ -6,7 +6,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.ThreadPool;
+import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;

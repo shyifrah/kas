@@ -1,10 +1,7 @@
-package com.kas.infra.base;
+package com.kas.infra.base.threads;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -13,79 +10,15 @@ public class ThreadPool
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private static class WorkQueue extends LinkedBlockingQueue<Runnable>
-  {
-    private static final long serialVersionUID = 1L;
-    
-    private int mMaxSize;
-    WorkQueue(int maxSize)
-    {
-      mMaxSize = maxSize;
-    }
-    
-    public boolean offer(Runnable cmd)
-    {
-      if (size() == mMaxSize)
-        return false;
-      
-      return super.offer(cmd);
-    }
-    
-    public boolean force(Runnable cmd)
-    {
-      return super.offer(cmd);
-    }
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private static class WorkQueueHandler implements RejectedExecutionHandler
-  {
-    public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
-    {
-      WorkQueue q = (WorkQueue)executor.getQueue();
-      q.force(r);
-    }
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private static class NamingThreadFactory implements ThreadFactory
-  {
-    private int mSeq;
-    private String mPrefix;
-    
-    NamingThreadFactory(String pref)
-    {
-      mPrefix = pref;
-      mSeq = 0;
-    }
-    
-    public Thread newThread(Runnable r)
-    {
-      String name;
-      synchronized(this)
-      {
-        ++mSeq;
-        name = mPrefix + "-" + mSeq;
-      }
-      return new Thread(r, name);
-    }
-  }
-   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private static WorkQueueHandler            sHandler;
+  private static ThreadPoolRejectHandler     sHandler;
   private static ThreadPoolExecutor          sExecutor;
   private static ScheduledThreadPoolExecutor sSchedExecutor;
   
-  static {
-    sHandler       = new WorkQueueHandler();
-    sSchedExecutor = new ScheduledThreadPoolExecutor(1, new NamingThreadFactory("KasSchedThread"));
-    sExecutor      = new ThreadPoolExecutor(1, 20, 60, TimeUnit.SECONDS, new WorkQueue(1000), new NamingThreadFactory("KasThread"), sHandler);
+  static
+  {
+    sHandler       = new ThreadPoolRejectHandler();
+    sSchedExecutor = new ScheduledThreadPoolExecutor(1, new KasThreadFactory("KasSchedThread"));
+    sExecutor      = new ThreadPoolExecutor(1, 20, 60, TimeUnit.SECONDS, new ThreadPoolWorkQueue(1000), new KasThreadFactory("KasThread"), sHandler);
     sExecutor.allowCoreThreadTimeOut(true);
   }
   

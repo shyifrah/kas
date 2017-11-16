@@ -7,7 +7,7 @@ import com.kas.config.impl.ConfigTask;
 import com.kas.config.impl.Constants;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
-import com.kas.infra.base.ThreadPool;
+import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.config.IRegistrar;
