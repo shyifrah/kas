@@ -14,6 +14,8 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageHeader;
 import com.kas.q.ext.EMessageType;
@@ -26,6 +28,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    * 
    */
   public static final String cKasQEyeCatcher = "KasQ_EyeCatcher";
+  protected static ILogger   sLogger         = LoggerFactory.getLogger(KasqMessage.class);
   
   /***************************************************************************************************************
    * 

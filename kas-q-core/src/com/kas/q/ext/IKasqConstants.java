@@ -24,6 +24,9 @@ public interface IKasqConstants
   static final int    cPropertyDestinationType_Topic = 2;
   static final String cPropertyMessageSelector= "KasQ_MessageSelector";
   static final String cPropertyNoLocal = "KasQ_NoLocal";
+  static final String cPropertyConsumerQueue   = "KasQ_ConsumerQueue";
+  static final String cPropertyConsumerSession = "KasQ_ConsumerSession";
+  
   
   /*
    * 

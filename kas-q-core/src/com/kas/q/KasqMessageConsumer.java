@@ -76,7 +76,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     mDestination = (IKasqDestination)destination;
     
     if ((messageSelector == null) || (messageSelector.length() == 0))
-      mMessageSelector = null;
+      mMessageSelector = "";
     else
       mMessageSelector = messageSelector;
     
@@ -128,13 +128,20 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     // send a request for message consuming
     msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Consume);
     
+    // message destination
     msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
     msg.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(mDestination.getType()) ? 
         IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
     
+    // filtering criteria
     msg.setStringProperty(IKasqConstants.cPropertyMessageSelector, mMessageSelector);
     msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
     
+    // where to send the consumed message
+    msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, queue.getQueueName());
+    msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.mSessionId.toString());
+    
+    // send the request and await reply
     mSession.internalSend(msg);
     return queue.get();
   }

@@ -17,8 +17,10 @@ import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.base.threads.ThreadPool;
 import com.kas.logging.ILogger;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.ConnectionReceiverTask;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqMessageFactory;
 
@@ -38,8 +40,9 @@ public class KasqConnection extends AKasObject implements Connection
   protected String  mClientId = null;
   
   protected IMessenger mMessenger;
+  protected ConnectionReceiverTask mReceiver;
   
-  private Map<UniqueId, KasqSession> mOpenSessions;
+  private Map<UniqueId, KasqSession> mOpenedSessions;
   
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
@@ -68,7 +71,7 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
-      mOpenSessions = new ConcurrentHashMap<UniqueId, KasqSession>();
+      mOpenedSessions = new ConcurrentHashMap<UniqueId, KasqSession>();
       
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       
@@ -78,6 +81,8 @@ public class KasqConnection extends AKasObject implements Connection
     {
       throw new JMSException("Connection creation failed", e.getMessage());
     }
+    
+    mReceiver = new ConnectionReceiverTask(mMessenger, this);
     
     boolean authenticated = authenticate(userName, password);
     if (!authenticated)
@@ -89,6 +94,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void start()
   {
+    ThreadPool.execute(mReceiver);
     mStarted = true;
   }
 
@@ -98,6 +104,7 @@ public class KasqConnection extends AKasObject implements Connection
   public void stop()
   {
     mStarted = false;
+    ThreadPool.removeTask(mReceiver);
   }
   
   /***************************************************************************************************************
@@ -105,7 +112,7 @@ public class KasqConnection extends AKasObject implements Connection
    * 
    * @return true if the connection is started, false otherwise
    */
-  boolean isStarted()
+  public boolean isStarted()
   {
     return mStarted;
   }
@@ -116,7 +123,7 @@ public class KasqConnection extends AKasObject implements Connection
   public Session createSession() throws JMSException
   {
     KasqSession session = new KasqSession(this);
-    mOpenSessions.put(session.getSessionId(), session);
+    mOpenedSessions.put(session.getSessionId(), session);
     return session;
   }
 
@@ -126,7 +133,7 @@ public class KasqConnection extends AKasObject implements Connection
   public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException
   {
     KasqSession session = new KasqSession(this, transacted, acknowledgeMode);
-    mOpenSessions.put(session.getSessionId(), session);
+    mOpenedSessions.put(session.getSessionId(), session);
     return session;
   }
 
@@ -136,7 +143,7 @@ public class KasqConnection extends AKasObject implements Connection
   public Session createSession(int sessionMode) throws JMSException
   {
     KasqSession session = new KasqSession(this, sessionMode);
-    mOpenSessions.put(session.getSessionId(), session);
+    mOpenedSessions.put(session.getSessionId(), session);
     return session;
   }
 
@@ -221,6 +228,18 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
+   * Get a KasqSession object from the OpenedSessions map
+   * 
+   * @param id the {@code UniqueId} of the session
+   * 
+   * @return the KasqSession with the specified id, or null if not found 
+   */
+  public KasqSession getOpenSession(UniqueId id)
+  {
+    return mOpenedSessions.get(id);
+  }
+  
+  /***************************************************************************************************************
    * Authenticate the caller
    * 
    * @param userName the user name of the caller
@@ -274,7 +293,6 @@ public class KasqConnection extends AKasObject implements Connection
     }
     catch (Throwable e)
     {
-      e.printStackTrace();
       throw new JMSException("Failed to send message", e.getMessage());
     }
   }

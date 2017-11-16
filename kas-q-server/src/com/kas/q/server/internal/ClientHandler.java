@@ -8,6 +8,8 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
@@ -184,7 +186,11 @@ public class ClientHandler extends AKasObject implements Runnable
   {
     sLogger.debug("ClientHandler::process() - IN");
     
-    if (packet.getPacketClassId() == PacketHeader.cClassIdKasq)
+    if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
+    {
+      sLogger.warn("Unknown packet class ID=" + packet.getPacketClassId() + ", Ignoring message");
+    }
+    else
     {
       IKasqMessage request = (IKasqMessage)packet;
       int requestType = 0;
@@ -196,15 +202,14 @@ public class ClientHandler extends AKasObject implements Runnable
       
       if (requestType == IKasqConstants.cPropertyRequestType_Shutdown)
       {
-        if (mAdminHandler)
-        {
-          //mMainThread.interrupt(); --> not working for some reason...
-          mController.onShutdownRequest();
-        }
-        else
-        {
-          sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
-        }
+        sLogger.debug("ClientHandler::process() - Got request class ID=" + requestType + ": Shutdown request");
+        processShutdownRequest();
+      }
+      else
+      if (requestType == IKasqConstants.cPropertyRequestType_Consume)
+      {
+        sLogger.debug("ClientHandler::process() - Got request class ID=" + requestType + ": Consume request");
+        processConsumeRequest(request);
       }
       else
       {
@@ -236,7 +241,8 @@ public class ClientHandler extends AKasObject implements Runnable
    */
   private void put(IKasqDestination destination, IKasqMessage message)
   {
-    sLogger.debug("ClientHandler::process() - message destination is managed by KAS/Q. Name=[" + destination.getFormattedName() + "]");
+    sLogger.debug("ClientHandler::put() - IN");
+    sLogger.debug("ClientHandler::put() - message destination is managed by KAS/Q. Name=[" + destination.getFormattedName() + "]");
     
     String destinationName = destination.getName();
     IKasqDestination destinationFromRepo = mRepository.locate(destinationName);
@@ -246,7 +252,7 @@ public class ClientHandler extends AKasObject implements Runnable
     }
     else
     {
-      sLogger.debug("ClientHandler::process() - Destination is not defined, define it now...");
+      sLogger.debug("ClientHandler::put() - Destination is not defined, define it now...");
       boolean defined = mRepository.defineQueue(destinationName);
       if (defined)
       {
@@ -260,6 +266,121 @@ public class ClientHandler extends AKasObject implements Runnable
         sLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
       }
     }
+    sLogger.debug("ClientHandler::put() - OUT");
+  }
+  
+  /***************************************************************************************************************
+   * Process a shutdown request
+   * 
+   * If the current {@code ClientHandler} is an administrative handler, we call the controller to shutdown
+   * the KAS/Q server. Otherwise, this is an un-authorized request and we deny it. 
+   */
+  private void processShutdownRequest()
+  {
+    sLogger.debug("ClientHandler::processShutdownRequest() - IN");
+    
+    if (mAdminHandler)
+    {
+      //mMainThread.interrupt(); --> not working for some reason...
+      mController.onShutdownRequest();
+    }
+    else
+    {
+      sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
+    }
+    
+    sLogger.debug("ClientHandler::processShutdownRequest() - OUT");
+  }
+  
+  /***************************************************************************************************************
+   * Process a consume request
+   * 
+   * @param request the request message 
+   */
+  private void processConsumeRequest(IKasqMessage request)
+  {
+    sLogger.debug("ClientHandler::processConsumeRequest() - IN");
+    
+    String  destName = null;
+    Integer destType = null;
+    try
+    {
+      destName = request.getStringProperty(IKasqConstants.cPropertyDestinationName);
+      destType = request.getIntProperty(IKasqConstants.cPropertyDestinationType);
+    }
+    catch (Throwable e) {}
+    
+    if ((destName == null) || (destName.length() == 0) || (destType == null))
+    {
+      sLogger.warn("Received consume request from an invalid destination: name=[" + StringUtils.asString(destName) + "], type=[" + StringUtils.asString(destType) + "]");
+      return;
+    }
+    
+    String   originQueue   = null;
+    UniqueId originSession = null;
+    try
+    {
+      originQueue   = request.getStringProperty(IKasqConstants.cPropertyConsumerQueue);
+      String originSessionId = request.getStringProperty(IKasqConstants.cPropertyConsumerSession);
+      originSession = UniqueId.fromString(originSessionId);
+    }
+    catch (Throwable e)
+    {
+      e.printStackTrace();
+    }
+    
+    if ((originQueue == null) || (originQueue.length() == 0) || (originSession == null))
+    {
+      sLogger.warn("Received consume request with invalid consumer details: originSession=[" + StringUtils.asString(originSession) + "], originQueue=[" + StringUtils.asString(originQueue) + "]");
+      return;
+    }
+    
+    //
+    // TODO: use the following message criteria to select the consumed message
+    //
+    // get the filtering criteria
+    //String selector = "";
+    //boolean noLocal = false;
+    //try
+    //{
+    //  selector = request.getStringProperty(IKasqConstants.cPropertyMessageSelector);
+    //  noLocal = request.getBooleanProperty(IKasqConstants.cPropertyNoLocal);
+    //}
+    //catch (Throwable e) {}
+    
+    IKasqMessage message;
+    
+    // now we address the repository and locate the destination
+    if (destType == IKasqConstants.cPropertyDestinationType_Queue)
+    {
+      IKasqDestination dest = mRepository.locateQueue(destName);
+      message = dest.getNoWait();
+    }
+    else
+    {
+      IKasqDestination dest = mRepository.locateTopic(destName);
+      message = dest.getNoWait();
+    }
+    
+    // set consumer location
+    try
+    {
+      message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, originQueue);
+      message.setObjectProperty(IKasqConstants.cPropertyConsumerSession, originSession);
+    }
+    catch (Throwable e) {}
+    
+    try
+    {
+      sLogger.debug("ClientHandler::processConsumeRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
+      mMessenger.send(message);
+    }
+    catch (Throwable e)
+    {
+      sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + originSession.toString() + ". Exception: ", e);
+    }
+    
+    sLogger.debug("ClientHandler::processConsumeRequest() - OUT");
   }
   
   /***************************************************************************************************************

@@ -35,7 +35,8 @@ public class KasqSession extends AKasObject implements Session
   int            mAcknowledgeMode;
   int            mSessionMode;
   UniqueId       mSessionId;
-  private Map<UniqueId, KasqMessageConsumer> mOpenConsumers;
+  private Map<String, KasqQueue> mOpenedQueues;
+  private Map<String, KasqTopic> mOpenedTopics;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
@@ -92,7 +93,8 @@ public class KasqSession extends AKasObject implements Session
     mSessionMode     = sessionMode;
     mSessionId       = UniqueId.generate();
     
-    mOpenConsumers = new ConcurrentHashMap<UniqueId, KasqMessageConsumer>();
+    mOpenedQueues = new ConcurrentHashMap<String, KasqQueue>();
+    mOpenedTopics = new ConcurrentHashMap<String, KasqTopic>();
   }
   
   /***************************************************************************************************************
@@ -244,9 +246,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination) throws JMSException
   {
-    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination);
-    mOpenConsumers.put(consumer.getConsumerId(), consumer);
-    return consumer;
+    return new KasqMessageConsumer(this, destination);
   }
 
   /***************************************************************************************************************
@@ -254,9 +254,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination, String messageSelector) throws JMSException
   {
-    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination, messageSelector);
-    mOpenConsumers.put(consumer.getConsumerId(), consumer);
-    return consumer;
+    return new KasqMessageConsumer(this, destination, messageSelector);
   }
 
   /***************************************************************************************************************
@@ -264,9 +262,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination, String messageSelector, boolean noLocal) throws JMSException
   {
-    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination, messageSelector, noLocal);
-    mOpenConsumers.put(consumer.getConsumerId(), consumer);
-    return consumer;
+    return new KasqMessageConsumer(this, destination, messageSelector, noLocal);
   }
 
   /***************************************************************************************************************
@@ -394,7 +390,7 @@ public class KasqSession extends AKasObject implements Session
   }
   
   /***************************************************************************************************************
-   * Create a queue with the specified name
+   * Create a queue with the specified name and add it to the OpenedQueues map
    * 
    * @param name the name of the queue
    * 
@@ -402,16 +398,21 @@ public class KasqSession extends AKasObject implements Session
    * 
    * @throws JMSException if {@code name} is null
    */
-  private TemporaryQueue internalCreateQueue(String name) throws JMSException
+  private KasqQueue internalCreateQueue(String name) throws JMSException
   {
     if (name == null)
       throw new JMSException("Failed to create queue", "Null name");
     
-    return new KasqQueue(name, "");
+    KasqQueue q = new KasqQueue(name, "");
+    synchronized (mOpenedQueues)
+    {
+      mOpenedQueues.put(name,  q);
+    }
+    return q;
   }
   
   /***************************************************************************************************************
-   * Create a topic with the specified name
+   * Create a topic with the specified name and add it to the OpenedTopics map
    * 
    * @param name the name of the topic
    * 
@@ -419,12 +420,17 @@ public class KasqSession extends AKasObject implements Session
    * 
    * @throws JMSException if {@code name} is null
    */
-  private TemporaryTopic internalCreateTopic(String name) throws JMSException
+  private KasqTopic internalCreateTopic(String name) throws JMSException
   {
     if (name == null)
       throw new JMSException("Failed to create topic", "Null name");
     
-    return new KasqTopic(name, "");
+    KasqTopic t = new KasqTopic(name, "");
+    synchronized (mOpenedTopics)
+    {
+      mOpenedTopics.put(name,  t);
+    }
+    return t;
   }
   
   /***************************************************************************************************************
@@ -440,6 +446,30 @@ public class KasqSession extends AKasObject implements Session
     {
       mConnection.internalSend(message);
     }
+  }
+  
+  /***************************************************************************************************************
+   * Get a KasqQueue object from the OpenedQueues map
+   * 
+   * @param name the name of the queue
+   * 
+   * @return the KasqQueue with the specified name, or null if not found 
+   */
+  public KasqQueue getOpenQueue(String name)
+  {
+    return mOpenedQueues.get(name);
+  }
+  
+  /***************************************************************************************************************
+   * Get a KasqTopic object from the OpenedTopics map
+   * 
+   * @param name the name of the topic
+   * 
+   * @return the KasqTopic with the specified name, or null if not found 
+   */
+  public KasqTopic getOpenTopic(String name)
+  {
+    return mOpenedTopics.get(name);
   }
   
   /***************************************************************************************************************

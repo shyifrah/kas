@@ -3,11 +3,14 @@ package my.test.pkg;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
+import com.kas.q.KasqMessage;
 import com.kas.q.ext.KasqClient;
 
 public class Driver
@@ -66,18 +69,22 @@ public class Driver
         System.out.println("connection created: " + conn.toString());
         
         Session sess = conn.createSession();
+        System.out.println("session created: " + sess.toString());
         
         Queue queue = sess.createQueue(cQueueName);
         
         
         sendTenMessages(sess, queue);
         
-        System.out.println("Driver::run() - Waiting 10 seconds before terminating...");
-        sleepForSeconds(60);
+        System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
+        sleepForSeconds(10);
+        
+        conn.start();
+        receiveFiveMessages(sess, queue);
       }
       catch (JMSException e)
       {
-        System.out.println("Driver::run() - JMSException: ");
+        System.out.println("Driver::run() - Exception caught");
         e.printStackTrace();
       }
       
@@ -98,8 +105,26 @@ public class Driver
     
     for (int i = 0; i < 10; i++)
     {
-      TextMessage msg = session.createTextMessage("shyifrah-" + Integer.toString(i));
+      String text = "shyifrah-" + Integer.toString(i);
+      TextMessage msg = session.createTextMessage(text);
       producer.send(queue, msg);
+    }
+  }
+  
+  //============================================================================================================================================
+  //
+  //
+  //
+  //============================================================================================================================================
+  private void receiveFiveMessages(Session session, Queue queue) throws JMSException
+  {
+    MessageConsumer consumer = session.createConsumer(queue);
+    
+    for (int i = 0; i < 5; i++)
+    {
+      Message msg = consumer.receive();
+      KasqMessage kmsg = (KasqMessage)msg;
+      kmsg.toPrintableString();
     }
   }
   
