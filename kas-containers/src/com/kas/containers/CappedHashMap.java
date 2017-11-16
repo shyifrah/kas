@@ -191,15 +191,15 @@ public class CappedHashMap<K,V> extends ACappedContainer implements Map<K, V>
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  ConfigPath=").append(mPath).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
       .append(pad).append("  Suspended=").append(mSuspended).append("\n")
       .append(pad).append("  Listener=").append(mListener).append("\n")
-      .append(StringUtils.asPrintableString(mHashMap, level + 2)).append("\n")
-      .append(pad).append(")\n");
-    
+      .append(pad).append("  Entries=(\n")
+      .append(StringUtils.asPrintableString(mHashMap, level+2)).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append(")");
     return sb.toString();
   }
 }

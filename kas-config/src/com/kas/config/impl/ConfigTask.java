@@ -72,15 +72,12 @@ final public class ConfigTask extends AKasObject implements Runnable
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  MonitoredFiles=(\n")
-      .append(StringUtils.asPrintableString(mMonitoredFilesLastModTimeStampMap, level + 2)).append("\n")
+      .append(StringUtils.asPrintableString(mMonitoredFilesLastModTimeStampMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

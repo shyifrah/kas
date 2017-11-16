@@ -277,8 +277,8 @@ public class KasqRepository extends AKasObject implements IInitializable
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Queues=(").append(mQueuesMap.toPrintableString(level + 1)).append(")\n")
-      .append(pad).append("  Topics=(").append(mTopicsMap.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  Queues=(").append(mQueuesMap.toPrintableString(level+1)).append(")\n")
+      .append(pad).append("  Topics=(").append(mTopicsMap.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
