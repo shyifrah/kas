@@ -19,6 +19,8 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   protected MessageListener  mMessageListener = null;
   protected boolean          mNoLocal         = false;
   
+  protected KasqQueue        mConsumerQueue   = null;
+  
   private   UniqueId         mConsumerId; 
   
   /***************************************************************************************************************
@@ -75,14 +77,13 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     
     mDestination = (IKasqDestination)destination;
     
-    if ((messageSelector == null) || (messageSelector.length() == 0))
-      mMessageSelector = "";
-    else
-      mMessageSelector = messageSelector;
-    
     mNoLocal = noLocal;
+    mMessageSelector = messageSelector;
+    if (messageSelector == null)
+      mMessageSelector = "";
     
     mConsumerId = UniqueId.generate();
+    mConsumerQueue = (KasqQueue)session.createQueue("KAS.CONSUMER.Q" + mConsumerId.toString());
   }
   
   /***************************************************************************************************************
@@ -122,28 +123,12 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive() throws JMSException
   {
-    KasqQueue queue = (KasqQueue)mSession.createTemporaryQueue();
-    KasqMessage msg = new KasqMessage();
+    KasqMessage msg = internalPrepareReceive();
+    if (msg == null)
+      throw new JMSException("Failed to create a consumption request message");
     
-    // send a request for message consuming
-    msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Consume);
-    
-    // message destination
-    msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
-    msg.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(mDestination.getType()) ? 
-        IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
-    
-    // filtering criteria
-    msg.setStringProperty(IKasqConstants.cPropertyMessageSelector, mMessageSelector);
-    msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
-    
-    // where to send the consumed message
-    msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, queue.getQueueName());
-    msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.mSessionId.toString());
-    
-    // send the request and await reply
     mSession.internalSend(msg);
-    return queue.get();
+    return mConsumerQueue.get();
   }
 
   /***************************************************************************************************************
@@ -151,7 +136,12 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive(long timeout) throws JMSException
   {
-    throw new JMSException("Unsupported method: MessageConsumer.receive(long)");
+    KasqMessage msg = internalPrepareReceive();
+    if (msg == null)
+      throw new JMSException("Failed to create a consumption request message");
+    
+    mSession.internalSend(msg);
+    return mConsumerQueue.getAndWait(timeout);
   }
 
   /***************************************************************************************************************
@@ -159,7 +149,12 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receiveNoWait() throws JMSException
   {
-    throw new JMSException("Unsupported method: MessageConsumer.receiveNoWait()");
+    KasqMessage msg = internalPrepareReceive();
+    if (msg == null)
+      throw new JMSException("Failed to create a consumption request message");
+    
+    mSession.internalSend(msg);
+    return mConsumerQueue.getNoWait();
   }
   
   /***************************************************************************************************************
@@ -170,6 +165,42 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   public UniqueId getConsumerId()
   {
     return mConsumerId;
+  }
+  
+  /***************************************************************************************************************
+   * Prepare for message consumption.
+   * Create a request message for consumption and set all properties needed for consuming a message.
+   * 
+   * @return the consumption request message or null if an error occurred while setting it up
+   * 
+   * @throws JMSException 
+   */
+  public KasqMessage internalPrepareReceive() throws JMSException
+  {
+    KasqMessage msg = null;
+    try
+    {
+      msg = new KasqMessage();
+      
+      // send a request for message consuming
+      msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Consume);
+      
+      // message destination
+      msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
+      msg.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(mDestination.getType()) ? 
+          IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
+      
+      // filtering criteria
+      msg.setStringProperty(IKasqConstants.cPropertyMessageSelector, mMessageSelector);
+      msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
+      
+      // where to send the consumed message
+      msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue.getQueueName());
+      msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.mSessionId);
+    }
+    catch (JMSException e) {}
+    
+    return msg;
   }
   
   /***************************************************************************************************************

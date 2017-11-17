@@ -362,24 +362,27 @@ public class ClientHandler extends AKasObject implements Runnable
       message = dest.getNoWait();
     }
     
-    // set consumer location
-    try
+    if (message != null)
     {
-      message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, originQueue);
-      message.setObjectProperty(IKasqConstants.cPropertyConsumerSession, originSession);
+      // set consumer location
+      try
+      {
+        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, originQueue);
+        message.setObjectProperty(IKasqConstants.cPropertyConsumerSession, originSession);
+      }
+      catch (Throwable e) {}
+      
+      try
+      {
+        sLogger.debug("ClientHandler::processConsumeRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
+        mMessenger.send(message);
+      }
+      catch (Throwable e)
+      {
+        sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + originSession.toString() + ". Exception: ", e);
+      }
     }
-    catch (Throwable e) {}
-    
-    try
-    {
-      sLogger.debug("ClientHandler::processConsumeRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
-      mMessenger.send(message);
-    }
-    catch (Throwable e)
-    {
-      sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + originSession.toString() + ". Exception: ", e);
-    }
-    
+  
     sLogger.debug("ClientHandler::processConsumeRequest() - OUT");
   }
   

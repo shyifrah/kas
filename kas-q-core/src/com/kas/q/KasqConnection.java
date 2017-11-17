@@ -17,10 +17,9 @@ import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.infra.base.threads.ThreadPool;
 import com.kas.logging.ILogger;
 import com.kas.q.ext.IKasqMessage;
-import com.kas.q.ext.ConnectionReceiverTask;
+import com.kas.q.ext.ReceiverTask;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqMessageFactory;
 
@@ -40,9 +39,9 @@ public class KasqConnection extends AKasObject implements Connection
   protected String  mClientId = null;
   
   protected IMessenger mMessenger;
-  protected ConnectionReceiverTask mReceiver;
+  protected ReceiverTask mReceiver;
   
-  private Map<UniqueId, KasqSession> mOpenedSessions;
+  private Map<String, KasqSession> mOpenedSessions;
   
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
@@ -71,10 +70,8 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
-      mOpenedSessions = new ConcurrentHashMap<UniqueId, KasqSession>();
-      
+      mOpenedSessions = new ConcurrentHashMap<String, KasqSession>();
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
-      
       mClientId = "CLNT" + UniqueId.generate().toString();
     }
     catch (Throwable e)
@@ -82,7 +79,7 @@ public class KasqConnection extends AKasObject implements Connection
       throw new JMSException("Connection creation failed", e.getMessage());
     }
     
-    mReceiver = new ConnectionReceiverTask(mMessenger, this);
+    mReceiver = new ReceiverTask(mMessenger, this);
     
     boolean authenticated = authenticate(userName, password);
     if (!authenticated)
@@ -94,7 +91,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void start()
   {
-    ThreadPool.execute(mReceiver);
+    mReceiver.start();
     mStarted = true;
   }
 
@@ -103,8 +100,8 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void stop()
   {
+    mReceiver.interrupt();
     mStarted = false;
-    ThreadPool.removeTask(mReceiver);
   }
   
   /***************************************************************************************************************
@@ -235,11 +232,11 @@ public class KasqConnection extends AKasObject implements Connection
   /***************************************************************************************************************
    * Get a KasqSession object from the OpenedSessions map
    * 
-   * @param id the {@code UniqueId} of the session
+   * @param id the ID of the session
    * 
    * @return the KasqSession with the specified id, or null if not found 
    */
-  public KasqSession getOpenSession(UniqueId id)
+  public KasqSession getOpenSession(String id)
   {
     return mOpenedSessions.get(id);
   }

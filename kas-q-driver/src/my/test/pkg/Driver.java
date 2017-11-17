@@ -66,25 +66,25 @@ public class Driver
       try
       {
         Connection conn = factory.createConnection(userName, password);
-        System.out.println("connection created: " + conn.toString());
+        System.out.println("connection created...: " + conn.toString());
         
         Session sess = conn.createSession();
-        System.out.println("session created: " + sess.toString());
+        System.out.println("session created......: " + sess.toString());
         
         Queue queue = sess.createQueue(cQueueName);
         
+        System.out.println("Driver::run() - Sending messages");
+        sendFiveMessages(sess, queue);
         
-        sendTenMessages(sess, queue);
-        
-        conn.start();
         System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
         sleepForSeconds(10);
         
         
+        conn.start();
+        System.out.println("Driver::run() - Receiving messages");
         receiveTenMessages(sess, queue);
         System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
         sleepForSeconds(10);
-        conn.close();
       }
       catch (JMSException e)
       {
@@ -103,11 +103,11 @@ public class Driver
   //
   //
   //============================================================================================================================================
-  private void sendTenMessages(Session session, Queue queue) throws JMSException
+  private void sendFiveMessages(Session session, Queue queue) throws JMSException
   {
     MessageProducer producer = session.createProducer(queue);
     
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 5; i++)
     {
       String text = "shyifrah-" + Integer.toString(i);
       TextMessage msg = session.createTextMessage(text);

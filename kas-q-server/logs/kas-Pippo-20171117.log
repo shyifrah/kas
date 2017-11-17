@@ -1,0 +1,537 @@
+17-11-2017 19:45:33,945 13584:1 DEBUG [com.kas.q.server.KasqServer] KasqServer::init() - IN
+17-11-2017 19:45:33,946 13584:1 INFO  [com.kas.q.server.KasqServer] KAS/Q initialization in progress...
+17-11-2017 19:45:33,950 13584:1 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::init() - IN
+17-11-2017 19:45:33,951 13584:1 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::define() - IN
+17-11-2017 19:45:33,951 13584:1 INFO  [com.kas.q.server.KasqRepository] Define queue with name=[local.dead] at manager=[qmgr]
+17-11-2017 19:45:33,953 13584:1 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - IN, name=[local.dead]
+17-11-2017 19:45:33,954 13584:1 INFO  [com.kas.q.ext.AKasqDestination] Starting initialization for local.dead
+17-11-2017 19:45:33,954 13584:1 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - Check if backup file exists. Backup file=[D:\Dev\Src\java\kas\kas-q-server/repo/local.dead]...
+17-11-2017 19:45:33,955 13584:1 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - OUT, Returns=true
+17-11-2017 19:45:33,955 13584:1 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::define() - OUT, Returns=true
+17-11-2017 19:45:33,956 13584:1 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::define() - IN
+17-11-2017 19:45:33,956 13584:1 INFO  [com.kas.q.server.KasqRepository] Define queue with name=[local.admin] at manager=[qmgr]
+17-11-2017 19:45:33,956 13584:1 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - IN, name=[local.admin]
+17-11-2017 19:45:33,957 13584:1 INFO  [com.kas.q.ext.AKasqDestination] Starting initialization for local.admin
+17-11-2017 19:45:33,957 13584:1 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - Check if backup file exists. Backup file=[D:\Dev\Src\java\kas\kas-q-server/repo/local.admin]...
+17-11-2017 19:45:33,957 13584:1 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - OUT, Returns=true
+17-11-2017 19:45:33,957 13584:1 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::define() - OUT, Returns=true
+17-11-2017 19:45:33,960 13584:1 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::init() - OUT, Returns=true
+17-11-2017 19:45:33,961 13584:1 DEBUG [com.kas.q.server.KasqServer] KasqServer::init() - OUT, Returns=true
+17-11-2017 19:45:33,961 13584:1 DEBUG [com.kas.q.server.KasqServer] KasqServer::run() - IN
+17-11-2017 19:45:33,964 13584:1 INFO  [com.kas.q.server.KasqServer] KAS/Q qmgr V1-0-2-321 started on 17-11-2017
+17-11-2017 19:45:33,966 13584:1 INFO  [com.kas.q.server.KasqServer] ===========================================
+17-11-2017 19:45:33,967 13584:1 TRACE [com.kas.q.server.KasqServer] <MainConfiguration>(
+  Initialized=true
+  ConfigDir=D:\Dev\Src\java\kas\kas-q-server/conf
+  MonitoringDelay=10000 MilliSeconds
+  MonitoringInterval=15000 MilliSeconds
+  Properties=(<Properties>(
+    kas.logging.appender.file.logLevel=DEBUG
+    kas.q.queueDispatch.interval=10000
+    kas.q.port=14560
+    kas.logging.appender.stderr.enabled=true
+    kas.logging.appender.stdout.enabled=true
+    kas.logging.appender.file.maxWriteErrors=10
+    kas.q.queueDispatch.delay=10000
+    kas.logging.enabled=true
+    kas.logging.appender.file.archive.sizeTestRate=20
+    kas.container.messaging.sessions.map.size=10
+    kas.q.enabled=true
+    kas.logging.appender.file.enabled=true
+    kas.logging.appender.file.flushRate=1
+    kas.logging.appender.stdout.logLevel=DEBUG
+    kas.container.messaging.topics.map.size=200
+    kas.q.managerName=qmgr
+    kas.q.remoteManager.qmgr1.port=14560
+    kas.logging.appender.file.fileNamePattern=kas-%u-%d.log
+    kas.logging.logger.com.kas.appender=file
+    kas.q.remoteManager.qmgr1.host=10.100.102.31
+    kas.container.messaging.queues.map.size=200
+    kas.q.adminq=local.admin
+    kas.q.deadq=local.dead
+    kas.q.remoteManager.qmgr1.xmitq=remote.xmit.qmgr1
+    kas.q.locator.port=14580
+    kas.q.remoteManager.qmgr1.enabled=true
+    kas.config.delay=10000
+    kas.logging.appender.stderr.logLevel=ERROR
+    kas.logging.appender.file.archive.maxFileSizeMb=10
+    kas.config.interval=15000
+    kas.logging.appender.file.archive.maxGenerations=5
+    kas.include=D:\Dev\Src\java\kas\kas-q-server/conf/internal/logging.properties,D:\Dev\Src\java\kas\kas-q-server/conf/internal/messaging.properties,D:\Dev\Src\java\kas\kas-q-server/conf/kas.properties
+  ))
+  ConfigTask=(<ConfigTask>(
+    MonitoredFiles=(
+      D:\Dev\Src\java\kas\kas-q-server/conf/kas.properties=-1
+      D:\Dev\Src\java\kas\kas-q-server/conf/internal/logging.properties=-1
+      D:\Dev\Src\java\kas\kas-q-server/conf/internal/messaging.properties=-1
+    )
+  ))
+  Listeners=(
+    <LoggingConfiguration>
+    <MessagingConfiguration>
+    <ContainersConfiguration>
+  )
+)
+
+17-11-2017 19:45:33,968 13584:1 TRACE [com.kas.q.server.KasqServer] <KasqServer>(
+  Configuration=(<MessagingConfiguration>(
+    Enabled=true
+    Name=qmgr
+    Port=14560
+    DeadQueue=local.dead
+    AdminQueue=local.admin
+    QueueDispatch.Delay=10000 MilliSeconds
+    QueueDispatch.Interval=10000 MilliSeconds
+    Locator.Port=14580
+    RemoteManagers=(
+
+    )
+  ))
+  Repository=(<KasqRepository>(
+    Queues=(<CappedHashMap>(
+      ConfigPath=messaging.queues.map
+      Threshold=200
+      Suspended=false
+      Listener=<CappedContainerProxy>
+      Entries=(
+        local.dead=queue://qmgr/local.dead
+        local.admin=queue://qmgr/local.admin
+      )
+    ))
+    Topics=(<CappedHashMap>(
+      ConfigPath=messaging.topics.map
+      Threshold=200
+      Suspended=false
+      Listener=<CappedContainerProxy>
+      Entries=(
+
+      )
+    ))
+  ))
+  Controller=(<ClientController>(
+    HandlerList=()
+  ))
+)
+17-11-2017 19:45:33,968 13584:1 TRACE [com.kas.q.server.KasqServer] Awaiting client connections...
+17-11-2017 19:45:39,851 13584:1 INFO  [com.kas.q.server.KasqServer] New connection accepted: Socket[addr=/127.0.0.1,port=37160,localport=14560]
+17-11-2017 19:45:39,916 13584:1 DEBUG [com.kas.q.server.internal.ClientController] ClientController::onHandlerStart() - IN
+17-11-2017 19:45:39,917 13584:1 DEBUG [com.kas.q.server.internal.ClientController] ClientController::onHandlerStart() - OUT
+17-11-2017 19:45:39,917 13584:1 TRACE [com.kas.q.server.KasqServer] Awaiting client connections...
+17-11-2017 19:45:39,918 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::run() - IN
+17-11-2017 19:45:39,918 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Handling client connection from: <Messenger>(
+  Host=127.0.0.1
+  Port=37160
+  Connected=true
+)
+
+17-11-2017 19:45:39,919 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::authenticate() - IN
+17-11-2017 19:45:39,987 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::authenticate() - Got a message: <KasqMessage>(
+  MessageId=32d3d2bd-3a36-4809-b2e8-957bb8456923
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_RequestType=1
+    KasQ_UserName=kas
+    KasQ_EyeCatcher=true
+    KasQ_Password=kas
+  ))
+)
+17-11-2017 19:45:40,053 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::authenticate() - Send message: <KasqMessage>(
+  MessageId=bb59e34c-2dca-4df9-8c5d-9dd377e900eb
+  CorrelationId=32d3d2bd-3a36-4809-b2e8-957bb8456923
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_ResponseMessage=
+    KasQ_ResponseCode=0
+    KasQ_EyeCatcher=true
+  ))
+)
+17-11-2017 19:45:40,056 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::authenticate() - OUT, Result=true
+17-11-2017 19:45:40,056 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Awaiting client to send messages..
+17-11-2017 19:45:40,071 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqTextMessage>(
+  MessageId=15e8454f-92b5-499a-ab4d-f5967fe4ec5e
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740062
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_EyeCatcher=true
+  ))
+)
+17-11-2017 19:45:40,071 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:40,072 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - IN
+17-11-2017 19:45:40,072 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - message destination is managed by KAS/Q. Name=[queue:///shy.local.queue]
+17-11-2017 19:45:40,072 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - Destination is not defined, define it now...
+17-11-2017 19:45:40,072 13584:15 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::define() - IN
+17-11-2017 19:45:40,073 13584:15 INFO  [com.kas.q.server.KasqRepository] Define queue with name=[shy.local.queue] at manager=[qmgr]
+17-11-2017 19:45:40,073 13584:15 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - IN, name=[shy.local.queue]
+17-11-2017 19:45:40,073 13584:15 INFO  [com.kas.q.ext.AKasqDestination] Starting initialization for shy.local.queue
+17-11-2017 19:45:40,073 13584:15 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - Check if backup file exists. Backup file=[D:\Dev\Src\java\kas\kas-q-server/repo/shy.local.queue]...
+17-11-2017 19:45:40,073 13584:15 DEBUG [com.kas.q.ext.AKasqDestination] KasqQueue::init() - OUT, Returns=true
+17-11-2017 19:45:40,074 13584:15 DEBUG [com.kas.q.server.KasqRepository] KasqRepository::define() - OUT, Returns=true
+17-11-2017 19:45:40,074 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - OUT
+17-11-2017 19:45:40,074 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:40,075 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqTextMessage>(
+  MessageId=23522d48-f938-407e-a42e-f7528a9fd174
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740069
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_EyeCatcher=true
+  ))
+)
+17-11-2017 19:45:40,076 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:40,076 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - IN
+17-11-2017 19:45:40,076 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - message destination is managed by KAS/Q. Name=[queue:///shy.local.queue]
+17-11-2017 19:45:40,076 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - OUT
+17-11-2017 19:45:40,077 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:40,078 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqTextMessage>(
+  MessageId=5fdd4ee1-38fe-4220-87b7-07a2f7b8261f
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740070
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_EyeCatcher=true
+  ))
+)
+17-11-2017 19:45:40,078 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:40,078 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - IN
+17-11-2017 19:45:40,078 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - message destination is managed by KAS/Q. Name=[queue:///shy.local.queue]
+17-11-2017 19:45:40,079 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - OUT
+17-11-2017 19:45:40,079 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:40,080 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqTextMessage>(
+  MessageId=982003c9-d50a-42a0-886d-64cf9a32a6c6
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740072
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_EyeCatcher=true
+  ))
+)
+17-11-2017 19:45:40,080 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:40,081 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - IN
+17-11-2017 19:45:40,081 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - message destination is managed by KAS/Q. Name=[queue:///shy.local.queue]
+17-11-2017 19:45:40,081 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - OUT
+17-11-2017 19:45:40,081 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:40,083 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqTextMessage>(
+  MessageId=e616df4d-9af3-436d-b27b-f7281d08e0ec
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740073
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_EyeCatcher=true
+  ))
+)
+17-11-2017 19:45:40,083 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:40,084 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - IN
+17-11-2017 19:45:40,084 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - message destination is managed by KAS/Q. Name=[queue:///shy.local.queue]
+17-11-2017 19:45:40,084 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::put() - OUT
+17-11-2017 19:45:40,084 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:50,077 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqMessage>(
+  MessageId=189b77ed-e6ff-4f20-a5b6-937714817c8a
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_DestinationType=1
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+    KasQ_MessageSelector=
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_NoLocal=false
+    KasQ_EyeCatcher=true
+    KasQ_DestinationName=shy.local.queue
+    KasQ_RequestType=3
+  ))
+)
+17-11-2017 19:45:50,079 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:50,079 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - Got request class ID=3: Consume request
+17-11-2017 19:45:50,079 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - IN
+17-11-2017 19:45:50,081 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - Sending to origin consumed message: <KasqTextMessage>(
+  MessageId=15e8454f-92b5-499a-ab4d-f5967fe4ec5e
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740062
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_EyeCatcher=true
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+  ))
+)
+17-11-2017 19:45:50,084 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - OUT
+17-11-2017 19:45:50,084 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:50,088 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqMessage>(
+  MessageId=a1f46399-ee1a-40ce-832d-c772ee393386
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_DestinationType=1
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+    KasQ_MessageSelector=
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_NoLocal=false
+    KasQ_EyeCatcher=true
+    KasQ_DestinationName=shy.local.queue
+    KasQ_RequestType=3
+  ))
+)
+17-11-2017 19:45:50,088 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:50,088 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - Got request class ID=3: Consume request
+17-11-2017 19:45:50,089 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - IN
+17-11-2017 19:45:50,089 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - Sending to origin consumed message: <KasqTextMessage>(
+  MessageId=23522d48-f938-407e-a42e-f7528a9fd174
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740069
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_EyeCatcher=true
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+  ))
+)
+17-11-2017 19:45:50,091 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - OUT
+17-11-2017 19:45:50,091 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:50,092 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqMessage>(
+  MessageId=81e40f69-3599-47e4-8c03-ff96c2246b42
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_DestinationType=1
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+    KasQ_MessageSelector=
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_NoLocal=false
+    KasQ_EyeCatcher=true
+    KasQ_DestinationName=shy.local.queue
+    KasQ_RequestType=3
+  ))
+)
+17-11-2017 19:45:50,093 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:50,093 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - Got request class ID=3: Consume request
+17-11-2017 19:45:50,093 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - IN
+17-11-2017 19:45:50,093 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - Sending to origin consumed message: <KasqTextMessage>(
+  MessageId=5fdd4ee1-38fe-4220-87b7-07a2f7b8261f
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740070
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_EyeCatcher=true
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+  ))
+)
+17-11-2017 19:45:50,095 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - OUT
+17-11-2017 19:45:50,095 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:50,097 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqMessage>(
+  MessageId=e50c4112-4eea-454a-aa2e-0e4e5baaddbb
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_DestinationType=1
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+    KasQ_MessageSelector=
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_NoLocal=false
+    KasQ_EyeCatcher=true
+    KasQ_DestinationName=shy.local.queue
+    KasQ_RequestType=3
+  ))
+)
+17-11-2017 19:45:50,097 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:50,097 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - Got request class ID=3: Consume request
+17-11-2017 19:45:50,097 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - IN
+17-11-2017 19:45:50,098 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - Sending to origin consumed message: <KasqTextMessage>(
+  MessageId=982003c9-d50a-42a0-886d-64cf9a32a6c6
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740072
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_EyeCatcher=true
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+  ))
+)
+17-11-2017 19:45:50,100 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - OUT
+17-11-2017 19:45:50,100 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:50,101 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqMessage>(
+  MessageId=ebb16e41-3871-4d81-afdb-e138f82b5fb2
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_DestinationType=1
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+    KasQ_MessageSelector=
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_NoLocal=false
+    KasQ_EyeCatcher=true
+    KasQ_DestinationName=shy.local.queue
+    KasQ_RequestType=3
+  ))
+)
+17-11-2017 19:45:50,101 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:50,101 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - Got request class ID=3: Consume request
+17-11-2017 19:45:50,102 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - IN
+17-11-2017 19:45:50,102 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - Sending to origin consumed message: <KasqTextMessage>(
+  MessageId=e616df4d-9af3-436d-b27b-f7281d08e0ec
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=PERSISTENT
+  DeliveryTime=0
+  Destination=queue:///shy.local.queue
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=1510940740073
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_EyeCatcher=true
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+  ))
+)
+17-11-2017 19:45:50,104 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - OUT
+17-11-2017 19:45:50,104 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT
+17-11-2017 19:45:50,106 13584:15 TRACE [com.kas.q.server.internal.ClientHandler] Received from client message: <KasqMessage>(
+  MessageId=e47c0cb7-ec8b-417a-bf57-d0ea0d0fe770
+  CorrelationId=00000000-0000-0000-0000-000000000000
+  DeliveryMode=
+  DeliveryTime=0
+  Destination=null
+  ReplyTo=null
+  Redelivered=false
+  Expiration=0
+  TimeStamp=0
+  Priority=0
+  Type=null
+  Properties=(<Properties>(
+    KasQ_DestinationType=1
+    KasQ_ConsumerSession=d1a8be21-f7f4-4ca6-87cb-da133d5a1e72
+    KasQ_MessageSelector=
+    KasQ_ConsumerQueue=KAS.CONSUMER.Q3b5c5e87-d8ee-4d04-9fe0-52a5bbbdb70c
+    KasQ_NoLocal=false
+    KasQ_EyeCatcher=true
+    KasQ_DestinationName=shy.local.queue
+    KasQ_RequestType=3
+  ))
+)
+17-11-2017 19:45:50,106 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - IN
+17-11-2017 19:45:50,106 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - Got request class ID=3: Consume request
+17-11-2017 19:45:50,106 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - IN
+17-11-2017 19:45:50,107 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::processConsumeRequest() - OUT
+17-11-2017 19:45:50,107 13584:15 DEBUG [com.kas.q.server.internal.ClientHandler] ClientHandler::process() - OUT

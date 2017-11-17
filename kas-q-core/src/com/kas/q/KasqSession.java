@@ -34,7 +34,7 @@ public class KasqSession extends AKasObject implements Session
   boolean        mTransacted;
   int            mAcknowledgeMode;
   int            mSessionMode;
-  UniqueId       mSessionId;
+  String         mSessionId;
   private Map<String, KasqQueue> mOpenedQueues;
   private Map<String, KasqTopic> mOpenedTopics;
   
@@ -91,7 +91,7 @@ public class KasqSession extends AKasObject implements Session
     mTransacted      = transacted;
     mAcknowledgeMode = acknowledgeMode;
     mSessionMode     = sessionMode;
-    mSessionId       = UniqueId.generate();
+    mSessionId       = UniqueId.generate().toString();
     
     mOpenedQueues = new ConcurrentHashMap<String, KasqQueue>();
     mOpenedTopics = new ConcurrentHashMap<String, KasqTopic>();
@@ -477,7 +477,7 @@ public class KasqSession extends AKasObject implements Session
    * 
    * @return The session's identifier
    */
-  public UniqueId getSessionId()
+  public String getSessionId()
   {
     return mSessionId;
   }
