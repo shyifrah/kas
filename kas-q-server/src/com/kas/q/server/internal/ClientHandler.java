@@ -8,8 +8,6 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
-import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
@@ -301,39 +299,7 @@ public class ClientHandler extends AKasObject implements Runnable
   {
     sLogger.debug("ClientHandler::processConsumeRequest() - IN");
     
-    String  destName = null;
-    Integer destType = null;
-    try
-    {
-      destName = request.getStringProperty(IKasqConstants.cPropertyDestinationName);
-      destType = request.getIntProperty(IKasqConstants.cPropertyDestinationType);
-    }
-    catch (Throwable e) {}
-    
-    if ((destName == null) || (destName.length() == 0) || (destType == null))
-    {
-      sLogger.warn("Received consume request from an invalid destination: name=[" + StringUtils.asString(destName) + "], type=[" + StringUtils.asString(destType) + "]");
-      return;
-    }
-    
-    String   originQueue   = null;
-    UniqueId originSession = null;
-    try
-    {
-      originQueue   = request.getStringProperty(IKasqConstants.cPropertyConsumerQueue);
-      String originSessionId = request.getStringProperty(IKasqConstants.cPropertyConsumerSession);
-      originSession = UniqueId.fromString(originSessionId);
-    }
-    catch (Throwable e)
-    {
-      e.printStackTrace();
-    }
-    
-    if ((originQueue == null) || (originQueue.length() == 0) || (originSession == null))
-    {
-      sLogger.warn("Received consume request with invalid consumer details: originSession=[" + StringUtils.asString(originSession) + "], originQueue=[" + StringUtils.asString(originQueue) + "]");
-      return;
-    }
+    ConsumeRequest consumeRequest = new ConsumeRequest(request);
     
     //
     // TODO: use the following message criteria to select the consumed message
@@ -351,24 +317,28 @@ public class ClientHandler extends AKasObject implements Runnable
     IKasqMessage message;
     
     // now we address the repository and locate the destination
-    if (destType == IKasqConstants.cPropertyDestinationType_Queue)
+    if (consumeRequest.getDestinationType() == IKasqConstants.cPropertyDestinationType_Queue)
     {
-      IKasqDestination dest = mRepository.locateQueue(destName);
+      IKasqDestination dest = mRepository.locateQueue(consumeRequest.getDestinationName());
       message = dest.getNoWait();
     }
     else
     {
-      IKasqDestination dest = mRepository.locateTopic(destName);
+      IKasqDestination dest = mRepository.locateTopic(consumeRequest.getDestinationName());
       message = dest.getNoWait();
     }
     
-    if (message != null)
+    if (message == null)
+    {
+      deferRequest(consumeRequest);
+    }
+    else
     {
       // set consumer location
       try
       {
-        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, originQueue);
-        message.setObjectProperty(IKasqConstants.cPropertyConsumerSession, originSession);
+        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, consumeRequest.getOriginQueueName());
+        message.setStringProperty(IKasqConstants.cPropertyConsumerSession, consumeRequest.getOriginSessionId());
       }
       catch (Throwable e) {}
       
@@ -379,11 +349,19 @@ public class ClientHandler extends AKasObject implements Runnable
       }
       catch (Throwable e)
       {
-        sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + originSession.toString() + ". Exception: ", e);
+        sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + consumeRequest.getOriginSessionId() + ". Exception: ", e);
       }
     }
   
     sLogger.debug("ClientHandler::processConsumeRequest() - OUT");
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  private void deferRequest(ConsumeRequest request)
+  {
+    
   }
   
   /***************************************************************************************************************
