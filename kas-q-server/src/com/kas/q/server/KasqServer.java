@@ -70,7 +70,7 @@ public class KasqServer extends AKasObject implements IInitializable
   private ILogger                mLogger;
   private ILogger                mConsole;
   private boolean                mShouldStop;
-  private ClientController         mController;
+  private ClientController       mController;
   private KasqRepository         mRepository;
   private ServerSocket           mListenSocket;
   private ShutdownHook           mShutdownHook;
@@ -226,6 +226,16 @@ public class KasqServer extends AKasObject implements IInitializable
   public KasqRepository getRepository()
   {
     return mRepository;
+  }
+  
+  /***************************************************************************************************************
+   * Gets the client controller
+   * 
+   * @return the {@code ClientRepository}
+   */
+  public ClientController getController()
+  {
+    return mController;
   }
   
   /***************************************************************************************************************

@@ -39,7 +39,7 @@ public class ClientController extends AKasObject implements IController
   {
     try
     {
-      ClientHandler handler = new ClientHandler(socket, this);
+      ClientHandler handler = new ClientHandler(socket);
       ThreadPool.execute(handler);
     }
     catch (IOException e)
