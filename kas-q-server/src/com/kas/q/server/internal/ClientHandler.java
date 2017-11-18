@@ -17,6 +17,12 @@ import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
+import com.kas.q.server.req.AuthenticateRequest;
+import com.kas.q.server.req.GetRequest;
+import com.kas.q.server.req.IRequest;
+import com.kas.q.server.req.PutRequest;
+import com.kas.q.server.req.RequestFactory;
+import com.kas.q.server.req.ShutdownRequest;
 
 public class ClientHandler extends AKasObject implements Runnable
 {
@@ -28,7 +34,8 @@ public class ClientHandler extends AKasObject implements Runnable
   private IMessenger       mMessenger;
   private IController      mController;
   private KasqRepository   mRepository;
-  private boolean          mAdminHandler;
+  private boolean          mAuthenticated;
+  //private boolean          mAdminHandler;
   
   /***************************************************************************************************************
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
@@ -43,7 +50,8 @@ public class ClientHandler extends AKasObject implements Runnable
     mMessenger  = MessengerFactory.create(socket, new KasqMessageFactory());
     mController = controller;
     mRepository = KasqServer.getInstance().getRepository();
-    mAdminHandler = false;
+    mAuthenticated = false;
+    //mAdminHandler = false;
     
     if (mController != null) mController.onHandlerStart(this);
   }
@@ -73,23 +81,15 @@ public class ClientHandler extends AKasObject implements Runnable
     
     try
     {
-      boolean auth = authenticate();
-      if (!auth)
+      sLogger.trace("Awaiting client to send messages..");
+      
+      IPacket message = mMessenger.receive();
+      while (message != null)
       {
-        sLogger.trace("Client failed authentication...");
-      }
-      else
-      {
-        sLogger.trace("Awaiting client to send messages..");
-        
-        IPacket message = mMessenger.receive();
-        while (message != null)
-        {
-          sLogger.trace("Received from client message: " + message.toPrintableString(0));
-          process(message);
-        
-          message = mMessenger.receive();
-        }
+        sLogger.trace("Received from client message: " + message.toPrintableString(0));
+        process(message);
+      
+        message = mMessenger.receive();
       }
     }
     catch (IOException e)
@@ -107,66 +107,6 @@ public class ClientHandler extends AKasObject implements Runnable
   }
   
   /***************************************************************************************************************
-   * Authenticate client.
-   *  
-   * @return true if client authenticated successfully, false otherwise
-   * 
-   * @throws IOException 
-   * @throws ClassNotFoundException 
-   */
-  private boolean authenticate() throws JMSException, ClassNotFoundException, IOException
-  {
-    sLogger.debug("ClientHandler::authenticate() - IN");
-    boolean authenticated = false;
-    
-    IPacket packet = mMessenger.receive();
-    sLogger.debug("ClientHandler::authenticate() - Got a message: " + packet.toPrintableString(0));
-    
-    if (packet.getPacketClassId() == PacketHeader.cClassIdKasq)
-    {
-      IKasqMessage request = (IKasqMessage)packet;
-      if (request.getIntProperty(IKasqConstants.cPropertyRequestType) == IKasqConstants.cPropertyRequestType_Authenticate)
-      {
-        String userName = null, password = null;
-        try
-        {
-          userName = request.getStringProperty(IKasqConstants.cPropertyUserName);
-          password = request.getStringProperty(IKasqConstants.cPropertyPassword);
-          mAdminHandler = request.getBooleanProperty(IKasqConstants.cPropertyAdminMessage);
-        }
-        catch (Throwable e) {}
-        
-        IKasqMessage response = new KasqMessage();
-        response.setJMSCorrelationID(request.getJMSMessageID());
-        
-        String msg = "";
-        int   code;
-        if ((userName != null) && (userName.length() > 0) && (password != null))
-        {
-          //
-          // TODO: address some security manager and find out if the credentials are okay
-          //
-          authenticated = true;
-          code = IKasqConstants.cPropertyResponseCode_Okay; 
-        }
-        else
-        {
-          code = IKasqConstants.cPropertyResponseCode_Fail;
-          msg  = "User name or password are incorrect";
-        }
-        
-        response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
-        response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
-        sLogger.debug("ClientHandler::authenticate() - Send message: " + response.toPrintableString(0));
-        mMessenger.send(response);
-      }
-    }
-    
-    sLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
-    return authenticated;
-  }
-  
-  /***************************************************************************************************************
    * Process an incoming {@code IPacket}.
    * 
    * Just like every {@link javax.jms.Message} object, the {@code IPacket} object carries a {@code Destination}
@@ -179,8 +119,9 @@ public class ClientHandler extends AKasObject implements Runnable
    * @param message the {@code IPacket} to be processed.
    * 
    * @throws JMSException if for some reason we fail to get the Destination from the message. 
+   * @throws IOException if the Messenger throws an exception 
    */
-  private void process(IPacket packet) throws JMSException
+  private void process(IPacket packet) throws JMSException, IOException
   {
     sLogger.debug("ClientHandler::process() - IN");
     
@@ -190,81 +131,30 @@ public class ClientHandler extends AKasObject implements Runnable
     }
     else
     {
-      IKasqMessage request = (IKasqMessage)packet;
-      int requestType = 0;
-      try
-      {
-        requestType = request.getIntProperty(IKasqConstants.cPropertyRequestType);
-      }
-      catch (Throwable e) {}
+      IKasqMessage requestMessage = (IKasqMessage)packet;
+      IRequest request = RequestFactory.createRequest(requestMessage);
       
-      if (requestType == IKasqConstants.cPropertyRequestType_Shutdown)
+      switch (request.getRequestType())
       {
-        sLogger.debug("ClientHandler::process() - Got request class ID=" + requestType + ": Shutdown request");
-        processShutdownRequest();
-      }
-      else
-      if (requestType == IKasqConstants.cPropertyRequestType_Consume)
-      {
-        sLogger.debug("ClientHandler::process() - Got request class ID=" + requestType + ": Consume request");
-        processConsumeRequest(request);
-      }
-      else
-      {
-        IKasqDestination kqDestination;
-        if (!(request.getJMSDestination() instanceof IKasqDestination))
-        {
-          sLogger.debug("ClientHandler::process() - message destination is NOT managed by KAS/Q. send to deadq");
-          kqDestination = mRepository.getDeadQueue();
-        }
-        else
-        {
-          kqDestination = (IKasqDestination)request.getJMSDestination();
-        }
-        
-        put(kqDestination, request);
+        case cShutdown:
+          if (mAuthenticated)
+            shutdown((ShutdownRequest)request);
+          break;
+        case cAuthenticate:
+          mAuthenticated = authenticate((AuthenticateRequest)request);
+          break;
+        case cGet:
+          if (mAuthenticated)
+            get((GetRequest)request);
+          break;
+        case cPut:
+          if (mAuthenticated)
+            put((PutRequest)request);
+          break;
       }
     }
     
     sLogger.debug("ClientHandler::process() - OUT");
-  }
-  
-  /***************************************************************************************************************
-   * Put a {@code IKasqMessagee} into a {@code IKasqDestination}
-   * 
-   * @param destination message target
-   * @param message message to put
-   * 
-   * @throws JMSException if for some reason we fail to get the Destination from the message. 
-   */
-  private void put(IKasqDestination destination, IKasqMessage message)
-  {
-    sLogger.debug("ClientHandler::put() - IN");
-    sLogger.debug("ClientHandler::put() - message destination is managed by KAS/Q. Name=[" + destination.getFormattedName() + "]");
-    
-    String destinationName = destination.getName();
-    IKasqDestination destinationFromRepo = mRepository.locate(destinationName);
-    if (destinationFromRepo != null)
-    {
-      destinationFromRepo.put(message);
-    }
-    else
-    {
-      sLogger.debug("ClientHandler::put() - Destination is not defined, define it now...");
-      boolean defined = mRepository.defineQueue(destinationName);
-      if (defined)
-      {
-        destinationFromRepo = mRepository.locate(destinationName);
-        destinationFromRepo.put(message);
-      }
-      else
-      {
-        IKasqDestination deadq = mRepository.getDeadQueue();
-        deadq.put(message);
-        sLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
-      }
-    }
-    sLogger.debug("ClientHandler::put() - OUT");
   }
   
   /***************************************************************************************************************
@@ -273,13 +163,12 @@ public class ClientHandler extends AKasObject implements Runnable
    * If the current {@code ClientHandler} is an administrative handler, we call the controller to shutdown
    * the KAS/Q server. Otherwise, this is an un-authorized request and we deny it. 
    */
-  private void processShutdownRequest()
+  private void shutdown(ShutdownRequest request)
   {
-    sLogger.debug("ClientHandler::processShutdownRequest() - IN");
+    sLogger.debug("ClientHandler::shutdown() - IN");
     
-    if (mAdminHandler)
+    if (request.isAdmin())
     {
-      //mMainThread.interrupt(); --> not working for some reason...
       mController.onShutdownRequest();
     }
     else
@@ -287,19 +176,51 @@ public class ClientHandler extends AKasObject implements Runnable
       sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
     }
     
-    sLogger.debug("ClientHandler::processShutdownRequest() - OUT");
+    sLogger.debug("ClientHandler::shutdown() - OUT");
   }
   
   /***************************************************************************************************************
-   * Process a consume request
+   * Authenticate client
+   *  
+   * @return true if client authenticated successfully, false otherwise
+   * 
+   * @throws IOException 
+   * @throws ClassNotFoundException 
+   */
+  private boolean authenticate(AuthenticateRequest request) throws JMSException, IOException
+  {
+    sLogger.debug("ClientHandler::authenticate() - IN");
+    boolean authenticated = false;
+    
+    //String userName = request.getUserName();
+    //String password = request.getPassword();
+    // TODO: address some security manager and find out if the credentials are okay
+    //       if they are okay, set authenticated to "true" and code to "Fail"
+    //
+    authenticated = true;
+    String msg = "";
+    int code = IKasqConstants.cPropertyResponseCode_Okay;
+    
+    IKasqMessage response = new KasqMessage();
+    response.setJMSCorrelationID(request.getJmsMessageId());
+    response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
+    response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
+    
+    sLogger.debug("ClientHandler::authenticate() - Send message: " + response.toPrintableString(0));
+    mMessenger.send(response);
+    
+    sLogger.debug("ClientHandler::authenticate() - OUT, Result=" + authenticated);
+    return authenticated;
+  }
+  
+  /***************************************************************************************************************
+   * Process a GetRequest
    * 
    * @param request the request message 
    */
-  private void processConsumeRequest(IKasqMessage request)
+  private void get(GetRequest request)
   {
-    sLogger.debug("ClientHandler::processConsumeRequest() - IN");
-    
-    ConsumeRequest consumeRequest = new ConsumeRequest(request);
+    sLogger.debug("ClientHandler::get() - IN");
     
     //
     // TODO: use the following message criteria to select the consumed message
@@ -317,49 +238,92 @@ public class ClientHandler extends AKasObject implements Runnable
     IKasqMessage message;
     
     // now we address the repository and locate the destination
-    if (consumeRequest.getDestinationType() == IKasqConstants.cPropertyDestinationType_Queue)
+    if (request.getDestinationType() == IKasqConstants.cPropertyDestinationType_Queue)
     {
-      IKasqDestination dest = mRepository.locateQueue(consumeRequest.getDestinationName());
+      IKasqDestination dest = mRepository.locateQueue(request.getDestinationName());
       message = dest.getNoWait();
     }
     else
     {
-      IKasqDestination dest = mRepository.locateTopic(consumeRequest.getDestinationName());
+      IKasqDestination dest = mRepository.locateTopic(request.getDestinationName());
       message = dest.getNoWait();
     }
     
     if (message == null)
     {
-      deferRequest(consumeRequest);
+      deferRequest(request);
     }
     else
     {
       // set consumer location
       try
       {
-        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, consumeRequest.getOriginQueueName());
-        message.setStringProperty(IKasqConstants.cPropertyConsumerSession, consumeRequest.getOriginSessionId());
+        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, request.getOriginQueueName());
+        message.setStringProperty(IKasqConstants.cPropertyConsumerSession, request.getOriginSessionId());
       }
       catch (Throwable e) {}
       
       try
       {
-        sLogger.debug("ClientHandler::processConsumeRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
+        sLogger.debug("ClientHandler::get() - Sending to origin consumed message: " + message.toPrintableString(0));
         mMessenger.send(message);
       }
       catch (Throwable e)
       {
-        sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + consumeRequest.getOriginSessionId() + ". Exception: ", e);
+        sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + request.getOriginSessionId() + ". Exception: ", e);
       }
     }
   
-    sLogger.debug("ClientHandler::processConsumeRequest() - OUT");
+    sLogger.debug("ClientHandler::get() - OUT");
+  }
+  
+  /***************************************************************************************************************
+   * Put a {@code IKasqMessagee} into a {@code IKasqDestination}
+   * 
+   * @param destination message target
+   * @param message message to put
+   * 
+   * @throws JMSException if for some reason we fail to get the Destination from the message. 
+   */
+  private void put(PutRequest request)
+  {
+    sLogger.debug("ClientHandler::put() - IN");
+    
+    IKasqDestination kqDestination = request.getDestination();
+    IKasqMessage     kqMessage     = request.getMessage();
+
+    sLogger.debug("ClientHandler::put() - message destination is managed by KAS/Q. Name=[" + kqDestination.getFormattedName() + "]");
+    
+    String destinationName = kqDestination.getName();
+    IKasqDestination destinationFromRepo = mRepository.locate(destinationName);
+    if (destinationFromRepo != null)
+    {
+      destinationFromRepo.put(kqMessage);
+    }
+    else
+    {
+      sLogger.debug("ClientHandler::put() - Destination is not defined, define it now...");
+      boolean defined = mRepository.defineQueue(destinationName);
+      if (defined)
+      {
+        destinationFromRepo = mRepository.locate(destinationName);
+        destinationFromRepo.put(kqMessage);
+      }
+      else
+      {
+        IKasqDestination deadq = mRepository.getDeadQueue();
+        deadq.put(kqMessage);
+        sLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
+      }
+    }
+    
+    sLogger.debug("ClientHandler::put() - OUT");
   }
   
   /***************************************************************************************************************
    *  
    */
-  private void deferRequest(ConsumeRequest request)
+  private void deferRequest(GetRequest request)
   {
     
   }

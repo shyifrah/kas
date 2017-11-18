@@ -1,4 +1,4 @@
-package com.kas.q.server.internal;
+package com.kas.q.server.req;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
@@ -7,12 +7,12 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 
-public class ConsumeRequest extends AKasObject
+public class GetRequest extends AKasObject implements IRequest
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(ConsumeRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(GetRequest.class);
   
   /***************************************************************************************************************
    * 
@@ -23,14 +23,14 @@ public class ConsumeRequest extends AKasObject
   private String  mOriginSessionId;
   
   /***************************************************************************************************************
-   * Construct a {@code ConsumeRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
-   * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the MessageConsumer.
+   * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the client.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  ConsumeRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  GetRequest(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  destName = null;
     Integer destType = null;
@@ -47,44 +47,44 @@ public class ConsumeRequest extends AKasObject
     
     if (destName == null)
     {
-      sLogger.warn("Received consume request with invalid destination: name=[" + StringUtils.asString(destName) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: null destination");
+      sLogger.warn("Received GetRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: null destination name");
     }
     
     if (destName.length() == 0)
     {
-      sLogger.warn("Received consume request with invalid destination: name=[" + StringUtils.asString(destName) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: destination is empty string");
+      sLogger.warn("Received GetRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: destination is empty string");
     }
     
     if (destType == null)
     {
-      sLogger.warn("Received consume request with invalid destination: type=[" + StringUtils.asString(destType) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: null destination type");
+      sLogger.warn("Received GetRequest with invalid destination: type=[" + StringUtils.asString(destType) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: null destination type");
     }
     
     if (originQueue == null)
     {
-      sLogger.warn("Received consume request with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: null origin queue");
+      sLogger.warn("Received GetRequest with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: null origin queue");
     }
     
     if (originQueue.length() == 0)
     {
-      sLogger.warn("Received consume request with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: queue is empty string");
+      sLogger.warn("Received GetRequest with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: queue is empty string");
     }
     
     if (originSession == null)
     {
-      sLogger.warn("Received consume request with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: null origin session");
+      sLogger.warn("Received GetRequest with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: null origin session");
     }
     
     if (originSession.length() == 0)
     {
-      sLogger.warn("Received consume request with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
-      throw new IllegalArgumentException("Invalid MessageConsumer request: session is empty string");
+      sLogger.warn("Received GetRequest with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: session is empty string");
     }
     
     mDestinationName = destName;
@@ -131,6 +131,14 @@ public class ConsumeRequest extends AKasObject
   public String getOriginSessionId()
   {
     return mOriginSessionId;
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public ERequestType getRequestType()
+  {
+    return ERequestType.cGet;
   }
   
   /***************************************************************************************************************

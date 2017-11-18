@@ -276,7 +276,10 @@ public class KasqConnection extends AKasObject implements Connection
         }
       }
     }
-    catch (Throwable e) {}
+    catch (Throwable e)
+    {
+      e.printStackTrace();
+    }
     return result;
   }
   

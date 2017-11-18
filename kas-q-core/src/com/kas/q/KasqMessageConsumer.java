@@ -183,7 +183,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       msg = new KasqMessage();
       
       // send a request for message consuming
-      msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Consume);
+      msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Get);
       
       // message destination
       msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
