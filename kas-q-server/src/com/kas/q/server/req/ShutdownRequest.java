@@ -6,7 +6,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 
-public class ShutdownRequest extends AKasObject implements IRequest
+final public class ShutdownRequest extends AKasObject implements IRequest
 {
   /***************************************************************************************************************
    * 

@@ -2,6 +2,7 @@ package com.kas.comm;
 
 import java.io.ObjectInputStream;
 import java.io.StreamCorruptedException;
+import java.net.SocketTimeoutException;
 
 public interface IPacketFactory
 {
@@ -14,5 +15,5 @@ public interface IPacketFactory
    * 
    * @throws StreamCorruptedException
    */
-  public abstract IPacket createFromStream(ObjectInputStream istream) throws StreamCorruptedException;
+  public abstract IPacket createFromStream(ObjectInputStream istream) throws StreamCorruptedException, SocketTimeoutException;
 }

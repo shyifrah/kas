@@ -438,14 +438,30 @@ public class KasqSession extends AKasObject implements Session
    * 
    * @param message the message to be sent
    * 
-   * @throws JMSException
+   * @throws JMSException if an exception is thrown from the Connection object 
    */
   synchronized void internalSend(IKasqMessage message) throws JMSException
   {
     if (message != null)
-    {
       mConnection.internalSend(message);
-    }
+  }
+  
+  /***************************************************************************************************************
+   * Send a message to the KAS/Q server and get a reply
+   * 
+   * @param message the message to be sent
+   * 
+   * @return the reply
+   * 
+   * @throws JMSException if an exception is thrown from the Connection object
+   */
+  synchronized IKasqMessage internalSendAndReceive(IKasqMessage message) throws JMSException
+  {
+    IKasqMessage reply = null;
+    if (message != null)
+      reply = mConnection.internalSendAndReceive(message);
+    
+    return reply;
   }
   
   /***************************************************************************************************************

@@ -7,7 +7,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 
-public class AuthenticateRequest extends AKasObject implements IRequest
+final public class AuthenticateRequest extends AKasObject implements IRequest
 {
   /***************************************************************************************************************
    * 

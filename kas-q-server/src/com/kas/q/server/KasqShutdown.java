@@ -44,10 +44,8 @@ public class KasqShutdown extends KasqClient
         shutdown.init();
         
         
+        System.out.println("Signal KAS/Q server to shutdown itself...");
         shutdown.shutdown();
-        
-        
-        shutdown.term();
       }
     }
     catch (Throwable e)
@@ -82,6 +80,12 @@ public class KasqShutdown extends KasqClient
    */
   private void shutdown() throws JMSException
   {
+    try
+    {
+      Thread.sleep(10000);
+    }
+    catch (Throwable e) {}
+    
     String userName = "admin";
     String password = "admin";
     
@@ -95,5 +99,11 @@ public class KasqShutdown extends KasqClient
     msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Shutdown);
     
     prod.send(msg);
+    
+    try
+    {
+      Thread.sleep(10000);
+    }
+    catch (Throwable e) {}
   }
 }

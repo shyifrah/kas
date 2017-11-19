@@ -1,0 +1,13 @@
+19-11-2017 12:33:50,064 12624:1 INFO  [com.kas.q.server.KasqShutdown] KasqClient initialized successfully
+19-11-2017 12:33:50,065 12624:1 DEBUG [com.kas.q.server.KasqShutdown] KasqClient::setup() - IN, Host=[localhost]; Port=[14560]
+19-11-2017 12:33:50,066 12624:1 DEBUG [com.kas.q.server.KasqShutdown] KasqClient::setup() - OUT, Result=true
+19-11-2017 12:34:00,273 12624:1 DEBUG [com.kas.comm.impl.Messenger] Messenger::send() - IN
+19-11-2017 12:34:00,281 12624:1 DEBUG [com.kas.comm.impl.Messenger] Messenger::send() - OUT
+19-11-2017 12:34:00,282 12624:1 DEBUG [com.kas.comm.impl.Messenger] Messenger::receive() - IN
+19-11-2017 12:34:00,287 12624:1 DEBUG [com.kas.q.ext.KasqMessageFactory] KasqMessageFactory::createFromStream() - IN
+19-11-2017 12:35:50,861 12624:1 DEBUG [com.kas.q.ext.KasqMessageFactory] KasqMessageFactory::createFromStream() - MessageType=cKasqMessage
+19-11-2017 12:35:50,865 12624:1 DEBUG [com.kas.q.ext.KasqMessageFactory] KasqMessageFactory::createFromStream() - OUT, Result=<KasqMessage>UniqueID:e32efefc-7c27-4adb-86cd-f6911bf96077
+19-11-2017 12:35:50,865 12624:1 DEBUG [com.kas.comm.impl.Messenger] Messenger::receive() - OUT
+19-11-2017 12:36:03,161 12624:1 DEBUG [com.kas.comm.impl.Messenger] Messenger::send() - IN
+19-11-2017 12:36:32,697 12624:1 DEBUG [com.kas.comm.impl.Messenger] Messenger::send() - OUT
+19-11-2017 12:37:32,560 12624:1 INFO  [com.kas.q.server.KasqShutdown] KasqClient terminated

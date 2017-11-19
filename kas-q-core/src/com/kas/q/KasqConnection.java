@@ -284,7 +284,7 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
-   * Send a message to the KAS/Q server by calling the messenger's send() message.
+   * Send a message to the KAS/Q server by calling the messenger's send() method.
    * 
    * @param message the message to be sent
    * 
@@ -300,6 +300,34 @@ public class KasqConnection extends AKasObject implements Connection
     {
       throw new JMSException("Failed to send message", e.getMessage());
     }
+  }
+  
+  /***************************************************************************************************************
+   * Send a message to the KAS/Q server and get a reply by calling the messenger's sendAndReceive() method.
+   * 
+   * @param message the message to be sent
+   * 
+   * @return the reply
+   * 
+   * @throws JMSException if an I/O exception occurs 
+   */
+  synchronized IKasqMessage internalSendAndReceive(IKasqMessage message) throws JMSException
+  {
+    IKasqMessage reply = null;
+    try
+    {
+      IPacket resp = mMessenger.sendAndReceive(message);
+      if (resp.getPacketClassId() != PacketHeader.cClassIdKasq)
+      {
+        throw new JMSException("Invalid reply from KAS/Q server", "Expected packet ID=[" + PacketHeader.cClassIdKasq + "], Actual=[" + resp.getPacketClassId() + "]");
+      }
+      reply = (IKasqMessage)resp;
+    }
+    catch (Throwable e)
+    {
+      throw new JMSException("Failed to send message", e.getMessage());
+    }
+    return reply;
   }
   
   /***************************************************************************************************************

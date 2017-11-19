@@ -226,7 +226,7 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   {
     try
     {
-      internalVerify(destination, message, deliveryMode, priority, timeToLive);
+      internalSetup(destination, message, deliveryMode, priority, timeToLive);
       internalSend(destination, message, deliveryMode, priority, timeToLive);
       
       if (completionListener != null)
@@ -259,7 +259,7 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
    * 
    * @throws JMSException
    */
-  private void internalVerify(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
+  private void internalSetup(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
     if (message == null)
       throw new JMSException("Cannot send a null message");
@@ -310,8 +310,8 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
       message.setJMSTimestamp(timestamp);
     
     message.setJMSDestination(destination);
-    message.setJMSPriority(priority);
     message.setJMSDeliveryMode(deliveryMode);
+    message.setJMSPriority(priority);
     message.setJMSExpiration(timeToLive);
     message.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Put);
     

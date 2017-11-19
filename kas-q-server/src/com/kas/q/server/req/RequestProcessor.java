@@ -10,7 +10,6 @@ import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
-import com.kas.q.server.internal.ClientController;
 import com.kas.q.server.internal.ClientHandler;
 import com.kas.q.server.internal.IController;
 

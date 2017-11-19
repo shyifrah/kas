@@ -8,7 +8,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 
-public class PutRequest extends AKasObject implements IRequest
+final public class PutRequest extends AKasObject implements IRequest
 {
   /***************************************************************************************************************
    * 

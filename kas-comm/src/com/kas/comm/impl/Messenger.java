@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import com.kas.comm.IPacket;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.IMessenger;
@@ -75,43 +76,19 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /***************************************************************************************************************
-   * Get the {@code ObjectOutputStream} that wraps the socket's OutputStream
-   * 
-   * @return the {@code ObjectOutputStream}
-   */
-  public ObjectOutputStream getOutputStream()
-  {
-    return mOutputStream;
-  }
-  
-  /***************************************************************************************************************
-   * Get the {@code ObjectInputStream} that wraps the socket's InputStream
-   * 
-   * @return the {@code ObjectInputStream}
-   */
-  public ObjectInputStream getInputStream()
-  {
-    return mInputStream;
-  }
-  
-  /***************************************************************************************************************
-   * Get the {@code Messenger}'s status.
-   * 
-   * @return the {@code Messenger}'s status
-   */
-  public boolean isConnected()
-  {
-    return mConnected;
-  }
-  
-  /***************************************************************************************************************
    * 
    */
   public void send(IPacket packet) throws IOException
   {
+    sLogger.debug("Messenger::send() - IN");
+    
+    verifyConnected();
+    
     PacketHeader header = packet.createHeader();
     header.serialize(mOutputStream);
     packet.serialize(mOutputStream);
+    
+    sLogger.debug("Messenger::send() - OUT");
   }
 
   /***************************************************************************************************************
@@ -119,9 +96,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public IPacket receive() throws StreamCorruptedException, SocketException
   {
-    mSocket.setSoTimeout(0);
-    IPacket packet = mPacketFactory.createFromStream(mInputStream);
-    return packet;
+    return receive(0);
   }
 
   /***************************************************************************************************************
@@ -129,14 +104,26 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public IPacket receive(int timeout) throws StreamCorruptedException, SocketException
   {
+    sLogger.debug("Messenger::receive() - IN");
+    
+    verifyConnected();
+    
     IPacket packet = null;
     mSocket.setSoTimeout(timeout);
     try
     {
-      packet= mPacketFactory.createFromStream(mInputStream);
+      packet = mPacketFactory.createFromStream(mInputStream);
     }
-    catch (Throwable e) {}
+    catch (SocketTimeoutException e)
+    {
+      sLogger.debug("Messenger::receive() - timeout expired, no packet received");
+    }
+    catch (Throwable e)
+    {
+      e.printStackTrace();
+    }
     
+    sLogger.debug("Messenger::receive() - OUT");
     return packet;
   }
 
@@ -159,19 +146,42 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /***************************************************************************************************************
+   * Verify the messenger's state
+   * 
+   * @throws IllegalStateException if the messenger is not connected
+   */
+  private void verifyConnected() throws IllegalStateException
+  {
+    if (!mConnected)
+      throw new IllegalStateException("Messenger not connected");
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append("Messenger: Address=[")
+      .append(mHost)
+      .append(':')
+      .append(mPort)
+      .append("], Connected=").append(mConnected);
+    return sb.toString();
+  }
+  
+  /***************************************************************************************************************
    * 
    */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Host=").append(mHost).append("\n")
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  Connected=").append(mConnected).append("\n")
       .append(pad).append(")\n");
-    
     return sb.toString();
   }
 }
