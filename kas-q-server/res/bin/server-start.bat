@@ -52,10 +52,16 @@ if "%JAVA_HOME%" == "" (
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 if "%KAS_DEBUG%" == "" (
   set "DEBUG_OPTS="
-) else if "%KAS_DEBUG_SUSPEND%" == "y" (
-  set "DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8567,suspend=y"
 ) else (
-  set "DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8567,suspend=n"
+  if "%KAS_DEBUG_SUSPEND%" == "" (
+    set "KAS_DEBUG_SUSPEND=n"
+  )
+  
+  if "%KAS_DEBUG_PORT%" == "" (
+    set "KAS_DEBUG_PORT=8567"
+  )
+  
+  set "DEBUG_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=!KAS_DEBUG_PORT!,suspend=!KAS_DEBUG_SUSPEND!"
 )
 
 
