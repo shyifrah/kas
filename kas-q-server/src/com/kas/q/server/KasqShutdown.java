@@ -91,6 +91,9 @@ public class KasqShutdown extends KasqClient
     
     ConnectionFactory factory = getFactory();
     Connection        conn    = factory.createConnection(userName, password);
+    
+    sleep(4);
+    
     Session           sess    = conn.createSession();
     MessageProducer   prod    = sess.createProducer(null);
     Message           msg     = sess.createMessage();
@@ -105,5 +108,35 @@ public class KasqShutdown extends KasqClient
     //  Thread.sleep(10000);
     //}
     //catch (Throwable e) {}
+  }
+  
+  private void sleep(int seconds)
+  {
+    boolean stop = false;
+    long startTS = System.currentTimeMillis();
+    do
+    {
+      long millis_to_sleep = seconds * 1000;
+      try
+      {
+        Thread.sleep(millis_to_sleep);
+        stop = true;
+      }
+      catch (InterruptedException e)
+      {
+        long interruptTS = System.currentTimeMillis();
+        long diff = interruptTS - startTS;
+        if (diff >= millis_to_sleep) // sleep time has expired
+        {
+          stop = true;
+        }
+        else
+        {
+          millis_to_sleep = diff;
+        }
+      }
+    }
+    while (!stop);
+    
   }
 }

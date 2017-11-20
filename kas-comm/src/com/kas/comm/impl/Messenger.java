@@ -116,6 +116,13 @@ public class Messenger extends AKasObject implements IMessenger
     }
     catch (SocketTimeoutException e)
     {
+      try
+      {
+        mInputStream.close();
+        mInputStream = new ObjectInputStream(mSocket.getInputStream());
+      }
+      catch (IOException ioe) {}
+      
       sLogger.debug("Messenger::receive() - Timeout expired, no packet received");
     }
     catch (Throwable e)

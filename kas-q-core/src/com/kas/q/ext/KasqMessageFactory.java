@@ -77,7 +77,7 @@ public class KasqMessageFactory implements IPacketFactory
     }
     catch (SocketTimeoutException e)
     {
-      throw e;
+      sLogger.debug("KasqMessageFactory::createFromStream() - Timeout expired");
     }
     catch (IOException e)
     {

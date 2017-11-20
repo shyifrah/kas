@@ -75,7 +75,6 @@ public class PacketHeader extends AKasObject implements ISerializable
     ostream.reset();
     ostream.writeInt(mType);
     ostream.reset();
-    ostream.flush();
   }
   
   /***************************************************************************************************************

@@ -84,7 +84,7 @@ public class ClientHandler extends AKasObject implements Runnable
       while (true)
       {
         sLogger.debug("ClientHandler::run() - Waiting for client packets...");
-        IPacket packet = mMessenger.receive();
+        IPacket packet = mMessenger.receive(1000);
         if (packet == null)
         {
           sLogger.debug("ClientHandler::run() - Got a null packet, going back to wait for a different one...");
