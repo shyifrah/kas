@@ -55,9 +55,13 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public KasqMessage()
   {
+    sLogger.diag("KasqMessage::KasqMessage() - IN");
+    
     mMessageId = UniqueId.generate();
     mCorrelationId = UniqueId.cNullUniqueId;
     mProperties.setBoolProperty(cKasQEyeCatcher, true);
+    
+    sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }
   
   /***************************************************************************************************************
@@ -90,6 +94,8 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     
     // properties
     mProperties    = (Properties)istream.readObject();
+    
+    sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }
   
   /***************************************************************************************************************
@@ -97,6 +103,8 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void serialize(ObjectOutputStream ostream)
   {
+    sLogger.diag("KasqMessage::serialize() - IN");
+    
     try
     {
       // headers
@@ -129,9 +137,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Throwable e)
     {
-      e.printStackTrace();
+      sLogger.diag("KasqMessage::serialize() - Exception caught: ", e);
       throw new RuntimeException(e);
     }
+    
+    sLogger.diag("KasqMessage::serialize() - OUT");
   }
   
   /***************************************************************************************************************

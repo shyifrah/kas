@@ -75,45 +75,63 @@ public class ClientHandler extends AKasObject implements Runnable
   public void run()
   {
     sLogger.debug("ClientHandler::run() - IN");
-    sLogger.trace("Handling client connection from: " + mMessenger.toPrintableString(0));
+    sLogger.trace("Handling client connection from: " + mMessenger.toString());
     
     try
     {
-      sLogger.trace("Awaiting for client requests...");
+      sLogger.trace("Start processing client requests...");
       
       while (true)
       {
-        sLogger.debug("ClientHandler::run() - Waiting for client packet for 1 second...");
-        IPacket packet = mMessenger.receive(1000);
-        sLogger.debug("ClientHandler::run() - received packet: [" + StringUtils.asString(packet) + "]");
+        sLogger.debug("ClientHandler::run() - Waiting for client packets...");
+        IPacket packet = mMessenger.receive();
         if (packet == null)
         {
-          sLogger.debug("ClientHandler::run() - Got a null packet. instead, take a request from the queue...");
-          IRequest request = mRequestQueue.poll();
-          if (request == null)
-          {
-            sLogger.debug("ClientHandler::run() - No requests in queue...");
-          }
-          else
-          {
-            process(request);
-          }
+          sLogger.debug("ClientHandler::run() - Got a null packet, going back to wait for a different one...");
+        }
+        else
+        if  (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
+        {
+          sLogger.debug("ClientHandler::run() - Got a non-KAS/Q packet, ignoring it and going back to wait for a different one...");
         }
         else
         {
-          sLogger.debug("ClientHandler::run() - Got a packet. testing for its class ID: [" + packet.getPacketClassId() + "]");
-          if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
-          {
-            sLogger.warn("Unknown packet class ID=" + packet.getPacketClassId() + ", Ignoring message");
-          }
-          else
-          {
-            IKasqMessage requestMessage = (IKasqMessage)packet;
-            sLogger.debug("ClientHandler::run() - Got a valid KasqMessage: " + requestMessage.toPrintableString(0));
-            IRequest request = RequestFactory.createRequest(requestMessage);
-            mRequestQueue.offer(request);
-          }
+          IRequest request = RequestFactory.createRequest((IKasqMessage)packet);
+          sLogger.debug("ClientHandler::run() - Processing request: " + request.toString());
+          process(request);
         }
+        
+        //sLogger.debug("ClientHandler::run() - Waiting for client packet for 1 second...");
+        //IPacket packet = mMessenger.receive();
+        //sLogger.debug("ClientHandler::run() - received packet: [" + StringUtils.asString(packet) + "]");
+        //if (packet == null)
+        //{
+        //  sLogger.debug("ClientHandler::run() - Got a null packet. instead, take a request from the queue...");
+        //  IRequest request = mRequestQueue.poll();
+        //  if (request == null)
+        //  {
+        //    sLogger.debug("ClientHandler::run() - No requests in queue, wait for packets from stream");
+        //  }
+        //  else
+        //  {
+        //    process(request);
+        //  }
+        //}
+        //else
+        //{
+        //  sLogger.debug("ClientHandler::run() - Got a packet. testing for its class ID: [" + packet.getPacketClassId() + "]");
+        //  if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
+        //  {
+        //    sLogger.warn("Unknown packet class ID=" + packet.getPacketClassId() + ", Ignoring message");
+        //  }
+        //  else
+        //  {
+        //    IKasqMessage requestMessage = (IKasqMessage)packet;
+        //    sLogger.debug("ClientHandler::run() - Got a valid KasqMessage: " + requestMessage.toPrintableString(0));
+        //    IRequest request = RequestFactory.createRequest(requestMessage);
+        //    mRequestQueue.offer(request);
+        //  }
+        //}
       }
     }
     catch (IOException e)
@@ -122,7 +140,7 @@ public class ClientHandler extends AKasObject implements Runnable
     }
     catch (Throwable e)
     {
-      sLogger.trace("Exception caught while trying to process message from client. ", e);
+      sLogger.trace("Exception caught while trying to process message from client: ", e);
     }
     mMessenger.cleanup();
     

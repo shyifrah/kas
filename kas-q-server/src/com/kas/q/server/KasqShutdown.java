@@ -80,12 +80,12 @@ public class KasqShutdown extends KasqClient
    */
   private void shutdown() throws JMSException
   {
-    try
-    {
-      Thread.sleep(10000);
-    }
-    catch (Throwable e) {}
-    
+    //try
+    //{
+    //  Thread.sleep(10000);
+    //}
+    //catch (Throwable e) {}
+    //
     String userName = "admin";
     String password = "admin";
     
@@ -100,10 +100,10 @@ public class KasqShutdown extends KasqClient
     
     prod.send(msg);
     
-    try
-    {
-      Thread.sleep(10000);
-    }
-    catch (Throwable e) {}
+    //try
+    //{
+    //  Thread.sleep(10000);
+    //}
+    //catch (Throwable e) {}
   }
 }

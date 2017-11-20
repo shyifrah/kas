@@ -85,11 +85,31 @@ final public class PutRequest extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append(name())
+      .append("(InDest=").append(mDestination.getName()).append(")");
+    return sb.toString();
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
+    String msgId = "unknown";
+    try
+    {
+      msgId = mMessage.getJMSMessageID();
+    }
+    catch (Throwable e) {}
+    
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
+      .append(pad).append("  MessageId=").append(msgId).append("\n")
+      .append(pad).append("  Destination=").append(mDestination.getName()).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

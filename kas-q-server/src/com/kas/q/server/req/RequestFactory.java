@@ -25,10 +25,6 @@ public class RequestFactory
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
           request = new GetRequest(message);
           break;
-        case cPut:
-          sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
-          request = new PutRequest(message);
-          break;
         case cAuthenticate:
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
           request = new AuthenticateRequest(message);
@@ -37,7 +33,10 @@ public class RequestFactory
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
           request = new ShutdownRequest(message);
           break;
+        case cPut:
         default:
+          sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
+          request = new PutRequest(message);
           break;
       }
     }

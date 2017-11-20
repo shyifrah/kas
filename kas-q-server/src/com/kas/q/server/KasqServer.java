@@ -201,6 +201,7 @@ public class KasqServer extends AKasObject implements IInitializable
       }
       catch (Throwable e)
       {
+        logInfoBoth("Server socket was closed. Terminating...");
         mShouldStop = true;
       }
     }

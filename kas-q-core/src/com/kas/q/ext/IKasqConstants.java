@@ -4,9 +4,9 @@ public interface IKasqConstants
 {
   static final String cKasqEyeCatcher      = "KasQ_EyeCatcher";
   
-  static final String cPropertyResponseMessage   = "KasQ_ResponseMessage";
+  static final String cPropertyResponseMessage = "KasQ_ResponseMessage";
   
-  static final String cPropertyResponseCode      = "KasQ_ResponseCode";
+  static final String cPropertyResponseCode = "KasQ_ResponseCode";
   static final int    cPropertyResponseCode_Okay = 0;
   static final int    cPropertyResponseCode_Fail = -1;
   

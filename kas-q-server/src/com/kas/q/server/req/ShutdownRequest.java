@@ -65,6 +65,17 @@ final public class ShutdownRequest extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append(name())
+      .append("(ByAdmin=").append(mAdmin).append(")");
+    return sb.toString();
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

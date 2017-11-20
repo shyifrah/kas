@@ -144,6 +144,17 @@ final public class GetRequest extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append(name())
+      .append("(FromDest=").append(mDestinationType == 1 ? "queue:///" : "topic:///").append(mDestinationName).append(")");
+    return sb.toString();
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

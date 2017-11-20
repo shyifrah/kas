@@ -2,6 +2,7 @@ package com.kas.infra.utils;
 
 import java.util.Collection;
 import java.util.Map;
+import com.kas.infra.base.IObject;
 
 public class StringUtils
 {
@@ -18,6 +19,18 @@ public class StringUtils
   }
   
   /***************************************************************************************************************
+   * Return IObject's toPrintableString() value, or "null" if object is null
+   * 
+   * @param obj the IObject
+   * 
+   * @return IObject's toPrintableString() value, or "null"
+   */
+  public static String asPrintableString(IObject obj)
+  {
+    return (obj == null ? "null" : obj.toPrintableString(0));
+  }
+  
+  /***************************************************************************************************************
    * Return a "key=value" string for a map entry
    * 
    * @param key entry's key
@@ -28,11 +41,9 @@ public class StringUtils
   public static String asString(Object key, Object value)
   {
     StringBuilder sb = new StringBuilder();
-    
     sb.append(asString(key));
     sb.append("=");
     sb.append(asString(value));
-    
     return sb.toString();
   }
   

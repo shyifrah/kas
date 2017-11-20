@@ -138,6 +138,18 @@ final public class AuthenticateRequest extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer();
+    sb.append(name())
+      .append("(UserName=").append(mUserName)
+      .append(" Password=").append(mPassword).append(")");
+    return sb.toString();
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

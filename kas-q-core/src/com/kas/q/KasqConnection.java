@@ -18,6 +18,7 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.ReceiverTask;
 import com.kas.q.ext.IKasqConstants;
@@ -34,7 +35,11 @@ public class KasqConnection extends AKasObject implements Connection
   /***************************************************************************************************************
    *  
    */
-  protected ILogger mLogger;
+  private static ILogger sLogger = LoggerFactory.getLogger(KasqConnection.class);
+  
+  /***************************************************************************************************************
+   *  
+   */
   protected boolean mStarted  = false;
   protected String  mClientId = null;
   
@@ -68,6 +73,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   KasqConnection(String host, int port, String userName, String password) throws JMSException
   {
+    sLogger.debug("KasqConnection::KasqConnection() - IN");
     try
     {
       mOpenedSessions = new ConcurrentHashMap<String, KasqSession>();
@@ -84,6 +90,8 @@ public class KasqConnection extends AKasObject implements Connection
     boolean authenticated = authenticate(userName, password);
     if (!authenticated)
       throw new JMSException("Authentication failed");
+    
+    sLogger.debug("KasqConnection::KasqConnection() - OUT");
   }
   
   /***************************************************************************************************************
@@ -91,8 +99,10 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void start()
   {
+    sLogger.debug("KasqConnection::start() - IN");
     mReceiver.start();
     mStarted = true;
+    sLogger.debug("KasqConnection::start() - OUT");
   }
 
   /***************************************************************************************************************
@@ -100,8 +110,10 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void stop()
   {
+    sLogger.debug("KasqConnection::stop() - IN");
     mReceiver.interrupt();
     mStarted = false;
+    sLogger.debug("KasqConnection::stop() - OUT");
   }
   
   /***************************************************************************************************************
@@ -253,6 +265,8 @@ public class KasqConnection extends AKasObject implements Connection
    */
   private boolean authenticate(String userName, String password) throws JMSException
   {
+    sLogger.debug("KasqConnection::authenticate() - IN");
+    
     boolean result = false;
     try
     {
@@ -264,8 +278,8 @@ public class KasqConnection extends AKasObject implements Connection
       if (userName.equals("admin"))
         authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
       
+      sLogger.debug("KasqConnection::authenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
       IPacket response = mMessenger.sendAndReceive(authRequest);
-      
       if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
       {
         IKasqMessage authResponse = (IKasqMessage)response;
@@ -278,8 +292,10 @@ public class KasqConnection extends AKasObject implements Connection
     }
     catch (Throwable e)
     {
-      e.printStackTrace();
+      sLogger.debug("KasqConnection::authenticate() - Exception caught: ", e);
     }
+    
+    sLogger.debug("KasqConnection::authenticate() - OUT, Result=" + result);
     return result;
   }
   

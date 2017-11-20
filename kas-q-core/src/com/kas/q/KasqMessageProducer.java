@@ -313,7 +313,6 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
     message.setJMSDeliveryMode(deliveryMode);
     message.setJMSPriority(priority);
     message.setJMSExpiration(timeToLive);
-    message.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Put);
     
     boolean eyeCatcher = message.getBooleanProperty(KasqMessage.cKasQEyeCatcher);
     if (eyeCatcher)

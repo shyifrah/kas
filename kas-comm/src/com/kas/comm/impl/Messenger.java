@@ -116,17 +116,17 @@ public class Messenger extends AKasObject implements IMessenger
     }
     catch (SocketTimeoutException e)
     {
-      sLogger.debug("Messenger::receive() - timeout expired, no packet received");
+      sLogger.debug("Messenger::receive() - Timeout expired, no packet received");
     }
     catch (Throwable e)
     {
-      e.printStackTrace();
+      sLogger.error("Messenger::receive() - Exception caught: ", e);
     }
     
     sLogger.debug("Messenger::receive() - OUT");
     return packet;
   }
-
+  
   /***************************************************************************************************************
    * 
    */

@@ -72,7 +72,6 @@ public class KasqMessageFactory implements IPacketFactory
     }
     catch (ClassNotFoundException e)
     {
-      e.printStackTrace();
       sLogger.debug("KasqMessageFactory::createFromStream() - Exception caught: ", e);
       throw new StreamCorruptedException("ClassNotFoundException caught, Message: " + e.getMessage());
     }
@@ -82,12 +81,11 @@ public class KasqMessageFactory implements IPacketFactory
     }
     catch (IOException e)
     {
-      e.printStackTrace();
       sLogger.debug("KasqMessageFactory::createFromStream() - Exception caught: ", e);
       throw new StreamCorruptedException("IOException caught, Message: " + e.getMessage());
     }
     
-    sLogger.debug("KasqMessageFactory::createFromStream() - OUT, Result=" + StringUtils.asString(message));
+    sLogger.debug("KasqMessageFactory::createFromStream() - OUT, Result=" + StringUtils.asPrintableString(message));
     return message;
   }
 }
