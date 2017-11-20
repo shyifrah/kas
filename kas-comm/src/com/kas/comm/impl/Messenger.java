@@ -116,13 +116,6 @@ public class Messenger extends AKasObject implements IMessenger
     }
     catch (SocketTimeoutException e)
     {
-      try
-      {
-        mInputStream.close();
-        mInputStream = new ObjectInputStream(mSocket.getInputStream());
-      }
-      catch (IOException ioe) {}
-      
       sLogger.debug("Messenger::receive() - Timeout expired, no packet received");
     }
     catch (Throwable e)
@@ -169,11 +162,12 @@ public class Messenger extends AKasObject implements IMessenger
   public String toString()
   {
     StringBuffer sb = new StringBuffer();
-    sb.append("Messenger: Address=[")
+    sb.append(name())
+      .append("(Address=[")
       .append(mHost)
       .append(':')
       .append(mPort)
-      .append("], Connected=").append(mConnected);
+      .append("])");
     return sb.toString();
   }
   

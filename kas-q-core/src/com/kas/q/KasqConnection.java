@@ -43,6 +43,11 @@ public class KasqConnection extends AKasObject implements Connection
   protected boolean mStarted  = false;
   protected String  mClientId = null;
   
+  protected String mUserName = null;
+  protected String mPassword = null;
+  
+  protected boolean mPriviliged = false;
+  
   protected IMessenger mMessenger;
   protected ReceiverTask mReceiver;
   
@@ -79,6 +84,9 @@ public class KasqConnection extends AKasObject implements Connection
       mOpenedSessions = new ConcurrentHashMap<String, KasqSession>();
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       mClientId = "CLNT" + UniqueId.generate().toString();
+      
+      mUserName = userName;
+      mPassword = password;
     }
     catch (Throwable e)
     {
@@ -275,8 +283,11 @@ public class KasqConnection extends AKasObject implements Connection
       
       authRequest.setStringProperty(IKasqConstants.cPropertyUserName, userName);
       authRequest.setStringProperty(IKasqConstants.cPropertyPassword, password);
+      
+      boolean admin = false;
       if (userName.equals("admin"))
-        authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
+        admin = true;
+      authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, admin);
       
       sLogger.debug("KasqConnection::authenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
       IPacket response = mMessenger.sendAndReceive(authRequest);
@@ -287,6 +298,7 @@ public class KasqConnection extends AKasObject implements Connection
         if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
         {
           result = true;
+          mPriviliged = admin;
         }
       }
     }
@@ -296,6 +308,43 @@ public class KasqConnection extends AKasObject implements Connection
     }
     
     sLogger.debug("KasqConnection::authenticate() - OUT, Result=" + result);
+    return result;
+  }
+  
+  /***************************************************************************************************************
+   * Shutdown KAS/Q server
+   * 
+   * @param message the request message sent by the {@code MessageProducer}
+   * 
+   * @return true if shutdown request accepted by KAS/Q server, false otherwise
+   * 
+   * @throws JMSException 
+   */
+  private boolean halt(IKasqMessage haltMessage) throws JMSException
+  {
+    sLogger.debug("KasqConnection::halt() - IN");
+    
+    boolean result = false;
+    try
+    {
+      sLogger.debug("KasqConnection::halt() - Sending shutdown request via message: " + haltMessage.toPrintableString(0));
+      IPacket response = mMessenger.sendAndReceive(haltMessage);
+      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
+      {
+        IKasqMessage haltResponse = (IKasqMessage)response;
+        int responseCode = haltResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+        {
+          result = true;
+        }
+      }
+    }
+    catch (Throwable e)
+    {
+      sLogger.debug("KasqConnection::halt() - Exception caught: ", e);
+    }
+    
+    sLogger.debug("KasqConnection::halt() - OUT, Result=" + result);
     return result;
   }
   
@@ -310,7 +359,16 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
-      mMessenger.send(message);
+      int requestType = message.getIntProperty(IKasqConstants.cPropertyRequestType);
+      if (requestType == IKasqConstants.cPropertyRequestType_Shutdown)
+      {
+        message.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mPriviliged);
+        halt(message);
+      }
+      else
+      {
+        mMessenger.send(message);
+      }
     }
     catch (Throwable e)
     {

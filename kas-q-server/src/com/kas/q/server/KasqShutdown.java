@@ -80,63 +80,24 @@ public class KasqShutdown extends KasqClient
    */
   private void shutdown() throws JMSException
   {
-    //try
-    //{
-    //  Thread.sleep(10000);
-    //}
-    //catch (Throwable e) {}
-    //
     String userName = "admin";
     String password = "admin";
     
     ConnectionFactory factory = getFactory();
     Connection        conn    = factory.createConnection(userName, password);
-    
-    sleep(4);
-    
     Session           sess    = conn.createSession();
     MessageProducer   prod    = sess.createProducer(null);
     Message           msg     = sess.createMessage();
     
-    msg.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
     msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Shutdown);
+    msg.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
     
     prod.send(msg);
     
-    //try
-    //{
-    //  Thread.sleep(10000);
-    //}
-    //catch (Throwable e) {}
-  }
-  
-  private void sleep(int seconds)
-  {
-    boolean stop = false;
-    long startTS = System.currentTimeMillis();
-    do
+    try
     {
-      long millis_to_sleep = seconds * 1000;
-      try
-      {
-        Thread.sleep(millis_to_sleep);
-        stop = true;
-      }
-      catch (InterruptedException e)
-      {
-        long interruptTS = System.currentTimeMillis();
-        long diff = interruptTS - startTS;
-        if (diff >= millis_to_sleep) // sleep time has expired
-        {
-          stop = true;
-        }
-        else
-        {
-          millis_to_sleep = diff;
-        }
-      }
+      Thread.sleep(5000);
     }
-    while (!stop);
-    
+    catch (Throwable e) {}
   }
 }

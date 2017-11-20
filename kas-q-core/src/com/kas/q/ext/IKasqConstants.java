@@ -28,6 +28,8 @@ public interface IKasqConstants
   static final String cPropertyConsumerQueue   = "KasQ_ConsumerQueue";
   static final String cPropertyConsumerSession = "KasQ_ConsumerSession";
   
+  static final String cPropertyRequestRepetitions = "KasQ_RequestRepetitions";
+  
   static final String cPropertyUserName = "KasQ_UserName";
   static final String cPropertyPassword = "KasQ_Password";
   

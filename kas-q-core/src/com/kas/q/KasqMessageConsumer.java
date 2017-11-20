@@ -123,7 +123,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive() throws JMSException
   {
-    KasqMessage msg = internalPrepareReceive();
+    KasqMessage msg = internalPrepareReceive(0);
     if (msg == null)
       throw new JMSException("Failed to create a consumption request message");
     
@@ -136,7 +136,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive(long timeout) throws JMSException
   {
-    KasqMessage msg = internalPrepareReceive();
+    KasqMessage msg = internalPrepareReceive(timeout);
     if (msg == null)
       throw new JMSException("Failed to create a consumption request message");
     
@@ -149,7 +149,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receiveNoWait() throws JMSException
   {
-    KasqMessage msg = internalPrepareReceive();
+    KasqMessage msg = internalPrepareReceive(-1L);
     if (msg == null)
       throw new JMSException("Failed to create a consumption request message");
     
@@ -175,7 +175,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    * 
    * @throws JMSException 
    */
-  public KasqMessage internalPrepareReceive() throws JMSException
+  public KasqMessage internalPrepareReceive(long timeout) throws JMSException
   {
     KasqMessage msg = null;
     try
@@ -184,6 +184,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       
       // send a request for message consuming
       msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Get);
+      msg.setLongProperty(IKasqConstants.cPropertyRequestRepetitions, (timeout == -1L ? 1 : timeout/1000));
       
       // message destination
       msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
