@@ -40,7 +40,7 @@ public class PacketHeader extends AKasObject implements ISerializable
    * Construct a {@code PacketHeader}
    *  
    * @param id the class ID of the packet
-   * @param type the message type. this is an integer which is managed outside of the messenger
+   * @param type the message type. this is an integer which is managed outside of the communication layer
    */
   protected PacketHeader(int id, int type)
   {

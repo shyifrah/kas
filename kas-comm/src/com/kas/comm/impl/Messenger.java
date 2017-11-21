@@ -3,10 +3,7 @@ package com.kas.comm.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import com.kas.comm.IPacket;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.IMessenger;
@@ -53,6 +50,7 @@ public class Messenger extends AKasObject implements IMessenger
     mPacketFactory = factory;
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
+    mSocket.setSoTimeout(0);
   }
   
   /***************************************************************************************************************
@@ -94,7 +92,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public IPacket receive() throws StreamCorruptedException, SocketException
+  public IPacket receive() throws IOException
   {
     return receive(0);
   }
@@ -102,7 +100,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public IPacket receive(int timeout) throws StreamCorruptedException, SocketException
+  public IPacket receive(int timeout) throws IOException
   {
     sLogger.debug("Messenger::receive() - IN");
     
@@ -110,18 +108,7 @@ public class Messenger extends AKasObject implements IMessenger
     
     IPacket packet = null;
     mSocket.setSoTimeout(timeout);
-    try
-    {
-      packet = mPacketFactory.createFromStream(mInputStream);
-    }
-    catch (SocketTimeoutException e)
-    {
-      sLogger.debug("Messenger::receive() - Timeout expired, no packet received");
-    }
-    catch (Throwable e)
-    {
-      sLogger.error("Messenger::receive() - Exception caught: ", e);
-    }
+    packet = mPacketFactory.createFromStream(mInputStream);
     
     sLogger.debug("Messenger::receive() - OUT");
     return packet;
@@ -130,7 +117,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public IPacket sendAndReceive(IPacket request) throws IOException, StreamCorruptedException
+  public IPacket sendAndReceive(IPacket request) throws IOException
   {
     send(request);
     return receive();
@@ -139,7 +126,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    *  
    */
-  public IPacket sendAndReceive(IPacket request, int timeout) throws IOException, StreamCorruptedException
+  public IPacket sendAndReceive(IPacket request, int timeout) throws IOException
   {
     send(request);
     return receive(timeout);

@@ -73,8 +73,11 @@ public class RequestProcessor
    * If we get back a message object, we set the origin properties and send it.    
    * 
    * @param the request object
+   * 
+   * @throws IOException 
+   * @throws JMSException 
    */
-  public static void handleGetRequest(ClientHandler handler, GetRequest request)
+  public static void handleGetRequest(ClientHandler handler, GetRequest request) throws IOException, JMSException
   {
     sLogger.debug("RequestProcessor::handleGetRequest() - IN");
     
@@ -92,6 +95,8 @@ public class RequestProcessor
     //catch (Throwable e) {}
     
     IKasqMessage message;
+    int code = IKasqConstants.cPropertyResponseCode_Fail;
+    String msg = "Failed to retrieve a message within the specified timeout";
     
     // now we address the repository and locate the destination
     if (request.getDestinationType() == IKasqConstants.cPropertyDestinationType_Queue)
@@ -105,31 +110,24 @@ public class RequestProcessor
       message = dest.getNoWait();
     }
     
+    
     if (message == null)
     {
-      handler.deferRequest(request);
+      message = new KasqMessage();
     }
     else
     {
-      // set consumer location
-      try
-      {
-        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, request.getOriginQueueName());
-        message.setStringProperty(IKasqConstants.cPropertyConsumerSession, request.getOriginSessionId());
-      }
-      catch (Throwable e) {}
-      
-      try
-      {
-        sLogger.debug("RequestProcessor::handleGetRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
-        handler.send(message);
-      }
-      catch (Throwable e)
-      {
-        sLogger.warn("Failed to send message " + message.toString() + " to consumer at session: " + request.getOriginSessionId() + ". Exception: ", e);
-      }
+      code = IKasqConstants.cPropertyResponseCode_Fail;
+      msg  = "";
     }
-  
+    
+    message.setJMSCorrelationID(request.getJmsMessageId());
+    message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
+    message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
+      
+    sLogger.debug("RequestProcessor::handleGetRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
+    handler.send(message);
+    
     sLogger.debug("RequestProcessor::handleGetRequest() - OUT");
   }
   
@@ -137,10 +135,9 @@ public class RequestProcessor
    * Process a {@link AuthenticateRequest}.
    * 
    * @return true if client authenticated successfully, false otherwise
-   * @throws JMSException 
    * 
    * @throws IOException 
-   * @throws ClassNotFoundException 
+   * @throws JMSException 
    */
   public static boolean handleAuthenticateRequest(ClientHandler handler, AuthenticateRequest request) throws JMSException, IOException
   {

@@ -8,19 +8,25 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
+import com.kas.q.ext.IKasqMessage;
 
 public class KasqMessageConsumer extends AKasObject implements MessageConsumer
 {
+  private static ILogger sLogger = LoggerFactory.getLogger(KasqMessageConsumer.class);
+  
   protected KasqSession      mSession         = null;
   protected IKasqDestination mDestination     = null;
   protected String           mMessageSelector = null;
   protected MessageListener  mMessageListener = null;
   protected boolean          mNoLocal         = false;
   
-  protected KasqQueue        mConsumerQueue   = null;
-  
+  //protected KasqQueue        mConsumerQueue   = null;
+  //
   private   UniqueId         mConsumerId; 
   
   /***************************************************************************************************************
@@ -83,7 +89,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       mMessageSelector = "";
     
     mConsumerId = UniqueId.generate();
-    mConsumerQueue = (KasqQueue)session.createQueue("KAS.CONSUMER.Q" + mConsumerId.toString());
+    //mConsumerQueue = (KasqQueue)session.createQueue("KAS.CONSUMER.Q" + mConsumerId.toString());
   }
   
   /***************************************************************************************************************
@@ -123,12 +129,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive() throws JMSException
   {
-    KasqMessage msg = internalPrepareReceive(0);
-    if (msg == null)
-      throw new JMSException("Failed to create a consumption request message");
-    
-    mSession.internalSend(msg);
-    return mConsumerQueue.get();
+    return internalReceive(-1);
   }
 
   /***************************************************************************************************************
@@ -136,12 +137,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receive(long timeout) throws JMSException
   {
-    KasqMessage msg = internalPrepareReceive(timeout);
-    if (msg == null)
-      throw new JMSException("Failed to create a consumption request message");
-    
-    mSession.internalSend(msg);
-    return mConsumerQueue.getAndWait(timeout);
+    return internalReceive(timeout/1000);
   }
 
   /***************************************************************************************************************
@@ -149,12 +145,55 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public Message receiveNoWait() throws JMSException
   {
-    KasqMessage msg = internalPrepareReceive(-1L);
-    if (msg == null)
-      throw new JMSException("Failed to create a consumption request message");
+    return internalReceive(1);
+  }
+  
+  /***************************************************************************************************************
+   * Consume a message from the designated queue.
+   * First we call {@link #internalPrepareConsumeRequest()} to prepare a request message. This message will be
+   * sent to the KAS/Q server for {@code repetitions} times. If {@code repetitions} is -1, this request message
+   * will be sent infinite times, until the consumer will get the requested message.
+   * Between failed calls, the current Thread is put to sleep for 1 second.
+   * 
+   * @param repetitions The number of times the request message will be sent to the KAS/Q server before
+   *        we give up.
+   *        
+   * @return the consumed message, or null if we failed to consume a message
+   */
+  private Message internalReceive(long repetitions) throws JMSException
+  {
+    sLogger.debug("KasqMessageConsumer::internalReceive() - IN");
     
-    mSession.internalSend(msg);
-    return mConsumerQueue.getNoWait();
+    boolean infinite = repetitions == -1 ? true : false;
+    IKasqMessage requestMessage = internalPrepareConsumeRequest(); // request for consumption message
+    IKasqMessage replyMessage = null;                              // reply for the request
+    IKasqMessage message = null;                                   // the message that will be returned to the caller
+    
+    int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
+    
+    sLogger.debug("KasqMessageConsumer::internalReceive() - Prepared for polling " + (infinite ? "infinite" : repetitions) + " times");
+    for (long reqIndex = 0; (responseCode == IKasqConstants.cPropertyResponseCode_Fail) && ((reqIndex < repetitions) || (infinite)); ++reqIndex)
+    {
+      replyMessage = mSession.internalSendAndReceive(requestMessage);
+      responseCode = replyMessage.getIntProperty(IKasqConstants.cPropertyResponseCode);
+      if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+      {
+        sLogger.debug("KasqMessageConsumer::internalReceive() - Message polling successfully received a message");
+        message = replyMessage;
+      }
+      else
+      {
+        sLogger.debug("KasqMessageConsumer::internalReceive() - Failed to get message, sleeping before next attempt...");
+        try
+        {
+          Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {}
+      }
+    }
+    
+    sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
+    return message;
   }
   
   /***************************************************************************************************************
@@ -175,16 +214,15 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    * 
    * @throws JMSException 
    */
-  public KasqMessage internalPrepareReceive(long timeout) throws JMSException
+  public KasqMessage internalPrepareConsumeRequest() throws JMSException
   {
     KasqMessage msg = null;
     try
     {
       msg = new KasqMessage();
       
-      // send a request for message consuming
+      // request type: message consuming
       msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Get);
-      msg.setLongProperty(IKasqConstants.cPropertyRequestRepetitions, (timeout == -1L ? 1 : timeout/1000));
       
       // message destination
       msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
@@ -196,8 +234,8 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
       
       // where to send the consumed message
-      msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue.getQueueName());
-      msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.mSessionId);
+      //msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue.getQueueName());
+      //msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.mSessionId);
     }
     catch (JMSException e) {}
     

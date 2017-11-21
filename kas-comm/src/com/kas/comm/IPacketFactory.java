@@ -1,8 +1,7 @@
 package com.kas.comm;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
-import java.net.SocketTimeoutException;
 
 public interface IPacketFactory
 {
@@ -13,7 +12,7 @@ public interface IPacketFactory
    * 
    * @param istream the {@code ObjectInputStream} from which the packet will be deserialized
    * 
-   * @throws StreamCorruptedException
+   * @throws IOException
    */
-  public abstract IPacket createFromStream(ObjectInputStream istream) throws StreamCorruptedException, SocketTimeoutException;
+  public abstract IPacket createFromStream(ObjectInputStream istream) throws IOException;
 }

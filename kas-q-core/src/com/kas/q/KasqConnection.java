@@ -312,44 +312,8 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
-   * Shutdown KAS/Q server
-   * 
-   * @param message the request message sent by the {@code MessageProducer}
-   * 
-   * @return true if shutdown request accepted by KAS/Q server, false otherwise
-   * 
-   * @throws JMSException 
-   */
-  private boolean halt(IKasqMessage haltMessage) throws JMSException
-  {
-    sLogger.debug("KasqConnection::halt() - IN");
-    
-    boolean result = false;
-    try
-    {
-      sLogger.debug("KasqConnection::halt() - Sending shutdown request via message: " + haltMessage.toPrintableString(0));
-      IPacket response = mMessenger.sendAndReceive(haltMessage);
-      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
-      {
-        IKasqMessage haltResponse = (IKasqMessage)response;
-        int responseCode = haltResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
-        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
-        {
-          result = true;
-        }
-      }
-    }
-    catch (Throwable e)
-    {
-      sLogger.debug("KasqConnection::halt() - Exception caught: ", e);
-    }
-    
-    sLogger.debug("KasqConnection::halt() - OUT, Result=" + result);
-    return result;
-  }
-  
-  /***************************************************************************************************************
    * Send a message to the KAS/Q server by calling the messenger's send() method.
+   * If the message is a Shutdown request, call the halt() function instead
    * 
    * @param message the message to be sent
    * 
@@ -359,16 +323,7 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
-      int requestType = message.getIntProperty(IKasqConstants.cPropertyRequestType);
-      if (requestType == IKasqConstants.cPropertyRequestType_Shutdown)
-      {
-        message.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mPriviliged);
-        halt(message);
-      }
-      else
-      {
-        mMessenger.send(message);
-      }
+      mMessenger.send(message);
     }
     catch (Throwable e)
     {
@@ -390,12 +345,12 @@ public class KasqConnection extends AKasObject implements Connection
     IKasqMessage reply = null;
     try
     {
-      IPacket resp = mMessenger.sendAndReceive(message);
-      if (resp.getPacketClassId() != PacketHeader.cClassIdKasq)
+      IPacket packet = mMessenger.sendAndReceive(message);
+      if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
       {
-        throw new JMSException("Invalid reply from KAS/Q server", "Expected packet ID=[" + PacketHeader.cClassIdKasq + "], Actual=[" + resp.getPacketClassId() + "]");
+        throw new JMSException("Invalid reply from KAS/Q server", "Expected packet ID=[" + PacketHeader.cClassIdKasq + "], Actual=[" + packet.getPacketClassId() + "]");
       }
-      reply = (IKasqMessage)resp;
+      reply = (IKasqMessage)packet;
     }
     catch (Throwable e)
     {

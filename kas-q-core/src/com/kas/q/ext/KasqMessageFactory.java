@@ -2,8 +2,6 @@ package com.kas.q.ext;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
-import java.net.SocketTimeoutException;
 import com.kas.comm.IPacket;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.PacketHeader;
@@ -29,9 +27,9 @@ public class KasqMessageFactory implements IPacketFactory
    * 
    * @param istream the {@code ObjectInputStream} that will be deserialized 
    * 
-   * @throws StreamCorruptedException if deserialization failed or IOException occur 
+   * @throws IOException 
    */
-  public IPacket createFromStream(ObjectInputStream istream) throws StreamCorruptedException, SocketTimeoutException
+  public IPacket createFromStream(ObjectInputStream istream) throws IOException
   {
     sLogger.debug("KasqMessageFactory::createFromStream() - IN");
     
@@ -73,16 +71,7 @@ public class KasqMessageFactory implements IPacketFactory
     catch (ClassNotFoundException e)
     {
       sLogger.debug("KasqMessageFactory::createFromStream() - Exception caught: ", e);
-      throw new StreamCorruptedException("ClassNotFoundException caught, Message: " + e.getMessage());
-    }
-    catch (SocketTimeoutException e)
-    {
-      sLogger.debug("KasqMessageFactory::createFromStream() - Timeout expired");
-    }
-    catch (IOException e)
-    {
-      sLogger.debug("KasqMessageFactory::createFromStream() - Exception caught: ", e);
-      throw new StreamCorruptedException("IOException caught, Message: " + e.getMessage());
+      throw new IOException("ClassNotFoundException caught, Message: " + e.getMessage());
     }
     
     sLogger.debug("KasqMessageFactory::createFromStream() - OUT, Result=" + StringUtils.asPrintableString(message));

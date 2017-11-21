@@ -9,12 +9,16 @@ import javax.jms.Message;
 import javax.jms.MessageProducer;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 
 public class KasqMessageProducer extends AKasObject implements MessageProducer
 {
+  private static ILogger sLogger = LoggerFactory.getLogger(KasqMessageProducer.class);  
+  
   protected KasqSession mSession = null;
   protected IKasqDestination mDestination = null;
   private boolean mDisableMessageId = false;
@@ -261,6 +265,8 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
    */
   private void internalSetup(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
+    sLogger.debug("KasqMessageProducer::internalSetup() - IN");
+    
     if (message == null)
       throw new JMSException("Cannot send a null message");
     
@@ -271,8 +277,13 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
     }
     catch (Throwable e) {}
     
-    if (!admin)
+    if (admin)
     {
+      sLogger.debug("KasqMessageProducer::internalSetup() - Priviliged message, skipping destination verification");
+    }
+    else
+    {
+      sLogger.debug("KasqMessageProducer::internalSetup() - Verifying destination is not NULL");
       if (destination == null)
         throw new JMSException("Cannot send message. Null destination");
     }
@@ -285,6 +296,8 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
     
     if (timeToLive < 0)
       throw new JMSException("Invalid Time-to-Live: " + timeToLive);
+    
+    sLogger.debug("KasqMessageProducer::internalSetup() - OUT");
   }
   
   /***************************************************************************************************************
@@ -300,6 +313,8 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
    */
   private void internalSend(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
+    sLogger.debug("KasqMessageProducer::internalSend() - IN");
+    
     String messageId = null;
     if (!mDisableMessageId)
       messageId = UniqueId.generate().toString();
@@ -318,8 +333,15 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
     if (eyeCatcher)
     {
       IKasqMessage iMessage = (IKasqMessage)message;
+      sLogger.debug("KasqMessageProducer::internalSend() - Sending message: " + iMessage.toPrintableString(0));
       mSession.internalSend(iMessage);
     }
+    else
+    {
+      sLogger.debug("KasqMessageProducer::internalSend() - Not a KAS/Q message, cannot send");      
+    }
+    
+    sLogger.debug("KasqMessageProducer::internalSend() - OUT");
   }
   
   /***************************************************************************************************************

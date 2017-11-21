@@ -2,15 +2,12 @@ package com.kas.q.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.ArrayDeque;
-import java.util.Queue;
 import javax.jms.JMSException;
 import com.kas.comm.IPacket;
 import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
@@ -34,7 +31,7 @@ public class ClientHandler extends AKasObject implements Runnable
   private IMessenger      mMessenger;
   private IController     mController;
   private boolean         mAuthenticated;
-  private Queue<IRequest> mRequestQueue;
+  //private Queue<IRequest> mRequestQueue;
   
   /***************************************************************************************************************
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
@@ -49,7 +46,7 @@ public class ClientHandler extends AKasObject implements Runnable
     mMessenger  = MessengerFactory.create(socket, new KasqMessageFactory());
     mAuthenticated = false;
     mController = KasqServer.getInstance().getController();
-    mRequestQueue = new ArrayDeque<IRequest>();
+    //mRequestQueue = new ArrayDeque<IRequest>();
     
     if (mController != null) mController.onHandlerStart(this);
   }
@@ -97,41 +94,9 @@ public class ClientHandler extends AKasObject implements Runnable
         else
         {
           IRequest request = RequestFactory.createRequest((IKasqMessage)packet);
-          sLogger.debug("ClientHandler::run() - Processing request: " + request.toString());
+          sLogger.debug("ClientHandler::run() - Got request " + request.toString() + " calling RequestPocessor");
           process(request);
         }
-        
-        //sLogger.debug("ClientHandler::run() - Waiting for client packet for 1 second...");
-        //IPacket packet = mMessenger.receive();
-        //sLogger.debug("ClientHandler::run() - received packet: [" + StringUtils.asString(packet) + "]");
-        //if (packet == null)
-        //{
-        //  sLogger.debug("ClientHandler::run() - Got a null packet. instead, take a request from the queue...");
-        //  IRequest request = mRequestQueue.poll();
-        //  if (request == null)
-        //  {
-        //    sLogger.debug("ClientHandler::run() - No requests in queue, wait for packets from stream");
-        //  }
-        //  else
-        //  {
-        //    process(request);
-        //  }
-        //}
-        //else
-        //{
-        //  sLogger.debug("ClientHandler::run() - Got a packet. testing for its class ID: [" + packet.getPacketClassId() + "]");
-        //  if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
-        //  {
-        //    sLogger.warn("Unknown packet class ID=" + packet.getPacketClassId() + ", Ignoring message");
-        //  }
-        //  else
-        //  {
-        //    IKasqMessage requestMessage = (IKasqMessage)packet;
-        //    sLogger.debug("ClientHandler::run() - Got a valid KasqMessage: " + requestMessage.toPrintableString(0));
-        //    IRequest request = RequestFactory.createRequest(requestMessage);
-        //    mRequestQueue.offer(request);
-        //  }
-        //}
       }
     }
     catch (IOException e)
@@ -142,6 +107,7 @@ public class ClientHandler extends AKasObject implements Runnable
     {
       sLogger.trace("Exception caught while trying to process message from client: ", e);
     }
+    
     mMessenger.cleanup();
     
     if (mController != null) mController.onHandlerStop(this);
@@ -170,21 +136,21 @@ public class ClientHandler extends AKasObject implements Runnable
     switch (request.getRequestType())
     {
       case cShutdown:
-        sLogger.debug("ClientHandler::process() - processing a Shutdown request");
+        sLogger.debug("ClientHandler::process() - Processing a Shutdown request");
         if (mAuthenticated)
           RequestProcessor.handleShutdownRequest((ShutdownRequest)request);
         break;
       case cAuthenticate:
-        sLogger.debug("ClientHandler::process() - processing an Authentication request");
+        sLogger.debug("ClientHandler::process() - Processing an Authentication request");
         mAuthenticated = RequestProcessor.handleAuthenticateRequest(this, (AuthenticateRequest)request);
         break;
       case cGet:
-        sLogger.debug("ClientHandler::process() - processing an Get request");
+        sLogger.debug("ClientHandler::process() - Processing an Get request");
         if (mAuthenticated)
           RequestProcessor.handleGetRequest(this, (GetRequest)request);
         break;
       case cPut:
-        sLogger.debug("ClientHandler::process() - processing an Put request");
+        sLogger.debug("ClientHandler::process() - Processing an Put request");
         if (mAuthenticated)
           RequestProcessor.handlePutRequest((PutRequest)request);
         break;
@@ -205,16 +171,16 @@ public class ClientHandler extends AKasObject implements Runnable
     mMessenger.send(message);
   }
   
-  /***************************************************************************************************************
-   * Deferring a request means simply means to put a request back to the queue
-   * 
-   * @param request the {@code IRequest} to be processed.
-   */
-  public void deferRequest(IRequest request)
-  {
-    mRequestQueue.offer(request);
-  }
-  
+  ///***************************************************************************************************************
+  // * Deferring a request means simply means to put a request back to the queue
+  // * 
+  // * @param request the {@code IRequest} to be processed.
+  // */
+  //public void deferRequest(IRequest request)
+  //{
+  //  mRequestQueue.offer(request);
+  //}
+  //
   /***************************************************************************************************************
    *  
    */
@@ -226,7 +192,7 @@ public class ClientHandler extends AKasObject implements Runnable
       .append(pad).append("  Authenticated=(").append(mAuthenticated).append(")\n")
       .append(pad).append("  Messenger=(").append(mMessenger.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  Requests Queue=(\n")
-      .append(StringUtils.asPrintableString(mRequestQueue, level+2)).append("\n")
+    //  .append(StringUtils.asPrintableString(mRequestQueue, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

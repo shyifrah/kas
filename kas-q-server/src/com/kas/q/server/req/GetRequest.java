@@ -19,8 +19,9 @@ final public class GetRequest extends AKasObject implements IRequest
    */
   private String  mDestinationName;
   private Integer mDestinationType;
-  private String  mOriginQueueName;
-  private String  mOriginSessionId;
+  private String  mJmsMessageId;
+  //private String  mOriginQueueName;
+  //private String  mOriginSessionId;
   
   /***************************************************************************************************************
    * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
@@ -34,14 +35,16 @@ final public class GetRequest extends AKasObject implements IRequest
   {
     String  destName = null;
     Integer destType = null;
-    String  originQueue   = null;
-    String  originSession = null;
+    String  jmsMsgId = null;
+    //String  originQueue   = null;
+    //String  originSession = null;
     try
     {
       destName = requestMessage.getStringProperty(IKasqConstants.cPropertyDestinationName);
       destType = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
-      originQueue   = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerQueue);
-      originSession = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerSession);
+      jmsMsgId = requestMessage.getJMSMessageID();
+    //  originQueue   = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerQueue);
+    //  originSession = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerSession);
     }
     catch (Throwable e) {}
     
@@ -63,34 +66,47 @@ final public class GetRequest extends AKasObject implements IRequest
       throw new IllegalArgumentException("Invalid GetRequest: null destination type");
     }
     
-    if (originQueue == null)
+    if (jmsMsgId == null)
     {
-      sLogger.warn("Received GetRequest with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: null origin queue");
+      sLogger.warn("Received GetRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: null JMS message ID");
     }
     
-    if (originQueue.length() == 0)
+    if (jmsMsgId.length() == 0)
     {
-      sLogger.warn("Received GetRequest with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: queue is empty string");
+      sLogger.warn("Received GetRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: JMS message ID is empty string");
     }
     
-    if (originSession == null)
-    {
-      sLogger.warn("Received GetRequest with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: null origin session");
-    }
-    
-    if (originSession.length() == 0)
-    {
-      sLogger.warn("Received GetRequest with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: session is empty string");
-    }
-    
+    //if (originQueue == null)
+    //{
+    //  sLogger.warn("Received GetRequest with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
+    //  throw new IllegalArgumentException("Invalid GetRequest: null origin queue");
+    //}
+    //
+    //if (originQueue.length() == 0)
+    //{
+    //  sLogger.warn("Received GetRequest with invalid origin: queue=[" + StringUtils.asString(originQueue) + "]");
+    //  throw new IllegalArgumentException("Invalid GetRequest: queue is empty string");
+    //}
+    //
+    //if (originSession == null)
+    //{
+    //  sLogger.warn("Received GetRequest with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
+    //  throw new IllegalArgumentException("Invalid GetRequest: null origin session");
+    //}
+    //
+    //if (originSession.length() == 0)
+    //{
+    //  sLogger.warn("Received GetRequest with invalid origin: session=[" + StringUtils.asString(originSession) + "]");
+    //  throw new IllegalArgumentException("Invalid GetRequest: session is empty string");
+    //}
+    //
     mDestinationName = destName;
     mDestinationType = destType;
-    mOriginQueueName = originQueue;
-    mOriginSessionId = originSession;
+    mJmsMessageId = jmsMsgId;
+    //mOriginQueueName = originQueue;
+    //mOriginSessionId = originSession;
   }
   
   /***************************************************************************************************************
@@ -114,25 +130,35 @@ final public class GetRequest extends AKasObject implements IRequest
   }
   
   /***************************************************************************************************************
-   * Get the origin queue name
+   * Get the JMS message ID
    * 
-   * @return the origin queue name
+   * @return the JMS message ID
    */
-  public String getOriginQueueName()
+  public String getJmsMessageId()
   {
-    return mOriginQueueName;
+    return mJmsMessageId;
   }
   
-  /***************************************************************************************************************
-   * Get the origin session ID
-   * 
-   * @return the origin session ID
-   */
-  public String getOriginSessionId()
-  {
-    return mOriginSessionId;
-  }
-  
+  ///***************************************************************************************************************
+  // * Get the origin queue name
+  // * 
+  // * @return the origin queue name
+  // */
+  //public String getOriginQueueName()
+  //{
+  //  return mOriginQueueName;
+  //}
+  //
+  ///***************************************************************************************************************
+  // * Get the origin session ID
+  // * 
+  // * @return the origin session ID
+  // */
+  //public String getOriginSessionId()
+  //{
+  //  return mOriginSessionId;
+  //}
+  //
   /***************************************************************************************************************
    *  
    */
@@ -162,8 +188,9 @@ final public class GetRequest extends AKasObject implements IRequest
     sb.append(name()).append("(\n")
       .append(pad).append("  Destintation Name=(").append(mDestinationName).append(")\n")
       .append(pad).append("  Destintation Type=(").append(mDestinationType).append(")\n")
-      .append(pad).append("  Origin Queue=(").append(mOriginQueueName).append(")\n")
-      .append(pad).append("  Origin Session=(").append(mOriginSessionId).append(")\n")
+      .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
+      //.append(pad).append("  Origin Queue=(").append(mOriginQueueName).append(")\n")
+      //.append(pad).append("  Origin Session=(").append(mOriginSessionId).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

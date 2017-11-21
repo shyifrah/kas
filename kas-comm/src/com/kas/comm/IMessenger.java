@@ -1,8 +1,6 @@
 package com.kas.comm;
 
 import java.io.IOException;
-import java.io.StreamCorruptedException;
-import java.net.SocketException;
 import com.kas.infra.base.IObject;
 
 public interface IMessenger extends IObject
@@ -28,10 +26,9 @@ public interface IMessenger extends IObject
    * 
    * @return read packet
    * 
-   * @throws StreamCorruptedException
-   * @throws SocketException
+   * @throws IOException
    */
-  public abstract IPacket receive() throws StreamCorruptedException, SocketException;
+  public abstract IPacket receive() throws IOException;
   
   /***************************************************************************************************************
    * Receive a {@code IPacket} object.
@@ -41,10 +38,9 @@ public interface IMessenger extends IObject
    * 
    * @return the read packet or {@code null} if one is not available
    * 
-   * @throws StreamCorruptedException
-   * @throws SocketException
+   * @throws IOException
    */
-  public abstract IPacket receive(int timeout) throws StreamCorruptedException, SocketException;
+  public abstract IPacket receive(int timeout) throws IOException;
   
   /***************************************************************************************************************
    * Sends a {@code IPacket} and wait indefinitely for a reply.
@@ -54,10 +50,8 @@ public interface IMessenger extends IObject
    * @return response packet
    * 
    * @throws IOException
-   * @throws StreamCorruptedException
-   * @throws SocketException
    */
-  public abstract IPacket sendAndReceive(IPacket request) throws IOException, StreamCorruptedException, SocketException;
+  public abstract IPacket sendAndReceive(IPacket request) throws IOException;
   
   /***************************************************************************************************************
    * Sends a {@code IPacket} and wait for a reply.
@@ -68,8 +62,6 @@ public interface IMessenger extends IObject
    * @return response packet or null if timeout expires
    * 
    * @throws IOException
-   * @throws StreamCorruptedException
-   * @throws SocketException
    */
-  public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException, StreamCorruptedException, SocketException;
+  public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
 }

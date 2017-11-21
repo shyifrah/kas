@@ -158,6 +158,7 @@ final public class AuthenticateRequest extends AKasObject implements IRequest
       .append(pad).append("  UserName=(").append(mUserName).append(")\n")
       .append(pad).append("  Password=(").append(mPassword).append(")\n")
       .append(pad).append("  Admin=(").append(mAdmin).append(")\n")
+      .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
