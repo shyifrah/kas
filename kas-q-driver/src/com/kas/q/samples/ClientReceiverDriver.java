@@ -1,22 +1,23 @@
-package my.test.pkg;
+package com.kas.q.samples;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
 import com.kas.q.KasqTextMessage;
 import com.kas.q.ext.KasqClient;
 
-public class Driver
+public class ClientReceiverDriver
 {
   private final static String cQueueName = "shy.local.queue";
   private final static String cHostname  = "localhost";
+  
+  private final static int    cNumberOfMessages = 5;
+  
   private final static int    cPort      = 14560;
   
   //============================================================================================================================================
@@ -30,7 +31,7 @@ public class Driver
     
     try
     {
-      Driver driver = new Driver();
+      ClientReceiverDriver driver = new ClientReceiverDriver();
       driver.run(args);
     }
     catch (Throwable e)
@@ -73,18 +74,11 @@ public class Driver
         
         Queue queue = sess.createQueue(cQueueName);
         
-        System.out.println("Driver::run() - Sending messages");
-        sendFiveMessages(sess, queue);
-        
-        System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
+        conn.start();
+        System.out.println("Driver::run() - Receiving messages");
+        receiveMessages(sess, queue);
+        System.out.println("Driver::run() - Waiting 5 seconds before continuing...");
         sleepForSeconds(5);
-        
-        
-        //conn.start();
-        //System.out.println("Driver::run() - Receiving messages");
-        //receiveTenMessages(sess, queue);
-        //System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
-        //sleepForSeconds(10);
       }
       catch (JMSException e)
       {
@@ -103,28 +97,11 @@ public class Driver
   //
   //
   //============================================================================================================================================
-  private void sendFiveMessages(Session session, Queue queue) throws JMSException
-  {
-    MessageProducer producer = session.createProducer(queue);
-    
-    for (int i = 0; i < 5; i++)
-    {
-      String text = "shyifrah-" + Integer.toString(i);
-      TextMessage msg = session.createTextMessage(text);
-      producer.send(queue, msg);
-    }
-  }
-  
-  //============================================================================================================================================
-  //
-  //
-  //
-  //============================================================================================================================================
-  private void receiveTenMessages(Session session, Queue queue) throws JMSException
+  private void receiveMessages(Session session, Queue queue) throws JMSException
   {
     MessageConsumer consumer = session.createConsumer(queue);
     
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < cNumberOfMessages; i++)
     {
       Message msg = consumer.receive();
       KasqTextMessage kmsg = (KasqTextMessage)msg;

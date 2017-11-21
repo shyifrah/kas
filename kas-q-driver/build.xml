@@ -44,6 +44,8 @@
   <target name="Prepare" depends="Clean" description="prepare output directories">
     <mkdir dir="${bin}"/>
     <mkdir dir="${lib}"/>
+    <mkdir dir="${logs}"/>
+    <mkdir dir="${repo}"/>
     <buildnumber file="${res}/buildnumber.txt"/>
     <subant target="Main">
       <fileset dir="${infra}"      includes="build.xml"/>
@@ -82,7 +84,7 @@
   <target name="Jar" depends="Compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar"
        basedir="${bin}"
-       includes="my/test/pkg/**/*.class"
+       includes="com/kas/q/**/*.class"
        excludes="**/Test*.class">
       <manifest>
         <attribute name="Kas-Version" value="${build.major}-${build.minor}-${build.mod}-${build.number}"/>

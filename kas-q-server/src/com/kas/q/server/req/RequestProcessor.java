@@ -117,7 +117,7 @@ public class RequestProcessor
     }
     else
     {
-      code = IKasqConstants.cPropertyResponseCode_Fail;
+      code = IKasqConstants.cPropertyResponseCode_Okay;
       msg  = "";
     }
     

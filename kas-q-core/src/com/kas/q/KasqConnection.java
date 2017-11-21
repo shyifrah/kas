@@ -1,5 +1,6 @@
 package com.kas.q;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Connection;
@@ -20,7 +21,6 @@ import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
-import com.kas.q.ext.ReceiverTask;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqMessageFactory;
 
@@ -49,7 +49,6 @@ public class KasqConnection extends AKasObject implements Connection
   protected boolean mPriviliged = false;
   
   protected IMessenger mMessenger;
-  protected ReceiverTask mReceiver;
   
   private Map<String, KasqSession> mOpenedSessions;
   
@@ -88,12 +87,10 @@ public class KasqConnection extends AKasObject implements Connection
       mUserName = userName;
       mPassword = password;
     }
-    catch (Throwable e)
+    catch (IOException e)
     {
       throw new JMSException("Connection creation failed", e.getMessage());
     }
-    
-    mReceiver = new ReceiverTask(mMessenger, this);
     
     boolean authenticated = authenticate(userName, password);
     if (!authenticated)
@@ -108,7 +105,6 @@ public class KasqConnection extends AKasObject implements Connection
   public void start()
   {
     sLogger.debug("KasqConnection::start() - IN");
-    mReceiver.start();
     mStarted = true;
     sLogger.debug("KasqConnection::start() - OUT");
   }
@@ -119,7 +115,6 @@ public class KasqConnection extends AKasObject implements Connection
   public void stop()
   {
     sLogger.debug("KasqConnection::stop() - IN");
-    mReceiver.interrupt();
     mStarted = false;
     sLogger.debug("KasqConnection::stop() - OUT");
   }
