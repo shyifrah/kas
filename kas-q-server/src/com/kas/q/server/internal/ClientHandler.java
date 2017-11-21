@@ -145,12 +145,12 @@ public class ClientHandler extends AKasObject implements Runnable
         mAuthenticated = RequestProcessor.handleAuthenticateRequest(this, (AuthenticateRequest)request);
         break;
       case cGet:
-        sLogger.debug("ClientHandler::process() - Processing an Get request");
+        sLogger.debug("ClientHandler::process() - Processing a Get request");
         if (mAuthenticated)
           RequestProcessor.handleGetRequest(this, (GetRequest)request);
         break;
       case cPut:
-        sLogger.debug("ClientHandler::process() - Processing an Put request");
+        sLogger.debug("ClientHandler::process() - Processing a Put request");
         if (mAuthenticated)
           RequestProcessor.handlePutRequest((PutRequest)request);
         break;

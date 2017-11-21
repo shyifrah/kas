@@ -89,7 +89,7 @@ final public class PutRequest extends AKasObject implements IRequest
   {
     StringBuffer sb = new StringBuffer();
     sb.append(name())
-      .append("(InDest=").append(mDestination.getName()).append(")");
+      .append("(ToDest=").append(mDestination.getName()).append(")");
     return sb.toString();
   }
   

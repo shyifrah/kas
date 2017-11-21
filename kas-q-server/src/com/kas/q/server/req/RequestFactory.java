@@ -1,5 +1,6 @@
 package com.kas.q.server.req;
 
+import javax.jms.JMSException;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
@@ -13,11 +14,17 @@ public class RequestFactory
   {
     sLogger.debug("RequestFactory::createRequest() - IN");
     
+    int ord = 0;
+    try
+    {
+      ord = message.getIntProperty(IKasqConstants.cPropertyRequestType);
+    }
+    catch (JMSException e) {}
+    
     IRequest request = null;
     try
     {
-      int t = message.getIntProperty(IKasqConstants.cPropertyRequestType);
-      ERequestType type = ERequestType.fromInt(t);
+      ERequestType type = ERequestType.fromInt(ord);
       
       switch (type)
       {

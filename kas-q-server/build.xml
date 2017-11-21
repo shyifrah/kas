@@ -50,6 +50,7 @@
     <mkdir dir="${bin}"/>
     <mkdir dir="${lib}"/>
   	<mkdir dir="${logs}"/>
+    <mkdir dir="${repo}"/>
     <buildnumber file="${res}/buildnumber.txt"/>
     <subant target="Main">
       <fileset dir="${infra}"      includes="build.xml"/>

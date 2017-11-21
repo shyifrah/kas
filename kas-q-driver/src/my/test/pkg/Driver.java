@@ -80,11 +80,11 @@ public class Driver
         sleepForSeconds(10);
         
         
-        conn.start();
-        System.out.println("Driver::run() - Receiving messages");
-        receiveTenMessages(sess, queue);
-        System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
-        sleepForSeconds(10);
+        //conn.start();
+        //System.out.println("Driver::run() - Receiving messages");
+        //receiveTenMessages(sess, queue);
+        //System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
+        //sleepForSeconds(10);
       }
       catch (JMSException e)
       {
