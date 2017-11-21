@@ -31,13 +31,23 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
    * 
    * @param istream the {@code ObjectInputStream} from which the message will be deserialized
    * 
-   * @throws IOException 
-   * @throws ClassNotFoundException 
+   * @throws IOException
    */
-  public KasqMapMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public KasqMapMessage(ObjectInputStream istream) throws IOException
   {
     super(istream);
-    mBody = (Properties)istream.readObject();
+    try
+    {
+      mBody = (Properties)istream.readObject();
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
   }
   
   /***************************************************************************************************************

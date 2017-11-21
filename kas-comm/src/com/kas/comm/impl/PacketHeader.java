@@ -3,7 +3,6 @@ package com.kas.comm.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.SocketTimeoutException;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.AKasObject;
 
@@ -54,14 +53,24 @@ public class PacketHeader extends AKasObject implements ISerializable
    * 
    * @param istream the {@code ObjectInputStream}
    * 
-   * @throws IOException 
-   * @throws ClassNotFoundException 
+   * @throws IOException
    */
-  public PacketHeader(ObjectInputStream istream) throws ClassNotFoundException, SocketTimeoutException, IOException
+  public PacketHeader(ObjectInputStream istream) throws IOException
   {
-    mEyeCatcher = (String)istream.readObject();
-    mClassId = istream.readInt();
-    mType    = istream.readInt();
+    try
+    {
+      mEyeCatcher = (String)istream.readObject();
+      mClassId = istream.readInt();
+      mType    = istream.readInt();
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
   }
   
   /***************************************************************************************************************

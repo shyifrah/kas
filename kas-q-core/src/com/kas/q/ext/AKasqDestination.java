@@ -28,6 +28,8 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   private File    mBackupFile;
   private LinkedBlockingDeque<IKasqMessage> mQueue;
   
+  private String  mBackupFileName = null;
+  
   /***************************************************************************************************************
    * Constructs a {@code KasqDestination} object, specifying its name
    * 
@@ -53,7 +55,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
     sLogger.info("Starting initialization for " + mName);
     try
     {
-      String fileName = RunTimeUtils.getProductHomeDir() + "/repo/" + mName;
+      String fileName = getBackupFileName();
       sLogger.debug("KasqQueue::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
       mBackupFile = new File(fileName);
       if (mBackupFile.exists())
@@ -111,7 +113,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
     {
       if (!mQueue.isEmpty())
       {
-        String fileName = RunTimeUtils.getProductHomeDir() + "/repo/" + mName;
+        String fileName = getBackupFileName();
         sLogger.trace(mName + " is not empty. Saving messages to backup file=[" + fileName + "]");
         mBackupFile = new File(fileName);
         if (!mBackupFile.exists())
@@ -248,6 +250,40 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   /***************************************************************************************************************
    * 
    */
+  protected void internalDelete()
+  {
+    if (mName.startsWith("KAS.TEMP."))
+    {
+      // TODO: delete the queue/topic
+    }
+  }
+  
+  /***************************************************************************************************************
+   * Constructs (if wasn't done before) and returns the backup file name of the destination
+   * 
+   * @returns full-path backup file name
+   */
+  protected String getBackupFileName()
+  {
+    if (mBackupFileName == null)
+    {
+      StringBuffer sb = new StringBuffer();
+      sb.append(RunTimeUtils.getProductHomeDir())        // C:\app\kas        /opt/kas          << path of kasq
+        .append(File.separatorChar)                      // \                 /
+        .append("repo")                                  // repo              repo              << repo directory
+        .append(File.separatorChar)                      // \                 /
+        .append(getName())                               // shy.admin.queue   /shy.test.topic   << name of destination
+        .append('.')                                     // .                 .
+        .append(getType().substring(0,1))                // q                 t                 << first char of type
+        .append("bk");                                   // bk                bk                << "bk", designating backup
+      mBackupFileName = sb.toString();
+    }
+    return mBackupFileName;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String getFormattedName()
   {
     StringBuffer sb = new StringBuffer();
@@ -257,17 +293,6 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
       .append('/')
       .append(mName);
     return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
-  protected void internalDelete()
-  {
-    if (mName.startsWith("KAS.TEMP."))
-    {
-      // TODO: delete the queue/topic
-    }
   }
   
   /***************************************************************************************************************

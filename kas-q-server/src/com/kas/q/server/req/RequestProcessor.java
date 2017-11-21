@@ -125,7 +125,7 @@ public class RequestProcessor
     message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
       
-    sLogger.debug("RequestProcessor::handleGetRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
+    sLogger.diag("RequestProcessor::handleGetRequest() - Sending to origin consumed message: " + message.toPrintableString(0));
     handler.send(message);
     
     sLogger.debug("RequestProcessor::handleGetRequest() - OUT");
@@ -158,7 +158,7 @@ public class RequestProcessor
     response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
     
-    sLogger.debug("RequestProcessor::handleAuthenticateRequest() - Send message: " + response.toPrintableString(0));
+    sLogger.diag("RequestProcessor::handleAuthenticateRequest() - Sending response message: " + response.toPrintableString(0));
     handler.send(response);
     
     sLogger.debug("RequestProcessor::handleAuthenticateRequest() - OUT, Result=" + authenticated);

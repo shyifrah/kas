@@ -38,12 +38,22 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
    * @param istream the {@code ObjectInputStream} from which the message will be deserialized
    * 
    * @throws IOException 
-   * @throws ClassNotFoundException 
    */
-  public KasqTextMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public KasqTextMessage(ObjectInputStream istream) throws IOException
   {
     super(istream);
-    mBody = (String)istream.readObject();
+    try
+    {
+      mBody = (String)istream.readObject();
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
   }
   
   /***************************************************************************************************************

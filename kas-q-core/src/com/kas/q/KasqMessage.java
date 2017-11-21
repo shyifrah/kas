@@ -69,31 +69,43 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    * 
    * @param istream the {@code ObjectInputStream}
    * 
-   * @throws IOException 
-   * @throws ClassNotFoundException 
+   * @throws IOException
    */
-  public KasqMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public KasqMessage(ObjectInputStream istream) throws IOException
   {
-    // headers
-    byte [] idBytes = new byte [16];
-    istream.read(idBytes);
-    mMessageId     = UniqueId.fromByteArray(idBytes);
+    sLogger.diag("KasqMessage::KasqMessage() - IN");
     
-    istream.read(idBytes);
-    mCorrelationId = UniqueId.fromByteArray(idBytes);     
-    
-    mDestination   = (Destination)istream.readObject();
-    mReplyTo       = (Destination)istream.readObject();
-    mDeliveryMode  = istream.readInt();
-    mDeliveryTime  = istream.readLong();
-    mRedelivered   = istream.readBoolean();
-    mExpiration    = istream.readLong();
-    mTimestamp     = istream.readLong();
-    mPriority      = istream.readInt();
-    mType          = (String)istream.readObject();
-    
-    // properties
-    mProperties    = (Properties)istream.readObject();
+    try
+    {
+      // headers
+      byte [] idBytes = new byte [16];
+      istream.read(idBytes);
+      mMessageId     = UniqueId.fromByteArray(idBytes);
+      
+      istream.read(idBytes);
+      mCorrelationId = UniqueId.fromByteArray(idBytes);     
+      
+      mDestination   = (Destination)istream.readObject();
+      mReplyTo       = (Destination)istream.readObject();
+      mDeliveryMode  = istream.readInt();
+      mDeliveryTime  = istream.readLong();
+      mRedelivered   = istream.readBoolean();
+      mExpiration    = istream.readLong();
+      mTimestamp     = istream.readLong();
+      mPriority      = istream.readInt();
+      mType          = (String)istream.readObject();
+      
+      // properties
+      mProperties    = (Properties)istream.readObject();
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
     
     sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }

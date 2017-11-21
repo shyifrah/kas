@@ -38,13 +38,19 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
    * 
    * @param istream the {@code ObjectInputStream} from which the message will be deserialized
    * 
-   * @throws IOException 
-   * @throws ClassNotFoundException 
+   * @throws IOException
    */
-  public KasqStreamMessage(ObjectInputStream istream) throws ClassNotFoundException, IOException
+  public KasqStreamMessage(ObjectInputStream istream) throws IOException
   {
     super(istream);
-    mInputStream = istream;
+    try
+    {
+      mInputStream = istream;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
   }
   
   /***************************************************************************************************************

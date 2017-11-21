@@ -1,13 +1,13 @@
 package com.kas.q.server;
 
-import java.io.IOException;
-import java.net.ServerSocket;
+import java.io.File;
 import com.kas.containers.CappedContainerProxy;
 import com.kas.containers.CappedContainersFactory;
 import com.kas.containers.CappedHashMap;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.WeakRef;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqQueue;
@@ -22,7 +22,6 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   private ILogger mLogger;
   private MessagingConfiguration mConfig;
-  private ServerSocket mLocatorSocket;
   
   private CappedContainerProxy mQueuesMapProxy;
   private CappedHashMap<String, KasqQueue> mQueuesMap;
@@ -58,23 +57,64 @@ public class KasqRepository extends AKasObject implements IInitializable
     mLogger.debug("KasqRepository::init() - IN");
     boolean success = true;
     
-    // define deadq
-    String deadq = mConfig.getDeadQueue();
-    defineQueue(deadq);
-    mDeadQueue = new WeakRef<KasqQueue>(mQueuesMap.get(deadq));
+    mLogger.trace("KasqRepository::init() - Initializing queues and topics...");
     
-    // define adminq
-    String adminq = mConfig.getAdminQueue();
-    defineQueue(adminq);
-    mAdminQueue = new WeakRef<KasqQueue>(mQueuesMap.get(adminq));
-    
-    try
+    // read repo directory contents and define a queue/topic per backup file found there
+    String repoDirPath = RunTimeUtils.getProductHomeDir() + File.separatorChar + "repo";
+    File repoDir = new File(repoDirPath);
+    if (!repoDir.exists())
     {
-      mLocatorSocket = new ServerSocket(mConfig.getLocatorPort());
+      success = repoDir.mkdir();
+      mLogger.info("KasqRepository::init() - Repository directory does not exist, try to create. result=" + success);
     }
-    catch (IOException e)
+    else
+    if (!repoDir.isDirectory())
     {
       success = false;
+      mLogger.error("KasqRepository::init() - Repository directory path points to a file. Cannot continue");
+    }
+    else
+    {
+      
+      String [] entries = repoDir.list();
+      for (String entry : entries)
+      {
+        boolean isTopic = false;
+        if (entry.endsWith(".qbk"))
+          isTopic = false;
+        else if (entry.endsWith(".tbk"))
+          isTopic = true;
+        else
+          continue;
+        
+        File destFile = new File(repoDirPath + File.separatorChar + entry);
+        if (destFile.isFile())
+        {
+          String destName = entry.substring(0, entry.lastIndexOf('.'));
+          mLogger.trace("KasqRepository::init() - Restoring contents of " + (isTopic ? "topic [" : "queue [") + destName + ']');
+          define(destName, mConfig.getManagerName(), isTopic);
+        }
+      }
+      
+      // define deadq if needed
+      if (locateQueue(mConfig.getDeadQueue()) == null)
+      {
+        String deadq = mConfig.getDeadQueue();
+        mLogger.trace("KasqRepository::init() - DEADQ: [" + deadq + "] could not be located, define it now");
+        
+        defineQueue(deadq);
+        mDeadQueue = new WeakRef<KasqQueue>(mQueuesMap.get(deadq));
+      }
+      
+      // define adminq if needed
+      if (locateQueue(mConfig.getAdminQueue()) == null)
+      {
+        String adminq = mConfig.getAdminQueue();
+        mLogger.trace("KasqRepository::init() - ADMINQ: [" + adminq + "] could not be located, define it now");
+        
+        defineQueue(adminq);
+        mDeadQueue = new WeakRef<KasqQueue>(mQueuesMap.get(adminq));
+      }
     }
     
     mLogger.debug("KasqRepository::init() - OUT, Returns=" + success);
@@ -111,12 +151,6 @@ public class KasqRepository extends AKasObject implements IInitializable
       mLogger.debug("KasqRepository::term() - Writing topic contents. Topic=[" + tname + "]; Messages=[" + topic.size() + "]");
       topic.term();
     }
-    
-    try
-    {
-      mLocatorSocket.close();
-    }
-    catch (IOException e) {}
     
     mLogger.debug("KasqRepository::term() - OUT");
     return true;
