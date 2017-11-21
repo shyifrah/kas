@@ -6,6 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingDeque;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.PacketHeader;
@@ -85,8 +88,26 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
           }
         }
         
-        // delete the file so we won't read the same messages upon next startup
-        mBackupFile.delete();
+        // closing the file
+        try
+        {
+          fis.close();
+          istream.close();
+        }
+        catch (IOException e) {}
+        
+        // deleting it so we won't read again the same messages 
+        String abspath = mBackupFile.getAbsolutePath();
+        try
+        {
+          Path path = Paths.get(abspath);
+          Files.delete(path);
+        }
+        catch (IOException e)
+        {
+          sLogger.warn("Failed to delete backup file " + abspath + ", exception: ", e);
+        }
+        
         sLogger.trace("Contents successfully restored; Total read messages [" + mQueue.size() + "]");
       }
     }

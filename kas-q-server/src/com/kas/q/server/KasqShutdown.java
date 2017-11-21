@@ -96,7 +96,7 @@ public class KasqShutdown extends KasqClient
     
     try
     {
-      Thread.sleep(5000);
+      Thread.sleep(3000);
     }
     catch (Throwable e) {}
   }

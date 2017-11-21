@@ -77,7 +77,7 @@ public class Driver
         sendFiveMessages(sess, queue);
         
         System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
-        sleepForSeconds(10);
+        sleepForSeconds(5);
         
         
         //conn.start();
