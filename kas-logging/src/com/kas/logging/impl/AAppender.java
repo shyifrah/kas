@@ -5,6 +5,8 @@ import com.kas.infra.base.ThrowableFormatter;
 
 public abstract class AAppender extends AKasObject implements IAppender
 {
+  protected static final String cAppenderMessageFormat = "%s %d:%d %-5s [%s] %s%n";
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------

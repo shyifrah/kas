@@ -10,6 +10,8 @@ import com.kas.infra.utils.RunTimeUtils;
 
 public class FileAppender extends AAppender
 {
+  private static final int cBytesPerMB = 1024 * 1024;
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
@@ -18,7 +20,7 @@ public class FileAppender extends AAppender
   private BufferedWriter            mBufferedWriter  = null;
   private int                       mErrorCount      = 0;
   private int                       mWriteCount      = 0;
-  private String                    mFileName        = Constants.cDefaultLogFileName;
+  private String                    mFileName        = FileAppenderConfiguration.cDefaultLogFileName;
   private File                      mLogFile         = null;
   
   //------------------------------------------------------------------------------------------------------------------
@@ -112,7 +114,7 @@ public class FileAppender extends AAppender
         TimeStamp ts = new TimeStamp();
         try
         {
-          mBufferedWriter.write(String.format(Constants.cAppenderMessageFormat, 
+          mBufferedWriter.write(String.format(cAppenderMessageFormat, 
             ts.toString(),
             RunTimeUtils.getProcessId(),
             RunTimeUtils.getThreadId(),
@@ -174,7 +176,7 @@ public class FileAppender extends AAppender
     {
       long logFileSize = mLogFile.length();
 
-      if (logFileSize >= mConfig.getArchiveMaxFileSizeMb() * Constants.cBytesPerMB)  // is file size > max file size?
+      if (logFileSize >= mConfig.getArchiveMaxFileSizeMb() * cBytesPerMB)  // is file size > max file size?
       {
         // scan all generations from the oldest to the newest
         for (int generationIndex = mConfig.getArchiveMaxGenerations(); generationIndex >= 1; --generationIndex)

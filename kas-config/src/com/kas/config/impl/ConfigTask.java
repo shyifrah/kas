@@ -10,7 +10,7 @@ import com.kas.infra.utils.StringUtils;
 final public class ConfigTask extends AKasObject implements Runnable
 {
   private IMainConfiguration mMainConfig;
-  private Map<String, Long>  mMonitoredFilesLastModTimeStampMap;
+  private Map<String, Long>  mMonitoredFilesMap;
   
   //----------------------------------------------------------------------------------------------------
   //
@@ -18,14 +18,14 @@ final public class ConfigTask extends AKasObject implements Runnable
   public ConfigTask(IMainConfiguration config)
   {
     mMainConfig  = config;
-    mMonitoredFilesLastModTimeStampMap = new HashMap<String, Long>();
+    mMonitoredFilesMap = new HashMap<String, Long>();
     
     for (String monitoredFile : mMainConfig.getConfigFiles())
     {
       File file = new File(monitoredFile);
       if (file.exists())
       {
-        mMonitoredFilesLastModTimeStampMap.put(monitoredFile,  -1L);
+        mMonitoredFilesMap.put(monitoredFile,  -1L);
       }
     }
   }
@@ -37,7 +37,7 @@ final public class ConfigTask extends AKasObject implements Runnable
   {
     boolean reload = false;
     
-    for (Map.Entry<String, Long> pair : mMonitoredFilesLastModTimeStampMap.entrySet())
+    for (Map.Entry<String, Long> pair : mMonitoredFilesMap.entrySet())
     {
       String fileName = pair.getKey();
       Long prevModTs  = pair.getValue();
@@ -45,7 +45,7 @@ final public class ConfigTask extends AKasObject implements Runnable
       // if the file was removed from monitored list, remove it from modification map
       if (!mMainConfig.getConfigFiles().contains(fileName))
       {
-        mMonitoredFilesLastModTimeStampMap.remove(fileName);
+        mMonitoredFilesMap.remove(fileName);
       }
       else
       {
@@ -56,7 +56,7 @@ final public class ConfigTask extends AKasObject implements Runnable
           currModTs = file.lastModified();
           if (currModTs > prevModTs)
           {
-            mMonitoredFilesLastModTimeStampMap.put(fileName, currModTs);
+            mMonitoredFilesMap.put(fileName, currModTs);
             reload = true;
           }
         }
@@ -75,7 +75,7 @@ final public class ConfigTask extends AKasObject implements Runnable
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(pad).append("  MonitoredFiles=(\n")
-      .append(StringUtils.asPrintableString(mMonitoredFilesLastModTimeStampMap, level+2)).append("\n")
+      .append(StringUtils.asPrintableString(mMonitoredFilesMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

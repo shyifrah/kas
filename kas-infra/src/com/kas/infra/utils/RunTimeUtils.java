@@ -6,10 +6,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
-import com.kas.infra.base.Constants;
 
 public class RunTimeUtils
 {
+  /***************************************************************************************************************
+   * 
+   */
+  private static final String cProductHomeDirProperty = "kas.home";
+  private static final String cUserNameProperty       = "user.name";
+  
   /***************************************************************************************************************
    * 
    */
@@ -83,7 +88,7 @@ public class RunTimeUtils
    */
   public static String getUserId()
   {
-    return getProperty(Constants.cUserNameProperty);
+    return getProperty(cUserNameProperty);
   }
   
   /***************************************************************************************************************
@@ -140,7 +145,7 @@ public class RunTimeUtils
    */
   private static String initProductHomeDir()
   {
-    String path = getProperty(Constants.cProductHomeDirProperty, ".");
+    String path = getProperty(cProductHomeDirProperty, ".");
     
     // last resort - assuming current directory
     File currdir = new File(path);

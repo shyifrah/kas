@@ -2,22 +2,29 @@ package com.kas.logging.impl;
 
 public class FileAppenderConfiguration extends AAppenderConfiguration
 {
+  static final String cDefaultLogFileName           = "kas-%p-%d.log";
+  static final int    cDefaultMaxWriteErrors        = 10;
+  static final int    cDefaultFlushRate             = 10;
+  static final int    cDefaultArchiveMaxFileSizeMb  = 10;
+  static final int    cDefaultArchiveMaxGenerations = 5;
+  static final int    cDefaultArchiveTestSizeRate   = 20;
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private String mFileNamePattern       = Constants.cDefaultLogFileName;
-  private int    mMaxWriteErrors        = Constants.cDefaultMaxWriteErrors;
-  private int    mFlushRate             = Constants.cDefaultFlushRate;
-  private int    mArchiveMaxFileSizeMb  = Constants.cDefaultArchiveMaxFileSizeMb;
-  private int    mArchiveMaxGenerations = Constants.cDefaultArchiveMaxGenerations;
-  private int    mArchiveTestSizeRate   = Constants.cDefaultArchiveTestSizeRate;
+  private String mFileNamePattern       = cDefaultLogFileName;
+  private int    mMaxWriteErrors        = cDefaultMaxWriteErrors;
+  private int    mFlushRate             = cDefaultFlushRate;
+  private int    mArchiveMaxFileSizeMb  = cDefaultArchiveMaxFileSizeMb;
+  private int    mArchiveMaxGenerations = cDefaultArchiveMaxGenerations;
+  private int    mArchiveTestSizeRate   = cDefaultArchiveTestSizeRate;
   
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
   public FileAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(Constants.cFileAppenderName, loggingConfig);
+    super(AppenderManager.cFileAppenderName, loggingConfig);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -27,12 +34,12 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   {
     super.refresh();
     
-    mFileNamePattern       = sMainConfig.getStringProperty ( Constants.cLoggingConfigPrefix + "appender." + mName + ".fileNamePattern"        , mFileNamePattern       );
-    mMaxWriteErrors        = sMainConfig.getIntProperty    ( Constants.cLoggingConfigPrefix + "appender." + mName + ".maxWriteErrors"         , mMaxWriteErrors        );
-    mFlushRate             = sMainConfig.getIntProperty    ( Constants.cLoggingConfigPrefix + "appender." + mName + ".flushRate"              , mFlushRate             );
-    mArchiveMaxFileSizeMb  = sMainConfig.getIntProperty    ( Constants.cLoggingConfigPrefix + "appender." + mName + ".archive.maxFileSizeMb"  , mArchiveMaxFileSizeMb  );
-    mArchiveMaxGenerations = sMainConfig.getIntProperty    ( Constants.cLoggingConfigPrefix + "appender." + mName + ".archive.maxGenerations" , mArchiveMaxGenerations );
-    mArchiveTestSizeRate   = sMainConfig.getIntProperty    ( Constants.cLoggingConfigPrefix + "appender." + mName + ".archive.testSizeRate"   , mArchiveTestSizeRate   );
+    mFileNamePattern       = sMainConfig.getStringProperty ( cLoggingConfigPrefix + "appender." + mName + ".fileNamePattern"        , mFileNamePattern       );
+    mMaxWriteErrors        = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".maxWriteErrors"         , mMaxWriteErrors        );
+    mFlushRate             = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".flushRate"              , mFlushRate             );
+    mArchiveMaxFileSizeMb  = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.maxFileSizeMb"  , mArchiveMaxFileSizeMb  );
+    mArchiveMaxGenerations = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.maxGenerations" , mArchiveMaxGenerations );
+    mArchiveTestSizeRate   = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.testSizeRate"   , mArchiveTestSizeRate   );
   }
   
   //------------------------------------------------------------------------------------------------------------------

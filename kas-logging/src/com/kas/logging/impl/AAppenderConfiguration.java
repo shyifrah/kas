@@ -7,6 +7,13 @@ import com.kas.infra.config.IMainConfiguration;
 
 public abstract class AAppenderConfiguration extends AKasObject implements IListener
 {
+  static final String   cLoggingConfigPrefix  = "kas.logging.";
+  static final String   cConfigAppenderPrefix = cLoggingConfigPrefix + "appender."; 
+  
+  static final boolean   cDefaultEnabled  = true;
+  static final ELogLevel cDefaultLogLevel = ELogLevel.INFO;
+   
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
@@ -16,9 +23,9 @@ public abstract class AAppenderConfiguration extends AKasObject implements IList
   //
   //------------------------------------------------------------------------------------------------------------------
   protected LoggingConfiguration mLoggingConfig = null;
-  protected String   mName;
-  protected boolean  mEnabled  = Constants.cDefaultEnabled;
-  protected ELogLevel mLogLevel = Constants.cDefaultLogLevel;
+  protected String    mName;
+  protected boolean   mEnabled  = cDefaultEnabled;
+  protected ELogLevel mLogLevel = cDefaultLogLevel;
   
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -34,8 +41,8 @@ public abstract class AAppenderConfiguration extends AKasObject implements IList
   //------------------------------------------------------------------------------------------------------------------
   public void refresh()
   {
-    mEnabled        = sMainConfig.getBoolProperty  ( Constants.cLoggingConfigPrefix + "appender." + mName + ".enabled", mEnabled);
-    String logLevel = sMainConfig.getStringProperty( Constants.cLoggingConfigPrefix + "appender." + mName + ".logLevel", mLogLevel.name());
+    mEnabled        = sMainConfig.getBoolProperty  ( cLoggingConfigPrefix + "appender." + mName + ".enabled" , mEnabled);
+    String logLevel = sMainConfig.getStringProperty( cLoggingConfigPrefix + "appender." + mName + ".logLevel", mLogLevel.name());
     
     try {
       mLogLevel = ELogLevel.valueOf(ELogLevel.class, logLevel);

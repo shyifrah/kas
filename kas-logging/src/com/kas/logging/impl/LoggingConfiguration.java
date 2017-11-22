@@ -2,7 +2,6 @@ package com.kas.logging.impl;
 
 import java.util.HashSet;
 import com.kas.config.impl.AConfiguration;
-import com.kas.config.impl.Constants;
 import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IRegistrar;
@@ -12,7 +11,14 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private boolean mEnabled = Constants.cDefaultEnabled;
+  public static final String cLoggingConfigPrefix = "kas.logging.";
+  
+  public static final boolean cDefaultEnabled = true;
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  private boolean mEnabled = cDefaultEnabled;
   
   private HashSet<WeakRef<IListener>> mAppenderConfigsSet = new HashSet<WeakRef<IListener>>();
   
@@ -21,7 +27,7 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
   //------------------------------------------------------------------------------------------------------------------
   public void refresh()
   {
-    mEnabled = mMainConfig.getBoolProperty ( Constants.cLoggingConfigPrefix + "enabled" , mEnabled);
+    mEnabled = mMainConfig.getBoolProperty ( cLoggingConfigPrefix + "enabled" , mEnabled);
     
     for (WeakRef<IListener> appenderConfigRef : mAppenderConfigsSet)
     {
@@ -49,7 +55,7 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
     // looking for best match
     do
     {
-      String key = Constants.cLoggingConfigPrefix + "logger." + loggerName + ".appender";
+      String key = cLoggingConfigPrefix + "logger." + loggerName + ".appender";
       String val = mMainConfig.getStringProperty(key, "");
       
       if (val.length() > 0)

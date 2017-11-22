@@ -7,6 +7,6 @@ public class StdoutAppenderConfiguration extends ConsoleAppenderConfiguration
   //------------------------------------------------------------------------------------------------------------------
   public StdoutAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(Constants.cStdoutAppenderName, loggingConfig);
+    super(AppenderManager.cStdoutAppenderName, loggingConfig);
   }
 }

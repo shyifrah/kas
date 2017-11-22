@@ -8,6 +8,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
 
 public class ClientSenderDriver
@@ -76,8 +77,8 @@ public class ClientSenderDriver
         System.out.println("Driver::run() - Sending messages");
         sendMessages(sess, queue);
         
-        System.out.println("Driver::run() - Waiting 10 seconds before continuing...");
-        sleepForSeconds(5);
+        System.out.println("Driver::run() - Waiting 5 seconds before continuing...");
+        RunTimeUtils.sleep(5);
       }
       catch (JMSException e)
       {
@@ -106,19 +107,5 @@ public class ClientSenderDriver
       TextMessage msg = session.createTextMessage(text);
       producer.send(queue, msg);
     }
-  }
-  
-  //============================================================================================================================================
-  //
-  //
-  //
-  //============================================================================================================================================
-  private void sleepForSeconds(int seconds)
-  {
-    try
-    {
-      Thread.sleep((long)(seconds * 1000));
-    }
-    catch (Throwable e) {}
   }
 }

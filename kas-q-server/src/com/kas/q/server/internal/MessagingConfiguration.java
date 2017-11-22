@@ -2,7 +2,6 @@ package com.kas.q.server.internal;
 
 import java.util.HashSet;
 import com.kas.config.impl.AConfiguration;
-import com.kas.config.impl.Constants;
 import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IRegistrar;
@@ -13,14 +12,23 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
   /***************************************************************************************************************
    * 
    */
-  private boolean mEnabled          = Constants.cDefaultEnabled;
-  private int     mPort             = Constants.cDefaultListenPort;
-  private String  mManagerName      = Constants.cDefaultManagerName;
-  private String  mDeadQueue        = Constants.cDefaultDeadQueueName;
-  private String  mAdminQueue       = Constants.cDefaultAdminQueueName;
-  private long    mDispatchDelay    = Constants.cDefaultDispatchDelay;
-  private long    mDispatchInterval = Constants.cDefaultDispatchInterval;
-  private int     mLocatorPort      = Constants.cDefaultLocatorListenPort;
+  private static final String  cMessagingConfigPrefix  = "kas.q.";
+  
+  public  static final boolean cDefaultEnabled        = true;
+  public  static final int     cDefaultListenPort     = 14560;
+  public  static final String  cDefaultManagerName    = "qmgr";
+  public  static final String  cDefaultDeadQueueName  = "local.dead";
+  public  static final String  cDefaultAdminQueueName = "local.admin";
+  
+  
+  /***************************************************************************************************************
+   * 
+   */
+  private boolean mEnabled     = cDefaultEnabled;
+  private int     mPort        = cDefaultListenPort;
+  private String  mManagerName = cDefaultManagerName;
+  private String  mDeadQueue   = cDefaultDeadQueueName;
+  private String  mAdminQueue  = cDefaultAdminQueueName;
       
   private HashSet<WeakRef<IListener>> mRemoteManagers = new HashSet<WeakRef<IListener>>();
   
@@ -29,14 +37,11 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
    */
   public void refresh()
   {
-    mEnabled          = mMainConfig.getBoolProperty   ( Constants.cMessagingConfigPrefix + "enabled"     , mEnabled     );
-    mPort             = mMainConfig.getIntProperty    ( Constants.cMessagingConfigPrefix + "port"        , mPort        );
-    mManagerName      = mMainConfig.getStringProperty ( Constants.cMessagingConfigPrefix + "managerName" , mManagerName );
-    mDeadQueue        = mMainConfig.getStringProperty ( Constants.cMessagingConfigPrefix + "deadq"       , mDeadQueue   );
-    mAdminQueue       = mMainConfig.getStringProperty ( Constants.cMessagingConfigPrefix + "adminq"      , mAdminQueue  );
-    mDispatchDelay    = mMainConfig.getLongProperty   ( Constants.cMessagingDispatchConfigPrefix + "delay"    , mDispatchDelay    ); 
-    mDispatchInterval = mMainConfig.getLongProperty   ( Constants.cMessagingDispatchConfigPrefix + "interval" , mDispatchInterval );
-    mLocatorPort      = mMainConfig.getIntProperty    ( Constants.cMessagingLocatorConfigPrefix + "port" , mLocatorPort );
+    mEnabled          = mMainConfig.getBoolProperty   ( cMessagingConfigPrefix + "enabled"     , mEnabled     );
+    mPort             = mMainConfig.getIntProperty    ( cMessagingConfigPrefix + "port"        , mPort        );
+    mManagerName      = mMainConfig.getStringProperty ( cMessagingConfigPrefix + "managerName" , mManagerName );
+    mDeadQueue        = mMainConfig.getStringProperty ( cMessagingConfigPrefix + "deadq"       , mDeadQueue   );
+    mAdminQueue       = mMainConfig.getStringProperty ( cMessagingConfigPrefix + "adminq"      , mAdminQueue  );
     
     synchronized (mRemoteManagers)
     {
@@ -127,36 +132,6 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
   }
   
   /***************************************************************************************************************
-   * Number of milliseconds since KAS/Q startup till the manager will start dispatch queues
-   * 
-   * @return dispatching delay in milliseconds
-   */
-  public long getDispatchDelay()
-  {
-    return mDispatchDelay;
-  }
-  
-  /***************************************************************************************************************
-   * Number of milliseconds between each dispatch task execution
-   * 
-   * @return dispatching interval in milliseconds
-   */
-  public long getDispatchInterval()
-  {
-    return mDispatchInterval;
-  }
-  
-  /***************************************************************************************************************
-   * The port number on which the Repository will listen for new location requests
-   * 
-   * @return locator's port number
-   */
-  public int getLocatorPort()
-  {
-    return mLocatorPort;
-  }
-  
-  /***************************************************************************************************************
    * 
    */
   public String toPrintableString(int level)
@@ -170,9 +145,6 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  DeadQueue=").append(mDeadQueue).append("\n")
       .append(pad).append("  AdminQueue=").append(mAdminQueue).append("\n")
-      .append(pad).append("  QueueDispatch.Delay=").append(mDispatchDelay).append(" MilliSeconds\n")
-      .append(pad).append("  QueueDispatch.Interval=").append(mDispatchInterval).append(" MilliSeconds\n")
-      .append(pad).append("  Locator.Port=").append(mLocatorPort).append("\n")
       .append(pad).append("  RemoteManagers=(\n")
       .append(StringUtils.asPrintableString(mRemoteManagers, level + 2)).append("\n")
       .append(pad).append("  )\n")

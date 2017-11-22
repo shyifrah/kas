@@ -8,6 +8,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import com.kas.infra.base.KasException;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.KasqTextMessage;
 import com.kas.q.ext.KasqClient;
 
@@ -78,7 +79,7 @@ public class ClientReceiverDriver
         System.out.println("Driver::run() - Receiving messages");
         receiveMessages(sess, queue);
         System.out.println("Driver::run() - Waiting 5 seconds before continuing...");
-        sleepForSeconds(5);
+        RunTimeUtils.sleep(5);
       }
       catch (JMSException e)
       {
@@ -107,19 +108,5 @@ public class ClientReceiverDriver
       KasqTextMessage kmsg = (KasqTextMessage)msg;
       System.out.println("Driver::run() - message: " + kmsg.toPrintableString());
     }
-  }
-  
-  //============================================================================================================================================
-  //
-  //
-  //
-  //============================================================================================================================================
-  private void sleepForSeconds(int seconds)
-  {
-    try
-    {
-      Thread.sleep((long)(seconds * 1000));
-    }
-    catch (Throwable e) {}
   }
 }

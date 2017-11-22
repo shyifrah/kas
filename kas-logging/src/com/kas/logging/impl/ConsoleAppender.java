@@ -47,7 +47,7 @@ public class ConsoleAppender extends AAppender
       if (mConfig.getLogLevel().isGreaterOrEqual(messageLevel))
       {
         TimeStamp ts = new TimeStamp();
-        mPrintStream.print(String.format(Constants.cAppenderMessageFormat,
+        mPrintStream.print(String.format(cAppenderMessageFormat,
           ts.toString(),
           RunTimeUtils.getProcessId(),
           RunTimeUtils.getThreadId(),

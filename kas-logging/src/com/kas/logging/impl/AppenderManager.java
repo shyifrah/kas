@@ -9,6 +9,13 @@ public class AppenderManager extends AKasObject
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
+  public static final String cFileAppenderName   = "file";
+  public static final String cStdoutAppenderName = "stdout";
+  public static final String cStderrAppenderName = "stderr";
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
   private static AppenderManager      sInstance = new AppenderManager();
   private static LoggingConfiguration sConfig   = new LoggingConfiguration();
 
@@ -73,21 +80,21 @@ public class AppenderManager extends AKasObject
     sConfig.register(fac);
     FileAppender fa = new FileAppender(fac);
     fa.init();
-    mAppenders.put(Constants.cFileAppenderName, fa);
+    mAppenders.put(cFileAppenderName, fa);
     
     // stdout
     ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(sConfig);
     sConfig.register(soac);
     ConsoleAppender stdout = new StdoutAppender(soac);
     stdout.init();
-    mAppenders.put(Constants.cStdoutAppenderName, stdout);
+    mAppenders.put(cStdoutAppenderName, stdout);
     
     // stderr
     ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(sConfig);
     sConfig.register(seac);
     ConsoleAppender stderr = new StderrAppender(seac);
     stderr.init();
-    mAppenders.put(Constants.cStderrAppenderName, stderr);
+    mAppenders.put(cStderrAppenderName, stderr);
     
     mAppendersLoaded = true;
   }

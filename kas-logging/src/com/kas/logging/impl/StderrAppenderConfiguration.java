@@ -7,6 +7,6 @@ public class StderrAppenderConfiguration extends ConsoleAppenderConfiguration
   //------------------------------------------------------------------------------------------------------------------
   public StderrAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(Constants.cStderrAppenderName, loggingConfig);
+    super(AppenderManager.cStderrAppenderName, loggingConfig);
   }
 }

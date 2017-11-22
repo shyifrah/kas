@@ -12,7 +12,8 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private static final long serialVersionUID = 1L;
+  public  static final String cIncludeKey      = "kas.include";
+  private static final long   serialVersionUID = 1L;
   
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -483,7 +484,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
           String actualVal = new PropertyValue(val).getActual();
           
           // if we encounter an "include" statement - load the new file
-          if (key.equalsIgnoreCase(Constants.cIncludeKey))
+          if (key.equalsIgnoreCase(cIncludeKey))
           {
             load(actualVal, properties);
           }
@@ -495,7 +496,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
       }
       
       // add file to list of monitored files
-      String included = (String)properties.get(Constants.cIncludeKey);
+      String included = (String)properties.get(cIncludeKey);
       if (included == null)
       {
         included = fileName;
@@ -504,7 +505,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
       {
         included = included + "," + fileName;
       }
-      properties.put(Constants.cIncludeKey, included);
+      properties.put(cIncludeKey, included);
     }
   }
   

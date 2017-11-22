@@ -1,10 +1,10 @@
 package com.kas.config;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import com.kas.config.impl.ConfigTask;
-import com.kas.config.impl.Constants;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.threads.ThreadPool;
@@ -18,20 +18,29 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
+  private static final long cDefaultMonitoringDelay    = 10000L;
+  private static final long cDefaultMonitoringInterval = 10000L;
+  
+  private static final String cMainConfigFileName = "kas.properties";
+  private static final String cConfigPropPrefix   = "kas.config.";
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
   private static MainConfiguration    sInstance      = new MainConfiguration();
   
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private boolean           mInitialized = false;
-  private String            mConfigDir   = RunTimeUtils.getProductHomeDir() + "/conf";
-  private Set<IListener>    mListeners   = new HashSet<IListener>();
-  private Set<String>       mConfigFiles = new HashSet<String>();
-  private Properties        mProperties  = null;
-  private ConfigTask        mConfigTask  = null;
+  private boolean        mInitialized = false;
+  private String         mConfigDir   = RunTimeUtils.getProductHomeDir() + File.separatorChar + "conf";
+  private Set<IListener> mListeners   = new HashSet<IListener>();
+  private Set<String>    mConfigFiles = new HashSet<String>();
+  private Properties     mProperties  = null;
+  private ConfigTask     mConfigTask  = null;
   
-  private long mConfigMonitoringDelay    = Constants.cDefaultMonitoringDelay;
-  private long mConfigMonitoringInterval = Constants.cDefaultMonitoringInterval;
+  private long mConfigMonitoringDelay    = cDefaultMonitoringDelay;
+  private long mConfigMonitoringInterval = cDefaultMonitoringInterval;
   
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -64,8 +73,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
       
       mConfigTask  = new ConfigTask(this);
       
-      mConfigMonitoringDelay    = getLongProperty( Constants.cConfigPropPrefix + "delay"    , mConfigMonitoringDelay    );
-      mConfigMonitoringInterval = getLongProperty( Constants.cConfigPropPrefix + "interval" , mConfigMonitoringInterval );
+      mConfigMonitoringDelay    = getLongProperty( cConfigPropPrefix + "delay"    , mConfigMonitoringDelay    );
+      mConfigMonitoringInterval = getLongProperty( cConfigPropPrefix + "interval" , mConfigMonitoringInterval );
       
       ThreadPool.scheduleAtFixedRate(mConfigTask, mConfigMonitoringDelay, mConfigMonitoringInterval, TimeUnit.MILLISECONDS);
       
@@ -98,18 +107,15 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   private boolean load()
   {
     // reloading configuration to new object and switch. old object will be gc'ed
-    //PropertiesLoader newLoader = new PropertiesLoader(mConfigDir, Constants.cIncludeKey);
     mProperties = new Properties();
-    mProperties.load(RunTimeUtils.getProductHomeDir() + "/conf/" + Constants.cMainConfigFileName);
+    mProperties.load(mConfigDir + File.separatorChar + cMainConfigFileName);
     
     if (mProperties.isEmpty())
-    {
       return false;
-    }
     
     mConfigFiles.clear();
     
-    String monitoredFiles = mProperties.getProperty(Constants.cIncludeKey);
+    String monitoredFiles = mProperties.getProperty(Properties.cIncludeKey);
     String [] listOfMonitoredFiles = monitoredFiles.split(",");
     for (String file : listOfMonitoredFiles)
     {
