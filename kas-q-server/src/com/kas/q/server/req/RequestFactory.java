@@ -40,6 +40,10 @@ public class RequestFactory
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
           request = new ShutdownRequest(message);
           break;
+        case cDefine:
+          sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
+          request = new DefineRequest(message);
+          break;
         case cPut:
         default:
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());

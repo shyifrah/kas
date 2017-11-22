@@ -7,12 +7,12 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 
-final public class GetRequest extends AKasObject implements IRequest
+final public class DefineRequest extends AKasObject implements IRequest
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(GetRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(DefineRequest.class);
   
   /***************************************************************************************************************
    * 
@@ -22,14 +22,14 @@ final public class GetRequest extends AKasObject implements IRequest
   private String  mJmsMessageId;
   
   /***************************************************************************************************************
-   * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code DefineRequest} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
    * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the client.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  GetRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  DefineRequest(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  destName = null;
     Integer destType = null;
@@ -44,32 +44,32 @@ final public class GetRequest extends AKasObject implements IRequest
     
     if (destName == null)
     {
-      sLogger.warn("Received GetRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: null destination name");
+      sLogger.warn("Received DefineRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
+      throw new IllegalArgumentException("Invalid DefineRequest: null destination name");
     }
     
     if (destName.length() == 0)
     {
-      sLogger.warn("Received GetRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: destination is empty string");
+      sLogger.warn("Received DefineRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
+      throw new IllegalArgumentException("Invalid DefineRequest: destination is empty string");
     }
     
     if (destType == null)
     {
-      sLogger.warn("Received GetRequest with invalid destination: type=[" + StringUtils.asString(destType) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: null destination type");
+      sLogger.warn("Received DefineRequest with invalid destination: type=[" + StringUtils.asString(destType) + "]");
+      throw new IllegalArgumentException("Invalid DefineRequest: null destination type");
     }
     
     if (jmsMsgId == null)
     {
-      sLogger.warn("Received GetRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: null JMS message ID");
+      sLogger.warn("Received DefineRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
+      throw new IllegalArgumentException("Invalid DefineRequest: null JMS message ID");
     }
     
     if (jmsMsgId.length() == 0)
     {
-      sLogger.warn("Received GetRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
-      throw new IllegalArgumentException("Invalid GetRequest: JMS message ID is empty string");
+      sLogger.warn("Received DefineRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
+      throw new IllegalArgumentException("Invalid DefineRequest: JMS message ID is empty string");
     }
     
     mDestinationName = destName;
@@ -112,7 +112,7 @@ final public class GetRequest extends AKasObject implements IRequest
    */
   public ERequestType getRequestType()
   {
-    return ERequestType.cGet;
+    return ERequestType.cDefine;
   }
   
   /***************************************************************************************************************
@@ -122,7 +122,7 @@ final public class GetRequest extends AKasObject implements IRequest
   {
     StringBuffer sb = new StringBuffer();
     sb.append(name())
-      .append("(FromDest=").append(mDestinationType == 1 ? "queue:///" : "topic:///").append(mDestinationName).append(")");
+      .append("(Dest=").append(mDestinationType == 1 ? "queue:///" : "topic:///").append(mDestinationName).append(")");
     return sb.toString();
   }
   

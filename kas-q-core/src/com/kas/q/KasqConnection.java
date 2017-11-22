@@ -1,8 +1,6 @@
 package com.kas.q;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
@@ -43,14 +41,9 @@ public class KasqConnection extends AKasObject implements Connection
   protected boolean mStarted  = false;
   protected String  mClientId = null;
   
-  protected String mUserName = null;
-  protected String mPassword = null;
-  
   protected boolean mPriviliged = false;
   
   protected IMessenger mMessenger;
-  
-  private Map<String, KasqSession> mOpenedSessions;
   
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
@@ -80,12 +73,8 @@ public class KasqConnection extends AKasObject implements Connection
     sLogger.debug("KasqConnection::KasqConnection() - IN");
     try
     {
-      mOpenedSessions = new ConcurrentHashMap<String, KasqSession>();
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       mClientId = "CLNT" + UniqueId.generate().toString();
-      
-      mUserName = userName;
-      mPassword = password;
     }
     catch (IOException e)
     {
@@ -104,9 +93,9 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void start()
   {
-    sLogger.debug("KasqConnection::start() - IN");
+    sLogger.diag("KasqConnection::start() - IN");
     mStarted = true;
-    sLogger.debug("KasqConnection::start() - OUT");
+    sLogger.diag("KasqConnection::start() - OUT");
   }
 
   /***************************************************************************************************************
@@ -114,9 +103,9 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void stop()
   {
-    sLogger.debug("KasqConnection::stop() - IN");
+    sLogger.diag("KasqConnection::stop() - IN");
     mStarted = false;
-    sLogger.debug("KasqConnection::stop() - OUT");
+    sLogger.diag("KasqConnection::stop() - OUT");
   }
   
   /***************************************************************************************************************
@@ -134,9 +123,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public Session createSession() throws JMSException
   {
-    KasqSession session = new KasqSession(this);
-    mOpenedSessions.put(session.getSessionId(), session);
-    return session;
+    return new KasqSession(this);
   }
 
   /***************************************************************************************************************
@@ -144,9 +131,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException
   {
-    KasqSession session = new KasqSession(this, transacted, acknowledgeMode);
-    mOpenedSessions.put(session.getSessionId(), session);
-    return session;
+    return new KasqSession(this, transacted, acknowledgeMode);
   }
 
   /***************************************************************************************************************
@@ -154,9 +139,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public Session createSession(int sessionMode) throws JMSException
   {
-    KasqSession session = new KasqSession(this, sessionMode);
-    mOpenedSessions.put(session.getSessionId(), session);
-    return session;
+    return new KasqSession(this, sessionMode);
   }
 
   /***************************************************************************************************************
@@ -245,18 +228,6 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
-   * Get a KasqSession object from the OpenedSessions map
-   * 
-   * @param id the ID of the session
-   * 
-   * @return the KasqSession with the specified id, or null if not found 
-   */
-  public KasqSession getOpenSession(String id)
-  {
-    return mOpenedSessions.get(id);
-  }
-  
-  /***************************************************************************************************************
    * Authenticate the caller
    * 
    * @param userName the user name of the caller
@@ -275,7 +246,6 @@ public class KasqConnection extends AKasObject implements Connection
     {
       KasqMessage authRequest = new KasqMessage();
       authRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Authenticate);
-      
       authRequest.setStringProperty(IKasqConstants.cPropertyUserName, userName);
       authRequest.setStringProperty(IKasqConstants.cPropertyPassword, password);
       
@@ -308,7 +278,6 @@ public class KasqConnection extends AKasObject implements Connection
   
   /***************************************************************************************************************
    * Send a message to the KAS/Q server by calling the messenger's send() method.
-   * If the message is a Shutdown request, call the halt() function instead
    * 
    * @param message the message to be sent
    * 
@@ -337,21 +306,22 @@ public class KasqConnection extends AKasObject implements Connection
    */
   synchronized IKasqMessage internalSendAndReceive(IKasqMessage message) throws JMSException
   {
-    IKasqMessage reply = null;
+    IPacket packet;
     try
     {
-      IPacket packet = mMessenger.sendAndReceive(message);
-      if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
-      {
-        throw new JMSException("Invalid reply from KAS/Q server", "Expected packet ID=[" + PacketHeader.cClassIdKasq + "], Actual=[" + packet.getPacketClassId() + "]");
-      }
-      reply = (IKasqMessage)packet;
+      packet = mMessenger.sendAndReceive(message);
     }
     catch (Throwable e)
     {
       throw new JMSException("Failed to send message", e.getMessage());
     }
-    return reply;
+    
+    if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
+    {
+      throw new JMSException("Invalid reply from KAS/Q server", "Expected packet ID=[" + PacketHeader.cClassIdKasq + "], Actual=[" + packet.getPacketClassId() + "]");
+    }
+    
+    return (IKasqMessage)packet;
   }
   
   /***************************************************************************************************************

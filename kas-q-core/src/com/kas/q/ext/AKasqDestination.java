@@ -28,10 +28,10 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
    */
   private String  mName;
   private String  mManagerName;
-  private File    mBackupFile;
-  private LinkedBlockingDeque<IKasqMessage> mQueue;
   
-  private String  mBackupFileName = null;
+  private transient LinkedBlockingDeque<IKasqMessage> mQueue;
+  private transient File    mBackupFile;
+  private transient String  mBackupFileName = null;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqDestination} object, specifying its name

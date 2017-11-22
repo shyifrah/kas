@@ -14,6 +14,7 @@ import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.server.KasqServer;
 import com.kas.q.server.req.AuthenticateRequest;
+import com.kas.q.server.req.DefineRequest;
 import com.kas.q.server.req.GetRequest;
 import com.kas.q.server.req.IRequest;
 import com.kas.q.server.req.PutRequest;
@@ -31,7 +32,6 @@ public class ClientHandler extends AKasObject implements Runnable
   private IMessenger      mMessenger;
   private IController     mController;
   private boolean         mAuthenticated;
-  //private Queue<IRequest> mRequestQueue;
   
   /***************************************************************************************************************
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
@@ -46,7 +46,6 @@ public class ClientHandler extends AKasObject implements Runnable
     mMessenger  = MessengerFactory.create(socket, new KasqMessageFactory());
     mAuthenticated = false;
     mController = KasqServer.getInstance().getController();
-    //mRequestQueue = new ArrayDeque<IRequest>();
     
     if (mController != null) mController.onHandlerStart(this);
   }
@@ -135,6 +134,11 @@ public class ClientHandler extends AKasObject implements Runnable
     
     switch (request.getRequestType())
     {
+      case cDefine:
+        sLogger.debug("ClientHandler::process() - Processing a Define request");
+        if (mAuthenticated)
+          RequestProcessor.handleDefineRequest(this, (DefineRequest)request);
+        break;
       case cShutdown:
         sLogger.debug("ClientHandler::process() - Processing a Shutdown request");
         if (mAuthenticated)
@@ -153,6 +157,8 @@ public class ClientHandler extends AKasObject implements Runnable
         sLogger.debug("ClientHandler::process() - Processing a Put request");
         if (mAuthenticated)
           RequestProcessor.handlePutRequest((PutRequest)request);
+        break;
+      default:
         break;
     }
     

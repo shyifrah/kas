@@ -24,11 +24,11 @@ public class RequestProcessor
   
   /***************************************************************************************************************
    * Process a {@link PutRequest}.
-   * 
+   * A PutRequest is a request to put a message into destination.
    * We locate the destination by it name in the repository and call put() on that destination.
    * If we don't find the destination, we put the message in the dead queue.
    * 
-   * @param the request object
+   * @param request the PutRequest
    */
   public static void handlePutRequest(PutRequest request)
   {
@@ -67,15 +67,16 @@ public class RequestProcessor
   
   /***************************************************************************************************************
    * Process a {@link GetRequest}.
-   * 
+   * A GetRequest is a request to consume a message from destination.
    * According to the destination type - queue or topic - we locate the destination by its name and call
    * getNoWait() on it.
    * If we get back a message object, we set the origin properties and send it.    
    * 
-   * @param the request object
+   * @param handler the client handler that received the request
+   * @param request the GetRequest
    * 
    * @throws IOException 
-   * @throws JMSException 
+   * @throws JMSException
    */
   public static void handleGetRequest(ClientHandler handler, GetRequest request) throws IOException, JMSException
   {
@@ -132,7 +133,79 @@ public class RequestProcessor
   }
   
   /***************************************************************************************************************
+   * Process a {@link DefineRequest}.
+   * A DefineRequest is a request to define a new destination in the Repository.
+   * We try to locate a destination with the specified name. If find one, we reply to caller with this
+   * destination as the JMSDestination header.
+   * If we could not locate this destination, we define one and reply to caller with this destination
+   * as the JMSDestination header.    
+   * 
+   * @param handler the client handler that received the request
+   * @param request the DefineRequest
+   * 
+   * @throws IOException 
+   * @throws JMSException 
+   */
+  public static void handleDefineRequest(ClientHandler handler, DefineRequest request) throws IOException, JMSException
+  {
+    sLogger.debug("RequestProcessor::handleDefineRequest() - IN");
+    
+    int code = IKasqConstants.cPropertyResponseCode_Fail;
+    String msg  = "";
+    
+    // now we address the repository and locate the destination and define it if necessary
+    boolean defined = false;
+    IKasqDestination dest = null;
+    if (request.getDestinationType() == IKasqConstants.cPropertyDestinationType_Queue)
+    {
+      dest = sRepository.locateQueue(request.getDestinationName());
+      if (dest != null)
+        code = IKasqConstants.cPropertyResponseCode_Okay;
+      else
+      {
+        defined = sRepository.defineQueue(request.getDestinationName());
+        if (defined)
+        {
+          code = IKasqConstants.cPropertyResponseCode_Okay;
+          dest = sRepository.locateQueue(request.getDestinationName());
+        }
+      }
+    }
+    else
+    {
+      dest = sRepository.locateTopic(request.getDestinationName());
+      if (dest != null)
+        code = IKasqConstants.cPropertyResponseCode_Okay;
+      else
+      {
+        defined = sRepository.defineTopic(request.getDestinationName());
+        if (defined)
+        {
+          code = IKasqConstants.cPropertyResponseCode_Okay;
+          dest = sRepository.locateQueue(request.getDestinationName());
+        }
+      }
+    }
+    
+    IKasqMessage message = new KasqMessage();
+    message.setJMSDestination(dest);
+    message.setJMSCorrelationID(request.getJmsMessageId());
+    message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
+    message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
+      
+    sLogger.diag("RequestProcessor::handleDefineRequest() - Sending to origin response: " + message.toPrintableString(0));
+    handler.send(message);
+    
+    sLogger.debug("RequestProcessor::handleDefineRequest() - OUT");
+  }
+  
+  /***************************************************************************************************************
    * Process a {@link AuthenticateRequest}.
+   * An AuthenticateRequest is a request to authenticate a created Connection object.
+   * We address the security manager and request it to authenticate the specified username and password.
+   * 
+   * @param handler the client handler that received the request
+   * @param request the AuthenticateRequest
    * 
    * @return true if client authenticated successfully, false otherwise
    * 
@@ -167,11 +240,11 @@ public class RequestProcessor
   
   /***************************************************************************************************************
    * Process a {@link ShutdownRequest}.
-   * 
+   * A ShutdownRequest is a request to shutdown the KAS/Q server.
    * If the current {@code ShutdownRequest} is an administrative one, we call the controller to shutdown
    * the KAS/Q server. Otherwise, this is an un-authorized request and we deny it.
    * 
-   * @param the request object
+   * @param request the ShutdownRequest
    */
   public static void handleShutdownRequest(ShutdownRequest request)
   {

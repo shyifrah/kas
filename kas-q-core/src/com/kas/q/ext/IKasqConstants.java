@@ -15,6 +15,7 @@ public interface IKasqConstants
   static final int    cPropertyRequestType_Get          = 1;
   static final int    cPropertyRequestType_Authenticate = 2;
   static final int    cPropertyRequestType_Shutdown     = 3;
+  static final int    cPropertyRequestType_Define       = 4;
   
   static final String cPropertyDestinationName = "KasQ_DestinationName";
   

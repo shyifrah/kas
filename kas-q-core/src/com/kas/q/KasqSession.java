@@ -1,8 +1,6 @@
 package com.kas.q;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -21,12 +19,24 @@ import javax.jms.TemporaryTopic;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
+import com.kas.comm.IPacket;
+import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.IKasqConstants;
+import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 
 public class KasqSession extends AKasObject implements Session
 {
+  /***************************************************************************************************************
+   * 
+   */
+  private static ILogger sLogger = LoggerFactory.getLogger(KasqSession.class);
+  
   /***************************************************************************************************************
    * 
    */
@@ -35,8 +45,6 @@ public class KasqSession extends AKasObject implements Session
   int            mAcknowledgeMode;
   int            mSessionMode;
   String         mSessionId;
-  private Map<String, KasqQueue> mOpenedQueues;
-  private Map<String, KasqTopic> mOpenedTopics;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
@@ -92,9 +100,6 @@ public class KasqSession extends AKasObject implements Session
     mAcknowledgeMode = acknowledgeMode;
     mSessionMode     = sessionMode;
     mSessionId       = UniqueId.generate().toString();
-    
-    mOpenedQueues = new ConcurrentHashMap<String, KasqQueue>();
-    mOpenedTopics = new ConcurrentHashMap<String, KasqTopic>();
   }
   
   /***************************************************************************************************************
@@ -286,7 +291,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public Queue createQueue(String queueName) throws JMSException
   {
-    return internalCreateQueue(queueName);
+    return (KasqQueue)internalCreateDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
   }
 
   /***************************************************************************************************************
@@ -294,7 +299,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public Topic createTopic(String topicName) throws JMSException
   {
-    return internalCreateTopic(topicName);
+    return (KasqTopic)internalCreateDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
   }
 
   /***************************************************************************************************************
@@ -304,7 +309,7 @@ public class KasqSession extends AKasObject implements Session
   {
     UniqueId uniqueId = UniqueId.generate();
     String queueName = "KAS.TEMP.Q" + uniqueId.toString();
-    return internalCreateQueue(queueName);
+    return (KasqQueue)internalCreateDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
   }
 
   /***************************************************************************************************************
@@ -314,7 +319,7 @@ public class KasqSession extends AKasObject implements Session
   {
     UniqueId uniqueId = UniqueId.generate();
     String topicName = "KAS.TEMP.T" + uniqueId.toString();
-    return internalCreateTopic(topicName);
+    return (KasqTopic)internalCreateDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
   }
 
   /***************************************************************************************************************
@@ -390,47 +395,51 @@ public class KasqSession extends AKasObject implements Session
   }
   
   /***************************************************************************************************************
-   * Create a queue with the specified name and add it to the OpenedQueues map
+   * Send a Define message to the KAS/Q server to define a new destination and return the defined destination
    * 
-   * @param name the name of the queue
+   * @param name the destination name
+   * @param type an integer representing the destination type: 1 - queue, 2 - topic
    * 
-   * @return a {@code KasqQueue} object
-   * 
-   * @throws JMSException if {@code name} is null
+   * @throws JMSException 
    */
-  private KasqQueue internalCreateQueue(String name) throws JMSException
+  private IKasqDestination internalCreateDestination(String name, int type) throws JMSException
   {
-    if (name == null)
-      throw new JMSException("Failed to create queue", "Null name");
+    sLogger.debug("KasqSession::internalCreateDestination() - IN");
     
-    KasqQueue q = new KasqQueue(name, "");
-    synchronized (mOpenedQueues)
-    {
-      mOpenedQueues.put(name,  q);
-    }
-    return q;
-  }
-  
-  /***************************************************************************************************************
-   * Create a topic with the specified name and add it to the OpenedTopics map
-   * 
-   * @param name the name of the topic
-   * 
-   * @return a {@code KasqTopic} object
-   * 
-   * @throws JMSException if {@code name} is null
-   */
-  private KasqTopic internalCreateTopic(String name) throws JMSException
-  {
     if (name == null)
-      throw new JMSException("Failed to create topic", "Null name");
+      throw new JMSException("Failed to create destination", "Invalid destination name: [" + StringUtils.asString(name) + "]");
     
-    KasqTopic t = new KasqTopic(name, "");
-    synchronized (mOpenedTopics)
+    if ((type != IKasqConstants.cPropertyDestinationType_Queue) && (type != IKasqConstants.cPropertyDestinationType_Topic))
+      throw new JMSException("Failed to create queue", "Invalid destination type: [" + type + "]");
+    
+    IKasqDestination dest = null;
+    try
     {
-      mOpenedTopics.put(name,  t);
+      KasqMessage defineRequest = new KasqMessage();
+      defineRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Define);
+      defineRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, name);
+      defineRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type);
+      
+      sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + defineRequest.toPrintableString(0));
+      IPacket response = mConnection.internalSendAndReceive(defineRequest);
+      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
+      {
+        IKasqMessage defineResponse = (IKasqMessage)response;
+        sLogger.debug("KasqSession::internalCreateDestination() - Got this response: " + defineResponse.toPrintableString(0));
+        int responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+        {
+          dest = (IKasqDestination)defineResponse.getJMSDestination();
+        }
+      }
     }
-    return t;
+    catch (Throwable e)
+    {
+      sLogger.debug("KasqSession::internalCreateDestination() - Exception caught: ", e);
+    }
+    
+    sLogger.debug("KasqSession::internalCreateDestination() - OUT, Result=" + StringUtils.asString(dest));
+    return dest;
   }
   
   /***************************************************************************************************************
@@ -465,30 +474,6 @@ public class KasqSession extends AKasObject implements Session
   }
   
   /***************************************************************************************************************
-   * Get a KasqQueue object from the OpenedQueues map
-   * 
-   * @param name the name of the queue
-   * 
-   * @return the KasqQueue with the specified name, or null if not found 
-   */
-  public KasqQueue getOpenQueue(String name)
-  {
-    return mOpenedQueues.get(name);
-  }
-  
-  /***************************************************************************************************************
-   * Get a KasqTopic object from the OpenedTopics map
-   * 
-   * @param name the name of the topic
-   * 
-   * @return the KasqTopic with the specified name, or null if not found 
-   */
-  public KasqTopic getOpenTopic(String name)
-  {
-    return mOpenedTopics.get(name);
-  }
-  
-  /***************************************************************************************************************
    * Get the session's identifier
    * 
    * @return The session's identifier
@@ -510,7 +495,7 @@ public class KasqSession extends AKasObject implements Session
       .append(pad).append("  Transacted=").append(mTransacted).append("\n")
       .append(pad).append("  AcknowledgeMode=").append(mAcknowledgeMode).append("\n")
       .append(pad).append("  SessionMode=").append(mSessionMode).append("\n")
-      .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level + 1)).append(")\n")
+      .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
