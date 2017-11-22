@@ -11,8 +11,13 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
 
-public class ClientSenderDriver
+public class MessageProducerAndConsumerDriver
 {
+  static class SenderThread extends Thread
+  {
+    
+  }
+  
   private final static String cQueueName = "shy.local.queue";
   private final static String cHostname  = "localhost";
   
@@ -31,7 +36,7 @@ public class ClientSenderDriver
     
     try
     {
-      ClientSenderDriver driver = new ClientSenderDriver();
+      MessageProducerAndConsumerDriver driver = new MessageProducerAndConsumerDriver();
       driver.run(args);
     }
     catch (Throwable e)
