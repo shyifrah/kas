@@ -1,4 +1,4 @@
-package com.kas.q.samples;
+package com.kas.q.samples.internal;
 
 import javax.jms.Queue;
 import javax.jms.Session;

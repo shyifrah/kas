@@ -8,6 +8,7 @@ import javax.jms.Session;
 import com.kas.infra.base.KasException;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
+import com.kas.q.samples.internal.SenderThread;
 
 public class MessageProducerDriver
 {

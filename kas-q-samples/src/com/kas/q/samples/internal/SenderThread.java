@@ -1,4 +1,4 @@
-package com.kas.q.samples;
+package com.kas.q.samples.internal;
 
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
@@ -8,7 +8,7 @@ import javax.jms.TextMessage;
 
 public class SenderThread extends AThread
 {
-  SenderThread(String name, int numOfMessages, int delay, Session session, Queue queue)
+  public SenderThread(String name, int numOfMessages, int delay, Session session, Queue queue)
   {
     super(name, numOfMessages, delay, session, queue);
   }

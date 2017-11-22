@@ -1,4 +1,4 @@
-package com.kas.q.samples;
+package com.kas.q.samples.internal;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -9,7 +9,7 @@ import com.kas.q.KasqMessage;
 
 public class ReceiverThread extends AThread
 {
-  ReceiverThread(String name, int numOfMessages, int delay, Session session, Queue queue)
+  public ReceiverThread(String name, int numOfMessages, int delay, Session session, Queue queue)
   {
     super(name, numOfMessages, delay, session, queue);
   }
