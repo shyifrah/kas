@@ -3,11 +3,10 @@ package com.kas.q.samples;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.Session;
 import com.kas.infra.base.KasException;
-import com.kas.infra.utils.RunTimeUtils;
+import com.kas.infra.base.Properties;
 import com.kas.q.ext.KasqClient;
+import com.kas.q.samples.internal.AThread;
 import com.kas.q.samples.internal.ReceiverThread;
 
 public class MessageConsumerDriver
@@ -65,18 +64,25 @@ public class MessageConsumerDriver
         Connection conn = factory.createConnection(userName, password);
         System.out.println("connection created...: " + conn.toString());
         
-        Session sess = conn.createSession();
-        System.out.println("session created......: " + sess.toString());
+        Properties threadParams = new Properties();
+        threadParams.setStringProperty(AThread.cProperty_ThreadName, "ReceiverThread");
+        threadParams.setIntProperty(AThread.cProperty_NumOfMessages, 5);
+        threadParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
+        threadParams.setObjectProperty(AThread.cProperty_KasqConnection, conn);
+        threadParams.setStringProperty(AThread.cProperty_QueueName, cQueueName);
         
-        Queue queue = sess.createQueue(cQueueName);
-        
-        Thread thread = new ReceiverThread("ReceiverThread", 5, 5, sess, queue);
+        Thread thread = new ReceiverThread(threadParams);
         thread.start();
-        RunTimeUtils.sleep(15);
+        thread.join();
       }
       catch (JMSException e)
       {
-        System.out.println("Driver::run() - Exception caught");
+        System.out.println("Driver::run() - JMSException caught");
+        e.printStackTrace();
+      }
+      catch (InterruptedException e)
+      {
+        System.out.println("Driver::run() - InterruptedException caught");
         e.printStackTrace();
       }
       

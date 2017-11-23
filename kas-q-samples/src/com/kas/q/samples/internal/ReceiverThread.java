@@ -5,20 +5,25 @@ import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Queue;
 import javax.jms.Session;
+import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.q.KasqMessage;
 
 public class ReceiverThread extends AThread
 {
-  public ReceiverThread(String name, int numOfMessages, int delay, Session session, Queue queue)
+  public ReceiverThread(Properties threadParams) throws KasException
   {
-    super(name, numOfMessages, delay, session, queue);
+    super(threadParams);
   }
   
   public void work()
   {
     try
     {
-      MessageConsumer consumer = mSession.createConsumer(mQueue);
+      Session session = mConnection.createSession();
+      String qname = mProperties.getStringProperty(AThread.cProperty_QueueName, "default.queue.name");
+      Queue  queue = session.createQueue(qname);
+      MessageConsumer consumer = session.createConsumer(queue);
       
       for (int i = 0; i < mNumOfMessages; i++)
       {

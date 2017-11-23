@@ -5,24 +5,29 @@ import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 
 public class SenderThread extends AThread
 {
-  public SenderThread(String name, int numOfMessages, int delay, Session session, Queue queue)
+  public SenderThread(Properties threadParams) throws KasException
   {
-    super(name, numOfMessages, delay, session, queue);
+    super(threadParams);
   }
   
   public void work()
   {
     try
     {
-      MessageProducer producer = mSession.createProducer(mQueue);
+      Session session = mConnection.createSession();
+      String qname = mProperties.getStringProperty(AThread.cProperty_QueueName, "default.queue.name");
+      Queue  queue = session.createQueue(qname);
+      MessageProducer producer = session.createProducer(queue);
       
       for (int i = 0; i < mNumOfMessages; i++)
       {
         String text = "shyifrah-" + Integer.toString(i);
-        TextMessage msg = mSession.createTextMessage(text);
+        TextMessage msg = session.createTextMessage(text);
         producer.send(msg);
       }
     }
