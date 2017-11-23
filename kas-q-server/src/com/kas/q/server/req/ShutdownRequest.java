@@ -1,17 +1,23 @@
 package com.kas.q.server.req;
 
+import java.io.IOException;
+import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.server.IClientHandler;
+import com.kas.q.server.IController;
+import com.kas.q.server.KasqServer;
 
-final public class ShutdownRequest extends AKasObject implements IRequest
+final public class ShutdownRequest extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
   private static ILogger sLogger = LoggerFactory.getLogger(ShutdownRequest.class);
+  private static IController sController = KasqServer.getInstance().getController();
   
   /***************************************************************************************************************
    * 
@@ -52,6 +58,35 @@ final public class ShutdownRequest extends AKasObject implements IRequest
   public boolean isAdmin()
   {
     return mAdmin;
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public boolean process(IClientHandler handler) throws JMSException, IOException
+  {
+    sLogger.debug("ShutdownRequest::process() - IN");
+    
+    boolean result = false;
+    if (!handler.isAuthenticated())
+    {
+      sLogger.debug("ShutdownRequest::process() - ClientHandler was not authenticated, cannot continue");
+    }
+    else
+    {
+      if (mAdmin)
+      {
+        sController.onShutdownRequest();
+      }
+      else
+      {
+        sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
+      }
+      result = true;
+    }
+    
+    sLogger.debug("ShutdownRequest::process() - OUT, Result=" + result);
+    return result;
   }
   
   /***************************************************************************************************************

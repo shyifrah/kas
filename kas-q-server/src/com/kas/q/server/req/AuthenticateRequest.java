@@ -1,13 +1,17 @@
 package com.kas.q.server.req;
 
+import java.io.IOException;
+import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.KasqMessage;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.server.IClientHandler;
 
-final public class AuthenticateRequest extends AKasObject implements IRequest
+final public class AuthenticateRequest extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
@@ -125,6 +129,35 @@ final public class AuthenticateRequest extends AKasObject implements IRequest
   public String getJmsMessageId()
   {
     return mJmsMessageId;
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public boolean process(IClientHandler handler) throws JMSException, IOException
+  {
+    sLogger.debug("RequestProcessor::handleAuthenticateRequest() - IN");
+    boolean authenticated = false;
+    
+    //String userName = request.getUserName();
+    //String password = request.getPassword();
+    // TODO: address some security manager and find out if the credentials are okay
+    //       if they are okay, set authenticated to "true" and code to "Fail"
+    //
+    authenticated = true;
+    String msg = "";
+    int code = IKasqConstants.cPropertyResponseCode_Okay;
+    
+    IKasqMessage response = new KasqMessage();
+    response.setJMSCorrelationID(mJmsMessageId);
+    response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
+    response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
+    
+    sLogger.diag("RequestProcessor::handleAuthenticateRequest() - Sending response message: " + response.toPrintableString(0));
+    handler.send(response);
+    
+    sLogger.debug("RequestProcessor::handleAuthenticateRequest() - OUT, Result=" + authenticated);
+    return authenticated;
   }
   
   /***************************************************************************************************************

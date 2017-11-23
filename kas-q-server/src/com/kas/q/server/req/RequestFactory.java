@@ -10,7 +10,7 @@ public class RequestFactory
 {
   private static ILogger sLogger = LoggerFactory.getLogger(RequestFactory.class);
   
-  public static IRequest createRequest(IKasqMessage message)
+  public static IRequestProcessor createRequest(IKasqMessage message)
   {
     sLogger.debug("RequestFactory::createRequest() - IN");
     
@@ -21,7 +21,7 @@ public class RequestFactory
     }
     catch (JMSException e) {}
     
-    IRequest request = null;
+    IRequestProcessor request = null;
     try
     {
       ERequestType type = ERequestType.fromInt(ord);

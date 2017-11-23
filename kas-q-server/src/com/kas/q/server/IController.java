@@ -1,6 +1,7 @@
-package com.kas.q.server.internal;
+package com.kas.q.server;
 
 import com.kas.infra.base.IObject;
+import com.kas.q.server.internal.ClientHandler;
 
 public interface IController extends IObject
 {

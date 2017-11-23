@@ -1,19 +1,25 @@
 package com.kas.q.server.req;
 
+import java.io.IOException;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.server.IClientHandler;
+import com.kas.q.server.KasqRepository;
+import com.kas.q.server.KasqServer;
 
-final public class PutRequest extends AKasObject implements IRequest
+final public class PutRequest extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
   private static ILogger sLogger = LoggerFactory.getLogger(PutRequest.class);
+  private static KasqRepository sRepository = KasqServer.getInstance().getRepository();
   
   /***************************************************************************************************************
    * 
@@ -72,6 +78,51 @@ final public class PutRequest extends AKasObject implements IRequest
   public IKasqDestination getDestination()
   {
     return mDestination;
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public boolean process(IClientHandler handler) throws JMSException, IOException
+  {
+    sLogger.debug("PutRequest::process() - IN");
+    
+    boolean result = false;
+    if (!handler.isAuthenticated())
+    {
+      sLogger.debug("PutRequest::process() - ClientHandler was not authenticated, cannot continue");
+    }
+    else
+    {
+      sLogger.debug("PutRequest::process() - Message destination is managed by KAS/Q. Name=[" + mDestination.getFormattedName() + "]");
+      
+      String destinationName = mDestination.getName();
+      IKasqDestination destinationFromRepo = sRepository.locate(destinationName);
+      if (destinationFromRepo != null)
+      {
+        destinationFromRepo.put(mMessage);
+      }
+      else
+      {
+        sLogger.debug("PutRequest::process() - Destination is not defined, define it now...");
+        boolean defined = sRepository.defineQueue(destinationName);
+        if (defined)
+        {
+          destinationFromRepo = sRepository.locate(destinationName);
+          destinationFromRepo.put(mMessage);
+        }
+        else
+        {
+          IKasqDestination deadq = sRepository.getDeadQueue();
+          deadq.put(mMessage);
+          sLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
+        }
+      }
+      result = true;
+    }
+    
+    sLogger.debug("PutRequest::process() - OUT, Result=" + result);
+    return result;
   }
   
   /***************************************************************************************************************

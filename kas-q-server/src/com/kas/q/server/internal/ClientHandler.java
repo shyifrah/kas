@@ -2,7 +2,6 @@ package com.kas.q.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
-import javax.jms.JMSException;
 import com.kas.comm.IPacket;
 import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
@@ -12,26 +11,22 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageFactory;
+import com.kas.q.server.IClientHandler;
+import com.kas.q.server.IController;
 import com.kas.q.server.KasqServer;
-import com.kas.q.server.req.AuthenticateRequest;
-import com.kas.q.server.req.DefineRequest;
-import com.kas.q.server.req.GetRequest;
-import com.kas.q.server.req.IRequest;
-import com.kas.q.server.req.PutRequest;
+import com.kas.q.server.req.IRequestProcessor;
 import com.kas.q.server.req.RequestFactory;
-import com.kas.q.server.req.RequestProcessor;
-import com.kas.q.server.req.ShutdownRequest;
 
-public class ClientHandler extends AKasObject implements Runnable
+public class ClientHandler extends AKasObject implements IClientHandler
 {
   private static ILogger sLogger = LoggerFactory.getLogger(ClientHandler.class);
   
   /***************************************************************************************************************
    * 
    */
-  private IMessenger      mMessenger;
-  private IController     mController;
-  private boolean         mAuthenticated;
+  private IMessenger  mMessenger;
+  private IController mController;
+  private boolean     mAuthenticated;
   
   /***************************************************************************************************************
    * Constructs a {@code ClientHandler} object, specifying the socket and start/stop callback.
@@ -60,6 +55,14 @@ public class ClientHandler extends AKasObject implements Runnable
       mMessenger.cleanup();
     }
     catch (Throwable e) {}
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public boolean isAuthenticated()
+  {
+    return mAuthenticated;
   }
   
   /***************************************************************************************************************
@@ -92,9 +95,10 @@ public class ClientHandler extends AKasObject implements Runnable
         }
         else
         {
-          IRequest request = RequestFactory.createRequest((IKasqMessage)packet);
-          sLogger.debug("ClientHandler::run() - Got request " + request.toString() + " calling RequestPocessor");
-          process(request);
+          IRequestProcessor request = RequestFactory.createRequest((IKasqMessage)packet);
+          sLogger.debug("ClientHandler::run() - Got request: " + request.toString());
+          boolean success = request.process(this);
+          sLogger.debug("ClientHandler::run() - Processing of request [" + request.toString() + "] ended " + (success ? "successfully" : "with an error"));
         }
       }
     }
@@ -113,58 +117,58 @@ public class ClientHandler extends AKasObject implements Runnable
     sLogger.debug("ClientHandler::run() - OUT");
   }
   
-  /***************************************************************************************************************
-   * Process an incoming {@code IPacket}.
-   * 
-   * Just like every {@link javax.jms.Message} object, the {@code IPacket} object carries a {@code Destination}
-   * object in the JMSDestination header.
-   * If this object is <b>not</b> an instance of {@code IDestination}, it means it is managed by some other provider,
-   * and we have nothing to do with this message, so we send it to our Dead queue.
-   * If this object is an instance of {@code IDestination}, then we try to locate it in our repository. If it was
-   * located, we put the message in that destination. If we didn't locate it, we define it and then put it there. 
-   * 
-   * @param request the {@code IRequest} to be processed
-   * 
-   * @throws JMSException if for some reason we fail to get the Destination from the message. 
-   * @throws IOException if the Messenger throws an exception 
-   */
-  private void process(IRequest request) throws JMSException, IOException
-  {
-    sLogger.debug("ClientHandler::process() - IN");
-    
-    switch (request.getRequestType())
-    {
-      case cDefine:
-        sLogger.debug("ClientHandler::process() - Processing a Define request");
-        if (mAuthenticated)
-          RequestProcessor.handleDefineRequest(this, (DefineRequest)request);
-        break;
-      case cShutdown:
-        sLogger.debug("ClientHandler::process() - Processing a Shutdown request");
-        if (mAuthenticated)
-          RequestProcessor.handleShutdownRequest((ShutdownRequest)request);
-        break;
-      case cAuthenticate:
-        sLogger.debug("ClientHandler::process() - Processing an Authentication request");
-        mAuthenticated = RequestProcessor.handleAuthenticateRequest(this, (AuthenticateRequest)request);
-        break;
-      case cGet:
-        sLogger.debug("ClientHandler::process() - Processing a Get request");
-        if (mAuthenticated)
-          RequestProcessor.handleGetRequest(this, (GetRequest)request);
-        break;
-      case cPut:
-        sLogger.debug("ClientHandler::process() - Processing a Put request");
-        if (mAuthenticated)
-          RequestProcessor.handlePutRequest((PutRequest)request);
-        break;
-      default:
-        break;
-    }
-    
-    sLogger.debug("ClientHandler::process() - OUT");
-  }
-  
+//  /***************************************************************************************************************
+//   * Process an incoming {@code IPacket}.
+//   * 
+//   * Just like every {@link javax.jms.Message} object, the {@code IPacket} object carries a {@code Destination}
+//   * object in the JMSDestination header.
+//   * If this object is <b>not</b> an instance of {@code IDestination}, it means it is managed by some other provider,
+//   * and we have nothing to do with this message, so we send it to our Dead queue.
+//   * If this object is an instance of {@code IDestination}, then we try to locate it in our repository. If it was
+//   * located, we put the message in that destination. If we didn't locate it, we define it and then put it there. 
+//   * 
+//   * @param request the {@code IRequest} to be processed
+//   * 
+//   * @throws JMSException if for some reason we fail to get the Destination from the message. 
+//   * @throws IOException if the Messenger throws an exception 
+//   */
+//  private void process(IRequestProcessor request) throws JMSException, IOException
+//  {
+//    sLogger.debug("ClientHandler::process() - IN");
+//    
+//    switch (request.getRequestType())
+//    {
+//      case cDefine:
+//        sLogger.debug("ClientHandler::process() - Processing a Define request");
+//        if (mAuthenticated)
+//          RequestProcessor.handleDefineRequest(this, (DefineRequest)request);
+//        break;
+//      case cShutdown:
+//        sLogger.debug("ClientHandler::process() - Processing a Shutdown request");
+//        if (mAuthenticated)
+//          RequestProcessor.handleShutdownRequest((ShutdownRequest)request);
+//        break;
+//      case cAuthenticate:
+//        sLogger.debug("ClientHandler::process() - Processing an Authentication request");
+//        mAuthenticated = RequestProcessor.handleAuthenticateRequest(this, (AuthenticateRequest)request);
+//        break;
+//      case cGet:
+//        sLogger.debug("ClientHandler::process() - Processing a Get request");
+//        if (mAuthenticated)
+//          RequestProcessor.handleGetRequest(this, (GetRequest)request);
+//        break;
+//      case cPut:
+//        sLogger.debug("ClientHandler::process() - Processing a Put request");
+//        if (mAuthenticated)
+//          RequestProcessor.handlePutRequest((PutRequest)request);
+//        break;
+//      default:
+//        break;
+//    }
+//    
+//    sLogger.debug("ClientHandler::process() - OUT");
+//  }
+//  
   /***************************************************************************************************************
    * Send a message to client 
    * 
