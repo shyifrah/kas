@@ -7,7 +7,6 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
-import com.kas.q.KasqMessage;
 
 public class ReceiverThread extends AThread
 {
@@ -34,11 +33,7 @@ public class ReceiverThread extends AThread
       for (int i = 0; i < mNumOfMessages; i++)
       {
         Message msg = receiveOneMessage(consumer);
-        if (msg instanceof KasqMessage)
-        {
-          KasqMessage kmsg = (KasqMessage)msg;
-          System.out.println(kmsg.toPrintableString(0));
-        }
+        System.out.println("received message: " + msg.toString());
       }
     }
     catch (JMSException e)

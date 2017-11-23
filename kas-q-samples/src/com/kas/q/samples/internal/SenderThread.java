@@ -27,6 +27,7 @@ public class SenderThread extends AThread
       for (int i = 0; i < mNumOfMessages; i++)
       {
         String text = "shyifrah-" + Integer.toString(i);
+        System.out.println("Sending message " + i + " to queue: " + qname);
         TextMessage msg = session.createTextMessage(text);
         producer.send(msg);
       }
