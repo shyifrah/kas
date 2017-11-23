@@ -11,6 +11,12 @@ import com.kas.q.KasqMessage;
 
 public class ReceiverThread extends AThread
 {
+  public static final String cProperty_ReceiveMode = "receive_mode";
+  public static final String cProperty_ReceiveMode_NoWait = "immed";
+  public static final String cProperty_ReceiveMode_TimedWait = "wait";
+  public static final String cProperty_ReceiveMode_InfiniteWait = "infinite";
+  public static final String cProperty_ReceiveTimeout = "receive_timeout";
+  
   public ReceiverThread(Properties threadParams) throws KasException
   {
     super(threadParams);
@@ -27,7 +33,7 @@ public class ReceiverThread extends AThread
       
       for (int i = 0; i < mNumOfMessages; i++)
       {
-        Message msg = consumer.receive();
+        Message msg = receiveOneMessage(consumer);
         if (msg instanceof KasqMessage)
         {
           KasqMessage kmsg = (KasqMessage)msg;
@@ -38,6 +44,27 @@ public class ReceiverThread extends AThread
     catch (JMSException e)
     {
       e.printStackTrace();
+    }
+  }
+  
+  private Message receiveOneMessage(MessageConsumer consumer) throws JMSException
+  {
+    String receiveMode  = mProperties.getStringProperty(cProperty_ReceiveMode, cProperty_ReceiveMode_InfiniteWait);
+    long receiveTimeout = mProperties.getLongProperty(cProperty_ReceiveTimeout, 10000);
+    
+    // get message immediately
+    if (cProperty_ReceiveMode_NoWait.equalsIgnoreCase(receiveMode))
+    {
+      return consumer.receiveNoWait();
+    }
+    else // wait with timeout
+    if (cProperty_ReceiveMode_TimedWait.equalsIgnoreCase(receiveMode))
+    {
+      return consumer.receive(receiveTimeout);
+    }
+    else // infinite wait
+    {
+      return consumer.receive();
     }
   }
 }

@@ -11,24 +11,12 @@ public abstract class AThread extends Thread
   public static final String cProperty_PreAndPostDelay = "pre_post_delay";
   public static final String cProperty_NumOfMessages = "num_of_messages";
   public static final String cProperty_KasqConnection = "kasq_connection";
-  public static final String cProperty_QueueName = "shy.local.queue";
+  public static final String cProperty_QueueName = "queue_name";
   
   protected int        mNumOfMessages;
   protected int        mDelay;
   protected Connection mConnection;
   protected Properties mProperties;
-  //
-  //protected Session mSession;
-  //protected Queue   mQueue;
-  //
-  //AThread(String name, int numOfMessages, int delay, Session session, Queue queue)
-  //{
-  //  super(name);
-  //  mNumOfMessages = numOfMessages;
-  //  mDelay   = delay;
-  //  mSession = session;
-  //  mQueue   = queue;
-  //}
   
   AThread(Properties threadParams) throws KasException
   {
