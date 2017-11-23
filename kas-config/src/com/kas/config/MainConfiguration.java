@@ -115,11 +115,18 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     
     mConfigFiles.clear();
     
-    String monitoredFiles = mProperties.getProperty(Properties.cIncludeKey);
-    String [] listOfMonitoredFiles = monitoredFiles.split(",");
-    for (String file : listOfMonitoredFiles)
+    String monitoredFiles = mProperties.getStringProperty(Properties.cIncludeKey, null);
+    if (monitoredFiles == null) // this should not happen, cIncludeKey should have at least one file name 
     {
-      mConfigFiles.add(file);
+      return false;
+    }
+    else
+    {
+      String [] listOfMonitoredFiles = monitoredFiles.split(",");
+      for (String file : listOfMonitoredFiles)
+      {
+        mConfigFiles.add(file);
+      }
     }
     
     return true;
@@ -192,31 +199,26 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private String getProperty(String key)
-  {
-    String result = null;
-    if (mProperties == null)
-    {
-      throw new NullPointerException("Configuration not initialized or terminated");
-    }
-    else
-    {
-      result = mProperties.getProperty(key);
-    }
-    return result;
-  }
-  
+  //private String getProperty(String key)
+  //{
+  //  String result = null;
+  //  if (mProperties == null)
+  //  {
+  //    throw new NullPointerException("Configuration not initialized or terminated");
+  //  }
+  //  else
+  //  {
+  //    result = mProperties.getProperty(key);
+  //  }
+  //  return result;
+  //}
+  //
   ///------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
   public String getStringProperty(String key, String defaultValue)
   {
-    String result = getProperty(key);
-    if (result == null)
-    {
-      return defaultValue;
-    }
-    return result;
+    return mProperties.getStringProperty(key, defaultValue);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -224,22 +226,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   //------------------------------------------------------------------------------------------------------------------
   public int getIntProperty(String key, int defaultValue)
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
-      return defaultValue;
-    }
-    
-    int result;
-    try
-    {
-      result = Integer.valueOf(strResult);
-    }
-    catch (NumberFormatException e)
-    {
-      result = defaultValue;
-    }
-    return result;
+    return mProperties.getIntProperty(key, defaultValue);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -247,22 +234,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   //------------------------------------------------------------------------------------------------------------------
   public long getLongProperty(String key, long defaultValue)
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
-      return defaultValue;
-    }
-    
-    long result;
-    try
-    {
-      result = Long.valueOf(strResult);
-    }
-    catch (NumberFormatException e)
-    {
-      result = defaultValue;
-    }
-    return result;
+    return mProperties.getLongProperty(key, defaultValue);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -270,17 +242,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   //------------------------------------------------------------------------------------------------------------------
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
-      return defaultValue;
-    }
-    
-    if (!("false".equalsIgnoreCase(strResult)) && !("true".equalsIgnoreCase(strResult)))
-    {
-      return defaultValue;
-    }
-    return Boolean.valueOf(strResult);
+    return mProperties.getBoolProperty(key, defaultValue);
   }
   
   //------------------------------------------------------------------------------------------------------------------

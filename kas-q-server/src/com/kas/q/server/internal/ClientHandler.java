@@ -177,16 +177,14 @@ public class ClientHandler extends AKasObject implements Runnable
     mMessenger.send(message);
   }
   
-  ///***************************************************************************************************************
-  // * Deferring a request means simply means to put a request back to the queue
-  // * 
-  // * @param request the {@code IRequest} to be processed.
-  // */
-  //public void deferRequest(IRequest request)
-  //{
-  //  mRequestQueue.offer(request);
-  //}
-  //
+  /***************************************************************************************************************
+   *  
+   */
+  public String toString()
+  {
+    return mMessenger.toString();
+  }
+  
   /***************************************************************************************************************
    *  
    */
@@ -197,9 +195,6 @@ public class ClientHandler extends AKasObject implements Runnable
     sb.append(name()).append("(\n")
       .append(pad).append("  Authenticated=(").append(mAuthenticated).append(")\n")
       .append(pad).append("  Messenger=(").append(mMessenger.toPrintableString(level+1)).append(")\n")
-      .append(pad).append("  Requests Queue=(\n")
-    //  .append(StringUtils.asPrintableString(mRequestQueue, level+2)).append("\n")
-      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

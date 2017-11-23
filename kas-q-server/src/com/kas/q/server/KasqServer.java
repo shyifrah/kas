@@ -40,7 +40,6 @@ public class KasqServer extends AKasObject implements IInitializable
       
       KasqServer server = getInstance();
       boolean initialized = server.init();
-      
       if (initialized)
       {
         server.run();
@@ -195,8 +194,6 @@ public class KasqServer extends AKasObject implements IInitializable
       try
       {
         Socket socket = mListenSocket.accept();
-        logInfoBoth("New connection accepted: " + socket.toString());
-        
         mController.startClient(socket);
       }
       catch (Throwable e)

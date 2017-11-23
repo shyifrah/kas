@@ -278,6 +278,8 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   public synchronized KasqQueue locateQueue(String name)
   {
+    if (name == null)
+      return null;
     return mQueuesMap.get(name);
   }
 
@@ -286,6 +288,8 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   public synchronized KasqTopic locateTopic(String name)
   {
+    if (name == null)
+      return null;
     return mTopicsMap.get(name);
   }
   
@@ -299,6 +303,8 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   public IKasqDestination locate(String name)
   {
+    if (name == null)
+      return null;
     IKasqDestination iDest = locateQueue(name);
     return (iDest != null ? iDest : locateTopic(name));
   }

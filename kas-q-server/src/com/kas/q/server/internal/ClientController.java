@@ -14,6 +14,7 @@ import com.kas.logging.LoggerFactory;
 public class ClientController extends AKasObject implements IController
 {
   private ILogger mLogger;
+  private ILogger mConsole;
   private List<ClientHandler> mHandlers;
   private ServerSocket mServerSocket;
   
@@ -22,7 +23,8 @@ public class ClientController extends AKasObject implements IController
    */
   public ClientController(ServerSocket socket)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger  = LoggerFactory.getLogger(this.getClass());
+    mConsole = LoggerFactory.getStdout(this.getClass());
     mHandlers = new ArrayList<ClientHandler>();
     mServerSocket = socket;
   }
@@ -56,6 +58,7 @@ public class ClientController extends AKasObject implements IController
     mLogger.debug("ClientController::onHandlerStart() - IN");
     
     mHandlers.add(handler);
+    logInfo("New Handler started: " + handler.toString());
     
     mLogger.debug("ClientController::onHandlerStart() - OUT");
   }
@@ -68,6 +71,7 @@ public class ClientController extends AKasObject implements IController
     mLogger.debug("ClientController::onHandlerStop() - IN");
     
     mHandlers.remove(handler);
+    logInfo("Handler stopped: " + handler.toString());
     
     mLogger.debug("ClientController::onHandlerStop() - OUT");
   }
@@ -81,6 +85,7 @@ public class ClientController extends AKasObject implements IController
     
     try
     {
+      logInfo("KAS/Q server shutdown in progress...");
       mServerSocket.close();
     }
     catch (Throwable e) {}
@@ -95,12 +100,24 @@ public class ClientController extends AKasObject implements IController
   {
     mLogger.debug("ClientController::closeAll() - IN");
     
+    logInfo("Signaling all client handlers to terminate...");
     for (ClientHandler handler : mHandlers)
     {
       handler.term();
     }
     
     mLogger.debug("ClientController::closeAll() - OUT");
+  }
+  
+  /***************************************************************************************************************
+   * Logs a message to both Console and Logger
+   * 
+   * @param message the message to be logged
+   */
+  private void logInfo(String message)
+  {
+    mLogger.info(message);
+    mConsole.info(message);
   }
 
   /***************************************************************************************************************
@@ -111,8 +128,9 @@ public class ClientController extends AKasObject implements IController
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  HandlerList=(").append(StringUtils.asPrintableString(mHandlers, level+1)).append(")\n")
-      .append(pad).append(")");
+      .append(pad).append("  HandlerList=(\n")
+      .append(StringUtils.asPrintableString(mHandlers, level+2)).append("\n")
+      .append(pad).append("  )\n");
     return sb.toString();
   }
 }

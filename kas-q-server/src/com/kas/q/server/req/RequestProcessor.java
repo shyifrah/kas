@@ -242,7 +242,7 @@ public class RequestProcessor
    * Process a {@link ShutdownRequest}.
    * A ShutdownRequest is a request to shutdown the KAS/Q server.
    * If the current {@code ShutdownRequest} is an administrative one, we call the controller to shutdown
-   * the KAS/Q server. Otherwise, this is an un-authorized request and we deny it.
+   * the KAS/Q server. Otherwise, this is an unauthorized request and we deny it.
    * 
    * @param request the ShutdownRequest
    */

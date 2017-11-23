@@ -3,11 +3,12 @@ package com.kas.infra.base;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.config.IConfiguration;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
-public class Properties extends java.util.Properties implements IConfiguration, Map<Object, Object>
+public class Properties extends ConcurrentHashMap<Object, Object> implements IConfiguration
 {
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -26,28 +27,12 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public Properties(java.util.Properties props)
-  {
-    super.putAll(props);
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public Properties(Map<Object, Object> map)
-  {
-    super.putAll(map);
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public String getProperty(String key)
+  public Object getProperty(Object key)
   {
     if (key == null)
       return null;
     
-    return super.getProperty(key);
+    return super.get(key);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -55,17 +40,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public boolean getBoolProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getBoolProperty() - Property not found: " + key);
+    
+    Boolean result;
+    try
+    {
+      result = (Boolean)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Boolean.valueOf(strResult);
+    }
+    catch (Throwable e)
+    {
+      throw new KasException("getBoolProperty() - Invalid value: " + objResult);
     }
     
-    if (!("false".equalsIgnoreCase(strResult)) && !("true".equalsIgnoreCase(strResult)))
-    {
-      throw new KasException("getBoolProperty() - Invalid value: " + strResult);
-    }
-    return Boolean.valueOf(strResult);
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -87,7 +81,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setBoolProperty(String key, boolean value)
   {
-    super.setProperty(key, Boolean.toString(value));
+    put(key, new Boolean(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -95,22 +89,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public int getIntProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getIntProperty() - Property not found: " + key);
-    }
     
-    int value;
+    Integer result;
     try
     {
-      value = Integer.valueOf(strResult);
+      result = (Integer)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Integer.valueOf(strResult);
     }
     catch (Throwable e)
     {
-      throw new KasException("getIntProperty() - Exception caught", e);
+      throw new KasException("getIntProperty() - Invalid value: " + objResult);
     }
-    return value;
+    
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -132,7 +130,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setIntProperty(String key, int value)
   {
-    super.setProperty(key, Integer.toString(value));
+    put(key, new Integer(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -140,13 +138,25 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public String getStringProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getStringProperty() - Property not found: " + key);
+    
+    String result;
+    try
+    {
+      result = (String)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      result = objResult.toString();
+    }
+    catch (Throwable e)
+    {
+      throw new KasException("getStringProperty() - Invalid value: " + objResult);
     }
     
-    return strResult;
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -168,7 +178,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setStringProperty(String key, String value)
   {
-    super.setProperty(key, value);
+    put(key, new String(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -176,22 +186,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public long getLongProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getLongProperty() - Property not found: " + key);
-    }
     
-    long value;
+    Long result;
     try
     {
-      value = Long.valueOf(strResult);
+      result = (Long)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Long.valueOf(strResult);
     }
     catch (Throwable e)
     {
-      throw new KasException("getLongProperty() - Exception caught", e);
+      throw new KasException("getLongProperty() - Invalid value: " + objResult);
     }
-    return value;
+    
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -213,7 +227,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setLongProperty(String key, long value)
   {
-    super.setProperty(key, Long.toString(value));
+    put(key, new Long(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -221,22 +235,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public byte getByteProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getByteProperty() - Property not found: " + key);
-    }
     
-    byte value;
+    Byte result;
     try
     {
-      value = Byte.valueOf(strResult);
+      result = (Byte)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Byte.valueOf(strResult);
     }
     catch (Throwable e)
     {
-      throw new KasException("getByteProperty() - Exception caught", e);
+      throw new KasException("getByteProperty() - Invalid value: " + objResult);
     }
-    return value;
+    
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -258,7 +276,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setByteProperty(String key, byte value)
   {
-    super.setProperty(key, Byte.toString(value));
+    put(key, new Byte(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -266,22 +284,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public double getDoubleProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getDoubleProperty() - Property not found: " + key);
-    }
     
-    double value;
+    Double result;
     try
     {
-      value = Double.valueOf(strResult);
+      result = (Double)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Double.valueOf(strResult);
     }
     catch (Throwable e)
     {
-      throw new KasException("getDoubleProperty() - Exception caught", e);
+      throw new KasException("getDoubleProperty() - Invalid value: " + objResult);
     }
-    return value;
+    
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -303,7 +325,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setDoubleProperty(String key, double value)
   {
-    super.setProperty(key, Double.toString(value));
+    put(key, new Double(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -311,22 +333,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public float getFloatProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getFloatProperty() - Property not found: " + key);
-    }
     
-    float value;
+    Float result;
     try
     {
-      value = Float.valueOf(strResult);
+      result = (Float)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Float.valueOf(strResult);
     }
     catch (Throwable e)
     {
-      throw new KasException("getFloatProperty() - Exception caught", e);
+      throw new KasException("getFloatProperty() - Invalid value: " + objResult);
     }
-    return value;
+    
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -348,7 +374,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setFloatProperty(String key, float value)
   {
-    super.setProperty(key, Float.toString(value));
+    put(key, new Float(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -356,14 +382,11 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public Object getObjectProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object result = getProperty(key);
+    if (result == null)
       throw new KasException("getObjectProperty() - Property not found: " + key);
-    }
     
-    Object value = strResult;
-    return value;
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -385,7 +408,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setObjectProperty(String key, Object value)
   {
-    super.setProperty(key, value.toString());
+    put(key, value);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -393,22 +416,26 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public short getShortProperty(String key) throws KasException
   {
-    String strResult = getProperty(key);
-    if (strResult == null)
-    {
+    Object objResult = getProperty(key);
+    if (objResult == null)
       throw new KasException("getShortProperty() - Property not found: " + key);
-    }
     
-    short value;
+    Short result;
     try
     {
-      value = Short.valueOf(strResult);
+      result = (Short)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      result = Short.valueOf(strResult);
     }
     catch (Throwable e)
     {
-      throw new KasException("getShortProperty() - Exception caught", e);
+      throw new KasException("getShortProperty() - Invalid value: " + objResult);
     }
-    return value;
+    
+    return result;
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -430,7 +457,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   public void setShortProperty(String key, short value)
   {
-    super.setProperty(key, Short.toString(value));
+    put(key, new Short(value));
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -450,7 +477,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
         subset.remove(key);
     }
     
-    return new Properties(subset);
+    return subset;
   }
 
   //------------------------------------------------------------------------------------------------------------------
@@ -464,7 +491,7 @@ public class Properties extends java.util.Properties implements IConfiguration, 
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private void load(String fileName, java.util.Properties properties)
+  private void load(String fileName, Properties properties)
   {
     // now try to load the properties inside this file
     File file = new File(fileName);
