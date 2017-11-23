@@ -18,7 +18,7 @@ public class ThreadPool
   {
     sHandler       = new ThreadPoolRejectHandler();
     sSchedExecutor = new ScheduledThreadPoolExecutor(1, new KasThreadFactory("KasSchedThread"));
-    sExecutor      = new ThreadPoolExecutor(1, 20, 60, TimeUnit.SECONDS, new ThreadPoolWorkQueue(1000), new KasThreadFactory("KasThread"), sHandler);
+    sExecutor      = new ThreadPoolExecutor(1, 20, 60, TimeUnit.SECONDS, new ThreadPoolWorkQueue(0), new KasThreadFactory("KasThread"), sHandler);
     sExecutor.allowCoreThreadTimeOut(true);
   }
   
