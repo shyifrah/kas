@@ -14,6 +14,7 @@ import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.IController;
 import com.kas.q.server.KasqServer;
+import com.kas.q.server.req.ERequestType;
 import com.kas.q.server.req.IRequestProcessor;
 import com.kas.q.server.req.RequestFactory;
 
@@ -97,7 +98,11 @@ public class ClientHandler extends AKasObject implements IClientHandler
         {
           IRequestProcessor request = RequestFactory.createRequest((IKasqMessage)packet);
           sLogger.debug("ClientHandler::run() - Got request: " + request.toString());
+          
           boolean success = request.process(this);
+          if (request.getRequestType() == ERequestType.cAuthenticate)
+            mAuthenticated = success;
+          
           sLogger.debug("ClientHandler::run() - Processing of request [" + request.toString() + "] ended " + (success ? "successfully" : "with an error"));
         }
       }

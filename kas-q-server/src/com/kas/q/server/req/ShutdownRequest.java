@@ -73,15 +73,14 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
       sLogger.debug("ShutdownRequest::process() - ClientHandler was not authenticated, cannot continue");
     }
     else
+    if (!mAdmin)
     {
-      if (mAdmin)
-      {
-        sController.onShutdownRequest();
-      }
-      else
-      {
-        sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
-      }
+      sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
+      result = true;
+    }
+    else
+    {
+      sController.onShutdownRequest();
       result = true;
     }
     

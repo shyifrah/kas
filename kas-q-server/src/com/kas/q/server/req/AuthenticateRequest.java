@@ -136,7 +136,7 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("RequestProcessor::handleAuthenticateRequest() - IN");
+    sLogger.debug("AuthenticateRequest::process() - IN");
     boolean authenticated = false;
     
     //String userName = request.getUserName();
@@ -153,10 +153,10 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
     response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
     
-    sLogger.diag("RequestProcessor::handleAuthenticateRequest() - Sending response message: " + response.toPrintableString(0));
+    sLogger.diag("AuthenticateRequest::process() - Sending response message: " + response.toPrintableString(0));
     handler.send(response);
     
-    sLogger.debug("RequestProcessor::handleAuthenticateRequest() - OUT, Result=" + authenticated);
+    sLogger.debug("AuthenticateRequest::process() - OUT, Result=" + authenticated);
     return authenticated;
   }
   
