@@ -1,5 +1,7 @@
 package com.kas.q.samples.internal;
 
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
@@ -19,12 +21,17 @@ public class SenderThread extends AThread
   {
     try
     {
-      Session session = mConnection.createSession();
+      ConnectionFactory factory = mClient.getFactory();
+      Connection conn = factory.createConnection();
+      Session session = conn.createSession();
       String qname = mProperties.getStringProperty(AThread.cProperty_QueueName, "default.queue.name");
-      Queue  queue = session.createQueue(qname);
+      
+      Queue queue = mClient.locateQueue(qname);
+      if (queue == null)
+        queue = session.createQueue(qname);
       MessageProducer producer = session.createProducer(queue);
       
-      for (int i = 0; i < mNumOfMessages; i++)
+      for (int i = 1; i <= mNumOfMessages; i++)
       {
         String text = "shyifrah-" + Integer.toString(i);
         System.out.println("Sending message " + i + " to queue: " + qname);

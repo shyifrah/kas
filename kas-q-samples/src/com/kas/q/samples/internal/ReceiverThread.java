@@ -1,5 +1,7 @@
 package com.kas.q.samples.internal;
 
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
@@ -25,15 +27,20 @@ public class ReceiverThread extends AThread
   {
     try
     {
-      Session session = mConnection.createSession();
+      ConnectionFactory factory = mClient.getFactory();
+      Connection conn = factory.createConnection();
+      Session session = conn.createSession();
       String qname = mProperties.getStringProperty(AThread.cProperty_QueueName, "default.queue.name");
-      Queue  queue = session.createQueue(qname);
+      
+      Queue queue = mClient.locateQueue(qname);
+      if (queue == null)
+        queue = session.createQueue(qname);
       MessageConsumer consumer = session.createConsumer(queue);
       
-      for (int i = 0; i < mNumOfMessages; i++)
+      for (int i = 1; i <= mNumOfMessages; i++)
       {
         Message msg = receiveOneMessage(consumer);
-        System.out.println("received message: " + msg.toString());
+        System.out.println("received message " + i + ": " + msg.toString());
       }
     }
     catch (JMSException e)

@@ -67,10 +67,10 @@ public class MessageProducerAndConsumerDriver
       
       client.init();
       
-      ConnectionFactory factory = client.getFactory();
-      
       try
       {
+        ConnectionFactory factory = client.getFactory();
+        
         Connection conn = factory.createConnection(userName, password);
         System.out.println("connection created...: " + conn.toString());
         
