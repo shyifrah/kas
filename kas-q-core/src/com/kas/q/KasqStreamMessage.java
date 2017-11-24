@@ -22,15 +22,22 @@ public class KasqStreamMessage extends KasqMessage implements StreamMessage
   /***************************************************************************************************************
    * Constructs a default {@code KasqStreamMessage} object
    * 
-   * @throws IOException 
+   * @throws JMSException if an IOException is thrown 
    */
-  public KasqStreamMessage() throws IOException
+  public KasqStreamMessage() throws JMSException
   {
     super();
     mBodyMode = EReadWriteMode.cWriteOnly;
     
-    mOutputArray  = new ByteArrayOutputStream();
-    mOutputStream = new ObjectOutputStream(mOutputArray);
+    try
+    {
+      mOutputArray  = new ByteArrayOutputStream();
+      mOutputStream = new ObjectOutputStream(mOutputArray);
+    }
+    catch (IOException e)
+    {
+      throw new JMSException("IOException caught");
+    }
   }
   
   /***************************************************************************************************************

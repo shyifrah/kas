@@ -16,10 +16,15 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.KasqSession;
 
 public abstract class AKasqDestination extends AKasObject implements IKasqDestination
 {
   private static final long serialVersionUID = 1L;
+  
+  /***************************************************************************************************************
+   * 
+   */
   private static ILogger sLogger = LoggerFactory.getLogger(AKasqDestination.class);
   private static IPacketFactory sMessageFactory = new KasqMessageFactory();
   
@@ -29,22 +34,34 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   private String  mName;
   private String  mManagerName;
   
+  private transient KasqSession mSession;
   private transient LinkedBlockingDeque<IKasqMessage> mQueue;
   private transient File    mBackupFile;
   private transient String  mBackupFileName = null;
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqDestination} object, specifying its name
+   * Constructs a {@code AKasqDestination} object, specifying its name and owning manager
    * 
    * @param name the name associated with this destination
    * @param managerName the name of the manager of this destination
    */
   protected AKasqDestination(String name, String managerName)
   {
-    mName   = name;
+    this(name, managerName, null);
+  }
+  
+  /***************************************************************************************************************
+   * Constructs a {@code AKasqDestination} object, specifying its name, owning manager and owning session
+   * 
+   * @param name the name associated with this destination
+   * @param managerName the name of the manager of this destination
+   */
+  protected AKasqDestination(String name, String managerName, KasqSession session)
+  {
+    mName = name;
     mManagerName = managerName;
-    mQueue  = new LinkedBlockingDeque<IKasqMessage>();
     mBackupFile = null;
+    mSession = session;
   }
   
   /***************************************************************************************************************
@@ -54,6 +71,8 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   {
     sLogger.debug("KasqQueue::init() - IN, name=[" + mName + "]");
     boolean success = true;
+    
+    mQueue  = new LinkedBlockingDeque<IKasqMessage>();
     
     sLogger.info("Starting initialization for " + mName);
     try
@@ -269,13 +288,15 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   }
 
   /***************************************************************************************************************
-   * 
+   * Delete this destination.
+   * Since all destination implementation types are derived from this class, this method has no effect for
+   * the permanent types. 
    */
   protected void internalDelete()
   {
-    if (mName.startsWith("KAS.TEMP."))
+    if ((mSession != null) && (mName.startsWith("KAS.TEMP.")))
     {
-      // TODO: delete the queue/topic
+      ///// not good enough
     }
   }
   
@@ -288,7 +309,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   {
     if (mBackupFileName == null)
     {
-      StringBuffer sb = new StringBuffer();
+      StringBuffer sb = new StringBuffer();              // WINDOWS           LINUX
       sb.append(RunTimeUtils.getProductHomeDir())        // C:\app\kas        /opt/kas          << path of kasq
         .append(File.separatorChar)                      // \                 /
         .append("repo")                                  // repo              repo              << repo directory

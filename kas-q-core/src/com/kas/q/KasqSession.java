@@ -115,7 +115,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public BytesMessage createBytesMessage() throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createBytesMessage()");
+    return new KasqBytesMessage();
   }
 
   /***************************************************************************************************************
@@ -123,7 +123,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MapMessage createMapMessage() throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createMapMessage()");
+    return new KasqMapMessage();
   }
 
   /***************************************************************************************************************
@@ -131,7 +131,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public ObjectMessage createObjectMessage() throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createObjectMessage()");
+    return new KasqObjectMessage();
   }
 
   /***************************************************************************************************************
@@ -139,7 +139,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public ObjectMessage createObjectMessage(Serializable object) throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createObjectMessage(Serializable)");
+    return new KasqObjectMessage(object);
   }
   
   /***************************************************************************************************************
@@ -147,7 +147,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public StreamMessage createStreamMessage() throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.createStreamMessage()");
+    return new KasqStreamMessage();
   }
 
   /***************************************************************************************************************
@@ -412,13 +412,17 @@ public class KasqSession extends AKasObject implements Session
     if ((type != IKasqConstants.cPropertyDestinationType_Queue) && (type != IKasqConstants.cPropertyDestinationType_Topic))
       throw new JMSException("Failed to create queue", "Invalid destination type: [" + type + "]");
     
-    IKasqDestination dest = null;
+    IKasqDestination dest;
+    if (type == IKasqConstants.cPropertyDestinationType_Queue)
+      dest = new KasqQueue(name, "");
+    else
+      dest = new KasqTopic(name, "");
+    
     try
     {
       KasqMessage defineRequest = new KasqMessage();
       defineRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Define);
-      defineRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, name);
-      defineRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type);
+      defineRequest.setJMSDestination(dest);
       
       sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + defineRequest.toPrintableString(0));
       IPacket response = mConnection.internalSendAndReceive(defineRequest);

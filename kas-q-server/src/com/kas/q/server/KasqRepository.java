@@ -207,6 +207,51 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
+   * Define a destination to the repository.
+   * If the destination is already defined in the repository, we don't touch it.
+   * 
+   * @param destination the destination to be added to the proper map
+   * 
+   * @return true if the destination was successfully added, null otherwise
+   */
+  public boolean define(IKasqDestination destination)
+  {
+    mLogger.debug("KasqRepository::define() - IN");
+    boolean success = true;
+    
+    if (destination == null)
+    {
+      success = false;
+    }
+    else
+    {
+      mLogger.info("Define " + destination.getType() + " with name=[" + destination.getName() + "]");
+      if ("queue".equals(destination.getType()))
+      {
+        KasqQueue q = mQueuesMap.get(destination.getName());
+        if (q == null)
+        {
+          mQueuesMap.put(destination.getName(), (KasqQueue)destination);
+          destination.init();
+        }
+      }
+      else
+      {
+        KasqTopic t = mTopicsMap.get(destination.getName());
+        if (t == null)
+        {
+          mTopicsMap.put(destination.getName(), (KasqTopic)destination);
+          destination.init();
+        }
+      }
+      success = true;
+    }
+    
+    mLogger.debug("KasqRepository::define() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /***************************************************************************************************************
    * Define and initialize a topic/queue in the repository, specifying the name of the topic/queue and the its manager
    * 
    * @param name the name of the topic/queue

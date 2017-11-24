@@ -3,8 +3,9 @@ package com.kas.q.ext;
 import java.io.Serializable;
 import javax.jms.Destination;
 import com.kas.infra.base.IInitializable;
+import com.kas.infra.base.IObject;
 
-public interface IKasqDestination extends IInitializable, Serializable, Destination
+public interface IKasqDestination extends IInitializable, Serializable, Destination, IObject
 {
   /***************************************************************************************************************
    * Put a {@code IMessage} to the destination.

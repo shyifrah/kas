@@ -22,16 +22,23 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   /***************************************************************************************************************
    * Constructs a default {@code KasqBytesMessage} object
    * 
-   * @throws IOException 
+   * @throws JMSException if an IOException is thrown
    */
-  public KasqBytesMessage() throws IOException
+  public KasqBytesMessage() throws JMSException
   {
     super();
     mBody = null;
     mBodyMode = EReadWriteMode.cWriteOnly;
     
-    mOutputArray  = new ByteArrayOutputStream();
-    mOutputStream = new ObjectOutputStream(mOutputArray);
+    try
+    {
+      mOutputArray  = new ByteArrayOutputStream();
+      mOutputStream = new ObjectOutputStream(mOutputArray);
+    }
+    catch (IOException e)
+    {
+      throw new JMSException("IOException caught");
+    }
   }
   
   /***************************************************************************************************************
