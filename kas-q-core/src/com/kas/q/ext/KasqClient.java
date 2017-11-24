@@ -1,14 +1,17 @@
 package com.kas.q.ext;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.KasqConnection;
 import com.kas.q.KasqConnectionFactory;
 import com.kas.q.KasqQueue;
+import com.kas.q.KasqSession;
 import com.kas.q.KasqTopic;
 
 public class KasqClient extends AKasObject implements IInitializable
@@ -17,6 +20,9 @@ public class KasqClient extends AKasObject implements IInitializable
   private boolean   mInitialized;
   
   private KasqConnectionFactory mConnectionFactory;
+  
+  private KasqConnection mClientConnection;
+  private KasqSession    mClientSession;
   
   private String    mHost;
   private int       mPort;
@@ -32,6 +38,8 @@ public class KasqClient extends AKasObject implements IInitializable
     mHost = host;
     mPort = port;
     mConnectionFactory = null;
+    mClientConnection = null;
+    mClientSession = null;
   }
   
   /***************************************************************************************************************
@@ -52,6 +60,14 @@ public class KasqClient extends AKasObject implements IInitializable
       boolean verified = verify(mHost, mPort);
       if (!verified)
         return false;
+      
+      mConnectionFactory = new KasqConnectionFactory(mHost, mPort);
+      try
+      {
+        mClientConnection = (KasqConnection)mConnectionFactory.createConnection();
+        mClientSession = (KasqSession)mClientConnection.createSession();
+      }
+      catch (JMSException e) {}
       
       mInitialized = true;
     }
@@ -80,18 +96,16 @@ public class KasqClient extends AKasObject implements IInitializable
    * If the {@code ConnectionFactory} was not created, create it and then return it.
    * 
    * @return the connection factory
+   * 
+   * @throws JMSException if the KasqClient was not initialized
    */
-  public ConnectionFactory getFactory()
+  public ConnectionFactory getFactory() throws JMSException
   {
-    ConnectionFactory factory = null;
-    if (mInitialized)
+    if (!mInitialized)
     {
-      if (mConnectionFactory == null)
-        mConnectionFactory = new KasqConnectionFactory(mHost, mPort);
-      
-      factory = mConnectionFactory;
+      throw new JMSException("KasqClient not initialized");
     }
-    return factory;
+    return mConnectionFactory;
   }
   
   /***************************************************************************************************************
@@ -126,22 +140,30 @@ public class KasqClient extends AKasObject implements IInitializable
     return verified;
   }
   
-  /***************************************************************************************************************
+  /****************************************************************************************************************
    * 
    */
-  public KasqQueue locateQueue(String name)
+  public KasqQueue locateQueue(String name) throws JMSException
   {
-    KasqQueue queue = null;
-    return queue;
+    if (mClientSession == null)
+    {
+      throw new JMSException("Cannot locate queue with name " + name + ". Null client session");
+    }
+    
+    return (KasqQueue)mClientSession.locateQueue(name);
   }
   
   /***************************************************************************************************************
    * 
    */
-  public KasqTopic locateTopic(String name)
+  public KasqTopic locateTopic(String name) throws JMSException
   {
-    KasqTopic topic = null;
-    return topic;
+    if (mClientSession == null)
+    {
+      throw new JMSException("Cannot locate topic with name " + name + ". Null client session");
+    }
+    
+    return (KasqTopic)mClientSession.locateTopic(name);
   }
   
   /***************************************************************************************************************

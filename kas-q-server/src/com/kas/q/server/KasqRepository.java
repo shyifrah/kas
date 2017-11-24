@@ -182,37 +182,12 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
-   * Define and initialize a topic in the repository, specifying the name of the topic
-   * 
-   * @param name the name of the topic
-   * 
-   * @return true if topic definition was successful
-   */
-  public boolean defineTopic(String name)
-  {
-    return defineTopic(name, mConfig.getManagerName());
-  }
-  
-  /***************************************************************************************************************
-   * Define and initialize a topic in the repository, specifying the name of the topic and the its manager
-   * 
-   * @param name the name of the topic
-   * @param managerName of the manager in which this topic defined
-   * 
-   * @return true if topic definition was successful
-   */
-  public boolean defineTopic(String name, String managerName)
-  {
-    return define(name, managerName, true);
-  }
-  
-  /***************************************************************************************************************
    * Define a destination to the repository.
-   * If the destination is already defined in the repository, we don't touch it.
+   * If the destination is already defined in the repository, we don't change it.
    * 
-   * @param destination the destination to be added to the proper map
+   * @param destination the destination to be added to the repository
    * 
-   * @return true if the destination was successfully added, null otherwise
+   * @return true if the destination was successfully added, false otherwise
    */
   public boolean define(IKasqDestination destination)
   {
@@ -231,8 +206,14 @@ public class KasqRepository extends AKasObject implements IInitializable
         KasqQueue q = mQueuesMap.get(destination.getName());
         if (q == null)
         {
+          mLogger.debug("KasqRepository::define() - Queue with name " + destination.getName() + " does not exist. Define it now");
           mQueuesMap.put(destination.getName(), (KasqQueue)destination);
           destination.init();
+        }
+        else
+        {
+          mLogger.debug("KasqRepository::define() - Queue with name " + destination.getName() + " already exists");
+          success = false;
         }
       }
       else
@@ -240,11 +221,16 @@ public class KasqRepository extends AKasObject implements IInitializable
         KasqTopic t = mTopicsMap.get(destination.getName());
         if (t == null)
         {
+          mLogger.debug("KasqRepository::define() - Topic with name " + destination.getName() + " does not exist. Define it now");
           mTopicsMap.put(destination.getName(), (KasqTopic)destination);
           destination.init();
         }
+        else
+        {
+          mLogger.debug("KasqRepository::define() - Topic with name " + destination.getName() + " already exists");
+          success = false;
+        }
       }
-      success = true;
     }
     
     mLogger.debug("KasqRepository::define() - OUT, Returns=" + success);

@@ -285,6 +285,22 @@ public class KasqSession extends AKasObject implements Session
   {
     throw new JMSException("Unsupported method: Session.createSharedConsumer(Topic, String, String)");
   }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public Queue locateQueue(String queueName) throws JMSException
+  {
+    return (KasqQueue)internalLocateDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
+  }
+
+  /***************************************************************************************************************
+   * 
+   */
+  public Topic locateTopic(String topicName) throws JMSException
+  {
+    return (KasqTopic)internalLocateDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
+  }
 
   /***************************************************************************************************************
    * 
@@ -407,12 +423,15 @@ public class KasqSession extends AKasObject implements Session
     sLogger.debug("KasqSession::internalCreateDestination() - IN");
     
     if (name == null)
-      throw new JMSException("Failed to create destination", "Invalid destination name: [" + StringUtils.asString(name) + "]");
+      throw new JMSException("Failed to create destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
     
     if ((type != IKasqConstants.cPropertyDestinationType_Queue) && (type != IKasqConstants.cPropertyDestinationType_Topic))
-      throw new JMSException("Failed to create queue", "Invalid destination type: [" + type + "]");
+      throw new JMSException("Failed to create destination: Invalid destination type: [" + type + "]");
     
     IKasqDestination dest;
+    int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
+    String msg = null;
+    
     if (type == IKasqConstants.cPropertyDestinationType_Queue)
       dest = new KasqQueue(name, "");
     else
@@ -429,12 +448,12 @@ public class KasqSession extends AKasObject implements Session
       if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
       {
         IKasqMessage defineResponse = (IKasqMessage)response;
-        sLogger.debug("KasqSession::internalCreateDestination() - Got this response: " + defineResponse.toPrintableString(0));
-        int responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+        sLogger.debug("KasqSession::internalCreateDestination() - Got response: " + defineResponse.toPrintableString(0));
+        responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
         if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
-        {
           dest = (IKasqDestination)defineResponse.getJMSDestination();
-        }
+        else
+          msg  = defineResponse.getStringProperty(IKasqConstants.cPropertyResponseMessage);
       }
     }
     catch (Throwable e)
@@ -442,7 +461,58 @@ public class KasqSession extends AKasObject implements Session
       sLogger.debug("KasqSession::internalCreateDestination() - Exception caught: ", e);
     }
     
+    if (responseCode == IKasqConstants.cPropertyResponseCode_Fail)
+      throw new JMSException("Destination creation failed: " + msg);
+    
     sLogger.debug("KasqSession::internalCreateDestination() - OUT, Result=" + StringUtils.asString(dest));
+    return dest;
+  }
+  
+  /***************************************************************************************************************
+   * Send a Locate message to the KAS/Q server to locate an existing destination and return it
+   * 
+   * @param name the destination name
+   * @param type an integer representing the destination type: 1 - queue, 2 - topic
+   * 
+   * @throws JMSException 
+   */
+  private IKasqDestination internalLocateDestination(String name, int type) throws JMSException
+  {
+    sLogger.debug("KasqSession::internalLocateDestination() - IN");
+    
+    if (name == null)
+      throw new JMSException("Failed to locate destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
+    
+    if ((type != IKasqConstants.cPropertyDestinationType_Queue) && (type != IKasqConstants.cPropertyDestinationType_Topic))
+      throw new JMSException("Failed to locate destination: Invalid destination type: [" + type + "]");
+    
+    IKasqDestination dest = null;
+    int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
+    
+    try
+    {
+      KasqMessage locateRequest = new KasqMessage();
+      locateRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Locate);
+      locateRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, name);
+      locateRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type);
+      
+      sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + locateRequest.toPrintableString(0));
+      IPacket response = mConnection.internalSendAndReceive(locateRequest);
+      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
+      {
+        IKasqMessage locateResponse = (IKasqMessage)response;
+        sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + locateResponse.toPrintableString(0));
+        responseCode = locateResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+          dest = (IKasqDestination)locateResponse.getJMSDestination();
+      }
+    }
+    catch (Throwable e)
+    {
+      sLogger.debug("KasqSession::internalCreateDestination() - Exception caught: ", e);
+    }
+    
+    sLogger.debug("KasqSession::internalLocateDestination() - OUT, Result=" + StringUtils.asString(dest));
     return dest;
   }
   

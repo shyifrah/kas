@@ -7,6 +7,7 @@ public enum ERequestType
   cAuthenticate,
   cShutdown,
   cDefine,
+  cLocate,
   ;
   
   private static final ERequestType [] cValues = ERequestType.values();

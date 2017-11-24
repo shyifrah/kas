@@ -27,8 +27,6 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
    * 
    */
   private IKasqDestination mJmsDestination;
-  //private String  mDestinationName;
-  //private Integer mDestinationType;
   private String  mJmsMessageId;
   
   /***************************************************************************************************************
@@ -42,36 +40,14 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
   DefineRequest(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     Destination dest = null;
-    //String  destName = null;
-    //Integer destType = null;
     String  jmsMsgId = null;
     try
     {
       dest = requestMessage.getJMSDestination();
-      //destName = requestMessage.getStringProperty(IKasqConstants.cPropertyDestinationName);
-      //destType = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
       jmsMsgId = requestMessage.getJMSMessageID();
     }
     catch (Throwable e) {}
     
-    //if (destName == null)
-    //{
-    //  sLogger.warn("Received DefineRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
-    //  throw new IllegalArgumentException("Invalid DefineRequest: null destination name");
-    //}
-    //
-    //if (destName.length() == 0)
-    //{
-    //  sLogger.warn("Received DefineRequest with invalid destination: name=[" + StringUtils.asString(destName) + "]");
-    //  throw new IllegalArgumentException("Invalid DefineRequest: destination is empty string");
-    //}
-    //
-    //if (destType == null)
-    //{
-    //  sLogger.warn("Received DefineRequest with invalid destination: type=[" + StringUtils.asString(destType) + "]");
-    //  throw new IllegalArgumentException("Invalid DefineRequest: null destination type");
-    //}
-    //
     if (dest == null)
     {
       sLogger.warn("Received DefineRequest with invalid JMS Destination: dest=[" + StringUtils.asString(dest) + "]");
@@ -97,31 +73,9 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
     }
     
     mJmsDestination = (IKasqDestination)dest;
-    //mDestinationName = destName;
-    //mDestinationType = destType;
     mJmsMessageId = jmsMsgId;
   }
   
-  ///***************************************************************************************************************
-  // * Get the destination name
-  // * 
-  // * @return the destination name
-  // */
-  //public String getDestinationName()
-  //{
-  //  return mDestinationName;
-  //}
-  //
-  ///***************************************************************************************************************
-  // * Get the destination type
-  // * 
-  // * @return the destination type. 1 if it's queue, 2 if it's topic
-  // */
-  //public int getDestinationType()
-  //{
-  //  return mDestinationType;
-  //}
-  //
   /***************************************************************************************************************
    * Get the JMS message ID
    * 
@@ -164,58 +118,11 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
       {
         code = IKasqConstants.cPropertyResponseCode_Okay;
       }
-      //// now we address the repository and locate the destination and define it if necessary
-      //boolean isQueue = mDestinationType == IKasqConstants.cPropertyDestinationType_Queue;
-      //sLogger.debug("DefineRequest::process() - Destination type is " + (isQueue ? "queue" : "topic"));
-      //
-      //IKasqDestination dest = null;
-      //if (isQueue)
-      //{
-      //  dest = sRepository.locateQueue(mDestinationName);
-      //  if (dest != null)
-      //  {
-      //    code = IKasqConstants.cPropertyResponseCode_Okay;
-      //    msg  = "Queue with name " + mDestinationName + " already exists";
-      //  }
-      //  else
-      //  {
-      //    boolean defined = sRepository.defineQueue(mDestinationName);
-      //    if (defined)
-      //    {
-      //      code = IKasqConstants.cPropertyResponseCode_Okay;
-      //      msg  = "Queue with name " + mDestinationName + " successfully defined";
-      //      dest = sRepository.locateQueue(mDestinationName);
-      //    }
-      //    else
-      //    {
-      //      msg  = "Queue with name " + mDestinationName + " could not be located and failed definition";
-      //    }
-      //  }
-      //}
-      //else
-      //{
-      //  dest = sRepository.locateTopic(mDestinationName);
-      //  if (dest != null)
-      //  {
-      //    code = IKasqConstants.cPropertyResponseCode_Okay;
-      //    msg  = "Topic with name " + mDestinationName + " already exists";
-      //  }
-      //  else
-      //  {
-      //    boolean defined = sRepository.defineTopic(mDestinationName);
-      //    if (defined)
-      //    {
-      //      code = IKasqConstants.cPropertyResponseCode_Okay;
-      //      msg  = "Topic with name " + mDestinationName + " successfully defined";
-      //      dest = sRepository.locateQueue(mDestinationName);
-      //    }
-      //    else
-      //    {
-      //      msg  = "Topic with name " + mDestinationName + " could not be located and failed definition";
-      //    }
-      //  }
-      //}
-      //
+      else
+      {
+        msg = mJmsDestination.getType() + " with name " + mJmsDestination.getName() + " already exists";
+      }
+      
       IKasqMessage message = new KasqMessage();
       message.setJMSDestination(mJmsDestination);
       message.setJMSCorrelationID(mJmsMessageId);

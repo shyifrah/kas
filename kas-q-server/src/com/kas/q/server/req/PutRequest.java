@@ -7,6 +7,7 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.KasqQueue;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.server.IClientHandler;
@@ -104,19 +105,9 @@ final public class PutRequest extends AKasObject implements IRequestProcessor
       }
       else
       {
-        sLogger.debug("PutRequest::process() - Destination is not defined, define it now...");
-        boolean defined = sRepository.defineQueue(destinationName);
-        if (defined)
-        {
-          destinationFromRepo = sRepository.locate(destinationName);
-          destinationFromRepo.put(mMessage);
-        }
-        else
-        {
-          IKasqDestination deadq = sRepository.getDeadQueue();
-          deadq.put(mMessage);
-          sLogger.warn("Destination " + destinationName + " failed definition; message sent to deadq");
-        }
+        sLogger.debug("PutRequest::process() - Destination is not defined, sending to DEADQ...");
+        KasqQueue deadq = sRepository.getDeadQueue();
+        deadq.put(mMessage);
       }
       result = true;
     }

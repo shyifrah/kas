@@ -122,58 +122,6 @@ public class ClientHandler extends AKasObject implements IClientHandler
     sLogger.debug("ClientHandler::run() - OUT");
   }
   
-//  /***************************************************************************************************************
-//   * Process an incoming {@code IPacket}.
-//   * 
-//   * Just like every {@link javax.jms.Message} object, the {@code IPacket} object carries a {@code Destination}
-//   * object in the JMSDestination header.
-//   * If this object is <b>not</b> an instance of {@code IDestination}, it means it is managed by some other provider,
-//   * and we have nothing to do with this message, so we send it to our Dead queue.
-//   * If this object is an instance of {@code IDestination}, then we try to locate it in our repository. If it was
-//   * located, we put the message in that destination. If we didn't locate it, we define it and then put it there. 
-//   * 
-//   * @param request the {@code IRequest} to be processed
-//   * 
-//   * @throws JMSException if for some reason we fail to get the Destination from the message. 
-//   * @throws IOException if the Messenger throws an exception 
-//   */
-//  private void process(IRequestProcessor request) throws JMSException, IOException
-//  {
-//    sLogger.debug("ClientHandler::process() - IN");
-//    
-//    switch (request.getRequestType())
-//    {
-//      case cDefine:
-//        sLogger.debug("ClientHandler::process() - Processing a Define request");
-//        if (mAuthenticated)
-//          RequestProcessor.handleDefineRequest(this, (DefineRequest)request);
-//        break;
-//      case cShutdown:
-//        sLogger.debug("ClientHandler::process() - Processing a Shutdown request");
-//        if (mAuthenticated)
-//          RequestProcessor.handleShutdownRequest((ShutdownRequest)request);
-//        break;
-//      case cAuthenticate:
-//        sLogger.debug("ClientHandler::process() - Processing an Authentication request");
-//        mAuthenticated = RequestProcessor.handleAuthenticateRequest(this, (AuthenticateRequest)request);
-//        break;
-//      case cGet:
-//        sLogger.debug("ClientHandler::process() - Processing a Get request");
-//        if (mAuthenticated)
-//          RequestProcessor.handleGetRequest(this, (GetRequest)request);
-//        break;
-//      case cPut:
-//        sLogger.debug("ClientHandler::process() - Processing a Put request");
-//        if (mAuthenticated)
-//          RequestProcessor.handlePutRequest((PutRequest)request);
-//        break;
-//      default:
-//        break;
-//    }
-//    
-//    sLogger.debug("ClientHandler::process() - OUT");
-//  }
-//  
   /***************************************************************************************************************
    * Send a message to client 
    * 

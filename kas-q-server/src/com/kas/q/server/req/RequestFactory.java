@@ -44,6 +44,10 @@ public class RequestFactory
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
           request = new DefineRequest(message);
           break;
+        case cLocate:
+          sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
+          request = new LocateRequest(message);
+          break;
         case cPut:
         default:
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
