@@ -19,8 +19,6 @@ import javax.jms.TemporaryTopic;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSubscriber;
-import com.kas.comm.IPacket;
-import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
@@ -444,17 +442,14 @@ public class KasqSession extends AKasObject implements Session
       defineRequest.setJMSDestination(dest);
       
       sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + defineRequest.toPrintableString(0));
-      IPacket response = mConnection.internalSendAndReceive(defineRequest);
-      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
-      {
-        IKasqMessage defineResponse = (IKasqMessage)response;
-        sLogger.debug("KasqSession::internalCreateDestination() - Got response: " + defineResponse.toPrintableString(0));
-        responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
-        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
-          dest = (IKasqDestination)defineResponse.getJMSDestination();
-        else
-          msg  = defineResponse.getStringProperty(IKasqConstants.cPropertyResponseMessage);
-      }
+      IKasqMessage defineResponse = mConnection.internalSendAndReceive(defineRequest);
+      
+      sLogger.debug("KasqSession::internalCreateDestination() - Got response: " + defineResponse.toPrintableString(0));
+      responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+      if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+        dest = (IKasqDestination)defineResponse.getJMSDestination();
+      else
+        msg  = defineResponse.getStringProperty(IKasqConstants.cPropertyResponseMessage);
     }
     catch (Throwable e)
     {
@@ -497,15 +492,13 @@ public class KasqSession extends AKasObject implements Session
       locateRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type);
       
       sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + locateRequest.toPrintableString(0));
-      IPacket response = mConnection.internalSendAndReceive(locateRequest);
-      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
-      {
-        IKasqMessage locateResponse = (IKasqMessage)response;
-        sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + locateResponse.toPrintableString(0));
-        responseCode = locateResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
-        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
-          dest = (IKasqDestination)locateResponse.getJMSDestination();
-      }
+      IKasqMessage locateResponse = mConnection.internalSendAndReceive(locateRequest);
+      
+      sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + locateResponse.toPrintableString(0));
+      responseCode = locateResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+      if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+        dest = (IKasqDestination)locateResponse.getJMSDestination();
+      
     }
     catch (Throwable e)
     {

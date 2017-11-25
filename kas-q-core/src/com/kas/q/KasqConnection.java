@@ -255,16 +255,14 @@ public class KasqConnection extends AKasObject implements Connection
       authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, admin);
       
       sLogger.debug("KasqConnection::authenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
-      IPacket response = mMessenger.sendAndReceive(authRequest);
-      if (response.getPacketClassId() == PacketHeader.cClassIdKasq)
+      IKasqMessage authResponse = internalSendAndReceive(authRequest);
+      
+      sLogger.debug("KasqConnection::authenticate() - Got response: " + authResponse.toPrintableString(0));
+      int responseCode = authResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+      if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
       {
-        IKasqMessage authResponse = (IKasqMessage)response;
-        int responseCode = authResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
-        if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
-        {
-          result = true;
-          mPriviliged = admin;
-        }
+        result = true;
+        mPriviliged = admin;
       }
     }
     catch (Throwable e)
