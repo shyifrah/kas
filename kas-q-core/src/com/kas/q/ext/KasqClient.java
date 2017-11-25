@@ -23,6 +23,7 @@ public class KasqClient extends AKasObject implements IInitializable
   
   private KasqConnection mClientConnection;
   private KasqSession    mClientSession;
+  private boolean        mSessionInitialized;
   
   private String    mHost;
   private int       mPort;
@@ -62,13 +63,6 @@ public class KasqClient extends AKasObject implements IInitializable
         return false;
       
       mConnectionFactory = new KasqConnectionFactory(mHost, mPort);
-      try
-      {
-        mClientConnection = (KasqConnection)mConnectionFactory.createConnection();
-        mClientSession = (KasqSession)mClientConnection.createSession();
-      }
-      catch (JMSException e) {}
-      
       mInitialized = true;
     }
     
@@ -141,29 +135,58 @@ public class KasqClient extends AKasObject implements IInitializable
   }
   
   /****************************************************************************************************************
+   * Locate a queue in KAS/Q server
    * 
+   * @param name the name of the queue
+   * 
+   * @return the {@code KasqQueue} object of the queue, or null if client failed to locate it
+   * 
+   * @throws JMSException if client's session initialization failed
    */
   public KasqQueue locateQueue(String name) throws JMSException
   {
-    if (mClientSession == null)
+    initClientSession();
+    if (!mSessionInitialized)
     {
-      throw new JMSException("Cannot locate queue with name " + name + ". Null client session");
+      throw new JMSException("Cannot locate queue with name " + name + ". Client session failed initialization");
     }
     
     return (KasqQueue)mClientSession.locateQueue(name);
   }
   
   /***************************************************************************************************************
+   * Locate a topic in KAS/Q server
    * 
+   * @param name the name of the topic
+   * 
+   * @return the {@code KasqTopic} object of the topic, or null if client failed to locate it
+   * 
+   * @throws JMSException if client's session initialization failed
    */
   public KasqTopic locateTopic(String name) throws JMSException
   {
-    if (mClientSession == null)
+    initClientSession();
+    if (!mSessionInitialized)
     {
-      throw new JMSException("Cannot locate topic with name " + name + ". Null client session");
+      throw new JMSException("Cannot locate queue with name " + name + ". Client session failed initialization");
     }
     
     return (KasqTopic)mClientSession.locateTopic(name);
+  }
+  
+  /***************************************************************************************************************
+   * Initialize the client's Session and Connection which are used for locating resources in the KAS/Q server.
+   * 
+   * @throws JMSException if connection or session creation are failed
+   */
+  private void initClientSession() throws JMSException
+  {
+    if (!mSessionInitialized)
+    {
+      mClientConnection = (KasqConnection)mConnectionFactory.createConnection();
+      mClientSession = (KasqSession)mClientConnection.createSession();
+      mSessionInitialized = true;
+    }
   }
   
   /***************************************************************************************************************

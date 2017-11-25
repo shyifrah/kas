@@ -9,13 +9,14 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.concurrent.LinkedBlockingDeque;
+import javax.jms.JMSException;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.KasqMessage;
 import com.kas.q.KasqSession;
 
 public abstract class AKasqDestination extends AKasObject implements IKasqDestination
@@ -34,10 +35,10 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   private String  mName;
   private String  mManagerName;
   
-  private transient KasqSession mSession;
-  private transient LinkedBlockingDeque<IKasqMessage> mQueue;
-  private transient File    mBackupFile;
-  private transient String  mBackupFileName = null;
+  protected transient KasqSession  mSession;
+  protected transient MessageDeque mQueue;
+  protected transient File    mBackupFile;
+  protected transient String  mBackupFileName = null;
   
   /***************************************************************************************************************
    * Constructs a {@code AKasqDestination} object, specifying its name and owning manager
@@ -69,16 +70,16 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
    */
   public boolean init()
   {
-    sLogger.debug("KasqQueue::init() - IN, name=[" + mName + "]");
+    sLogger.debug("AKasqDestination::init() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    mQueue  = new LinkedBlockingDeque<IKasqMessage>();
+    mQueue  = new MessageDeque();
     
     sLogger.info("Starting initialization for " + mName);
     try
     {
       String fileName = getBackupFileName();
-      sLogger.debug("KasqQueue::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
+      sLogger.debug("AKasqDestination::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
       mBackupFile = new File(fileName);
       if (mBackupFile.exists())
       {
@@ -102,7 +103,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
           }
           catch (Throwable e)
           {
-            sLogger.debug("KasqQueue::init() - Exception caught while trying to restore " + mName + " contents ", e);
+            sLogger.debug("AKasqDestination::init() - Exception caught while trying to restore " + mName + " contents ", e);
             error = true;
           }
         }
@@ -132,11 +133,11 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqQueue::init() - Exception caught during initialization. Name=" + mName + "; Exception: ", e);
+      sLogger.debug("AKasqDestination::init() - Exception caught during initialization. Name=" + mName + "; Exception: ", e);
       success = false;
     }
     
-    sLogger.debug("KasqQueue::init() - OUT, Returns=" + success);
+    sLogger.debug("AKasqDestination::init() - OUT, Returns=" + success);
     return success;
   }
   
@@ -145,7 +146,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
    */
   public boolean term()
   {
-    sLogger.debug("KasqQueue::term() - IN, name=[" + mName + "]");
+    sLogger.debug("AKasqDestination::term() - IN, name=[" + mName + "]");
     boolean success = true;
     
     sLogger.info("Starting termination for " + mName);
@@ -197,11 +198,11 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqQueue::term() - Exception caught during termination. Name=" + mName + "; Exception: ", e);
+      sLogger.debug("AKasqDestination::term() - Exception caught during termination. Name=" + mName + "; Exception: ", e);
       success = false;
     }
     
-    sLogger.debug("KasqQueue::term() - OUT, Returns=" + success);
+    sLogger.debug("AKasqDestination::term() - OUT, Returns=" + success);
     return success;
   }
   
@@ -217,6 +218,11 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
    * 
    */
   public abstract String getType();
+  
+  /***************************************************************************************************************
+   * 
+   */
+  protected abstract IKasqMessage requestReply(IKasqMessage request) throws JMSException;
   
   /***************************************************************************************************************
    * 
@@ -291,12 +297,41 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
    * Delete this destination.
    * Since all destination implementation types are derived from this class, this method has no effect for
    * the permanent types. 
+   * 
+   * @throws JMSException 
    */
-  protected void internalDelete()
+  protected void internalDelete() throws JMSException
   {
     if ((mSession != null) && (mName.startsWith("KAS.TEMP.")))
     {
-      ///// not good enough
+      sLogger.debug("AKasqDestination::internalLocateDestination() - IN");
+      
+      int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
+      String msg = "";
+      try
+      {
+        KasqMessage deleteRequest = new KasqMessage();
+        deleteRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Delete);
+        deleteRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, mName);
+        deleteRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(getType()) ? 
+            IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
+        
+        sLogger.debug("AKasqDestination::internalLocateDestination() - Sending delete request via message: " + deleteRequest.toPrintableString(0));
+        IKasqMessage deleteResponse = requestReply(deleteRequest);
+        
+        sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + deleteResponse.toPrintableString(0));
+        responseCode = deleteResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+        msg = deleteResponse.getStringProperty(IKasqConstants.cPropertyResponseMessage);
+      }
+      catch (Throwable e)
+      {
+        sLogger.debug("AKasqDestination::internalCreateDestination() - Exception caught: ", e);
+      }
+      
+      if (responseCode == IKasqConstants.cPropertyResponseCode_Fail)
+        throw new JMSException("Failed to delete destination " + getFormattedName() + ". " + msg);
+      
+      sLogger.debug("AKasqDestination::internalLocateDestination() - OUT");
     }
   }
   

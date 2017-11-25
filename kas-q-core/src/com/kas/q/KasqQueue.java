@@ -3,6 +3,7 @@ package com.kas.q;
 import javax.jms.JMSException;
 import javax.jms.TemporaryQueue;
 import com.kas.q.ext.AKasqDestination;
+import com.kas.q.ext.IKasqMessage;
 
 public class KasqQueue extends AKasqDestination implements TemporaryQueue
 {
@@ -41,5 +42,13 @@ public class KasqQueue extends AKasqDestination implements TemporaryQueue
   public void delete() throws JMSException
   {
     internalDelete();
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  protected IKasqMessage requestReply(IKasqMessage request) throws JMSException
+  {
+    return mSession.internalSendAndReceive(request);
   }
 }
