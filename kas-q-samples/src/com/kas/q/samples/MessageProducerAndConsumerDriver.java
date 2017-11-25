@@ -3,26 +3,20 @@ package com.kas.q.samples;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
-import javax.jms.TextMessage;
 import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
+import com.kas.q.samples.internal.AThread;
+import com.kas.q.samples.internal.ReceiverThread;
+import com.kas.q.samples.internal.SenderThread;
 
 public class MessageProducerAndConsumerDriver
 {
-  static class SenderThread extends Thread
-  {
-    
-  }
-  
   private final static String cQueueName = "shy.local.queue";
   private final static String cHostname  = "localhost";
-  
-  private final static int    cNumberOfMessages = 5;
-  
   private final static int    cPort      = 14560;
   
   //============================================================================================================================================
@@ -70,20 +64,28 @@ public class MessageProducerAndConsumerDriver
       try
       {
         ConnectionFactory factory = client.getFactory();
-        
         Connection conn = factory.createConnection(userName, password);
-        System.out.println("connection created...: " + conn.toString());
-        
         Session sess = conn.createSession();
-        System.out.println("session created......: " + sess.toString());
+        Queue queue = client.locateQueue(cQueueName);
+        if (queue == null) queue = sess.createQueue(cQueueName);
         
-        Queue queue = sess.createQueue(cQueueName);
+        Properties senderParams = new Properties();
+        senderParams.setStringProperty(AThread.cProperty_ThreadName, "SenderThread");
+        senderParams.setIntProperty(AThread.cProperty_NumOfMessages, 5);
+        senderParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 10);
+        senderParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
+        senderParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
+        Thread sender = new SenderThread(senderParams);
+        sender.start();
         
-        System.out.println("Driver::run() - Sending messages");
-        sendMessages(sess, queue);
+        Properties receiverParams = new Properties(senderParams);
+        receiverParams.setStringProperty(AThread.cProperty_ThreadName, "ReceiverThread");
+        senderParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
+        receiverParams.setStringProperty(ReceiverThread.cProperty_ReceiveMode, ReceiverThread.cProperty_ReceiveMode_InfiniteWait);
+        Thread receiver = new ReceiverThread(receiverParams);
+        receiver.start();
         
-        System.out.println("Driver::run() - Waiting 5 seconds before continuing...");
-        RunTimeUtils.sleep(5);
+        RunTimeUtils.sleep(60);
       }
       catch (JMSException e)
       {
@@ -95,22 +97,5 @@ public class MessageProducerAndConsumerDriver
     }
 
     System.out.println("Driver::run() - OUT");
-  }
-  
-  //============================================================================================================================================
-  //
-  //
-  //
-  //============================================================================================================================================
-  private void sendMessages(Session session, Queue queue) throws JMSException
-  {
-    MessageProducer producer = session.createProducer(queue);
-    
-    for (int i = 0; i < cNumberOfMessages; i++)
-    {
-      String text = "shyifrah-" + Integer.toString(i);
-      TextMessage msg = session.createTextMessage(text);
-      producer.send(queue, msg);
-    }
   }
 }

@@ -1,12 +1,8 @@
 package com.kas.q.samples.internal;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
-import javax.jms.Queue;
-import javax.jms.Session;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 
@@ -27,16 +23,7 @@ public class ReceiverThread extends AThread
   {
     try
     {
-      ConnectionFactory factory = mClient.getFactory();
-      Connection conn = factory.createConnection();
-      Session session = conn.createSession();
-      String qname = mProperties.getStringProperty(AThread.cProperty_QueueName, "default.queue.name");
-      
-      Queue queue = mClient.locateQueue(qname);
-      if (queue == null)
-        queue = session.createQueue(qname);
-      MessageConsumer consumer = session.createConsumer(queue);
-      
+      MessageConsumer consumer = mSession.createConsumer(mQueue);
       for (int i = 1; i <= mNumOfMessages; i++)
       {
         Message msg = receiveOneMessage(consumer);
