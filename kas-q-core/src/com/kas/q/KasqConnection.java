@@ -1,6 +1,8 @@
 package com.kas.q;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
@@ -16,10 +18,12 @@ import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.IKasqConstants;
+import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.KasqMessageFactory;
 
 public class KasqConnection extends AKasObject implements Connection
@@ -42,6 +46,10 @@ public class KasqConnection extends AKasObject implements Connection
   protected String  mClientId = null;
   
   protected boolean mPriviliged = false;
+  
+  protected List<KasqSession> mSessions;
+  protected List<KasqQueue>  mTempQueues;
+  protected List<KasqTopic>  mTempTopics;
   
   protected IMessenger mMessenger;
   
@@ -75,6 +83,10 @@ public class KasqConnection extends AKasObject implements Connection
     {
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       mClientId = "CLNT" + UniqueId.generate().toString();
+      
+      mSessions = new ArrayList<KasqSession>();
+      mTempQueues = new ArrayList<KasqQueue>();
+      mTempTopics = new ArrayList<KasqTopic>();
     }
     catch (IOException e)
     {
@@ -123,7 +135,12 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public Session createSession() throws JMSException
   {
-    return new KasqSession(this);
+    KasqSession sess = new KasqSession(this);
+    synchronized (mSessions)
+    {
+      mSessions.add(sess);
+    }
+    return sess;
   }
 
   /***************************************************************************************************************
@@ -131,7 +148,12 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public Session createSession(boolean transacted, int acknowledgeMode) throws JMSException
   {
-    return new KasqSession(this, transacted, acknowledgeMode);
+    KasqSession sess = new KasqSession(this, transacted, acknowledgeMode);
+    synchronized (mSessions)
+    {
+      mSessions.add(sess);
+    }
+    return sess;
   }
 
   /***************************************************************************************************************
@@ -139,7 +161,12 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public Session createSession(int sessionMode) throws JMSException
   {
-    return new KasqSession(this, sessionMode);
+    KasqSession sess = new KasqSession(this, sessionMode);
+    synchronized (mSessions)
+    {
+      mSessions.add(sess);
+    }
+    return sess;
   }
 
   /***************************************************************************************************************
@@ -189,8 +216,31 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
-      stop();
+      // release all allocated resources (?)
       mMessenger.cleanup();
+      
+      // delete all temporary destinations
+      synchronized (mTempQueues)
+      {
+        for (KasqQueue queue : mTempQueues)
+          queue.delete();
+      }
+      
+      synchronized (mTempTopics)
+      {
+        for (KasqTopic topic : mTempTopics)
+          topic.delete();
+      }
+      
+      // call close() method on all sessions
+      // when closing a session, it should close all consumers and producers
+      synchronized (mSessions)
+      {
+        for (KasqSession sess : mSessions)
+          sess.close();
+      }
+      
+      stop();
     }
     catch (Throwable e) {}
   }
@@ -275,6 +325,50 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
+   * Create a temporary destination
+   * 
+   * @param name the name of the destination to create
+   * @param type an integer representing the type of the destination: 1 - queue, 2 - topic
+   * 
+   * @return the created destination
+   * 
+   * @throws JMSException 
+   */
+  IKasqDestination internalCreateTemporaryDestination(String name, int type) throws JMSException
+  {
+    sLogger.debug("KasqConnection::internalCreateTemporaryDestination() - IN");
+    
+    if (name == null)
+      throw new JMSException("Failed to create destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
+    
+    IKasqDestination dest = null;
+    if (type == IKasqConstants.cPropertyDestinationType_Queue)
+    {
+      dest = new KasqQueue(name, "");
+      synchronized (mTempQueues)
+      {
+        mTempQueues.add((KasqQueue)dest);
+      }
+    }
+    else
+    if (type == IKasqConstants.cPropertyDestinationType_Topic)
+    {
+      dest = new KasqTopic(name, "");
+      synchronized (mTempTopics)
+      {
+        mTempTopics.add((KasqTopic)dest);
+      }
+    }
+    else
+    {
+      throw new JMSException("Failed to create destination: Invalid destination type: [" + type + "]");
+    }
+    
+    sLogger.debug("KasqConnection::internalCreateTemporaryDestination() - OUT, Result=" + StringUtils.asString(dest));
+    return dest;
+  }
+  
+  /***************************************************************************************************************
    * Send a message to the KAS/Q server by calling the messenger's send() method.
    * 
    * @param message the message to be sent
@@ -332,6 +426,15 @@ public class KasqConnection extends AKasObject implements Connection
     sb.append(name()).append("(\n")
       .append(pad).append("  Started=").append(mStarted).append("\n")
       .append(pad).append("  ClientId=").append(mClientId).append("\n")
+      .append(pad).append("  Sessions=(")
+      .append(StringUtils.asPrintableString(mSessions, level+2)).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append("  TempQueues=(")
+      .append(StringUtils.asPrintableString(mTempQueues, level+2)).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append("  TempTopics=(")
+      .append(StringUtils.asPrintableString(mTempTopics, level+2)).append("\n")
+      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

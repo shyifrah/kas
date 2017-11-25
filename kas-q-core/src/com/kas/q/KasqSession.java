@@ -1,6 +1,8 @@
 package com.kas.q;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -43,6 +45,9 @@ public class KasqSession extends AKasObject implements Session
   int            mAcknowledgeMode;
   int            mSessionMode;
   String         mSessionId;
+  
+  List<KasqMessageProducer> mProducers;
+  List<KasqMessageConsumer> mConsumers;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
@@ -98,6 +103,9 @@ public class KasqSession extends AKasObject implements Session
     mAcknowledgeMode = acknowledgeMode;
     mSessionMode     = sessionMode;
     mSessionId       = UniqueId.generate().toString();
+    
+    mProducers = new ArrayList<KasqMessageProducer>();
+    mConsumers = new ArrayList<KasqMessageConsumer>();
   }
   
   /***************************************************************************************************************
@@ -201,7 +209,20 @@ public class KasqSession extends AKasObject implements Session
    */
   public void close() throws JMSException
   {
-    throw new JMSException("Unsupported method: Session.close()");
+    // close all producers
+    synchronized (mProducers)
+    {
+      for (KasqMessageProducer producer : mProducers)
+        producer.close();
+    }
+    
+    // close all consumers
+    // when closing a consumer, we should wait for all consumers to finish their receive() calls
+    synchronized (mConsumers)
+    {
+      for (KasqMessageConsumer consumer : mConsumers)
+        consumer.close();
+    }
   }
 
   /***************************************************************************************************************
@@ -241,7 +262,12 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageProducer createProducer(Destination destination) throws JMSException
   {
-    return new KasqMessageProducer(this, destination);
+    KasqMessageProducer producer = new KasqMessageProducer(this, destination);
+    synchronized(mProducers)
+    {
+      mProducers.add(producer);
+    }
+    return producer;
   }
 
   /***************************************************************************************************************
@@ -249,7 +275,12 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination) throws JMSException
   {
-    return new KasqMessageConsumer(this, destination);
+    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination);
+    synchronized(mConsumers)
+    {
+      mConsumers.add(consumer);
+    }
+    return consumer;
   }
 
   /***************************************************************************************************************
@@ -257,7 +288,12 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination, String messageSelector) throws JMSException
   {
-    return new KasqMessageConsumer(this, destination, messageSelector);
+    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination, messageSelector);
+    synchronized(mConsumers)
+    {
+      mConsumers.add(consumer);
+    }
+    return consumer;
   }
 
   /***************************************************************************************************************
@@ -265,7 +301,12 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createConsumer(Destination destination, String messageSelector, boolean noLocal) throws JMSException
   {
-    return new KasqMessageConsumer(this, destination, messageSelector, noLocal);
+    KasqMessageConsumer consumer = new KasqMessageConsumer(this, destination, messageSelector, noLocal);
+    synchronized(mConsumers)
+    {
+      mConsumers.add(consumer);
+    }
+    return consumer;
   }
 
   /***************************************************************************************************************
@@ -285,7 +326,14 @@ public class KasqSession extends AKasObject implements Session
   }
   
   /***************************************************************************************************************
+   * Locate a queue in the KAS/Q server
+   * This method is used by {@code KasqClient} users.
    * 
+   * @param queueName the name of the queue to be located
+   * 
+   * @return the located {@code KasqQueue} object, or null if none was located
+   * 
+   * @throws JMSException
    */
   public Queue locateQueue(String queueName) throws JMSException
   {
@@ -293,7 +341,14 @@ public class KasqSession extends AKasObject implements Session
   }
 
   /***************************************************************************************************************
+   * Locate a topic in the KAS/Q server
+   * This method is used by {@code KasqClient} users.
    * 
+   * @param topicName the name of the topic to be located
+   * 
+   * @return the located {@code KasqTopic} object, or null if none was located
+   * 
+   * @throws JMSException
    */
   public Topic locateTopic(String topicName) throws JMSException
   {
@@ -323,7 +378,7 @@ public class KasqSession extends AKasObject implements Session
   {
     UniqueId uniqueId = UniqueId.generate();
     String queueName = "KAS.TEMP.Q" + uniqueId.toString();
-    return (KasqQueue)internalCreateDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
+    return (KasqQueue)internalCreateTemporaryDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
   }
 
   /***************************************************************************************************************
@@ -333,7 +388,7 @@ public class KasqSession extends AKasObject implements Session
   {
     UniqueId uniqueId = UniqueId.generate();
     String topicName = "KAS.TEMP.T" + uniqueId.toString();
-    return (KasqTopic)internalCreateDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
+    return (KasqTopic)internalCreateTemporaryDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
   }
 
   /***************************************************************************************************************
@@ -464,6 +519,21 @@ public class KasqSession extends AKasObject implements Session
   }
   
   /***************************************************************************************************************
+   * Create of a temporary destination.
+   * Since the scope of a temporary destination is the Connection object, the Connection object must be
+   * aware of all created temporary destinations.
+   * 
+   * @param name the destination name
+   * @param type an integer representing the destination type: 1 - queue, 2 - topic
+   * 
+   * @throws JMSException 
+   */
+  private IKasqDestination internalCreateTemporaryDestination(String name, int type) throws JMSException
+  {
+    return mConnection.internalCreateTemporaryDestination(name, type);
+  }
+  
+  /***************************************************************************************************************
    * Send a Locate message to the KAS/Q server to locate an existing destination and return it
    * 
    * @param name the destination name
@@ -563,6 +633,12 @@ public class KasqSession extends AKasObject implements Session
       .append(pad).append("  AcknowledgeMode=").append(mAcknowledgeMode).append("\n")
       .append(pad).append("  SessionMode=").append(mSessionMode).append("\n")
       .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level+1)).append(")\n")
+      .append(pad).append("  MessageProducers=(")
+      .append(StringUtils.asPrintableString(mProducers, level+2)).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append("  MessageConsumers=(")
+      .append(StringUtils.asPrintableString(mConsumers, level+2)).append("\n")
+      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }
