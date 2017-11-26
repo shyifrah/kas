@@ -12,6 +12,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqQueue;
 import com.kas.q.KasqTopic;
+import com.kas.q.ext.AKasqDestination;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.server.internal.MessagingConfiguration;
 
@@ -251,7 +252,7 @@ public class KasqRepository extends AKasObject implements IInitializable
     mLogger.debug("KasqRepository::define() - IN");
     boolean success = true;
     
-    mLogger.info("Define " + (isTopic ? "topic" : "queue") + " with name=[" + name + "] at manager=[" + managerName + "]");
+    mLogger.info("Define " + (isTopic ? AKasqDestination.cTypeTopic : AKasqDestination.cTypeQueue) + " with name=[" + name + "] at manager=[" + managerName + "]");
     
     IKasqDestination dest = (isTopic ? mTopicsMap.get(name) : mQueuesMap.get(name));
     if (dest == null)
@@ -275,7 +276,7 @@ public class KasqRepository extends AKasObject implements IInitializable
       }
       catch (Throwable e)
       {
-        mLogger.error("Failed to define local topic [" + name + "] at manager=[" + managerName + "]. Exception caught: ", e);
+        mLogger.error("Failed to define destination [" + name + "] at manager=[" + managerName + "]. Exception caught: ", e);
         success = false;
       }
     }

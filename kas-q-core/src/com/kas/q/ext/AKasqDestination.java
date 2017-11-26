@@ -21,6 +21,9 @@ import com.kas.q.KasqSession;
 
 public abstract class AKasqDestination extends AKasObject implements IKasqDestination
 {
+  public static final String cTypeQueue = "queue";
+  public static final String cTypeTopic = "topic";
+  
   private static final long serialVersionUID = 1L;
   
   /***************************************************************************************************************

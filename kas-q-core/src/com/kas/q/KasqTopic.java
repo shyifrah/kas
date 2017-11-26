@@ -33,7 +33,7 @@ public class KasqTopic extends AKasqDestination implements TemporaryTopic
    */
   public String getType()
   {
-    return "topic";
+    return cTypeTopic;
   }
 
   /***************************************************************************************************************

@@ -7,6 +7,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
+import com.kas.q.ext.AKasqDestination;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
@@ -136,7 +137,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       boolean isQueue = mDestinationType == IKasqConstants.cPropertyDestinationType_Queue;
       
       // now we address the repository and locate the destination
-      sLogger.debug("LocateRequest::process() - Destination type is " + (isQueue ? "queue" : "topic"));
+      sLogger.debug("LocateRequest::process() - Destination type is " + (isQueue ? AKasqDestination.cTypeQueue : AKasqDestination.cTypeTopic));
       if (isQueue)
       {
         dest = sRepository.locateQueue(mDestinationName);
@@ -149,7 +150,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       
       if (dest == null)
       {
-        msg = (isQueue ? "Queue" : "Topic") + " with name " + mDestinationName + " could not be located";
+        msg = (isQueue ? AKasqDestination.cTypeQueue : AKasqDestination.cTypeTopic) + " with name " + mDestinationName + " could not be located";
       }
       else
       {

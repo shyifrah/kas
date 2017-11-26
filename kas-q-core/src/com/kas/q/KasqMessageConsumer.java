@@ -11,6 +11,7 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.AKasqDestination;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
@@ -24,10 +25,8 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   protected String           mMessageSelector = null;
   protected MessageListener  mMessageListener = null;
   protected boolean          mNoLocal         = false;
-  
-  //protected KasqQueue        mConsumerQueue   = null;
-  //
-  private   UniqueId         mConsumerId; 
+  protected UniqueId         mConsumerId;
+  protected KasqQueue        mConsumerQueue;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqMessageConsumer} object for the specified {@code Destination}
@@ -89,7 +88,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       mMessageSelector = "";
     
     mConsumerId = UniqueId.generate();
-    //mConsumerQueue = (KasqQueue)session.createQueue("KAS.CONSUMER.Q" + mConsumerId.toString());
+    mConsumerQueue = new KasqQueue("KAS.TEMP" + mConsumerId.toString(), "");
   }
   
   /***************************************************************************************************************
@@ -97,7 +96,9 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public void close() throws JMSException
   {
-    throw new JMSException("Unsupported method: MessageConsumer.close()");
+    // Closes the message consumer.
+    // 1. Free all allocated resources
+    // 2. A blocked receive call returns null when this message consumer is closed.
   }
 
   /***************************************************************************************************************
@@ -164,34 +165,34 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   {
     sLogger.debug("KasqMessageConsumer::internalReceive() - IN");
     
-    boolean infinite = repetitions == -1 ? true : false;
-    IKasqMessage requestMessage = internalPrepareConsumeRequest(); // request for consumption message
-    IKasqMessage replyMessage = null;                              // reply for the request
+    //boolean infinite = repetitions == -1 ? true : false;
+    //IKasqMessage requestMessage = internalPrepareConsumeRequest(); // request for consumption message
+    //IKasqMessage replyMessage = null;                              // reply for the request
     IKasqMessage message = null;                                   // the message that will be returned to the caller
-    
-    int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
-    
-    sLogger.debug("KasqMessageConsumer::internalReceive() - Prepared for polling " + (infinite ? "infinite" : repetitions) + " times");
-    for (long reqIndex = 0; (responseCode == IKasqConstants.cPropertyResponseCode_Fail) && ((reqIndex < repetitions) || (infinite)); ++reqIndex)
-    {
-      replyMessage = mSession.internalSendAndReceive(requestMessage);
-      responseCode = replyMessage.getIntProperty(IKasqConstants.cPropertyResponseCode);
-      if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
-      {
-        sLogger.debug("KasqMessageConsumer::internalReceive() - Message polling successfully received a message");
-        message = replyMessage;
-      }
-      else
-      {
-        sLogger.debug("KasqMessageConsumer::internalReceive() - Failed to get message, sleeping before next attempt...");
-        try
-        {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e) {}
-      }
-    }
-    
+    //
+    //int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
+    //
+    //sLogger.debug("KasqMessageConsumer::internalReceive() - Prepared for polling " + (infinite ? "infinite" : repetitions) + " times");
+    //for (long reqIndex = 0; (responseCode == IKasqConstants.cPropertyResponseCode_Fail) && ((reqIndex < repetitions) || (infinite)); ++reqIndex)
+    //{
+    //  replyMessage = mSession.internalSendAndReceive(requestMessage);
+    //  responseCode = replyMessage.getIntProperty(IKasqConstants.cPropertyResponseCode);
+    //  if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+    //  {
+    //    sLogger.debug("KasqMessageConsumer::internalReceive() - Message polling successfully received a message");
+    //    message = replyMessage;
+    //  }
+    //  else
+    //  {
+    //    sLogger.debug("KasqMessageConsumer::internalReceive() - Failed to get message, sleeping before next attempt...");
+    //    try
+    //    {
+    //      Thread.sleep(1000);
+    //    }
+    //    catch (InterruptedException e) {}
+    //  }
+    //}
+    //
     sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
     return message;
   }
@@ -214,9 +215,9 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    * 
    * @throws JMSException 
    */
-  public KasqMessage internalPrepareConsumeRequest() throws JMSException
+  private KasqMessage internalPrepareConsumeRequest() throws JMSException
   {
-    KasqMessage msg = null;
+    KasqMessage msg = null; 
     try
     {
       msg = new KasqMessage();
@@ -226,16 +227,15 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       
       // message destination
       msg.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestination.getName());
-      msg.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(mDestination.getType()) ? 
+      msg.setIntProperty(IKasqConstants.cPropertyDestinationType, AKasqDestination.cTypeQueue.equals(mDestination.getType()) ? 
           IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
+      
+      // message origin
+      msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue.getName());
       
       // filtering criteria
       msg.setStringProperty(IKasqConstants.cPropertyMessageSelector, mMessageSelector);
       msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
-      
-      // where to send the consumed message
-      //msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue.getQueueName());
-      //msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.mSessionId);
     }
     catch (JMSException e) {}
     

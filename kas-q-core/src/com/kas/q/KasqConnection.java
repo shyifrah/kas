@@ -216,8 +216,13 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
-      // release all allocated resources (?)
-      mMessenger.cleanup();
+      // call close() method on all sessions
+      // when closing a session, it should close all consumers and producers
+      synchronized (mSessions)
+      {
+        for (KasqSession sess : mSessions)
+          sess.close();
+      }
       
       // delete all temporary destinations
       synchronized (mTempQueues)
@@ -232,15 +237,10 @@ public class KasqConnection extends AKasObject implements Connection
           topic.delete();
       }
       
-      // call close() method on all sessions
-      // when closing a session, it should close all consumers and producers
-      synchronized (mSessions)
-      {
-        for (KasqSession sess : mSessions)
-          sess.close();
-      }
-      
       stop();
+      
+      // release all allocated resources (?)
+      mMessenger.cleanup();
     }
     catch (Throwable e) {}
   }
