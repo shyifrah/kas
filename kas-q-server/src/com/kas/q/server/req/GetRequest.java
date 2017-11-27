@@ -162,13 +162,14 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
           break;
       }
 
-      sLogger.debug("GetRequest::process() - Get from destination " + (message == null ? " did not " : " ") + "returned a message");
       if (message == null)
       {
+        sLogger.debug("GetRequest::process() - Failed to get a message from destination " + dest.getFormattedName());
         message = new KasqMessage();
       }
       else
       {
+        sLogger.debug("GetRequest::process() - Got a message from destination " + dest.getFormattedName());
         code = IKasqConstants.cPropertyResponseCode_Okay;
         msg  = "";
       }
