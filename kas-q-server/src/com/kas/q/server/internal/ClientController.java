@@ -131,7 +131,7 @@ public class ClientController extends AKasObject implements IController
     sb.append(name()).append("(\n")
       .append(pad).append("  HandlerList=(\n")
       .append(StringUtils.asPrintableString(mHandlers, level+2)).append("\n")
-      .append(pad).append("  )\n");
+      .append(pad).append("  )");
     return sb.toString();
   }
 }

@@ -201,7 +201,7 @@ public class KasqRepository extends AKasObject implements IInitializable
     else
     {
       mLogger.info("Define " + destination.getType() + " with name=[" + destination.getName() + "]");
-      if ("queue".equals(destination.getType()))
+      if (destination.getType() == EDestinationType.cQueue)
       {
         KasqQueue q = mQueuesMap.get(destination.getName());
         if (q == null)
@@ -217,6 +217,7 @@ public class KasqRepository extends AKasObject implements IInitializable
         }
       }
       else
+      if (destination.getType() == EDestinationType.cTopic)
       {
         KasqTopic t = mTopicsMap.get(destination.getName());
         if (t == null)
