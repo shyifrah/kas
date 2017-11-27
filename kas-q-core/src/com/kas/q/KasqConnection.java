@@ -28,6 +28,7 @@ import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.KasqMessageFactory;
+import com.kas.q.ext.KasqReceiverTask;
 
 public class KasqConnection extends AKasObject implements Connection
 {
@@ -55,6 +56,7 @@ public class KasqConnection extends AKasObject implements Connection
   protected Map<String, KasqTopic> mTempTopics;
   
   protected IMessenger mMessenger;
+  protected KasqReceiverTask mReceiverTask;
   
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
@@ -90,6 +92,8 @@ public class KasqConnection extends AKasObject implements Connection
       mSessions   = new ArrayList<KasqSession>();
       mTempQueues = new ConcurrentHashMap<String, KasqQueue>();
       mTempTopics = new ConcurrentHashMap<String, KasqTopic>();
+      
+      mReceiverTask = new KasqReceiverTask(mMessenger, mTempQueues);
     }
     catch (IOException e)
     {
@@ -110,6 +114,7 @@ public class KasqConnection extends AKasObject implements Connection
   {
     sLogger.diag("KasqConnection::start() - IN");
     mStarted = true;
+    mReceiverTask.start();
     sLogger.diag("KasqConnection::start() - OUT");
   }
 
@@ -119,6 +124,7 @@ public class KasqConnection extends AKasObject implements Connection
   public void stop()
   {
     sLogger.diag("KasqConnection::stop() - IN");
+    mReceiverTask.interrupt();
     mStarted = false;
     sLogger.diag("KasqConnection::stop() - OUT");
   }
@@ -213,18 +219,27 @@ public class KasqConnection extends AKasObject implements Connection
   }
 
   /***************************************************************************************************************
-   *  
+   * Order of cleanup:
+   * 1. Stop the receiver task because it is using the mTempQueuesMap.
+   * 2. Close all sessions (which will trigger the closure of all {@code MessageConsumers} and {@code MessageProducers}).
+   * 3. Clearing the Sessions list
+   * 4. Clear the temporary queues map
+   * 5. Clear the temporary topics map
+   * 6. Perform {@code Messenger} cleanup
    */
   public void close() throws JMSException
   {
     try
     {
+      stop();
+      
       // call close() method on all sessions
       // when closing a session, it should close all consumers and producers
       synchronized (mSessions)
       {
         for (KasqSession sess : mSessions)
           sess.close();
+        mSessions.clear();
       }
       
       // delete all temporary destinations
@@ -237,8 +252,6 @@ public class KasqConnection extends AKasObject implements Connection
       {
         mTempTopics.clear();
       }
-      
-      stop();
       
       // release all allocated resources (?)
       mMessenger.cleanup();
