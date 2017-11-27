@@ -3,6 +3,8 @@ package com.kas.q;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.jms.Connection;
 import javax.jms.ConnectionConsumer;
 import javax.jms.ConnectionMetaData;
@@ -22,6 +24,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.KasqMessageFactory;
@@ -48,8 +51,8 @@ public class KasqConnection extends AKasObject implements Connection
   protected boolean mPriviliged = false;
   
   protected List<KasqSession> mSessions;
-  protected List<KasqQueue>  mTempQueues;
-  protected List<KasqTopic>  mTempTopics;
+  protected Map<String, KasqQueue> mTempQueues;
+  protected Map<String, KasqTopic> mTempTopics;
   
   protected IMessenger mMessenger;
   
@@ -84,9 +87,9 @@ public class KasqConnection extends AKasObject implements Connection
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       mClientId = "CLNT" + UniqueId.generate().toString();
       
-      mSessions = new ArrayList<KasqSession>();
-      mTempQueues = new ArrayList<KasqQueue>();
-      mTempTopics = new ArrayList<KasqTopic>();
+      mSessions   = new ArrayList<KasqSession>();
+      mTempQueues = new ConcurrentHashMap<String, KasqQueue>();
+      mTempTopics = new ConcurrentHashMap<String, KasqTopic>();
     }
     catch (IOException e)
     {
@@ -227,14 +230,12 @@ public class KasqConnection extends AKasObject implements Connection
       // delete all temporary destinations
       synchronized (mTempQueues)
       {
-        for (KasqQueue queue : mTempQueues)
-          queue.delete();
+        mTempQueues.clear();
       }
       
       synchronized (mTempTopics)
       {
-        for (KasqTopic topic : mTempTopics)
-          topic.delete();
+        mTempTopics.clear();
       }
       
       stop();
@@ -328,13 +329,13 @@ public class KasqConnection extends AKasObject implements Connection
    * Create a temporary destination
    * 
    * @param name the name of the destination to create
-   * @param type an integer representing the type of the destination: 1 - queue, 2 - topic
+   * @param type the destination type
    * 
    * @return the created destination
    * 
    * @throws JMSException 
    */
-  IKasqDestination internalCreateTemporaryDestination(String name, int type) throws JMSException
+  IKasqDestination internalCreateTemporaryDestination(String name, EDestinationType type) throws JMSException
   {
     sLogger.debug("KasqConnection::internalCreateTemporaryDestination() - IN");
     
@@ -342,30 +343,65 @@ public class KasqConnection extends AKasObject implements Connection
       throw new JMSException("Failed to create destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
     
     IKasqDestination dest = null;
-    if (type == IKasqConstants.cPropertyDestinationType_Queue)
+    switch (type)
     {
-      dest = new KasqQueue(name, "");
-      synchronized (mTempQueues)
-      {
-        mTempQueues.add((KasqQueue)dest);
-      }
-    }
-    else
-    if (type == IKasqConstants.cPropertyDestinationType_Topic)
-    {
-      dest = new KasqTopic(name, "");
-      synchronized (mTempTopics)
-      {
-        mTempTopics.add((KasqTopic)dest);
-      }
-    }
-    else
-    {
-      throw new JMSException("Failed to create destination: Invalid destination type: [" + type + "]");
+      case cQueue:
+        dest = new KasqQueue(name, "");
+        synchronized (mTempQueues)
+        {
+          mTempQueues.put(name, (KasqQueue)dest);
+        }
+        break;
+      case cTopic:
+        dest = new KasqTopic(name, "");
+        synchronized (mTempTopics)
+        {
+          mTempTopics.put(name, (KasqTopic)dest);
+        }
+        break;
+      default:
+        throw new JMSException("Failed to create destination: Invalid destination type: [" + type + "]");
     }
     
     sLogger.debug("KasqConnection::internalCreateTemporaryDestination() - OUT, Result=" + StringUtils.asString(dest));
     return dest;
+  }
+  
+  /***************************************************************************************************************
+   * Delete a temporary destination
+   * 
+   * @param name the name of the destination to delete
+   * @param type the destination type
+   * 
+   * @throws JMSException 
+   */
+  void internalDeleteTemporaryDestination(String name, EDestinationType type) throws JMSException
+  {
+    sLogger.debug("KasqConnection::internalDeleteTemporaryDestination() - IN");
+    
+    if (name == null)
+      throw new JMSException("Failed to delete destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
+    
+    IKasqDestination dest = null;
+    switch (type)
+    {
+      case cQueue:
+        synchronized (mTempQueues)
+        {
+          mTempQueues.remove(name);
+        }
+        break;
+      case cTopic:
+        synchronized (mTempTopics)
+        {
+          mTempTopics.remove(name);
+        }
+        break;
+      default:
+        throw new JMSException("Failed to delete destination: Invalid destination type: [" + type.toString() + "]");
+    }
+    
+    sLogger.debug("KasqConnection::internalDeleteTemporaryDestination() - OUT, Result=" + StringUtils.asString(dest));
   }
   
   /***************************************************************************************************************

@@ -2,10 +2,9 @@ package com.kas.q;
 
 import javax.jms.JMSException;
 import javax.jms.TemporaryQueue;
-import com.kas.q.ext.AKasqDestination;
-import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.EDestinationType;
 
-public class KasqQueue extends AKasqDestination implements TemporaryQueue
+public class KasqQueue extends KasqDestination implements TemporaryQueue
 {
   private static final long serialVersionUID = 1L;
   
@@ -17,7 +16,7 @@ public class KasqQueue extends AKasqDestination implements TemporaryQueue
    */
   public KasqQueue(String name, String managerName)
   {
-    super(name, managerName);
+    super(EDestinationType.cQueue, name, managerName);
   }
   
   /***************************************************************************************************************
@@ -27,14 +26,6 @@ public class KasqQueue extends AKasqDestination implements TemporaryQueue
   {
     return getName();
   }
-  
-  /***************************************************************************************************************
-   * 
-   */
-  public String getType()
-  {
-    return "queue";
-  }
 
   /***************************************************************************************************************
    * 
@@ -42,13 +33,5 @@ public class KasqQueue extends AKasqDestination implements TemporaryQueue
   public void delete() throws JMSException
   {
     internalDelete();
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
-  protected IKasqMessage requestReply(IKasqMessage request) throws JMSException
-  {
-    return mSession.internalSendAndReceive(request);
   }
 }

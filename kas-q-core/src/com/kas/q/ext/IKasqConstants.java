@@ -20,10 +20,7 @@ public interface IKasqConstants
   static final int    cPropertyRequestType_Delete       = 6;
   
   static final String cPropertyDestinationName = "KasQ_DestinationName";
-  
   static final String cPropertyDestinationType = "KasQ_DestinationType";
-  static final int    cPropertyDestinationType_Queue = 1;
-  static final int    cPropertyDestinationType_Topic = 2;
   
   static final String cPropertyMessageSelector = "KasQ_MessageSelector";
   static final String cPropertyNoLocal         = "KasQ_NoLocal";

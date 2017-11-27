@@ -12,7 +12,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqQueue;
 import com.kas.q.KasqTopic;
-import com.kas.q.ext.AKasqDestination;
+import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.server.internal.MessagingConfiguration;
 
@@ -76,15 +76,14 @@ public class KasqRepository extends AKasObject implements IInitializable
     }
     else
     {
-      
       String [] entries = repoDir.list();
       for (String entry : entries)
       {
-        boolean isTopic = false;
+        EDestinationType destType;
         if (entry.endsWith(".qbk"))
-          isTopic = false;
+          destType = EDestinationType.cQueue;
         else if (entry.endsWith(".tbk"))
-          isTopic = true;
+          destType = EDestinationType.cTopic;
         else
           continue;
         
@@ -92,8 +91,8 @@ public class KasqRepository extends AKasObject implements IInitializable
         if (destFile.isFile())
         {
           String destName = entry.substring(0, entry.lastIndexOf('.'));
-          mLogger.trace("KasqRepository::init() - Restoring contents of " + (isTopic ? "topic [" : "queue [") + destName + ']');
-          define(destName, mConfig.getManagerName(), isTopic);
+          mLogger.trace("KasqRepository::init() - Restoring contents of " + destType.toString() + " [" + destName + ']');
+          define(destName, mConfig.getManagerName(), destType);
         }
       }
       
@@ -179,7 +178,7 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   public boolean defineQueue(String name, String managerName)
   {
-    return define(name, managerName, false);
+    return define(name, managerName, EDestinationType.cQueue);
   }
   
   /***************************************************************************************************************
@@ -243,42 +242,45 @@ public class KasqRepository extends AKasObject implements IInitializable
    * 
    * @param name the name of the topic/queue
    * @param managerName of the manager in which this topic/queue defined
-   * @param isTopic true if the defined object is a Topic, false if it's a Queue
+   * @param type the destination type
    * 
    * @return true if topic/queue definition was successful
    */
-  private boolean define(String name, String managerName, boolean isTopic)
+  private boolean define(String name, String managerName, EDestinationType type)
   {
     mLogger.debug("KasqRepository::define() - IN");
     boolean success = true;
     
-    mLogger.info("Define " + (isTopic ? AKasqDestination.cTypeTopic : AKasqDestination.cTypeQueue) + " with name=[" + name + "] at manager=[" + managerName + "]");
+    mLogger.info("Define " + type.toString() + " with name=[" + name + "] at manager=[" + managerName + "]");
     
-    IKasqDestination dest = (isTopic ? mTopicsMap.get(name) : mQueuesMap.get(name));
-    if (dest == null)
+    try
     {
-      try
+      switch (type)
       {
-        if (isTopic)
-        {
-          KasqTopic topic = new KasqTopic(name, managerName);
-          success = topic.init();
-        
-          if (success) mTopicsMap.put(name, topic);
-        }
-        else
-        {
-          KasqQueue queue = new KasqQueue(name, managerName);
-          success = queue.init();
-          
-          if (success) mQueuesMap.put(name, queue);
-        }
+        case cQueue:
+          KasqQueue queue = mQueuesMap.get(name);
+          if (queue == null)
+          {
+            queue = new KasqQueue(name, managerName);
+            success = queue.init();
+            if (success) mQueuesMap.put(name, queue);
+          }
+          break;
+        case cTopic:
+          KasqTopic topic = mTopicsMap.get(name);
+          if (topic == null)
+          {
+            topic = new KasqTopic(name, managerName);
+            success = topic.init();
+            if (success) mTopicsMap.put(name, topic);
+          }
+          break;
       }
-      catch (Throwable e)
-      {
-        mLogger.error("Failed to define destination [" + name + "] at manager=[" + managerName + "]. Exception caught: ", e);
-        success = false;
-      }
+    }
+    catch (Throwable e)
+    {
+      mLogger.error("Failed to define destination type=[" + type.toString() + "], name=[" + name + "], manager=[" + managerName + "]");
+      success = false;
     }
     
     mLogger.debug("KasqRepository::define() - OUT, Returns=" + success);

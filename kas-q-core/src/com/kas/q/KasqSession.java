@@ -26,6 +26,7 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
@@ -337,7 +338,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public Queue locateQueue(String queueName) throws JMSException
   {
-    return (KasqQueue)internalLocateDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
+    return (KasqQueue)internalLocateDestination(queueName, EDestinationType.cQueue);
   }
 
   /***************************************************************************************************************
@@ -352,7 +353,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public Topic locateTopic(String topicName) throws JMSException
   {
-    return (KasqTopic)internalLocateDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
+    return (KasqTopic)internalLocateDestination(topicName, EDestinationType.cTopic);
   }
 
   /***************************************************************************************************************
@@ -360,7 +361,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public Queue createQueue(String queueName) throws JMSException
   {
-    return (KasqQueue)internalCreateDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
+    return (KasqQueue)internalCreateDestination(queueName, EDestinationType.cQueue);
   }
 
   /***************************************************************************************************************
@@ -368,7 +369,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public Topic createTopic(String topicName) throws JMSException
   {
-    return (KasqTopic)internalCreateDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
+    return (KasqTopic)internalCreateDestination(topicName, EDestinationType.cTopic);
   }
 
   /***************************************************************************************************************
@@ -378,7 +379,7 @@ public class KasqSession extends AKasObject implements Session
   {
     UniqueId uniqueId = UniqueId.generate();
     String queueName = "KAS.TEMP.Q" + uniqueId.toString();
-    return (KasqQueue)internalCreateTemporaryDestination(queueName, IKasqConstants.cPropertyDestinationType_Queue);
+    return (KasqQueue)internalCreateTemporaryDestination(queueName, EDestinationType.cQueue);
   }
 
   /***************************************************************************************************************
@@ -388,7 +389,7 @@ public class KasqSession extends AKasObject implements Session
   {
     UniqueId uniqueId = UniqueId.generate();
     String topicName = "KAS.TEMP.T" + uniqueId.toString();
-    return (KasqTopic)internalCreateTemporaryDestination(topicName, IKasqConstants.cPropertyDestinationType_Topic);
+    return (KasqTopic)internalCreateTemporaryDestination(topicName, EDestinationType.cTopic);
   }
 
   /***************************************************************************************************************
@@ -471,21 +472,18 @@ public class KasqSession extends AKasObject implements Session
    * 
    * @throws JMSException 
    */
-  private IKasqDestination internalCreateDestination(String name, int type) throws JMSException
+  private IKasqDestination internalCreateDestination(String name, EDestinationType type) throws JMSException
   {
     sLogger.debug("KasqSession::internalCreateDestination() - IN");
     
     if (name == null)
       throw new JMSException("Failed to create destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
     
-    if ((type != IKasqConstants.cPropertyDestinationType_Queue) && (type != IKasqConstants.cPropertyDestinationType_Topic))
-      throw new JMSException("Failed to create destination: Invalid destination type: [" + type + "]");
-    
     IKasqDestination dest;
     int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
     String msg = null;
     
-    if (type == IKasqConstants.cPropertyDestinationType_Queue)
+    if (type == EDestinationType.cQueue)
       dest = new KasqQueue(name, "");
     else
       dest = new KasqTopic(name, "");
@@ -524,13 +522,28 @@ public class KasqSession extends AKasObject implements Session
    * aware of all created temporary destinations.
    * 
    * @param name the destination name
-   * @param type an integer representing the destination type: 1 - queue, 2 - topic
+   * @param type the destination type
    * 
    * @throws JMSException 
    */
-  private IKasqDestination internalCreateTemporaryDestination(String name, int type) throws JMSException
+  private IKasqDestination internalCreateTemporaryDestination(String name, EDestinationType type) throws JMSException
   {
     return mConnection.internalCreateTemporaryDestination(name, type);
+  }
+  
+  /***************************************************************************************************************
+   * Delete a temporary destination.
+   * Since the scope of a temporary destination is the Connection object, the Connection object must be
+   * aware of all deleted temporary destinations.
+   * 
+   * @param name the destination name
+   * @param type the destination type
+   * 
+   * @throws JMSException 
+   */
+  protected void internalDeleteTemporaryDestination(String name, EDestinationType type) throws JMSException
+  {
+    mConnection.internalDeleteTemporaryDestination(name, type);
   }
   
   /***************************************************************************************************************
@@ -541,15 +554,12 @@ public class KasqSession extends AKasObject implements Session
    * 
    * @throws JMSException 
    */
-  private IKasqDestination internalLocateDestination(String name, int type) throws JMSException
+  private IKasqDestination internalLocateDestination(String name, EDestinationType type) throws JMSException
   {
     sLogger.debug("KasqSession::internalLocateDestination() - IN");
     
     if (name == null)
       throw new JMSException("Failed to locate destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
-    
-    if ((type != IKasqConstants.cPropertyDestinationType_Queue) && (type != IKasqConstants.cPropertyDestinationType_Topic))
-      throw new JMSException("Failed to locate destination: Invalid destination type: [" + type + "]");
     
     IKasqDestination dest = null;
     int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
@@ -559,7 +569,7 @@ public class KasqSession extends AKasObject implements Session
       KasqMessage locateRequest = new KasqMessage();
       locateRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Locate);
       locateRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, name);
-      locateRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type);
+      locateRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type.ordinal());
       
       sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + locateRequest.toPrintableString(0));
       IKasqMessage locateResponse = mConnection.internalSendAndReceive(locateRequest);

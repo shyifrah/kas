@@ -7,7 +7,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
-import com.kas.q.ext.AKasqDestination;
+import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
@@ -26,9 +26,9 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   /***************************************************************************************************************
    * 
    */
-  private String  mDestinationName;
-  private Integer mDestinationType;
-  private String  mJmsMessageId;
+  private String           mDestinationName;
+  private EDestinationType mDestinationType;
+  private String           mJmsMessageId;
   
   /***************************************************************************************************************
    * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
@@ -41,12 +41,12 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   GetRequest(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  destName = null;
-    Integer destType = null;
+    Integer type = null;
     String  jmsMsgId = null;
     try
     {
       destName = requestMessage.getStringProperty(IKasqConstants.cPropertyDestinationName);
-      destType = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
+      type = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
       jmsMsgId = requestMessage.getJMSMessageID();
     }
     catch (Throwable e) {}
@@ -63,9 +63,9 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       throw new IllegalArgumentException("Invalid GetRequest: destination is empty string");
     }
     
-    if (destType == null)
+    if (type == null)
     {
-      sLogger.warn("Received GetRequest with invalid destination: type=[" + StringUtils.asString(destType) + "]");
+      sLogger.warn("Received GetRequest with invalid destination: type=[" + StringUtils.asString(type) + "]");
       throw new IllegalArgumentException("Invalid GetRequest: null destination type");
     }
     
@@ -81,8 +81,8 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       throw new IllegalArgumentException("Invalid GetRequest: JMS message ID is empty string");
     }
     
+    mDestinationType = EDestinationType.fromInt(type);
     mDestinationName = destName;
-    mDestinationType = destType;
     mJmsMessageId = jmsMsgId;
   }
   
@@ -99,9 +99,9 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   /***************************************************************************************************************
    * Get the destination type
    * 
-   * @return the destination type. 1 if it's queue, 2 if it's topic
+   * @return the destination type
    */
-  public int getDestinationType()
+  public EDestinationType getDestinationType()
   {
     return mDestinationType;
   }
@@ -143,27 +143,26 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       //}
       //catch (Throwable e) {}
       
-      IKasqMessage message;
+      IKasqMessage message = null;
+      IKasqDestination dest = null;
       int code = IKasqConstants.cPropertyResponseCode_Fail;
       String msg = "Failed to retrieve a message";
       
-      boolean isQueue = mDestinationType == IKasqConstants.cPropertyDestinationType_Queue;
-      
       // now we address the repository and locate the destination
-      sLogger.debug("GetRequest::process() - Destination type is " + (isQueue ? AKasqDestination.cTypeQueue : AKasqDestination.cTypeTopic));
-      if (isQueue)
+      sLogger.debug("LocateRequest::process() - Destination type is " + mDestinationType.toString());
+      switch (mDestinationType)
       {
-        IKasqDestination dest = sRepository.locateQueue(mDestinationName);
-        message = dest.getNoWait();
+        case cQueue:
+          dest = sRepository.locateQueue(mDestinationName);
+          message = dest.getNoWait();
+          break;
+        case cTopic:
+          dest = sRepository.locateTopic(mDestinationName);
+          message = dest.getNoWait();
+          break;
       }
-      else
-      {
-        IKasqDestination dest = sRepository.locateTopic(mDestinationName);
-        message = dest.getNoWait();
-      }
-      sLogger.debug("GetRequest::process() - Get from destination" + (message == null ? " did not " : " ") + "returned a message");
-      
-      
+
+      sLogger.debug("GetRequest::process() - Get from destination " + (message == null ? " did not " : " ") + "returned a message");
       if (message == null)
       {
         message = new KasqMessage();
@@ -202,7 +201,7 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   {
     StringBuffer sb = new StringBuffer();
     sb.append(name())
-      .append("(FromDest=").append(mDestinationType == 1 ? "queue:///" : "topic:///").append(mDestinationName).append(")");
+      .append("(FromDest=").append(mDestinationType.toString()).append(":///").append(mDestinationName).append(")");
     return sb.toString();
   }
   

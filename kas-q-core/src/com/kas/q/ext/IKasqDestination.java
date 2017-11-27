@@ -58,9 +58,9 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
   /***************************************************************************************************************
    * Returns the type of the destination.
    * 
-   * @return "queue" if the destination is queue, "topic" if it's a topic
+   * @return cQueue if the destination is queue, cTopic if it's a topic
    */
-  public abstract String getType();
+  public abstract EDestinationType getType();
   
   /***************************************************************************************************************
    * Returns the name of the destination (the name of the queue/topic).

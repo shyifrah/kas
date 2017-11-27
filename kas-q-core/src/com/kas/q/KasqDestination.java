@@ -1,4 +1,4 @@
-package com.kas.q.ext;
+package com.kas.q;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,25 +16,27 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.KasqMessage;
-import com.kas.q.KasqSession;
+import com.kas.q.ext.EDestinationType;
+import com.kas.q.ext.IKasqDestination;
+import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.KasqMessageFactory;
+import com.kas.q.ext.MessageDeque;
 
-public abstract class AKasqDestination extends AKasObject implements IKasqDestination
+public class KasqDestination extends AKasObject implements IKasqDestination
 {
-  public static final String cTypeQueue = "queue";
-  public static final String cTypeTopic = "topic";
-  
   private static final long serialVersionUID = 1L;
   
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(AKasqDestination.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(KasqDestination.class);
   private static IPacketFactory sMessageFactory = new KasqMessageFactory();
   
   /***************************************************************************************************************
    * 
    */
+  private EDestinationType mType;
+  
   private String  mName;
   private String  mManagerName;
   
@@ -44,24 +46,25 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   protected transient String  mBackupFileName = null;
   
   /***************************************************************************************************************
-   * Constructs a {@code AKasqDestination} object, specifying its name and owning manager
+   * Constructs a {@code KasqDestination} object, specifying its name and owning manager
    * 
    * @param name the name associated with this destination
    * @param managerName the name of the manager of this destination
    */
-  protected AKasqDestination(String name, String managerName)
+  protected KasqDestination(EDestinationType type, String name, String managerName)
   {
-    this(name, managerName, null);
+    this(type, name, managerName, null);
   }
   
   /***************************************************************************************************************
-   * Constructs a {@code AKasqDestination} object, specifying its name, owning manager and owning session
+   * Constructs a {@code KasqDestination} object, specifying its name, owning manager and owning session
    * 
    * @param name the name associated with this destination
    * @param managerName the name of the manager of this destination
    */
-  protected AKasqDestination(String name, String managerName, KasqSession session)
+  protected KasqDestination(EDestinationType type, String name, String managerName, KasqSession session)
   {
+    mType = type;
     mName = name;
     mManagerName = managerName;
     mBackupFile = null;
@@ -220,12 +223,18 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   /***************************************************************************************************************
    * 
    */
-  public abstract String getType();
+  public EDestinationType getType()
+  {
+    return mType;
+  }
   
   /***************************************************************************************************************
    * 
    */
-  protected abstract IKasqMessage requestReply(IKasqMessage request) throws JMSException;
+  protected IKasqMessage requestReply(IKasqMessage request) throws JMSException
+  {
+    return mSession.internalSendAndReceive(request);
+  }
   
   /***************************************************************************************************************
    * 
@@ -309,30 +318,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
     {
       sLogger.debug("AKasqDestination::internalLocateDestination() - IN");
       
-      int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
-      String msg = "";
-      try
-      {
-        KasqMessage deleteRequest = new KasqMessage();
-        deleteRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Delete);
-        deleteRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, mName);
-        deleteRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, "queue".equals(getType()) ? 
-            IKasqConstants.cPropertyDestinationType_Queue : IKasqConstants.cPropertyDestinationType_Topic );
-        
-        sLogger.debug("AKasqDestination::internalLocateDestination() - Sending delete request via message: " + deleteRequest.toPrintableString(0));
-        IKasqMessage deleteResponse = requestReply(deleteRequest);
-        
-        sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + deleteResponse.toPrintableString(0));
-        responseCode = deleteResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
-        msg = deleteResponse.getStringProperty(IKasqConstants.cPropertyResponseMessage);
-      }
-      catch (Throwable e)
-      {
-        sLogger.debug("AKasqDestination::internalCreateDestination() - Exception caught: ", e);
-      }
-      
-      if (responseCode == IKasqConstants.cPropertyResponseCode_Fail)
-        throw new JMSException("Failed to delete destination " + getFormattedName() + ". " + msg);
+      mSession.internalDeleteTemporaryDestination(mName, mType);
       
       sLogger.debug("AKasqDestination::internalLocateDestination() - OUT");
     }
@@ -354,7 +340,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
         .append(File.separatorChar)                      // \                 /
         .append(getName())                               // shy.admin.queue   /shy.test.topic   << name of destination
         .append('.')                                     // .                 .
-        .append(getType().substring(0,1))                // q                 t                 << first char of type
+        .append(getType().toString().substring(0,1))     // q                 t                 << first char of type
         .append("bk");                                   // bk                bk                << "bk", designating backup
       mBackupFileName = sb.toString();
     }
@@ -367,7 +353,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
   public String getFormattedName()
   {
     StringBuffer sb = new StringBuffer();
-    sb.append(getType())
+    sb.append(getType().toString())
       .append("://")
       .append(mManagerName)
       .append('/')
@@ -392,7 +378,7 @@ public abstract class AKasqDestination extends AKasObject implements IKasqDestin
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append("  Type=").append(getType()).append("\n")
+      .append(pad).append("  Type=").append(getType().toString()).append("\n")
       .append(pad).append("  Size=").append(mQueue.size()).append("\n")
       .append(pad).append(")\n");
     return sb.toString();

@@ -7,7 +7,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
-import com.kas.q.ext.AKasqDestination;
+import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
@@ -26,9 +26,9 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
   /***************************************************************************************************************
    * 
    */
-  private String  mDestinationName;
-  private Integer mDestinationType;
-  private String  mJmsMessageId;
+  private String           mDestinationName;
+  private EDestinationType mDestinationType;
+  private String           mJmsMessageId;
   
   /***************************************************************************************************************
    * Construct a {@code LocateRequest} out of a {@link IKasqMessage}.
@@ -41,12 +41,12 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
   LocateRequest(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  destName = null;
-    Integer destType = null;
+    Integer type = null;
     String  jmsMsgId = null;
     try
     {
       destName = requestMessage.getStringProperty(IKasqConstants.cPropertyDestinationName);
-      destType = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
+      type = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
       jmsMsgId = requestMessage.getJMSMessageID();
     }
     catch (Throwable e) {}
@@ -63,9 +63,9 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       throw new IllegalArgumentException("Invalid LocateRequest: destination is empty string");
     }
     
-    if (destType == null)
+    if (type == null)
     {
-      sLogger.warn("Received LocateRequest with invalid destination: type=[" + StringUtils.asString(destType) + "]");
+      sLogger.warn("Received LocateRequest with invalid destination: type=[" + StringUtils.asString(type) + "]");
       throw new IllegalArgumentException("Invalid LocateRequest: null destination type");
     }
     
@@ -81,8 +81,9 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       throw new IllegalArgumentException("Invalid LocateRequest: JMS message ID is empty string");
     }
     
+    
+    mDestinationType = EDestinationType.fromInt(type);
     mDestinationName = destName;
-    mDestinationType = destType;
     mJmsMessageId = jmsMsgId;
   }
   
@@ -99,9 +100,9 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
   /***************************************************************************************************************
    * Get the destination type
    * 
-   * @return the destination type. 1 if it's queue, 2 if it's topic
+   * @return the destination type
    */
-  public int getDestinationType()
+  public EDestinationType getDestinationType()
   {
     return mDestinationType;
   }
@@ -134,23 +135,23 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       int code = IKasqConstants.cPropertyResponseCode_Fail;
       String msg = "";
       
-      boolean isQueue = mDestinationType == IKasqConstants.cPropertyDestinationType_Queue;
-      
       // now we address the repository and locate the destination
-      sLogger.debug("LocateRequest::process() - Destination type is " + (isQueue ? AKasqDestination.cTypeQueue : AKasqDestination.cTypeTopic));
-      if (isQueue)
+      sLogger.debug("LocateRequest::process() - Destination type is " + mDestinationType.toString());
+      switch (mDestinationType)
       {
-        dest = sRepository.locateQueue(mDestinationName);
+        case cQueue:
+          dest = sRepository.locateQueue(mDestinationName);
+          break;
+        case cTopic:
+          dest = sRepository.locateTopic(mDestinationName);
+          break;
       }
-      else
-      {
-        dest = sRepository.locateTopic(mDestinationName);
-      }
+      
       sLogger.debug("LocateRequest::process() - Located destination: " + StringUtils.asPrintableString(dest));
       
       if (dest == null)
       {
-        msg = (isQueue ? AKasqDestination.cTypeQueue : AKasqDestination.cTypeTopic) + " with name " + mDestinationName + " could not be located";
+        msg = mDestinationType.toString() + " with name " + mDestinationName + " could not be located";
       }
       else
       {
@@ -187,7 +188,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
   {
     StringBuffer sb = new StringBuffer();
     sb.append(name())
-      .append("(Dest=").append(mDestinationType == 1 ? "queue:///" : "topic:///").append(mDestinationName).append(")");
+      .append("(Dest=").append(mDestinationType.toString()).append(":///").append(mDestinationName).append(")");
     return sb.toString();
   }
   
@@ -200,7 +201,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(pad).append("  Destintation Name=(").append(mDestinationName).append(")\n")
-      .append(pad).append("  Destintation Type=(").append(mDestinationType).append(")\n")
+      .append(pad).append("  Destintation Type=(").append(mDestinationType.toString()).append(")\n")
       .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
       .append(pad).append(")");
     return sb.toString();

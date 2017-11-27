@@ -2,10 +2,9 @@ package com.kas.q;
 
 import javax.jms.JMSException;
 import javax.jms.TemporaryTopic;
-import com.kas.q.ext.AKasqDestination;
-import com.kas.q.ext.IKasqMessage;
+import com.kas.q.ext.EDestinationType;
 
-public class KasqTopic extends AKasqDestination implements TemporaryTopic
+public class KasqTopic extends KasqDestination implements TemporaryTopic
 {
   private static final long serialVersionUID = 1L;
   
@@ -17,7 +16,7 @@ public class KasqTopic extends AKasqDestination implements TemporaryTopic
    */
   public KasqTopic(String name, String managerName)
   {
-    super(name, managerName);
+    super(EDestinationType.cTopic, name, managerName);
   }
   
   /***************************************************************************************************************
@@ -31,24 +30,8 @@ public class KasqTopic extends AKasqDestination implements TemporaryTopic
   /***************************************************************************************************************
    * 
    */
-  public String getType()
-  {
-    return cTypeTopic;
-  }
-
-  /***************************************************************************************************************
-   * 
-   */
   public void delete() throws JMSException
   {
     internalDelete();
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
-  protected IKasqMessage requestReply(IKasqMessage request) throws JMSException
-  {
-    return mSession.internalSendAndReceive(request);
   }
 }
