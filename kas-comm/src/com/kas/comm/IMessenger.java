@@ -27,8 +27,9 @@ public interface IMessenger extends IObject
    * @return read packet
    * 
    * @throws IOException
+   * @throws InterruptedException
    */
-  public abstract IPacket receive() throws IOException;
+  public abstract IPacket receive() throws IOException, InterruptedException;
   
   /***************************************************************************************************************
    * Receive a {@code IPacket} object.
@@ -39,8 +40,9 @@ public interface IMessenger extends IObject
    * @return the read packet or {@code null} if one is not available
    * 
    * @throws IOException
+   * @throws InterruptedException
    */
-  public abstract IPacket receive(int timeout) throws IOException;
+  public abstract IPacket receive(int timeout) throws IOException, InterruptedException;
   
   /***************************************************************************************************************
    * Sends a {@code IPacket} and wait indefinitely for a reply.
@@ -50,8 +52,9 @@ public interface IMessenger extends IObject
    * @return response packet
    * 
    * @throws IOException
+   * @throws InterruptedException
    */
-  public abstract IPacket sendAndReceive(IPacket request) throws IOException;
+  public abstract IPacket sendAndReceive(IPacket request) throws IOException, InterruptedException;
   
   /***************************************************************************************************************
    * Sends a {@code IPacket} and wait for a reply.
@@ -62,6 +65,7 @@ public interface IMessenger extends IObject
    * @return response packet or null if timeout expires
    * 
    * @throws IOException
+   * @throws InterruptedException
    */
-  public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
+  public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException, InterruptedException;
 }

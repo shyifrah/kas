@@ -92,7 +92,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public IPacket receive() throws IOException
+  public IPacket receive() throws IOException, InterruptedException
   {
     return receive(0);
   }
@@ -100,7 +100,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public IPacket receive(int timeout) throws IOException
+  public IPacket receive(int timeout) throws IOException, InterruptedException
   {
     sLogger.debug("Messenger::receive() - IN");
     
@@ -117,7 +117,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    * 
    */
-  public IPacket sendAndReceive(IPacket request) throws IOException
+  public IPacket sendAndReceive(IPacket request) throws IOException, InterruptedException
   {
     send(request);
     return receive();
@@ -126,7 +126,7 @@ public class Messenger extends AKasObject implements IMessenger
   /***************************************************************************************************************
    *  
    */
-  public IPacket sendAndReceive(IPacket request, int timeout) throws IOException
+  public IPacket sendAndReceive(IPacket request, int timeout) throws IOException, InterruptedException
   {
     send(request);
     return receive(timeout);
