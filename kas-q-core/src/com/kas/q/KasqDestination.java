@@ -77,6 +77,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     mManagerName = managerName;
     mBackupFile = null;
     mSession = session;
+    mQueue  = new MessageDeque();
   }
   
   /***************************************************************************************************************
@@ -87,7 +88,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     sLogger.debug("AKasqDestination::init() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    mQueue  = new MessageDeque();
+    if (mQueue == null) mQueue = new MessageDeque();
     
     sLogger.info("Starting initialization for " + mName);
     try
