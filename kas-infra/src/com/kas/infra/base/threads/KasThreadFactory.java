@@ -14,7 +14,7 @@ public class KasThreadFactory implements ThreadFactory
    */
   public static Thread createThread(Runnable cmd, String name)
   {
-    return new KasThreads.RunnableThread(name, cmd);
+    return new KasRunnableThread(name, cmd);
   }
   
   /***************************************************************************************************************
