@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.LinkedBlockingDeque;
 import javax.jms.JMSException;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.PacketHeader;
@@ -20,10 +21,17 @@ import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageFactory;
-import com.kas.q.ext.MessageDeque;
 
 public class KasqDestination extends AKasObject implements IKasqDestination
 {
+  /***************************************************************************************************************
+   * "typedef" class
+   */
+  class MessageDeque extends LinkedBlockingDeque<IKasqMessage>
+  {
+    private static final long serialVersionUID = 1L;
+  }
+  
   private static final long serialVersionUID = 1L;
   
   /***************************************************************************************************************
