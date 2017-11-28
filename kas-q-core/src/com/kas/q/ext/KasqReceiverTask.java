@@ -37,7 +37,7 @@ public class KasqReceiverTask extends AKasThread
   
   /***************************************************************************************************************
    * Main receiver task loop.
-   * The receiver task runs as long as as it wasn't interrupted for some reason. It reads messages from
+   * The receiver task runs as long as it wasn't interrupted for some reason. It reads messages from
    * the connection's messenger and place them in the appropriate consumer queues (temporary queues which
    * are created upon {@code MessageConsumer} creation.
    */
@@ -46,48 +46,62 @@ public class KasqReceiverTask extends AKasThread
     mLogger.debug("KasqReceiverTask::run() - IN");
     
     boolean shouldStop = false;
-    while (shouldStop)
+    while (!shouldStop)
     {
       try
       {
         IPacket packet = mMessenger.receive();
         if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
         {
-          mLogger.debug("Got a non-KAS/Q packet. Ignoring it...");
+          mLogger.debug("KasqReceiverTask::run() - Got a non-KAS/Q packet. Ignoring it...");
         }
         else
         {
           IKasqMessage message = (IKasqMessage)packet;
           String tempq = null;
+          Integer rc = null;
+          String requestId = null;
           try
           {
+            rc = message.getIntProperty(IKasqConstants.cPropertyResponseCode);
             tempq = message.getStringProperty(IKasqConstants.cPropertyConsumerQueue);
+            requestId = message.getJMSCorrelationID();
           }
           catch (JMSException e) {}
           
+          if (rc == null)
+          {
+            mLogger.debug("KasqReceiverTask::run() - Got a message without response code. Ignoring it...");
+          }
+          else
+          if (rc == IKasqConstants.cPropertyResponseCode_Fail)
+          {
+            mLogger.debug("KasqReceiverTask::run() - Request with ID=" + requestId + " ended with failure. Continuing...");
+          }
+          else
           if (tempq == null)
           {
-            mLogger.debug("Got a message without origin. Ignoring it...");
+            mLogger.debug("KasqReceiverTask::run() - Got a message without origin queue. Ignoring it...");
           }
           else
           {
-            mLogger.debug("Got a message to be sent to origin: " + StringUtils.asString(tempq));
+            mLogger.debug("KasqReceiverTask::run() - Got a message to be sent to origin: " + StringUtils.asString(tempq));
             KasqQueue q = mTempQueues.get(tempq);
             if (q == null)
-              mLogger.debug("Origin queue does not exist, or was deleted");
+              mLogger.debug("KasqReceiverTask::run() - Origin queue does not exist, or was deleted");
             else
               q.put(message);
           }
         }
       }
-      catch (InterruptedException | IOException e)
+      catch (IOException e)
       {
         shouldStop = true;
       }
       catch (Throwable e)
       {
         shouldStop = true;
-        mLogger.error("KasqReceiverTask::run() - Exception caught: ", e);
+        mLogger.error("KasqReceiverTask caught exception: ", e);
       }
     }
     
