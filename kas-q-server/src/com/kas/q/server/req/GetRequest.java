@@ -29,6 +29,7 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   private String           mDestinationName;
   private EDestinationType mDestinationType;
   private String           mJmsMessageId;
+  private String           mConsumerQueue;
   
   /***************************************************************************************************************
    * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
@@ -43,11 +44,13 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
     String  destName = null;
     Integer type = null;
     String  jmsMsgId = null;
+    String  consQueue = null;
     try
     {
       destName = requestMessage.getStringProperty(IKasqConstants.cPropertyDestinationName);
       type = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
       jmsMsgId = requestMessage.getJMSMessageID();
+      consQueue = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerQueue);
     }
     catch (Throwable e) {}
     
@@ -81,9 +84,22 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       throw new IllegalArgumentException("Invalid GetRequest: JMS message ID is empty string");
     }
     
+    if (consQueue == null)
+    {
+      sLogger.warn("Received GetRequest with invalid Consumer Queue: name=[" + StringUtils.asString(consQueue) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: null Consumer queue");
+    }
+    
+    if (consQueue.length() == 0)
+    {
+      sLogger.warn("Received GetRequest with invalid Consumer Queue: name=[" + StringUtils.asString(consQueue) + "]");
+      throw new IllegalArgumentException("Invalid GetRequest: consumer queue is empty string");
+    }
+    
     mDestinationType = EDestinationType.fromInt(type);
     mDestinationName = destName;
     mJmsMessageId = jmsMsgId;
+    mConsumerQueue = consQueue;
   }
   
   /***************************************************************************************************************
@@ -114,6 +130,16 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   public String getJmsMessageId()
   {
     return mJmsMessageId;
+  }
+  
+  /***************************************************************************************************************
+   * Get the consumer queue name
+   * 
+   * @return the consumer queue name
+   */
+  public String getConsumerQueue()
+  {
+    return mConsumerQueue;
   }
   
   /***************************************************************************************************************
@@ -172,6 +198,7 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
         sLogger.debug("GetRequest::process() - Got a message from destination " + dest.getFormattedName());
         code = IKasqConstants.cPropertyResponseCode_Okay;
         msg  = "";
+        message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue);
       }
       
       message.setJMSCorrelationID(mJmsMessageId);
