@@ -132,16 +132,16 @@ public class Messenger extends AKasObject implements IMessenger
     return receive(timeout);
   }
   
-  public void shutdownInput() throws IOException
+  /***************************************************************************************************************
+   * 
+   */
+  public void shutdownInput()
   {
     try
     {
       mInputStream.close();
     }
-    catch (Throwable e)
-    {
-      e.printStackTrace();
-    }
+    catch (Throwable e) {}
   }
   
   /***************************************************************************************************************

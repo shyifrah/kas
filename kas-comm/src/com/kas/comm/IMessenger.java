@@ -66,7 +66,8 @@ public interface IMessenger extends IObject
   public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
   
   /***************************************************************************************************************
-   * 
+   * Shutdown the Messenger's Input side.
+   * This is achieved by simply closing the socket's input stream.
    */
-  public abstract void shutdownInput() throws IOException;
+  public abstract void shutdownInput();
 }
