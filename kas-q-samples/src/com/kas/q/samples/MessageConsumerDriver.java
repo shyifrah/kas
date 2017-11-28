@@ -76,7 +76,10 @@ public class MessageConsumerDriver
       
       Thread thread = new ReceiverThread(threadParams);
       thread.start();
+      conn.start();
       thread.join();
+      
+      conn.stop();
     }
     catch (JMSException e)
     {
