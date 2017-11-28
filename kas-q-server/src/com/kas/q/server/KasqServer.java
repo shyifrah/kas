@@ -69,6 +69,7 @@ public class KasqServer extends AKasObject implements IInitializable
   private ILogger                mLogger;
   private ILogger                mConsole;
   private boolean                mShouldStop;
+  private boolean                mTermInProgress;
   private ClientController       mController;
   private KasqRepository         mRepository;
   private ServerSocket           mListenSocket;
@@ -97,6 +98,7 @@ public class KasqServer extends AKasObject implements IInitializable
     
     mConfig = new MessagingConfiguration();
     mShouldStop = false;
+    mTermInProgress = false;
     
     new KasqMessageFactory();
   }
@@ -114,7 +116,7 @@ public class KasqServer extends AKasObject implements IInitializable
     mConfig.init();
     
     // register shutdown hook
-    mShutdownHook  = new ShutdownHook(mListenSocket);
+    mShutdownHook  = new ShutdownHook();
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
     // initialize the repository
@@ -144,25 +146,35 @@ public class KasqServer extends AKasObject implements IInitializable
   {
     mLogger.debug("KasqServer::term() - IN");
     
-    mConsole.info("KAS/Q termination in progress...");
-    
-    // close the server socket
-    try
+    if (mTermInProgress)
     {
-      mListenSocket.close();
+      mLogger.debug("KasqServer::term() - Termination of KAS/Q server already in progress");
     }
-    catch (Throwable e) {}
-    
-    mController.closeAll();
+    else
+    {
+      mTermInProgress = true;
+      
+      // close the server socket
+      try
+      {
+        mListenSocket.close();
+      }
+      catch (Throwable e) {}
+      
+      mConsole.info("KAS/Q termination in progress...");
+      
+      mController.closeAll();
 
-    // terminate the repository
-    mRepository.term();
-    
-    // unregister the shutdown hook
-    Runtime.getRuntime().removeShutdownHook(mShutdownHook);
-    
-    // shutdown the thread pool
-    ThreadPool.shutdownNow();
+      // terminate the repository
+      mRepository.term();
+      
+      // unregister the shutdown hook only if we're not running under the it
+      if (mShutdownHook.getThreadId() != Thread.currentThread().getId())
+        Runtime.getRuntime().removeShutdownHook(mShutdownHook);
+      
+      // shutdown the thread pool
+      ThreadPool.shutdownNow();
+    }
     
     mLogger.debug("KasqServer::term() - OUT");
     return true;

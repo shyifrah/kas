@@ -1,34 +1,43 @@
 package com.kas.q.server.internal;
 
-import java.net.ServerSocket;
+import com.kas.infra.base.threads.AKasThread;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.server.KasqServer;
 
-public class ShutdownHook extends Thread
+public class ShutdownHook extends AKasThread
 {
-  private ILogger      mLogger = null;
-  private ServerSocket mServerSocket = null;
+  public static final long cThreadIdNotSet = -1L;
+  
+  private ILogger mLogger = null;
+  private long    mThreadId = cThreadIdNotSet;
   
   /***************************************************************************************************************
-   * 
+   * Constructs a {@code ShutdownHook} object
    */
-  public ShutdownHook(ServerSocket socket)
+  public ShutdownHook()
   {
     super("KAS/Q shutdown hook");
-    mServerSocket = socket;
     mLogger = LoggerFactory.getLogger(this.getClass());
   }
   
   /***************************************************************************************************************
-   * 
+   * Shutdown hook execution. Call method {@code KasqServer} {@link com.kas.q.server.KasqServer#term()}. 
    */
   public void run()
   {
-    try
-    {
-      mLogger.info("Signal main thread to shutdown...");
-      mServerSocket.close();
-    }
-    catch (Throwable e) {}
+    mThreadId = Thread.currentThread().getId();
+    mLogger.info("Signal main thread to shutdown...");
+    KasqServer.getInstance().term();
+  }
+  
+  /***************************************************************************************************************
+   * Get the thread ID that runs the Shutdown hook.
+   * 
+   * @return the thread ID
+   */
+  public long getThreadId()
+  {
+    return mThreadId;
   }
 }
