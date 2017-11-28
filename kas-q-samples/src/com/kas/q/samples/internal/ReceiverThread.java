@@ -27,7 +27,7 @@ public class ReceiverThread extends AThread
       for (int i = 1; i <= mNumOfMessages; i++)
       {
         Message msg = receiveOneMessage(consumer);
-        System.out.println("received message " + i + ": " + msg.toString());
+        System.out.println("received message " + i + ": " + (msg == null ? "null" : msg.toString()));
       }
     }
     catch (JMSException e)
@@ -39,7 +39,7 @@ public class ReceiverThread extends AThread
   private Message receiveOneMessage(MessageConsumer consumer) throws JMSException
   {
     String receiveMode  = mProperties.getStringProperty(cProperty_ReceiveMode, cProperty_ReceiveMode_InfiniteWait);
-    long receiveTimeout = mProperties.getLongProperty(cProperty_ReceiveTimeout, 10000);
+    long receiveTimeout = mProperties.getLongProperty(cProperty_ReceiveTimeout, 3000);
     
     // get message immediately
     if (cProperty_ReceiveMode_NoWait.equalsIgnoreCase(receiveMode))

@@ -67,12 +67,12 @@ public class MessageConsumerDriver
       
       Properties threadParams = new Properties();
       threadParams.setStringProperty(AThread.cProperty_ThreadName, "ReceiverThread");
-      threadParams.setIntProperty(AThread.cProperty_NumOfMessages, 5);
+      threadParams.setIntProperty(AThread.cProperty_NumOfIterations, 5);
       threadParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
       threadParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
       threadParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
       threadParams.setStringProperty(ReceiverThread.cProperty_ReceiveMode, ReceiverThread.cProperty_ReceiveMode_InfiniteWait);
-      //threadParams.setLongProperty(ReceiverThread.cProperty_ReceiveTimeout, 20000);
+      threadParams.setLongProperty(ReceiverThread.cProperty_ReceiveTimeout, 3000);
       
       Thread thread = new ReceiverThread(threadParams);
       thread.start();

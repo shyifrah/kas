@@ -10,7 +10,7 @@ public abstract class AThread extends Thread
 {
   public static final String cProperty_ThreadName      = "thread_name";
   public static final String cProperty_PreAndPostDelay = "pre_post_delay";
-  public static final String cProperty_NumOfMessages   = "num_of_messages";
+  public static final String cProperty_NumOfIterations   = "num_of_messages";
   public static final String cProperty_KasqQueue       = "kasq_queue";
   public static final String cProperty_KasqSession     = "kasq_session";
   public static final String cProperty_QueueName       = "queue_name";
@@ -28,7 +28,7 @@ public abstract class AThread extends Thread
     
     mProperties = threadParams;
     
-    mNumOfMessages = mProperties.getIntProperty(cProperty_NumOfMessages, 5);
+    mNumOfMessages = mProperties.getIntProperty(cProperty_NumOfIterations, 5);
     mDelay         = mProperties.getIntProperty(cProperty_PreAndPostDelay, 5);
     mSession       = (KasqSession)mProperties.getObjectProperty(cProperty_KasqSession, null);
     mQueue         = (KasqQueue)mProperties.getObjectProperty(cProperty_KasqQueue, null);

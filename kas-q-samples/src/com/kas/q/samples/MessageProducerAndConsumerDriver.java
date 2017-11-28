@@ -71,7 +71,7 @@ public class MessageProducerAndConsumerDriver
         
         Properties senderParams = new Properties();
         senderParams.setStringProperty(AThread.cProperty_ThreadName, "SenderThread");
-        senderParams.setIntProperty(AThread.cProperty_NumOfMessages, 5);
+        senderParams.setIntProperty(AThread.cProperty_NumOfIterations, 5);
         senderParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 10);
         senderParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
         senderParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
