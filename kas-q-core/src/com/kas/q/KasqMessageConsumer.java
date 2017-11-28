@@ -87,7 +87,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       mMessageSelector = "";
     
     mConsumerId = UniqueId.generate();
-    mConsumerQueue = new KasqQueue("KAS.TEMP" + mConsumerId.toString(), "");
+    mConsumerQueue = (KasqQueue)mSession.createTemporaryQueue();
   }
   
   /***************************************************************************************************************
@@ -173,9 +173,11 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       IKasqMessage consumeRequest = internalPrepareConsumeRequest();
       if (consumeRequest == null)
         throw new JMSException("Failed to receive message. Could not create a consume request");
-      
+     
+      sLogger.debug("Sending get request via message: " + consumeRequest.toPrintableString(0));
       mSession.internalSend(consumeRequest);
       message = mConsumerQueue.getAndWait(1000);
+      sLogger.debug("Got response: " + StringUtils.asPrintableString(message));
     }
     
     sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
