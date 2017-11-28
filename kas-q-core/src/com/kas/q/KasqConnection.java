@@ -124,7 +124,15 @@ public class KasqConnection extends AKasObject implements Connection
   public void stop()
   {
     sLogger.diag("KasqConnection::stop() - IN");
-    mReceiverTask.interrupt();
+    try
+    {
+      mMessenger.shutdownInput();
+    }
+    catch (Throwable e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     mStarted = false;
     sLogger.diag("KasqConnection::stop() - OUT");
   }
