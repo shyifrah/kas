@@ -332,10 +332,14 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
     message.setJMSPriority(priority);
     message.setJMSExpiration(timeToLive);
     
-    boolean eyeCatcher = message.getBooleanProperty(KasqMessage.cKasQEyeCatcher);
+    boolean eyeCatcher = message.getBooleanProperty(IKasqConstants.cKasqEyeCatcher);
     if (eyeCatcher)
     {
       IKasqMessage iMessage = (IKasqMessage)message;
+      
+      iMessage.setStringProperty(IKasqConstants.cPropertyProducerSession, mSession.getSessionId());
+      iMessage.setLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay, mDeliveryDelay);
+      
       sLogger.debug("KasqMessageProducer::internalSend() - Sending message: " + iMessage.toPrintableString(0));
       mSession.internalSend(iMessage);
     }

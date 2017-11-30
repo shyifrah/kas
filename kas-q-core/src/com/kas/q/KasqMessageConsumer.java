@@ -208,10 +208,11 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       
       // message origin
       msg.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue.getName());
+      msg.setStringProperty(IKasqConstants.cPropertyConsumerSession, mSession.getSessionId());
       
       // filtering criteria
-      msg.setStringProperty(IKasqConstants.cPropertyMessageSelector, mMessageSelector);
-      msg.setBooleanProperty(IKasqConstants.cPropertyNoLocal, mNoLocal);
+      msg.setStringProperty(IKasqConstants.cPropertyConsumerMessageSelector, mMessageSelector);
+      msg.setBooleanProperty(IKasqConstants.cPropertyConsumerNoLocal, mNoLocal);
     }
     catch (JMSException e) {}
     
