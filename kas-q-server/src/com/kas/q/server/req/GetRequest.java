@@ -30,6 +30,9 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   private EDestinationType mDestinationType;
   private String           mJmsMessageId;
   private String           mConsumerQueue;
+  private String           mConsumerSession;
+  private Boolean          mNoLocal;
+  private String           mSelector;
   
   /***************************************************************************************************************
    * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
@@ -100,6 +103,30 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
     mDestinationName = destName;
     mJmsMessageId = jmsMsgId;
     mConsumerQueue = consQueue;
+    
+    String  session = null;
+    boolean noLocal = false;
+    String  selector = null;
+    try
+    {
+      session = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerSession);
+    }
+    catch (Throwable e) {}
+    mConsumerSession = session;
+    
+    try
+    {
+      noLocal = requestMessage.getBooleanProperty(IKasqConstants.cPropertyConsumerNoLocal);
+    }
+    catch (Throwable e) {}
+    mNoLocal = noLocal;
+    
+    try
+    {
+      selector = requestMessage.getStringProperty(IKasqConstants.cPropertyConsumerMessageSelector);
+    }
+    catch (Throwable e) {}
+    mSelector = selector;
   }
   
   /***************************************************************************************************************
@@ -156,19 +183,6 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
     }
     else
     {
-      //
-      // TODO: use the following message criteria to select the consumed message
-      //
-      // get the filtering criteria
-      //String selector = "";
-      //boolean noLocal = false;
-      //try
-      //{
-      //  selector = request.getStringProperty(IKasqConstants.cPropertyMessageSelector);
-      //  noLocal = request.getBooleanProperty(IKasqConstants.cPropertyNoLocal);
-      //}
-      //catch (Throwable e) {}
-      
       IKasqMessage message = null;
       IKasqDestination dest = null;
       int code = IKasqConstants.cPropertyResponseCode_Fail;
@@ -180,11 +194,11 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       {
         case cQueue:
           dest = sRepository.locateQueue(mDestinationName);
-          message = dest.getNoWait();
+          message = dest.getMatching(mNoLocal, mConsumerSession, mSelector);
           break;
         case cTopic:
           dest = sRepository.locateTopic(mDestinationName);
-          message = dest.getNoWait();
+          message = dest.getMatching(mNoLocal, mConsumerSession, mSelector);
           break;
       }
 
