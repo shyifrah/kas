@@ -250,14 +250,10 @@ public class KasqDestination extends AKasObject implements IKasqDestination
   /***************************************************************************************************************
    * 
    */
-  public IKasqMessage get(long timeout)
+  public IKasqMessage get(long timeout) throws InterruptedException
   {
     IKasqMessage message = null;
-    try
-    {
-      message = mQueue.poll(timeout, TimeUnit.MILLISECONDS);
-    }
-    catch (InterruptedException e) {}
+    message = mQueue.poll(timeout, TimeUnit.MILLISECONDS);
     return message;
   }
   

@@ -23,8 +23,10 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
    * 
    * @return the first {@code IKasqMessage} in the destination. If a message is not available and
    *   {@code timeout} milliseconds have passed, {@code null} is returned.
+   *   
+   * @throws InterruptedException if thread is interrupted during wait 
    */
-  public abstract IKasqMessage get(long timeout);
+  public abstract IKasqMessage get(long timeout) throws InterruptedException;
   
   /***************************************************************************************************************
    * Get and remove a {@code IKasqMessage} from the destination that matches the filtering criteria.<br>

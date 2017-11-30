@@ -11,6 +11,7 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
@@ -26,6 +27,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   protected boolean          mNoLocal         = false;
   protected UniqueId         mConsumerId;
   protected KasqQueue        mConsumerQueue;
+  protected Thread           mExecutingThread;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqMessageConsumer} object for the specified {@code Destination}
@@ -95,9 +97,10 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
    */
   public void close() throws JMSException
   {
-    // Closes the message consumer.
-    // 1. Free all allocated resources
-    // 2. A blocked receive call returns null when this message consumer is closed.
+    if (mExecutingThread != null)
+      mExecutingThread.interrupt();
+    
+    mSession.internalDeleteTemporaryDestination(mConsumerQueue.getName(), EDestinationType.cQueue);
   }
 
   /***************************************************************************************************************
@@ -149,7 +152,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   }
   
   /***************************************************************************************************************
-   * Consume a message from the designated destination.
+   * Consume a message from the designated destination.<br>
    * First we call {@link #internalPrepareConsumeRequest()} to prepare a request message. This message will be
    * sent to the KAS/Q server which will send a message matching the filtering criteria to the consumer queue.
    * The consume request will be sent timeout/1000 times, and each time the consumer will wait for the message
@@ -164,11 +167,14 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
   {
     sLogger.debug("KasqMessageConsumer::internalReceive() - IN");
     
+    mExecutingThread = Thread.currentThread();
+    
     IKasqMessage message = null;
     boolean infinite = timeout == 0;
+    boolean closing = false;
     long repeat = timeout == -1L ? 1 : timeout / 1000; 
     
-    for (long i = 0; ((i < repeat) || (infinite)) && (message == null); ++i)
+    for (long i = 0; ((i < repeat) || (infinite)) && (message == null) && (!closing); ++i)
     {
       IKasqMessage consumeRequest = internalPrepareConsumeRequest();
       if (consumeRequest == null)
@@ -176,16 +182,26 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
      
       sLogger.debug("Sending get request via message: " + consumeRequest.toPrintableString(0));
       mSession.internalSend(consumeRequest);
-      message = mConsumerQueue.get(1000);
+      try
+      {
+        message = mConsumerQueue.get(1000);
+      }
+      catch (InterruptedException e)
+      {
+        closing = true;
+      }
       sLogger.debug("Got response: " + StringUtils.asPrintableString(message));
     }
     
     sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
+    
+    mExecutingThread = null;
+    
     return message;
   }
   
   /***************************************************************************************************************
-   * Prepare for message consumption.
+   * Prepare for message consumption.<br>
    * Create a request message for consumption and set all properties needed for consuming a message.
    * 
    * @return the consumption request message or null if an error occurred while setting it up

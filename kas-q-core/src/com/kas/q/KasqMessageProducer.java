@@ -164,10 +164,7 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
    */
   public void close() throws JMSException
   {
-    // Closes the message producer.
-    // 1. Free all allocated resources
-    // 2. Wait until all a-sync sends ends
-    // 3. Wait until all CompletionListener call-backs have returned
+    // TODO: need to do something?
   }
 
   /***************************************************************************************************************
