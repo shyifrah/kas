@@ -21,14 +21,14 @@ import com.kas.q.ext.KasqMessageHeader;
 import com.kas.q.ext.EMessageType;
 import com.kas.q.ext.KasqUtils;
 import com.kas.q.ext.EReadWriteMode;
+import com.kas.q.ext.IKasqConstants;
 
 public class KasqMessage extends AKasObject implements IKasqMessage
 {
   /***************************************************************************************************************
    * 
    */
-  public static final String cKasQEyeCatcher = "KasQ_EyeCatcher";
-  protected static ILogger   sLogger         = LoggerFactory.getLogger(KasqMessage.class);
+  protected static ILogger sLogger = LoggerFactory.getLogger(KasqMessage.class);
   
   /***************************************************************************************************************
    * 
@@ -59,7 +59,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     
     mMessageId = UniqueId.generate();
     mCorrelationId = UniqueId.cNullUniqueId;
-    mProperties.setBoolProperty(cKasQEyeCatcher, true);
+    mProperties.setBoolProperty(IKasqConstants.cKasqEyeCatcher, true);
     
     sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }

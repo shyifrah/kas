@@ -5,8 +5,7 @@ public interface IKasqConstants
   static final String cKasqEyeCatcher      = "KasQ_EyeCatcher";
   
   static final String cPropertyResponseMessage = "KasQ_ResponseMessage";
-  
-  static final String cPropertyResponseCode = "KasQ_ResponseCode";
+  static final String cPropertyResponseCode    = "KasQ_ResponseCode";
   static final int    cPropertyResponseCode_Okay = 0;
   static final int    cPropertyResponseCode_Fail = -1;
   
@@ -22,13 +21,13 @@ public interface IKasqConstants
   static final String cPropertyDestinationName = "KasQ_DestinationName";
   static final String cPropertyDestinationType = "KasQ_DestinationType";
   
-  static final String cPropertyMessageSelector = "KasQ_MessageSelector";
-  static final String cPropertyNoLocal         = "KasQ_NoLocal";
+  static final String cPropertyConsumerMessageSelector = "KasQ_ConsumerMessageSelector";
+  static final String cPropertyConsumerNoLocal         = "KasQ_ConsumerNoLocal";
+  static final String cPropertyConsumerQueue           = "KasQ_ConsumerQueue";
+  static final String cPropertyConsumerSession         = "KasQ_ConsumerSession";
   
-  static final String cPropertyConsumerQueue   = "KasQ_ConsumerQueue";
-  static final String cPropertyConsumerSession = "KasQ_ConsumerSession";
-  
-  static final String cPropertyRequestRepetitions = "KasQ_RequestRepetitions";
+  static final String cPropertyProducerSession         = "KasQ_ProducerSession";
+  static final String cPropertyProducerDeliveryDelay   = "KasQ_ProducerDeliveryDelay";
   
   static final String cPropertyUserName = "KasQ_UserName";
   static final String cPropertyPassword = "KasQ_Password";

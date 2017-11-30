@@ -8,48 +8,43 @@ import com.kas.infra.base.IObject;
 public interface IKasqDestination extends IInitializable, Serializable, Destination, IObject
 {
   /***************************************************************************************************************
-   * Put a {@code IMessage} to the destination.
+   * Put a {@code IKasqMessage} to the destination.
    * 
-   * @param message the {@code IMessage} to be placed in the destination.
+   * @param message the {@code IKasqMessage} to be placed in the destination.
    */
   public abstract void put(IKasqMessage message);
   
   /***************************************************************************************************************
-   * Get a {@code IMessage} from the destination, but not remove it.
+   * Get and remove a {@code IKasqMessage} from the destination.
+   * If a message is not available, the caller is blocked indefinitely.
    * 
-   * @return the first {@code IMessage} in the destination.
-   */
-  public abstract IKasqMessage peek();
-  
-  /***************************************************************************************************************
-   * Get and remove a {@code IMessage} from the destination.
-   * If a message is not available, this caller is blocked indefinitely.
-   * 
-   * @return the first {@code IMessage} in the destination.
+   * @return the first {@code IKasqMessage} in the destination.
    */
   public abstract IKasqMessage get();
   
   /***************************************************************************************************************
-   * Get and remove a {@code IMessage} from the destination.
-   * If a message is not available, this call will wait for {@code timeout} milliseconds.
+   * Get and remove a {@code IKasqMessage} from the destination.
+   * If a message is not available, the call will wait for {@code timeout} milliseconds. If a message is still
+   * not available, {@code null} will be returned.
    * 
    * @param timeout number of milliseconds to wait for a message to become available.
    * 
-   * @return the first {@code IMessage} in the destination. If a message is not available and
+   * @return the first {@code IKasqMessage} in the destination. If a message is not available and
    *   {@code timeout} milliseconds have passed, {@code null} is returned.
    */
   public abstract IKasqMessage getAndWait(long timeout);
   
   /***************************************************************************************************************
-   * Get and remove a {@code IMessage} from the destination, but only if a message is immediately available.
+   * Get and remove a {@code IKasqMessage} from the destination, but only if a message is immediately available.
+   * If a message is not available, {@code null} will be returned.
    * 
-   * @return the first {@code IMessage} in the destination. If a message is not available, {@code null}
+   * @return the first {@code IKasqMessage} in the destination. If a message is not available, {@code null}
    *   is returned.
    */
   public abstract IKasqMessage getNoWait();
   
   /***************************************************************************************************************
-   * Returns the size of the destination.
+   * Returns the number of messages held in the destination.
    * 
    * @return number of messages in destination
    */
