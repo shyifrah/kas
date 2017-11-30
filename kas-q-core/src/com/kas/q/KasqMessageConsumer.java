@@ -83,8 +83,8 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     
     mNoLocal = noLocal;
     mMessageSelector = messageSelector;
-    if (messageSelector == null)
-      mMessageSelector = "";
+    if ((messageSelector != null) && (messageSelector.length() == 0))
+      mMessageSelector = null;
     
     mConsumerId = UniqueId.generate();
     mConsumerQueue = (KasqQueue)mSession.createTemporaryQueue();
@@ -176,7 +176,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
      
       sLogger.debug("Sending get request via message: " + consumeRequest.toPrintableString(0));
       mSession.internalSend(consumeRequest);
-      message = mConsumerQueue.getAndWait(1000);
+      message = mConsumerQueue.get(1000);
       sLogger.debug("Got response: " + StringUtils.asPrintableString(message));
     }
     

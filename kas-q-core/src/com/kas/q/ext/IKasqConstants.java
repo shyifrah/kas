@@ -26,6 +26,7 @@ public interface IKasqConstants
   static final String cPropertyConsumerQueue           = "KasQ_ConsumerQueue";
   static final String cPropertyConsumerSession         = "KasQ_ConsumerSession";
   
+  static final String cPropertyProducerTimestamp       = "KasQ_ProducerTimestamp";
   static final String cPropertyProducerSession         = "KasQ_ProducerSession";
   static final String cPropertyProducerDeliveryDelay   = "KasQ_ProducerDeliveryDelay";
   

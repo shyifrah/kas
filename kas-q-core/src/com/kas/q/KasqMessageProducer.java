@@ -339,6 +339,7 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
       
       iMessage.setStringProperty(IKasqConstants.cPropertyProducerSession, mSession.getSessionId());
       iMessage.setLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay, mDeliveryDelay);
+      iMessage.setLongProperty(IKasqConstants.cPropertyProducerTimestamp, timestamp);
       
       sLogger.debug("KasqMessageProducer::internalSend() - Sending message: " + iMessage.toPrintableString(0));
       mSession.internalSend(iMessage);
