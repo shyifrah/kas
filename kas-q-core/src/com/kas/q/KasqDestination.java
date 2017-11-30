@@ -19,6 +19,7 @@ import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.EDestinationType;
+import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageFactory;
@@ -246,27 +247,10 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     mQueue.offer(message);
   }
   
-  /**************************************************************************************************************
-   * 
-   */
-  public IKasqMessage get() 
-  {
-    IKasqMessage message = null;
-    while (message == null)
-    {
-      try
-      {
-        message = mQueue.take();
-      }
-      catch (InterruptedException e) {}
-    }
-    return message;
-  }
-  
   /***************************************************************************************************************
    * 
    */
-  public IKasqMessage getAndWait(long timeout)
+  public IKasqMessage get(long timeout)
   {
     IKasqMessage message = null;
     try
@@ -276,15 +260,59 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     catch (InterruptedException e) {}
     return message;
   }
-
+  
   /***************************************************************************************************************
    * 
    */
-  public IKasqMessage getNoWait()
+  public IKasqMessage getMatching(boolean noLocal, String session, String selector)
   {
-    return mQueue.poll();
+    IKasqMessage message = null;
+    for (IKasqMessage candidate : mQueue)
+    {
+      String prodSession = null;
+      Long prodDeliveryDelay = null;
+      Long prodTimestamp = null;
+      try
+      {
+        prodSession = candidate.getStringProperty(IKasqConstants.cPropertyProducerSession);
+        prodDeliveryDelay = candidate.getLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay);
+        prodTimestamp = candidate.getLongProperty(IKasqConstants.cPropertyProducerTimestamp);
+      }
+      catch (JMSException e) {}
+      
+      // if no-local messages are allowed AND consumer & producer sessions are the same - skip this message
+      if ((noLocal) && (session != null))
+      {
+        if (session.equals(prodSession))
+          continue;
+      }
+      
+      // if delivery delay not expired - skip this message
+      if ((prodDeliveryDelay != null) && (prodTimestamp != null))
+      {
+        long now = System.currentTimeMillis();
+        if (now < prodTimestamp + prodDeliveryDelay)
+          continue;
+      }
+      
+      // if candidate message does not pass selector - skip this message;
+      if (selector != null)
+      {
+        // TODO: implement message selection
+        continue;
+      }
+      
+      message = candidate;
+      break;
+    }
+    
+    // if loop was broken because we found a message, remove it from queue
+    if (message != null)
+      mQueue.remove(message);
+    
+    return message;
   }
-
+  
   /***************************************************************************************************************
    * 
    */
@@ -294,7 +322,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
   }
 
   /***************************************************************************************************************
-   * Delete this destination.
+   * Delete this destination.<br>
    * Since all destination implementation types are derived from this class, this method has no effect for
    * the permanent types. 
    * 
@@ -302,14 +330,14 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   protected void internalDelete() throws JMSException
   {
+    sLogger.debug("AKasqDestination::internalLocateDestination() - IN");
+    
     if ((mSession != null) && (mName.startsWith("KAS.TEMP.")))
     {
-      sLogger.debug("AKasqDestination::internalLocateDestination() - IN");
-      
       mSession.internalDeleteTemporaryDestination(mName, mType);
-      
-      sLogger.debug("AKasqDestination::internalLocateDestination() - OUT");
     }
+    
+    sLogger.debug("AKasqDestination::internalLocateDestination() - OUT");
   }
   
   /***************************************************************************************************************

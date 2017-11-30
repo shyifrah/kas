@@ -15,15 +15,7 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
   public abstract void put(IKasqMessage message);
   
   /***************************************************************************************************************
-   * Get and remove a {@code IKasqMessage} from the destination.
-   * If a message is not available, the caller is blocked indefinitely.
-   * 
-   * @return the first {@code IKasqMessage} in the destination.
-   */
-  public abstract IKasqMessage get();
-  
-  /***************************************************************************************************************
-   * Get and remove a {@code IKasqMessage} from the destination.
+   * Get and remove a {@code IKasqMessage} from the destination.<br>
    * If a message is not available, the call will wait for {@code timeout} milliseconds. If a message is still
    * not available, {@code null} will be returned.
    * 
@@ -32,16 +24,20 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
    * @return the first {@code IKasqMessage} in the destination. If a message is not available and
    *   {@code timeout} milliseconds have passed, {@code null} is returned.
    */
-  public abstract IKasqMessage getAndWait(long timeout);
+  public abstract IKasqMessage get(long timeout);
   
   /***************************************************************************************************************
-   * Get and remove a {@code IKasqMessage} from the destination, but only if a message is immediately available.
-   * If a message is not available, {@code null} will be returned.
+   * Get and remove a {@code IKasqMessage} from the destination that matches the filtering criteria.<br>
+   * If no matching message could be found, {@code null} is returned.
    * 
-   * @return the first {@code IKasqMessage} in the destination. If a message is not available, {@code null}
-   *   is returned.
+   * @param noLocal true if consumer requested messages produced only by different session than its own
+   * @param session if {@code noLocal} is true, then this will be the consumer's session ID
+   * @param selector a SQL's WHERE clause which is used to filter the message 
+   * 
+   * @return the first {@code IKasqMessage} in the destination that matches the specified criteria, or
+   *   {@code null} if no message matches.
    */
-  public abstract IKasqMessage getNoWait();
+  public abstract IKasqMessage getMatching(boolean noLocal, String session, String selector);
   
   /***************************************************************************************************************
    * Returns the number of messages held in the destination.
