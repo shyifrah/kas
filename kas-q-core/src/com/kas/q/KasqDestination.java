@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import javax.jms.JMSException;
 import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.PacketHeader;
@@ -240,25 +241,9 @@ public class KasqDestination extends AKasObject implements IKasqDestination
   /***************************************************************************************************************
    * 
    */
-  protected IKasqMessage requestReply(IKasqMessage request) throws JMSException
-  {
-    return mSession.internalSendAndReceive(request);
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
   public void put(IKasqMessage message)
   {
     mQueue.offer(message);
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
-  public IKasqMessage peek()
-  {
-    return mQueue.peek();
   }
   
   /**************************************************************************************************************
@@ -283,18 +268,12 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   public IKasqMessage getAndWait(long timeout)
   {
-    long toWait = timeout;
-    IKasqMessage message = getNoWait();
-    while ((message == null) && (toWait > 0))
+    IKasqMessage message = null;
+    try
     {
-      toWait -= 500;
-      try
-      {
-        Thread.sleep(500);
-      }
-      catch (Throwable e) {}
-      message = getNoWait();
+      message = mQueue.poll(timeout, TimeUnit.MILLISECONDS);
     }
+    catch (InterruptedException e) {}
     return message;
   }
 
