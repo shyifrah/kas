@@ -83,7 +83,7 @@ public class KasqShutdown extends KasqClient
     String userName = "admin";
     String password = "admin";
     
-    ConnectionFactory factory = getFactory();
+    ConnectionFactory factory = getConnectionFactory();
     Connection        conn    = factory.createConnection(userName, password);
     Session           sess    = conn.createSession();
     MessageProducer   prod    = sess.createProducer(null);

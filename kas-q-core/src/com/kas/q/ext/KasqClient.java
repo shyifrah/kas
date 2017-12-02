@@ -2,6 +2,7 @@ package com.kas.q.ext;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.QueueConnectionFactory;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.threads.ThreadPool;
@@ -11,6 +12,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqConnection;
 import com.kas.q.KasqConnectionFactory;
 import com.kas.q.KasqQueue;
+import com.kas.q.KasqQueueConnectionFactory;
 import com.kas.q.KasqSession;
 import com.kas.q.KasqTopic;
 
@@ -20,6 +22,7 @@ public class KasqClient extends AKasObject implements IInitializable
   private boolean   mInitialized;
   
   private KasqConnectionFactory mConnectionFactory;
+  private KasqQueueConnectionFactory mQueueConnectionFactory;
   
   private KasqConnection mClientConnection;
   private KasqSession    mClientSession;
@@ -39,6 +42,7 @@ public class KasqClient extends AKasObject implements IInitializable
     mHost = host;
     mPort = port;
     mConnectionFactory = null;
+    mQueueConnectionFactory = null;
     mClientConnection = null;
     mClientSession = null;
   }
@@ -63,6 +67,8 @@ public class KasqClient extends AKasObject implements IInitializable
         return false;
       
       mConnectionFactory = new KasqConnectionFactory(mHost, mPort);
+      mQueueConnectionFactory = new KasqQueueConnectionFactory(mHost, mPort);
+      
       mInitialized = true;
     }
     
@@ -79,6 +85,7 @@ public class KasqClient extends AKasObject implements IInitializable
       mLogger.info("KasqClient terminates");
       
       mConnectionFactory.shutdown();
+      mQueueConnectionFactory.shutdown();
       
       MainConfiguration.getInstance().term();
       ThreadPool.shutdownNow();
@@ -88,20 +95,37 @@ public class KasqClient extends AKasObject implements IInitializable
   }
 
   /***************************************************************************************************************
-   * Gets {@code ConnectionFactory}.
+   * Gets {@code ConnectionFactory}.<br>
    * If the {@code ConnectionFactory} was not created, create it and then return it.
    * 
    * @return the connection factory
    * 
    * @throws JMSException if the KasqClient was not initialized
    */
-  public ConnectionFactory getFactory() throws JMSException
+  public ConnectionFactory getConnectionFactory() throws JMSException
   {
     if (!mInitialized)
     {
       throw new JMSException("KasqClient not initialized");
     }
     return mConnectionFactory;
+  }
+  
+  /***************************************************************************************************************
+   * Gets {@code QueueConnectionFactory}.<br>
+   * If the {@code QueueConnectionFactory} was not created, create it and then return it.
+   * 
+   * @return the queue connection factory
+   * 
+   * @throws JMSException if the KasqClient was not initialized
+   */
+  public QueueConnectionFactory getQueueConnectionFactory() throws JMSException
+  {
+    if (!mInitialized)
+    {
+      throw new JMSException("KasqClient not initialized");
+    }
+    return mQueueConnectionFactory;
   }
   
   /***************************************************************************************************************
