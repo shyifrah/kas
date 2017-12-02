@@ -75,21 +75,35 @@ public class MessageProducerAndConsumerDriver
         senderParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 10);
         senderParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
         senderParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
+        senderParams.setIntProperty(SenderThread.cProperty_SendDelay, 1);
         Thread sender = new SenderThread(senderParams);
         sender.start();
         
-        Properties receiverParams = new Properties(senderParams);
+        Properties receiverParams = new Properties();
         receiverParams.setStringProperty(AThread.cProperty_ThreadName, "ReceiverThread");
-        senderParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
+        receiverParams.setIntProperty(AThread.cProperty_NumOfIterations, 5);
+        receiverParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
+        receiverParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
+        receiverParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
         receiverParams.setStringProperty(ReceiverThread.cProperty_ReceiveMode, ReceiverThread.cProperty_ReceiveMode_InfiniteWait);
+        receiverParams.setLongProperty(ReceiverThread.cProperty_ReceiveTimeout, 3000);
         Thread receiver = new ReceiverThread(receiverParams);
         receiver.start();
         
+        conn.start();
+        
         RunTimeUtils.sleep(60);
+        sender.join();
+        receiver.join();
       }
       catch (JMSException e)
       {
-        System.out.println("Driver::run() - Exception caught");
+        System.out.println("Driver::run() - JMSException caught");
+        e.printStackTrace();
+      }
+      catch (InterruptedException e)
+      {
+        System.out.println("Driver::run() - InterruptedException caught");
         e.printStackTrace();
       }
       

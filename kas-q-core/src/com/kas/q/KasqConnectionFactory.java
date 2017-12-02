@@ -1,15 +1,20 @@
 package com.kas.q;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.utils.StringUtils;
 
 public class KasqConnectionFactory extends AKasObject implements ConnectionFactory
 {
   protected String mHost;
   protected int    mPort;
+  
+  protected List<KasqConnection> mConnList;
   
   /***************************************************************************************************************
    * Constructs a {@code KasqConnectionFactory} object to the specified host/port
@@ -21,6 +26,8 @@ public class KasqConnectionFactory extends AKasObject implements ConnectionFacto
   {
     mHost = host;
     mPort = port;
+    
+    mConnList = new ArrayList<KasqConnection>();
   }
   
   /***************************************************************************************************************
@@ -28,7 +35,12 @@ public class KasqConnectionFactory extends AKasObject implements ConnectionFacto
    */
   public Connection createConnection() throws JMSException
   {
-    return new KasqConnection(mHost, mPort);
+    KasqConnection conn = new KasqConnection(mHost, mPort);
+    synchronized (mConnList)
+    {
+      mConnList.add(conn);
+    }
+    return conn;
   }
 
   /***************************************************************************************************************
@@ -36,7 +48,12 @@ public class KasqConnectionFactory extends AKasObject implements ConnectionFacto
    */
   public Connection createConnection(String userName, String password) throws JMSException
   {
-    return new KasqConnection(mHost, mPort, userName, password);
+    KasqConnection conn = new KasqConnection(mHost, mPort, userName, password);
+    synchronized (mConnList)
+    {
+      mConnList.add(conn);
+    }
+    return conn;
   }
   
   /***************************************************************************************************************
@@ -44,9 +61,13 @@ public class KasqConnectionFactory extends AKasObject implements ConnectionFacto
    */
   public JMSContext createContext()
   {
+    // Unsupported method: ConnectionFactory.createContext()
     return null;
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public JMSContext createContext(String userName, String password)
   {
     // Unsupported method: ConnectionFactory.createContext(String, String)
@@ -74,12 +95,30 @@ public class KasqConnectionFactory extends AKasObject implements ConnectionFacto
   /***************************************************************************************************************
    * 
    */
+  public void shutdown()
+  {
+    for (KasqConnection conn : mConnList)
+    {
+      try
+      {
+        conn.close();
+      }
+      catch (JMSException e) {}
+    }
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(pad).append("  Host=").append(mHost).append("\n")
-      .append(pad).append("  Port=").append(mPort).append("\n");
+      .append(pad).append("  Port=").append(mPort).append("\n")
+      .append(pad).append("  Connections=(")
+      .append(StringUtils.asPrintableString(mConnList, level+2))
+      .append(pad).append("  )");
     return sb.toString();
   }
 }

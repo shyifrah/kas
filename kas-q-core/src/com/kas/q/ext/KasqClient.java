@@ -76,10 +76,12 @@ public class KasqClient extends AKasObject implements IInitializable
   {
     if (mInitialized)
     {
+      mLogger.info("KasqClient terminates");
+      
+      mConnectionFactory.shutdown();
+      
       MainConfiguration.getInstance().term();
       ThreadPool.shutdownNow();
-      
-      mLogger.info("KasqClient terminated");
     }
     
     return true;
