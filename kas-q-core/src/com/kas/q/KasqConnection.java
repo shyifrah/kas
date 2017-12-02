@@ -19,6 +19,7 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -37,6 +38,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   private static final String cDefaultUserName = "kas";
   private static final String cDefaultPassword = "kas";
+  private static ProductVersion cProductVersion = new ProductVersion(KasqConnection.class);
   
   /***************************************************************************************************************
    *  
@@ -128,11 +130,8 @@ public class KasqConnection extends AKasObject implements Connection
     {
       mMessenger.shutdownInput();
     }
-    catch (Throwable e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    catch (Throwable e) {}
+    
     mStarted = false;
     sLogger.diag("KasqConnection::stop() - OUT");
   }
@@ -207,7 +206,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ConnectionMetaData getMetaData() throws JMSException
   {
-    throw new JMSException("Unsupported method: Connection.getMetaData()");
+    return new KasqConnectionMetaData(cProductVersion);
   }
 
   /***************************************************************************************************************
