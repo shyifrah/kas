@@ -181,9 +181,9 @@ public class KasqServer extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
-   * Main function of the {@code KasqServer}.
+   * Main function of the {@code KasqServer}.<br>
    * Essentially, this function prints the startup messages, accepts new connections from clients
-   * and hands them over to the {@code ClientHandlerManager} to create a {@code ClientHandler} to handle the
+   * and hands them over to the {@code ClientController} to create a {@code ClientHandler} to handle the
    * connection.
    */
   void run() 
