@@ -10,8 +10,8 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
 import com.kas.q.samples.internal.AThread;
-import com.kas.q.samples.internal.ReceiverThread;
-import com.kas.q.samples.internal.SenderThread;
+import com.kas.q.samples.internal.ConsumerThread;
+import com.kas.q.samples.internal.ProducerThread;
 
 public class MessageProducerAndConsumerDriver
 {
@@ -63,7 +63,7 @@ public class MessageProducerAndConsumerDriver
       
       try
       {
-        ConnectionFactory factory = client.getFactory();
+        ConnectionFactory factory = client.getConnectionFactory();
         Connection conn = factory.createConnection(userName, password);
         Session sess = conn.createSession();
         Queue queue = client.locateQueue(cQueueName);
@@ -75,8 +75,8 @@ public class MessageProducerAndConsumerDriver
         senderParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 10);
         senderParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
         senderParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
-        senderParams.setIntProperty(SenderThread.cProperty_SendDelay, 1);
-        Thread sender = new SenderThread(senderParams);
+        senderParams.setIntProperty(ProducerThread.cProperty_SendDelay, 1);
+        Thread sender = new ProducerThread(senderParams);
         sender.start();
         
         Properties receiverParams = new Properties();
@@ -85,9 +85,9 @@ public class MessageProducerAndConsumerDriver
         receiverParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
         receiverParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
         receiverParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
-        receiverParams.setStringProperty(ReceiverThread.cProperty_ReceiveMode, ReceiverThread.cProperty_ReceiveMode_InfiniteWait);
-        receiverParams.setLongProperty(ReceiverThread.cProperty_ReceiveTimeout, 3000);
-        Thread receiver = new ReceiverThread(receiverParams);
+        receiverParams.setStringProperty(ConsumerThread.cProperty_ReceiveMode, ConsumerThread.cProperty_ReceiveMode_InfiniteWait);
+        receiverParams.setLongProperty(ConsumerThread.cProperty_ReceiveTimeout, 3000);
+        Thread receiver = new ConsumerThread(receiverParams);
         receiver.start();
         
         conn.start();

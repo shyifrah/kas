@@ -7,11 +7,11 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 
-public class ProducerThread extends AThread
+public class QueueSenderThread extends AThread
 {
   public static final String cProperty_SendDelay = "send_delay"; 
   
-  public ProducerThread(Properties threadParams) throws KasException
+  public QueueSenderThread(Properties threadParams) throws KasException
   {
     super(threadParams);
   }
@@ -20,7 +20,15 @@ public class ProducerThread extends AThread
   {
     try
     {
-      MessageProducer producer = mSession.createProducer(mQueue);
+      MessageProducer producer;
+      if (mQueueSession != null)
+      {
+        producer = mQueueSession.createSender(mQueue);
+      }
+      else
+      {
+        producer = mSession.createProducer(mQueue);
+      }
       
       for (int i = 1; i <= mNumOfMessages; i++)
       {

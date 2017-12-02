@@ -1,17 +1,19 @@
 package com.kas.q.samples;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSession;
 import javax.jms.Session;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.q.ext.KasqClient;
 import com.kas.q.samples.internal.AThread;
 import com.kas.q.samples.internal.ConsumerThread;
+import com.kas.q.samples.internal.QueueReceiverThread;
 
-public class MessageConsumerDriver
+public class QueueReceiverDriver
 {
   private final static String cQueueName = "shy.local.queue";
   private final static String cHostname  = "localhost";
@@ -28,7 +30,7 @@ public class MessageConsumerDriver
     
     try
     {
-      MessageConsumerDriver driver = new MessageConsumerDriver();
+      QueueReceiverDriver driver = new QueueReceiverDriver();
       driver.run(args);
     }
     catch (Throwable e)
@@ -59,9 +61,9 @@ public class MessageConsumerDriver
     
     try
     {
-      ConnectionFactory factory = client.getConnectionFactory();
-      Connection conn = factory.createConnection(userName, password);
-      Session sess = conn.createSession();
+      QueueConnectionFactory factory = client.getQueueConnectionFactory();
+      QueueConnection conn = factory.createQueueConnection(userName, password);
+      QueueSession sess = conn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
       Queue queue = client.locateQueue(cQueueName);
       if (queue == null) queue = sess.createQueue(cQueueName);
       
@@ -74,7 +76,7 @@ public class MessageConsumerDriver
       threadParams.setStringProperty(ConsumerThread.cProperty_ReceiveMode, ConsumerThread.cProperty_ReceiveMode_InfiniteWait);
       threadParams.setLongProperty(ConsumerThread.cProperty_ReceiveTimeout, 3000);
       
-      Thread thread = new ConsumerThread(threadParams);
+      Thread thread = new QueueReceiverThread(threadParams);
       thread.start();
       conn.start();
       thread.join();

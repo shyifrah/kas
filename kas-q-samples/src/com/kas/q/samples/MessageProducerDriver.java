@@ -9,7 +9,7 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.q.ext.KasqClient;
 import com.kas.q.samples.internal.AThread;
-import com.kas.q.samples.internal.SenderThread;
+import com.kas.q.samples.internal.ProducerThread;
 
 public class MessageProducerDriver
 {
@@ -59,7 +59,7 @@ public class MessageProducerDriver
     
     try
     {
-      ConnectionFactory factory = client.getFactory();
+      ConnectionFactory factory = client.getConnectionFactory();
       Connection conn = factory.createConnection(userName, password);
       Session sess = conn.createSession();
       Queue queue = client.locateQueue(cQueueName);
@@ -71,9 +71,9 @@ public class MessageProducerDriver
       threadParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
       threadParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
       threadParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
-      threadParams.setIntProperty(SenderThread.cProperty_SendDelay, 1);
+      threadParams.setIntProperty(ProducerThread.cProperty_SendDelay, 1);
       
-      Thread thread = new SenderThread(threadParams);
+      Thread thread = new ProducerThread(threadParams);
       thread.start();
       thread.join();
     }

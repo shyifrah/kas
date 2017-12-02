@@ -4,13 +4,14 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.KasqQueue;
+import com.kas.q.KasqQueueSession;
 import com.kas.q.KasqSession;
 
 public abstract class AThread extends Thread
 {
   public static final String cProperty_ThreadName      = "thread_name";
   public static final String cProperty_PreAndPostDelay = "pre_post_delay";
-  public static final String cProperty_NumOfIterations   = "num_of_messages";
+  public static final String cProperty_NumOfIterations = "num_of_messages";
   public static final String cProperty_KasqQueue       = "kasq_queue";
   public static final String cProperty_KasqSession     = "kasq_session";
   public static final String cProperty_QueueName       = "queue_name";
@@ -18,6 +19,7 @@ public abstract class AThread extends Thread
   protected int         mNumOfMessages;
   protected int         mDelay;
   protected KasqSession mSession;
+  protected KasqQueueSession mQueueSession;
   protected KasqQueue   mQueue;
   protected Properties  mProperties;
   
@@ -32,6 +34,11 @@ public abstract class AThread extends Thread
     mDelay         = mProperties.getIntProperty(cProperty_PreAndPostDelay, 5);
     mSession       = (KasqSession)mProperties.getObjectProperty(cProperty_KasqSession, null);
     mQueue         = (KasqQueue)mProperties.getObjectProperty(cProperty_KasqQueue, null);
+    
+    if (mSession instanceof KasqQueueSession)
+    {
+      mQueueSession  = (KasqQueueSession)mSession;
+    }
     
     String name = mProperties.getStringProperty(cProperty_ThreadName, "");
     super.setName(name);

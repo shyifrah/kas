@@ -1,17 +1,19 @@
 package com.kas.q.samples;
 
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSession;
 import javax.jms.Session;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.q.ext.KasqClient;
 import com.kas.q.samples.internal.AThread;
-import com.kas.q.samples.internal.ConsumerThread;
+import com.kas.q.samples.internal.ProducerThread;
+import com.kas.q.samples.internal.QueueSenderThread;
 
-public class MessageConsumerDriver
+public class QueueSenderDriver
 {
   private final static String cQueueName = "shy.local.queue";
   private final static String cHostname  = "localhost";
@@ -28,7 +30,7 @@ public class MessageConsumerDriver
     
     try
     {
-      MessageConsumerDriver driver = new MessageConsumerDriver();
+      QueueSenderDriver driver = new QueueSenderDriver();
       driver.run(args);
     }
     catch (Throwable e)
@@ -59,27 +61,23 @@ public class MessageConsumerDriver
     
     try
     {
-      ConnectionFactory factory = client.getConnectionFactory();
-      Connection conn = factory.createConnection(userName, password);
-      Session sess = conn.createSession();
+      QueueConnectionFactory factory = client.getQueueConnectionFactory();
+      QueueConnection conn = factory.createQueueConnection(userName, password);
+      QueueSession sess = conn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
       Queue queue = client.locateQueue(cQueueName);
       if (queue == null) queue = sess.createQueue(cQueueName);
       
       Properties threadParams = new Properties();
-      threadParams.setStringProperty(AThread.cProperty_ThreadName, "ReceiverThread");
-      threadParams.setIntProperty(AThread.cProperty_NumOfIterations, 5);
+      threadParams.setStringProperty(AThread.cProperty_ThreadName, "SenderThread");
+      threadParams.setIntProperty(AThread.cProperty_NumOfIterations, 10);
       threadParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
       threadParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
       threadParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
-      threadParams.setStringProperty(ConsumerThread.cProperty_ReceiveMode, ConsumerThread.cProperty_ReceiveMode_InfiniteWait);
-      threadParams.setLongProperty(ConsumerThread.cProperty_ReceiveTimeout, 3000);
+      threadParams.setIntProperty(ProducerThread.cProperty_SendDelay, 1);
       
-      Thread thread = new ConsumerThread(threadParams);
+      Thread thread = new QueueSenderThread(threadParams);
       thread.start();
-      conn.start();
       thread.join();
-      
-      conn.stop();
     }
     catch (JMSException e)
     {

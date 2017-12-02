@@ -6,7 +6,7 @@ import javax.jms.MessageConsumer;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 
-public class ConsumerThread extends AThread
+public class QueueReceiverThread extends AThread
 {
   public static final String cProperty_ReceiveMode = "receive_mode";
   public static final String cProperty_ReceiveMode_NoWait = "immed";
@@ -14,7 +14,7 @@ public class ConsumerThread extends AThread
   public static final String cProperty_ReceiveMode_InfiniteWait = "infinite";
   public static final String cProperty_ReceiveTimeout = "receive_timeout";
   
-  public ConsumerThread(Properties threadParams) throws KasException
+  public QueueReceiverThread(Properties threadParams) throws KasException
   {
     super(threadParams);
   }
@@ -23,7 +23,16 @@ public class ConsumerThread extends AThread
   {
     try
     {
-      MessageConsumer consumer = mSession.createConsumer(mQueue);
+      MessageConsumer consumer;
+      if (mQueueSession == null)
+      {
+        consumer = mQueueSession.createReceiver(mQueue);
+      }
+      else
+      {
+        consumer = mSession.createConsumer(mQueue);
+      }
+      
       for (int i = 1; i <= mNumOfMessages; i++)
       {
         Message msg = receiveOneMessage(consumer);
