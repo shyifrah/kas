@@ -224,6 +224,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ExceptionListener getExceptionListener() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Connection.getExceptionListener()");
   }
 
@@ -232,6 +233,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public void setExceptionListener(ExceptionListener listener) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Connection.setExceptionListener(ExceptionListener)");
   }
 
@@ -274,6 +276,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ConnectionConsumer createConnectionConsumer(Destination destination, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Connection.createConnectionConsumer(destination, String, ServerSessionPool, int)");
   }
 
@@ -282,6 +285,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Connection.createSharedConnectionConsumer(Topic, String, String, ServerSessionPool, int)");
   }
 
@@ -290,6 +294,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ConnectionConsumer createDurableConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Connection.createDurableConnectionConsumer(Topic, String, String, ServerSessionPool, int)");
   }
 
@@ -298,6 +303,7 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic, String subscriptionName, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Connection.createSharedDurableConnectionConsumer(Topic, String, String, ServerSessionPool, int)");
   }
   

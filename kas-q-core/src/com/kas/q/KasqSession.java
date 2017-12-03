@@ -194,6 +194,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public void commit() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.commit()");
   }
 
@@ -202,6 +203,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public void rollback() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.rollback()");
   }
 
@@ -231,6 +233,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public void recover() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.recover()");
   }
 
@@ -239,6 +242,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageListener getMessageListener() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.getMessageListener()");
   }
 
@@ -247,6 +251,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public void setMessageListener(MessageListener listener) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.setMessageListener(MessageListener)");
   }
 
@@ -255,7 +260,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public void run()
   {
-    // Unsupported method: Session.run()
+    // TODO: Unsupported method: Session.run()
   }
 
   /***************************************************************************************************************
@@ -315,6 +320,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createSharedConsumer(Topic, String)");
   }
 
@@ -323,6 +329,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createSharedConsumer(Topic topic, String sharedSubscriptionName, String messageSelector) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createSharedConsumer(Topic, String, String)");
   }
   
@@ -397,6 +404,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public TopicSubscriber createDurableSubscriber(Topic topic, String name) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createDurableSubscriber(Topic, String)");
   }
 
@@ -405,6 +413,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public TopicSubscriber createDurableSubscriber(Topic topic, String name, String messageSelector, boolean noLocal) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createDurableSubscriber(Topic, String, String, boolean)");
   }
 
@@ -413,6 +422,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createDurableConsumer(Topic topic, String name) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createDurableConsumer(Topic, String)");
   }
 
@@ -421,6 +431,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createDurableConsumer(Topic topic, String name, String messageSelector, boolean noLocal) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createDurableConsumer(Topic, String, String, boolean)");
   }
 
@@ -429,6 +440,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createSharedDurableConsumer(Topic topic, String name) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createSharedDurableConsumer(Topic, String)");
   }
 
@@ -437,6 +449,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public MessageConsumer createSharedDurableConsumer(Topic topic, String name, String messageSelector) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createSharedDurableConsumer(Topic, String, String)");
   }
 
@@ -445,6 +458,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public QueueBrowser createBrowser(Queue queue) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createBrowser(Queue)");
   }
 
@@ -453,6 +467,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public QueueBrowser createBrowser(Queue queue, String messageSelector) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.createBrowser(Queue, String)");
   }
 
@@ -461,6 +476,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public void unsubscribe(String name) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Session.unsubscribe(String)");
   }
   

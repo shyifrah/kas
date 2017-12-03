@@ -1,7 +1,6 @@
 package com.kas.q;
 
 import javax.jms.JMSException;
-import javax.jms.JMSRuntimeException;
 import javax.jms.QueueConnection;
 import javax.jms.QueueConnectionFactory;
 
@@ -23,14 +22,12 @@ public class KasqQueueConnectionFactory extends KasqConnectionFactory implements
    */
   public QueueConnection createQueueConnection() throws JMSException
   {
-    try
+    KasqQueueConnection conn = new KasqQueueConnection(mHost, mPort);
+    synchronized (mConnList)
     {
-      return new KasqQueueConnection(mHost, mPort);
+      mConnList.add(conn);
     }
-    catch (Exception e)
-    {
-      throw new JMSRuntimeException("Exception caught ", "KasqQueueConnection(" + mHost + ", " + mPort + ")", e);
-    }
+    return conn;
   }
 
   /***************************************************************************************************************
@@ -38,14 +35,12 @@ public class KasqQueueConnectionFactory extends KasqConnectionFactory implements
    */
   public QueueConnection createQueueConnection(String userName, String password) throws JMSException
   {
-    try
+    KasqQueueConnection conn = new KasqQueueConnection(mHost, mPort, userName, password);
+    synchronized (mConnList)
     {
-      return new KasqQueueConnection(mHost, mPort, userName, password);
+      mConnList.add(conn);
     }
-    catch (Exception e)
-    {
-      throw new JMSRuntimeException("Exception caught ", "KasqQueueConnection(" + mHost + ", " + mPort + ", " + userName + ", " + password + ")", e);
-    }
+    return conn;
   }
   
   /***************************************************************************************************************

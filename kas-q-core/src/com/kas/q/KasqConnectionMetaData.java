@@ -97,6 +97,7 @@ public class KasqConnectionMetaData extends AKasObject implements ConnectionMeta
    */
   public Enumeration<?> getJMSXPropertyNames() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: ConnectionMetaData.getJMSXPropertyNames()");
   }
   

@@ -1,7 +1,5 @@
 package com.kas.q;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import javax.jms.ConnectionConsumer;
 import javax.jms.JMSException;
 import javax.jms.Queue;
@@ -18,11 +16,9 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    * @param host hostname or IP-address of the KasQ server
    * @param port port number on which the KasQ server listens for new connections
    * 
-   * @throws UnknownHostException
-   * @throws IOException
    * @throws JMSException 
    */
-  KasqQueueConnection(String host, int port) throws UnknownHostException, IOException, JMSException
+  KasqQueueConnection(String host, int port) throws JMSException
   {
     super(host, port);
   }
@@ -35,11 +31,9 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    * @param userName the caller's user name
    * @param password the caller's password
    * 
-   * @throws UnknownHostException
-   * @throws IOException
    * @throws JMSException 
    */
-  KasqQueueConnection(String host, int port, String userName, String password) throws UnknownHostException, IOException, JMSException
+  KasqQueueConnection(String host, int port, String userName, String password) throws JMSException
   {
     super(host, port, userName, password);
   }
@@ -49,7 +43,12 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    */
   public Session createSession() throws JMSException
   {
-    return new KasqSession(this);
+    KasqSession sess = new KasqSession(this);
+    synchronized (mSessions)
+    {
+      mSessions.add(sess);
+    }
+    return sess;
   }
 
   /***************************************************************************************************************
@@ -57,7 +56,12 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    */
   public QueueSession createQueueSession(boolean transacted, int acknowledgeMode) throws JMSException
   {
-    return new KasqQueueSession(this, transacted, acknowledgeMode);
+    KasqQueueSession sess = new KasqQueueSession(this, transacted, acknowledgeMode);
+    synchronized (mSessions)
+    {
+      mSessions.add(sess);
+    }
+    return sess;
   }
 
   /***************************************************************************************************************
@@ -65,6 +69,7 @@ public class KasqQueueConnection extends KasqConnection implements QueueConnecti
    */
   public ConnectionConsumer createConnectionConsumer(Queue queue, String messageSelector, ServerSessionPool sessionPool, int maxMessages) throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: QueueConnection.createConnectionConsumer(Queue, String, ServerSessionPool, int)");
   }
   
