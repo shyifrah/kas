@@ -12,7 +12,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.server.IClientHandler;
-import com.kas.q.server.IController;
+import com.kas.q.server.IClientController;
 import com.kas.q.server.KasqServer;
 import com.kas.q.server.req.ERequestType;
 import com.kas.q.server.req.IRequestProcessor;
@@ -26,7 +26,7 @@ public class ClientHandler extends AKasObject implements IClientHandler
    * 
    */
   private IMessenger  mMessenger;
-  private IController mController;
+  private IClientController mController;
   private boolean     mAuthenticated;
   
   /***************************************************************************************************************

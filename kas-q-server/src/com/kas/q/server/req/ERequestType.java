@@ -8,6 +8,7 @@ public enum ERequestType
   cShutdown,
   cDefine,
   cLocate,
+  cMetaData,
   ;
   
   private static final ERequestType [] cValues = ERequestType.values();

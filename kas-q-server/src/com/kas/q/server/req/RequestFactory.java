@@ -48,6 +48,10 @@ public class RequestFactory
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
           request = new LocateRequest(message);
           break;
+        case cMetaData:
+          sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());
+          request = new MetaDataRequest(message);
+          break;
         case cPut:
         default:
           sLogger.debug("RequestFactory::createRequest() - Creating request: " + type.toString());

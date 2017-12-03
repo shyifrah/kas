@@ -16,7 +16,7 @@ public interface IKasqConstants
   static final int    cPropertyRequestType_Shutdown     = 3;
   static final int    cPropertyRequestType_Define       = 4;
   static final int    cPropertyRequestType_Locate       = 5;
-  static final int    cPropertyRequestType_Delete       = 6;
+  static final int    cPropertyRequestType_MetaData     = 6;
   
   static final String cPropertyDestinationName = "KasQ_DestinationName";
   static final String cPropertyDestinationType = "KasQ_DestinationType";
@@ -34,4 +34,6 @@ public interface IKasqConstants
   static final String cPropertyPassword = "KasQ_Password";
   
   static final String cPropertyAdminMessage = "KasQ_Admin";
+  
+  static final String cPropertyMetaData = "KasQ_MetaData";
 }

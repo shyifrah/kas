@@ -19,7 +19,6 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -38,7 +37,6 @@ public class KasqConnection extends AKasObject implements Connection
    */
   private static final String cDefaultUserName = "kas";
   private static final String cDefaultPassword = "kas";
-  private static ProductVersion cProductVersion = new ProductVersion(KasqConnection.class);
   
   /***************************************************************************************************************
    *  
@@ -56,6 +54,8 @@ public class KasqConnection extends AKasObject implements Connection
   protected List<KasqSession> mSessions;
   protected Map<String, KasqQueue> mTempQueues;
   protected Map<String, KasqTopic> mTempTopics;
+  
+  protected ConnectionMetaData mMetaData;
   
   protected IMessenger mMessenger;
   protected KasqReceiverTask mReceiverTask;
@@ -95,6 +95,8 @@ public class KasqConnection extends AKasObject implements Connection
       mTempQueues = new ConcurrentHashMap<String, KasqQueue>();
       mTempTopics = new ConcurrentHashMap<String, KasqTopic>();
       
+      mMetaData = null;
+      
       mReceiverTask = new KasqReceiverTask(mMessenger, mTempQueues);
     }
     catch (IOException e)
@@ -102,7 +104,7 @@ public class KasqConnection extends AKasObject implements Connection
       throw new JMSException("Connection creation failed", e.getMessage());
     }
     
-    boolean authenticated = authenticate(userName, password);
+    boolean authenticated = internalAuthenticate(userName, password);
     if (!authenticated)
       throw new JMSException("Authentication failed");
     
@@ -206,7 +208,15 @@ public class KasqConnection extends AKasObject implements Connection
    */
   public ConnectionMetaData getMetaData() throws JMSException
   {
-    return new KasqConnectionMetaData(cProductVersion);
+    if (mMetaData == null)
+    {
+      ConnectionMetaData metaData = internalGetMetaData();
+      if (metaData != null)
+        mMetaData = metaData;
+      else
+        throw new JMSException("Failed to get KAS/Q meta data");
+    }
+    return mMetaData;
   }
 
   /***************************************************************************************************************
@@ -250,15 +260,8 @@ public class KasqConnection extends AKasObject implements Connection
       }
       
       // delete all temporary destinations
-      synchronized (mTempQueues)
-      {
-        mTempQueues.clear();
-      }
-      
-      synchronized (mTempTopics)
-      {
-        mTempTopics.clear();
-      }
+      mTempQueues.clear();
+      mTempTopics.clear();
       
       // release all allocated resources (?)
       mMessenger.cleanup();
@@ -308,9 +311,9 @@ public class KasqConnection extends AKasObject implements Connection
    * 
    * @throws JMSException 
    */
-  private boolean authenticate(String userName, String password) throws JMSException
+  private boolean internalAuthenticate(String userName, String password) throws JMSException
   {
-    sLogger.debug("KasqConnection::authenticate() - IN");
+    sLogger.debug("KasqConnection::internalAuthenticate() - IN");
     
     boolean result = false;
     try
@@ -325,10 +328,10 @@ public class KasqConnection extends AKasObject implements Connection
         admin = true;
       authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, admin);
       
-      sLogger.debug("KasqConnection::authenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
+      sLogger.debug("KasqConnection::internalAuthenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
       IKasqMessage authResponse = internalSendAndReceive(authRequest);
       
-      sLogger.debug("KasqConnection::authenticate() - Got response: " + authResponse.toPrintableString(0));
+      sLogger.debug("KasqConnection::internalAuthenticate() - Got response: " + authResponse.toPrintableString(0));
       int responseCode = authResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
       if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
       {
@@ -338,10 +341,10 @@ public class KasqConnection extends AKasObject implements Connection
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqConnection::authenticate() - Exception caught: ", e);
+      sLogger.debug("KasqConnection::internalAuthenticate() - Exception caught: ", e);
     }
     
-    sLogger.debug("KasqConnection::authenticate() - OUT, Result=" + result);
+    sLogger.debug("KasqConnection::internalAuthenticate() - OUT, Result=" + result);
     return result;
   }
   
@@ -367,17 +370,11 @@ public class KasqConnection extends AKasObject implements Connection
     {
       case cQueue:
         dest = new KasqQueue(name, "");
-        synchronized (mTempQueues)
-        {
-          mTempQueues.put(name, (KasqQueue)dest);
-        }
+        mTempQueues.put(name, (KasqQueue)dest);
         break;
       case cTopic:
         dest = new KasqTopic(name, "");
-        synchronized (mTempTopics)
-        {
-          mTempTopics.put(name, (KasqTopic)dest);
-        }
+        mTempTopics.put(name, (KasqTopic)dest);
         break;
       default:
         throw new JMSException("Failed to create destination: Invalid destination type: [" + type + "]");
@@ -406,22 +403,53 @@ public class KasqConnection extends AKasObject implements Connection
     switch (type)
     {
       case cQueue:
-        synchronized (mTempQueues)
-        {
-          mTempQueues.remove(name);
-        }
+        mTempQueues.remove(name);
         break;
       case cTopic:
-        synchronized (mTempTopics)
-        {
-          mTempTopics.remove(name);
-        }
+        mTempTopics.remove(name);
         break;
       default:
         throw new JMSException("Failed to delete destination: Invalid destination type: [" + type.toString() + "]");
     }
     
     sLogger.debug("KasqConnection::internalDeleteTemporaryDestination() - OUT, Result=" + StringUtils.asString(dest));
+  }
+  
+  /***************************************************************************************************************
+   * Query the KAS/Q server for the Meta Data
+   * 
+   * @return the {@code ConnectionMetaData} returned by the KAS/Q server
+   * 
+   * @throws JMSException 
+   */
+  private ConnectionMetaData internalGetMetaData() throws JMSException
+  {
+    sLogger.debug("KasqConnection::internalGetMetaData() - IN");
+    
+    ConnectionMetaData metaData = null;
+    
+    try
+    {
+      KasqMessage metaRequest = new KasqMessage();
+      metaRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_MetaData);
+      
+      sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + metaRequest.toPrintableString(0));
+      IKasqMessage metaResponse = internalSendAndReceive(metaRequest);
+      
+      sLogger.debug("KasqConnection::internalGetMetaData() - Got response: " + metaResponse.toPrintableString(0));
+      int responseCode = metaResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
+      if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
+      {
+        metaData = (ConnectionMetaData)metaResponse.getObjectProperty(IKasqConstants.cPropertyMetaData);
+      }
+    }
+    catch (Throwable e)
+    {
+      sLogger.debug("KasqConnection::internalAuthenticate() - Exception caught: ", e);
+    }
+    
+    sLogger.debug("KasqConnection::internalGetMetaData() - OUT, Result=" + StringUtils.asString(metaData));
+    return metaData;
   }
   
   /***************************************************************************************************************

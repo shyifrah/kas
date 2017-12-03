@@ -74,6 +74,7 @@ public class KasqServer extends AKasObject implements IInitializable
   private KasqRepository         mRepository;
   private ServerSocket           mListenSocket;
   private ShutdownHook           mShutdownHook;
+  private ProductVersion         mProductVersion;
   
   /***************************************************************************************************************
    * Gets the singleton instance of {@code KasqServer}
@@ -99,6 +100,7 @@ public class KasqServer extends AKasObject implements IInitializable
     mConfig = new MessagingConfiguration();
     mShouldStop = false;
     mTermInProgress = false;
+    mProductVersion = new ProductVersion(this.getClass());
     
     new KasqMessageFactory();
   }
@@ -246,6 +248,16 @@ public class KasqServer extends AKasObject implements IInitializable
   public ClientController getController()
   {
     return mController;
+  }
+  
+  /***************************************************************************************************************
+   * Gets KAS/Q version
+   * 
+   * @return the {@code ProductVersion}
+   */
+  public ProductVersion getVersion()
+  {
+    return mProductVersion;
   }
   
   /***************************************************************************************************************

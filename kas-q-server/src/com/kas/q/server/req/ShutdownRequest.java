@@ -8,7 +8,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.server.IClientHandler;
-import com.kas.q.server.IController;
+import com.kas.q.server.IClientController;
 import com.kas.q.server.KasqServer;
 
 final public class ShutdownRequest extends AKasObject implements IRequestProcessor
@@ -17,7 +17,7 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
    * 
    */
   private static ILogger sLogger = LoggerFactory.getLogger(ShutdownRequest.class);
-  private static IController sController = KasqServer.getInstance().getController();
+  private static IClientController sController = KasqServer.getInstance().getController();
   
   /***************************************************************************************************************
    * 

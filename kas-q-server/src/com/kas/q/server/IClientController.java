@@ -3,7 +3,7 @@ package com.kas.q.server;
 import com.kas.infra.base.IObject;
 import com.kas.q.server.internal.ClientHandler;
 
-public interface IController extends IObject
+public interface IClientController extends IObject
 {
   /***************************************************************************************************************
    * This callback is called whenever a {@code ClientHandler} is started.
@@ -20,9 +20,7 @@ public interface IController extends IObject
   public void onHandlerStop(ClientHandler handler);
   
   /***************************************************************************************************************
-   * This callback is called when a request to shutdown was received by a ClientHandler.
-   * 
-   * @param handler the {@code ClientHandler} that was stopped.
+   * This callback is called when a request to shutdown was received by a ClientHandler. 
    */
   public void onShutdownRequest();
 }
