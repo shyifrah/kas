@@ -96,25 +96,12 @@ public class KasqRepository extends AKasObject implements IInitializable
         }
       }
       
-      // define deadq if needed
-      if (locateQueue(mConfig.getDeadQueue()) == null)
-      {
-        String deadq = mConfig.getDeadQueue();
-        mLogger.trace("KasqRepository::init() - DEADQ: [" + deadq + "] could not be located, define it now");
-        
-        defineQueue(deadq);
-        mDeadQueue = new WeakRef<KasqQueue>(mQueuesMap.get(deadq));
-      }
+      KasqQueue q;
+      q = defineQueueIfNeeded(mConfig.getDeadQueue());
+      mDeadQueue = new WeakRef<KasqQueue>(q);
       
-      // define adminq if needed
-      if (locateQueue(mConfig.getAdminQueue()) == null)
-      {
-        String adminq = mConfig.getAdminQueue();
-        mLogger.trace("KasqRepository::init() - ADMINQ: [" + adminq + "] could not be located, define it now");
-        
-        defineQueue(adminq);
-        mDeadQueue = new WeakRef<KasqQueue>(mQueuesMap.get(adminq));
-      }
+      q = defineQueueIfNeeded(mConfig.getAdminQueue());
+      mAdminQueue = new WeakRef<KasqQueue>(q);
     }
     
     mLogger.debug("KasqRepository::init() - OUT, Returns=" + success);
@@ -157,28 +144,22 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
-   * Define and initialize a queue in the repository, specifying the name of the queue
+   * Define and initialize a queue only if needed.
    * 
    * @param name the name of the queue
    * 
    * @return true if queue definition was successful
    */
-  public boolean defineQueue(String name)
+  private KasqQueue defineQueueIfNeeded(String name)
   {
-    return defineQueue(name, mConfig.getManagerName());
-  }
-  
-  /***************************************************************************************************************
-   * Define and initialize a queue in the repository, specifying the name of the queue and the its manager
-   * 
-   * @param name the name of the queue
-   * @param managerName of the manager in which this queue is defined
-   * 
-   * @return true if queue definition was successful
-   */
-  public boolean defineQueue(String name, String managerName)
-  {
-    return define(name, managerName, EDestinationType.cQueue);
+    KasqQueue queue = locateQueue(name);
+    if (queue == null)
+    {
+      mLogger.trace("KasqRepository::init() - Queue [" + name + "] could not be located, define it now");
+      define(name, mConfig.getManagerName(), EDestinationType.cQueue);
+    }
+    
+    return queue;
   }
   
   /***************************************************************************************************************
@@ -309,7 +290,11 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
+   * Locate a {@code KasqQueue} based on its name.
    * 
+   * @param name the name of the queue
+   * 
+   * @return the {@code KasqQueue} associated with the name, or {@code null} if it could not be found
    */
   public synchronized KasqQueue locateQueue(String name)
   {
@@ -319,7 +304,11 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
 
   /***************************************************************************************************************
+   * Locate a {@code KasqTopic} based on its name.
    * 
+   * @param name the name of the topic
+   * 
+   * @return the {@code KasqTopic} associated with the name, or {@code null} if it could not be found
    */
   public synchronized KasqTopic locateTopic(String name)
   {
@@ -329,8 +318,8 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
-   * Locate a {@code IKasqDestination} object based on it's name. First we look in the queues map,
-   * then in the topics map.
+   * Locate a {@code IKasqDestination} object based on it's name.<br>
+   * First we look in the queues map, then in the topics map.
    * 
    * @param name the name of the destination
    * 
