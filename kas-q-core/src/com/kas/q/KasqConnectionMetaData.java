@@ -1,13 +1,19 @@
 package com.kas.q;
 
+import java.io.Serializable;
 import java.util.Enumeration;
 import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ProductVersion;
 
-public class KasqConnectionMetaData extends AKasObject implements ConnectionMetaData
+public class KasqConnectionMetaData extends AKasObject implements ConnectionMetaData, Serializable
 {
+  /***************************************************************************************************************
+   *  
+   */
+  private static final long serialVersionUID = 1L;
+  
   /***************************************************************************************************************
    *  
    */
@@ -25,7 +31,7 @@ public class KasqConnectionMetaData extends AKasObject implements ConnectionMeta
    * 
    * @param version the KAS/Q product version
    */
-  KasqConnectionMetaData(ProductVersion version)
+  public KasqConnectionMetaData(ProductVersion version)
   {
     mProductVersion = version;
   }

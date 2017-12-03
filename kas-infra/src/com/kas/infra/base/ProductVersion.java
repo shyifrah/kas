@@ -1,14 +1,20 @@
 package com.kas.infra.base;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-public class ProductVersion extends AKasObject
+public class ProductVersion extends AKasObject implements Serializable
 {
+  /***************************************************************************************************************
+   *  
+   */
+  private static final long serialVersionUID = 1L;
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
