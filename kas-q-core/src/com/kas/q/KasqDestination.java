@@ -268,11 +268,13 @@ public class KasqDestination extends AKasObject implements IKasqDestination
       String prodSession = null;
       Long prodDeliveryDelay = null;
       Long prodTimestamp = null;
+      Long expirationTimestamp = null;
       try
       {
         prodSession = candidate.getStringProperty(IKasqConstants.cPropertyProducerSession);
         prodDeliveryDelay = candidate.getLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay);
         prodTimestamp = candidate.getLongProperty(IKasqConstants.cPropertyProducerTimestamp);
+        expirationTimestamp = candidate.getJMSExpiration();
       }
       catch (JMSException e) {}
       
@@ -283,11 +285,19 @@ public class KasqDestination extends AKasObject implements IKasqDestination
           continue;
       }
       
-      // if delivery delay not expired - skip this message
+      long now = System.currentTimeMillis();
+      
+      // if delivery delay not reached - skip this message
       if ((prodDeliveryDelay != null) && (prodTimestamp != null))
       {
-        long now = System.currentTimeMillis();
         if (now < prodTimestamp + prodDeliveryDelay)
+          continue;
+      }
+      
+      // if candidate message has expiration date and it's expired - skip this message
+      if ((expirationTimestamp != null) && (expirationTimestamp > 0))
+      {
+        if (now > expirationTimestamp)
           continue;
       }
       
