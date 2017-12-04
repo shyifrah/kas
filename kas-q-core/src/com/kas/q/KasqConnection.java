@@ -29,6 +29,8 @@ import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.ext.KasqReceiverTask;
+import com.kas.q.requests.AuthRequest;
+import com.kas.q.requests.IRequest;
 
 public class KasqConnection extends AKasObject implements Connection
 {
@@ -327,26 +329,18 @@ public class KasqConnection extends AKasObject implements Connection
     boolean result = false;
     try
     {
-      KasqMessage authRequest = new KasqMessage();
-      authRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
-      authRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Authenticate);
-      authRequest.setStringProperty(IKasqConstants.cPropertyUserName, userName);
-      authRequest.setStringProperty(IKasqConstants.cPropertyPassword, password);
-      
-      boolean admin = false;
-      if (userName.equals("admin"))
-        admin = true;
-      authRequest.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, admin);
+      AuthRequest authRequest = new AuthRequest(userName, password);
+      IKasqMessage requestMessage = authRequest.createRequestMessage();
       
       sLogger.debug("KasqConnection::internalAuthenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
-      IKasqMessage authResponse = internalSendAndReceive(authRequest);
+      IKasqMessage authResponse = internalSendAndReceive(requestMessage);
       
       sLogger.debug("KasqConnection::internalAuthenticate() - Got response: " + authResponse.toPrintableString(0));
       int responseCode = authResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
       if (responseCode == IKasqConstants.cPropertyResponseCode_Okay)
       {
         result = true;
-        mPriviliged = admin;
+        mPriviliged = authRequest.isAdmin();
       }
     }
     catch (Throwable e)
