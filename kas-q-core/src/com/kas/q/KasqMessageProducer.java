@@ -315,19 +315,22 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   {
     sLogger.debug("KasqMessageProducer::internalSend() - IN");
     
-    String messageId = null;
-    if (!mDisableMessageId)
-      messageId = UniqueId.generate().toString();
-    message.setJMSMessageID(messageId);
+    if (mDisableMessageId)                                                    // Message ID
+      message.setJMSMessageID(null);                                          //   ..
+    else                                                                      //     ..
+      message.setJMSMessageID("ID:" + UniqueId.generate().toString());        //       ..
     
-    long timestamp = System.currentTimeMillis();
-    if (!mDisableMessageTimestamp)
-      message.setJMSTimestamp(timestamp);
+    long timestamp = System.currentTimeMillis();                              // Timestamp
+    if (mDisableMessageTimestamp)                                             //   ..
+      message.setJMSTimestamp(0);                                             //     ..
+    else                                                                      //       ..
+      message.setJMSTimestamp(timestamp);                                     //         ..
     
-    message.setJMSDestination(destination);
-    message.setJMSDeliveryMode(deliveryMode);
-    message.setJMSPriority(priority);
-    message.setJMSExpiration(timeToLive);
+    message.setJMSDestination(destination);                                   // Destination
+    message.setJMSDeliveryMode(deliveryMode);                                 // Delivery Mode
+    message.setJMSPriority(priority);                                         // Priority
+    message.setJMSExpiration(timeToLive == 0 ? 0 : timestamp + timeToLive);   // Expiration
+    message.setJMSDeliveryTime(timestamp + mDeliveryDelay);                   // Delivery Time
     
     boolean eyeCatcher = message.getBooleanProperty(IKasqConstants.cKasqEyeCatcher);
     if (eyeCatcher)
