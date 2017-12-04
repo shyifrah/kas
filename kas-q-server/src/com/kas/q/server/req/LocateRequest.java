@@ -3,6 +3,7 @@ package com.kas.q.server.req;
 import java.io.IOException;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -159,6 +160,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       }
       
       IKasqMessage message = new KasqMessage();
+      message.setJMSMessageID("ID:" + UniqueId.generate().toString());
       message.setJMSCorrelationID(mJmsMessageId);
       message.setJMSDestination(dest);
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);

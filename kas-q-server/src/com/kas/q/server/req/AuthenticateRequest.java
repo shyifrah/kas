@@ -3,6 +3,7 @@ package com.kas.q.server.req;
 import java.io.IOException;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -149,6 +150,7 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
     int code = IKasqConstants.cPropertyResponseCode_Okay;
     
     IKasqMessage response = new KasqMessage();
+    response.setJMSMessageID("ID:" + UniqueId.generate().toString());
     response.setJMSCorrelationID(mJmsMessageId);
     response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
