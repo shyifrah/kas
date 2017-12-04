@@ -69,8 +69,8 @@ public class QueueSenderDriver
       
       Properties threadParams = new Properties();
       threadParams.setStringProperty(AThread.cProperty_ThreadName, "SenderThread");
-      threadParams.setIntProperty(AThread.cProperty_NumOfIterations, 10);
-      threadParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 5);
+      threadParams.setIntProperty(AThread.cProperty_NumOfIterations, 5);
+      threadParams.setIntProperty(AThread.cProperty_PreAndPostDelay, 1);
       threadParams.setObjectProperty(AThread.cProperty_KasqSession, sess);
       threadParams.setObjectProperty(AThread.cProperty_KasqQueue, queue);
       threadParams.setIntProperty(ProducerThread.cProperty_SendDelay, 1);

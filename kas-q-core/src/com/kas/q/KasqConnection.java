@@ -441,6 +441,7 @@ public class KasqConnection extends AKasObject implements Connection
     try
     {
       KasqMessage metaRequest = new KasqMessage();
+      metaRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
       metaRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_MetaData);
       
       sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + metaRequest.toPrintableString(0));
@@ -472,11 +473,13 @@ public class KasqConnection extends AKasObject implements Connection
    */
   synchronized void internalSend(IKasqMessage message) throws JMSException
   {
+    // setting some mandatory and optional properties
+    message.setStringProperty("JMSXUserID", mUserName);
+    message.setIntProperty("JMSXDeliveryCount", 1);
+    
+    // actual send
     try
     {
-      message.setStringProperty("JMSXUserID", mUserName);
-      message.setStringProperty("JMSXAppID", null);
-      message.setIntProperty("JMSXDeliveryCount", 1);
       mMessenger.send(message);
     }
     catch (Throwable e)

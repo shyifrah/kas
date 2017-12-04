@@ -214,6 +214,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     try
     {
       msg = new KasqMessage();
+      msg.setJMSMessageID("ID:" + UniqueId.generate().toString());
       
       // request type: message consuming
       msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Get);

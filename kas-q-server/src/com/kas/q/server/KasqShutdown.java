@@ -7,6 +7,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqClient;
 
@@ -89,6 +90,7 @@ public class KasqShutdown extends KasqClient
     MessageProducer   prod    = sess.createProducer(null);
     Message           msg     = sess.createMessage();
     
+    msg.setJMSMessageID("ID:" + UniqueId.generate().toString());
     msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Shutdown);
     msg.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
     
