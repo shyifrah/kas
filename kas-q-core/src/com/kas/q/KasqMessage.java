@@ -50,18 +50,12 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   protected EReadWriteMode  mBodyMode  = EReadWriteMode.cReadWrite;
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqMessage} object, specifying no parameters
-   * This will generate a simple {@code KasqMessage} with a null correlation ID
+   * Constructs a {@code KasqMessage} object, specifying no parameters.<br>
+   * No properties or headers are set, only the KAS/Q eye-catcher.
    */
   public KasqMessage()
   {
-    sLogger.diag("KasqMessage::KasqMessage() - IN");
-    
-    mMessageId = UniqueId.generate();
-    mCorrelationId = UniqueId.cNullUniqueId;
     mProperties.setBoolProperty(IKasqConstants.cKasqEyeCatcher, true);
-    
-    sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }
   
   /***************************************************************************************************************
@@ -73,8 +67,6 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public KasqMessage(ObjectInputStream istream) throws IOException
   {
-    sLogger.diag("KasqMessage::KasqMessage() - IN");
-    
     try
     {
       // headers
@@ -106,8 +98,6 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     {
       throw new IOException(e);
     }
-    
-    sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }
   
   /***************************************************************************************************************
