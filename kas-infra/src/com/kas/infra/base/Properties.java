@@ -186,7 +186,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   //------------------------------------------------------------------------------------------------------------------
   public void setStringProperty(String key, String value)
   {
-    put(key, new String(value));
+    put(key, value);
   }
   
   //------------------------------------------------------------------------------------------------------------------
