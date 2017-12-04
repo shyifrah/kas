@@ -42,8 +42,6 @@ public class KasqSession extends AKasObject implements Session
    * 
    */
   KasqConnection mConnection;
-  boolean        mTransacted;
-  int            mAcknowledgeMode;
   int            mSessionMode;
   String         mSessionId;
   
@@ -51,13 +49,14 @@ public class KasqSession extends AKasObject implements Session
   List<KasqMessageConsumer> mConsumers;
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
+   * Constructs a {@code KasqSession} object associated with the specified {@code Connection}.<br>
+   * The session mode will be set to AUTO_ACKNOWLEDGE.
    * 
    * @param connection the associated {@code Connection}
    */
   KasqSession(KasqConnection connection)
   {
-    this(connection, false, 0, 0);
+    this(connection, Session.AUTO_ACKNOWLEDGE);
   }
   
   /***************************************************************************************************************
@@ -71,7 +70,7 @@ public class KasqSession extends AKasObject implements Session
    */
   KasqSession(KasqConnection connection, boolean transacted, int acknowledgeMode)
   {
-    this(connection, transacted, acknowledgeMode, 0);
+    this(connection, (transacted ? Session.SESSION_TRANSACTED : acknowledgeMode));
   }
   
   /***************************************************************************************************************
@@ -84,26 +83,9 @@ public class KasqSession extends AKasObject implements Session
    */
   KasqSession(KasqConnection connection, int sessionMode)
   {
-    this(connection, false, 0, sessionMode);
-  }
-  
-  /***************************************************************************************************************
-   * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
-   * 
-   * Parameters transacted, acknowledgeMode and sessionMode are not supported.
-   * 
-   * @param connection the associated {@code Connection}
-   * @param transacted indicates whether the session will use a local transaction
-   * @param acknowledgeMode when transacted is false, indicates how messages received by the session will be acknowledged
-   * @param sessionMode the session mode that will be used
-   */
-  KasqSession(KasqConnection connection, boolean transacted, int acknowledgeMode, int sessionMode)
-  {
-    mConnection      = connection;
-    mTransacted      = transacted;
-    mAcknowledgeMode = acknowledgeMode;
-    mSessionMode     = sessionMode;
-    mSessionId       = UniqueId.generate().toString();
+    mConnection  = connection;
+    mSessionMode = sessionMode;
+    mSessionId   = UniqueId.generate().toString();
     
     mProducers = new ArrayList<KasqMessageProducer>();
     mConsumers = new ArrayList<KasqMessageConsumer>();
@@ -178,7 +160,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public boolean getTransacted() throws JMSException
   {
-    return mTransacted;
+    return mSessionMode == Session.SESSION_TRANSACTED;
   }
 
   /***************************************************************************************************************
@@ -186,7 +168,7 @@ public class KasqSession extends AKasObject implements Session
    */
   public int getAcknowledgeMode() throws JMSException
   {
-    return mAcknowledgeMode;
+    return mSessionMode;
   }
 
   /***************************************************************************************************************
@@ -657,8 +639,6 @@ public class KasqSession extends AKasObject implements Session
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(pad).append("  SessionId=").append(mSessionId).append("\n")
-      .append(pad).append("  Transacted=").append(mTransacted).append("\n")
-      .append(pad).append("  AcknowledgeMode=").append(mAcknowledgeMode).append("\n")
       .append(pad).append("  SessionMode=").append(mSessionMode).append("\n")
       .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  MessageProducers=(")
