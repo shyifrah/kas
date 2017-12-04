@@ -79,8 +79,6 @@ public class KasqQueueSession extends KasqSession implements QueueSession
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(pad).append("  SessionId=").append(mSessionId).append("\n")
-      .append(pad).append("  Transacted=").append(mTransacted).append("\n")
-      .append(pad).append("  AcknowledgeMode=").append(mAcknowledgeMode).append("\n")
       .append(pad).append("  SessionMode=").append(mSessionMode).append("\n")
       .append(pad).append("  Connection=(").append(mConnection.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  MessageProducers=(")
