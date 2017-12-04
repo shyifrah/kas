@@ -334,7 +334,7 @@ public class KasqSession extends AKasObject implements Session
   }
   
   /***************************************************************************************************************
-   * Locate a queue in the KAS/Q server
+   * Locate a queue in the KAS/Q server.<br>
    * This method is used by {@code KasqClient} users.
    * 
    * @param queueName the name of the queue to be located
@@ -349,7 +349,7 @@ public class KasqSession extends AKasObject implements Session
   }
 
   /***************************************************************************************************************
-   * Locate a topic in the KAS/Q server
+   * Locate a topic in the KAS/Q server.<br>
    * This method is used by {@code KasqClient} users.
    * 
    * @param topicName the name of the topic to be located
@@ -507,6 +507,7 @@ public class KasqSession extends AKasObject implements Session
     try
     {
       KasqMessage defineRequest = new KasqMessage();
+      defineRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
       defineRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Define);
       defineRequest.setJMSDestination(dest);
       
@@ -583,6 +584,7 @@ public class KasqSession extends AKasObject implements Session
     try
     {
       KasqMessage locateRequest = new KasqMessage();
+      locateRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
       locateRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Locate);
       locateRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, name);
       locateRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type.ordinal());

@@ -49,6 +49,7 @@ public class KasqConnection extends AKasObject implements Connection
   protected boolean mStarted  = false;
   protected String  mClientId = null;
   
+  protected String  mUserName = null;
   protected boolean mPriviliged = false;
   
   protected List<KasqSession> mSessions;
@@ -88,6 +89,8 @@ public class KasqConnection extends AKasObject implements Connection
     sLogger.debug("KasqConnection::KasqConnection() - IN");
     try
     {
+      mUserName = userName;
+      
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
       mClientId = "CLNT" + UniqueId.generate().toString();
       
@@ -325,6 +328,7 @@ public class KasqConnection extends AKasObject implements Connection
     try
     {
       KasqMessage authRequest = new KasqMessage();
+      authRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
       authRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Authenticate);
       authRequest.setStringProperty(IKasqConstants.cPropertyUserName, userName);
       authRequest.setStringProperty(IKasqConstants.cPropertyPassword, password);
@@ -459,7 +463,8 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
-   * Send a message to the KAS/Q server by calling the messenger's send() method.
+   * Send a message to the KAS/Q server by calling the messenger's send() method.<br>
+   * Prior to handing the message to the Messenger, we set some JMSX properties, as required by JMS spec.
    * 
    * @param message the message to be sent
    * 
@@ -469,6 +474,9 @@ public class KasqConnection extends AKasObject implements Connection
   {
     try
     {
+      message.setStringProperty("JMSXUserID", mUserName);
+      message.setStringProperty("JMSXAppID", null);
+      message.setIntProperty("JMSXDeliveryCount", 1);
       mMessenger.send(message);
     }
     catch (Throwable e)
@@ -478,7 +486,8 @@ public class KasqConnection extends AKasObject implements Connection
   }
   
   /***************************************************************************************************************
-   * Send a message to the KAS/Q server and get a reply by calling the messenger's sendAndReceive() method.
+   * Send a message to the KAS/Q server and get a reply by calling the messenger's sendAndReceive() method.<br>
+   * Prior to handing the message to the Messenger, we set some JMSX properties, as required by JMS spec.
    * 
    * @param message the message to be sent
    * 
@@ -488,6 +497,11 @@ public class KasqConnection extends AKasObject implements Connection
    */
   synchronized IKasqMessage internalSendAndReceive(IKasqMessage message) throws JMSException
   {
+    // setting some mandatory and optional properties 
+    message.setStringProperty("JMSXUserID", mUserName);
+    message.setIntProperty("JMSXDeliveryCount", 1);
+    
+    // actual send
     IPacket packet;
     try
     {
@@ -498,6 +512,7 @@ public class KasqConnection extends AKasObject implements Connection
       throw new JMSException("Failed to send message", e.getMessage());
     }
     
+    // verify valid response
     if (packet.getPacketClassId() != PacketHeader.cClassIdKasq)
     {
       throw new JMSException("Invalid reply from KAS/Q server", "Expected packet ID=[" + PacketHeader.cClassIdKasq + "], Actual=[" + packet.getPacketClassId() + "]");
