@@ -29,11 +29,11 @@ public class QueueSenderThread extends AThread
       {
         producer = mSession.createProducer(mQueue);
       }
+      producer.setDisableMessageID(true);
       
       for (int i = 1; i <= mNumOfMessages; i++)
       {
         sendOneMessage(producer, i);
-        System.out.println("Sending message " + i + " to queue: " + mQueue.getName());
       }
     }
     catch (JMSException e)
@@ -48,6 +48,7 @@ public class QueueSenderThread extends AThread
     
     String text = "shyifrah-" + i;
     TextMessage msg = mSession.createTextMessage(text);
+    System.out.println("Sending message " + i + ": " + msg.toString());
     
     if (sendDelay > 0)
       RunTimeUtils.sleep(sendDelay);

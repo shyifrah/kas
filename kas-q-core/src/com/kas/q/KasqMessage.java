@@ -12,7 +12,6 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -33,8 +32,8 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   /***************************************************************************************************************
    * 
    */
-  protected UniqueId    mMessageId     = null;
-  protected UniqueId    mCorrelationId = null;
+  protected String      mMessageId     = null;
+  protected String      mCorrelationId = null;
   protected int         mDeliveryMode  = 0;
   protected long        mDeliveryTime  = 0L;
   protected Destination mDestination   = null;
@@ -50,18 +49,12 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   protected EReadWriteMode  mBodyMode  = EReadWriteMode.cReadWrite;
   
   /***************************************************************************************************************
-   * Constructs a {@code KasqMessage} object, specifying no parameters
-   * This will generate a simple {@code KasqMessage} with a null correlation ID
+   * Constructs a {@code KasqMessage} object, specifying no parameters.<br>
+   * No properties or headers are set, only the KAS/Q eye-catcher.
    */
   public KasqMessage()
   {
-    sLogger.diag("KasqMessage::KasqMessage() - IN");
-    
-    mMessageId = UniqueId.generate();
-    mCorrelationId = UniqueId.cNullUniqueId;
     mProperties.setBoolProperty(IKasqConstants.cKasqEyeCatcher, true);
-    
-    sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }
   
   /***************************************************************************************************************
@@ -73,18 +66,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public KasqMessage(ObjectInputStream istream) throws IOException
   {
-    sLogger.diag("KasqMessage::KasqMessage() - IN");
-    
     try
     {
       // headers
-      byte [] idBytes = new byte [16];
-      istream.read(idBytes);
-      mMessageId     = UniqueId.fromByteArray(idBytes);
-      
-      istream.read(idBytes);
-      mCorrelationId = UniqueId.fromByteArray(idBytes);     
-      
+      mMessageId     = (String)istream.readObject();
+      mCorrelationId = (String)istream.readObject();
       mDestination   = (Destination)istream.readObject();
       mReplyTo       = (Destination)istream.readObject();
       mDeliveryMode  = istream.readInt();
@@ -106,8 +92,6 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     {
       throw new IOException(e);
     }
-    
-    sLogger.diag("KasqMessage::KasqMessage() - OUT");
   }
   
   /***************************************************************************************************************
@@ -120,9 +104,9 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     try
     {
       // headers
-      ostream.write(mMessageId.toByteArray());
+      ostream.writeObject(mMessageId);
       ostream.reset();
-      ostream.write(mCorrelationId.toByteArray());
+      ostream.writeObject(mCorrelationId);
       ostream.reset();
       ostream.writeObject(mDestination);
       ostream.reset();
@@ -185,7 +169,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public boolean getBooleanProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getBoolProperty(key);
@@ -201,7 +185,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setBooleanProperty(String key, boolean value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setBoolProperty(key, value);
@@ -217,7 +201,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public byte getByteProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getByteProperty(key);
@@ -233,7 +217,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setByteProperty(String key, byte value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setByteProperty(key, value);
@@ -249,7 +233,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public double getDoubleProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getDoubleProperty(key);
@@ -265,7 +249,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setDoubleProperty(String key, double value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setDoubleProperty(key, value);
@@ -281,7 +265,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public float getFloatProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getFloatProperty(key);
@@ -297,7 +281,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setFloatProperty(String key, float value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setFloatProperty(key, value);
@@ -313,7 +297,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public int getIntProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getIntProperty(key);
@@ -329,7 +313,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setIntProperty(String key, int value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setIntProperty(key, value);
@@ -345,7 +329,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public long getLongProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getLongProperty(key);
@@ -361,7 +345,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setLongProperty(String key, long value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setLongProperty(key, value);
@@ -377,7 +361,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public Object getObjectProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getObjectProperty(key);
@@ -393,7 +377,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setObjectProperty(String key, Object value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setObjectProperty(key, value);
@@ -409,7 +393,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public short getShortProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getShortProperty(key);
@@ -425,7 +409,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setShortProperty(String key, short value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setShortProperty(key, value);
@@ -441,7 +425,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public String getStringProperty(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.getStringProperty(key);
@@ -457,14 +441,14 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void setStringProperty(String key, String value) throws JMSException
   {
-    assertPropertiesWriteable();
+    internalAssertPropertiesWriteable();
     try
     {
       mProperties.setStringProperty(key, value);
     }
     catch (Exception e)
     {
-      throw new JMSException("Properties.setStringProperty(" + key + ", " + value + ") failed", e.getMessage());
+      throw new JMSException("Properties.setStringProperty(" + key + ", " + value + ") failed", e.getClass().getName());
     }
   }
 
@@ -473,7 +457,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public Enumeration<?> getPropertyNames() throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.keys();
@@ -489,7 +473,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public boolean propertyExists(String key) throws JMSException
   {
-    assertPropertiesReadable();
+    internalAssertPropertiesReadable();
     try
     {
       return mProperties.containsKey(key);
@@ -505,9 +489,13 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    */
   public void acknowledge() throws JMSException
   {
+    // TODO: implement
     throw new JMSException("Unsupported method: Message.acknowledge()");
   }
 
+  /***************************************************************************************************************
+   * 
+   */
   public void clearBody() throws JMSException
   {
   }
@@ -567,11 +555,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   {
     try
     {
-      mCorrelationId = UniqueId.fromString(correlationId);
+      mCorrelationId = correlationId;
     }
     catch (Exception e)
     {
-      throw new JMSException("mCorrelationId = UniqueId.fromString(" + correlationId + ")", e.getMessage());
+      throw new JMSException("mCorrelationId = " + correlationId, e.getMessage());
     }
   }
 
@@ -582,11 +570,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   {
     try
     {
-      return mCorrelationId.toByteArray();
+      return mCorrelationId.getBytes();
     }
     catch (Exception e)
     {
-      throw new JMSException("mCorrelationId.toByteArray() failed", e.getMessage());
+      throw new JMSException("mCorrelationId.getBytes()", e.getMessage());
     }
   }
 
@@ -597,11 +585,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   {
     try
     {
-      mCorrelationId = UniqueId.fromByteArray(correlationId);
+      mCorrelationId = new String(correlationId);
     }
     catch (Exception e)
     {
-      throw new JMSException("mCorrelationId = UniqueId.fromByteArray(" + correlationId + ")", e.getMessage());
+      throw new JMSException("mCorrelationId = new String(" + correlationId + ")", e.getMessage());
     }
   }
 
@@ -631,7 +619,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mDeliveryMode = deliveryMode", e.getMessage());
+      throw new JMSException("mDeliveryMode = " + deliveryMode, e.getMessage());
     }
   }
 
@@ -661,7 +649,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mDeliveryTime = deliveryTime", e.getMessage());
+      throw new JMSException("mDeliveryTime = " + deliveryTime, e.getMessage());
     }
   }
 
@@ -691,7 +679,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mDestination = destination", e.getMessage());
+      throw new JMSException("mDestination = " + StringUtils.asString(destination), e.getMessage());
     }
   }
 
@@ -721,7 +709,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mExpiration = expiration", e.getMessage());
+      throw new JMSException("mExpiration = " + expiration, e.getMessage());
     }
   }
 
@@ -732,11 +720,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   {
     try
     {
-      return mMessageId.toString();
+      return mMessageId;
     }
     catch (Exception e)
     {
-      throw new JMSException("return mMessageId.toString()", e.getMessage());
+      throw new JMSException("return mMessageId", e.getMessage());
     }
   }
 
@@ -747,11 +735,11 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   {
     try
     {
-      mMessageId = UniqueId.fromString(messageId);
+      mMessageId = messageId;
     }
     catch (Exception e)
     {
-      throw new JMSException("mMessageId = UniqueId.fromString(" + messageId + ")", e.getMessage());
+      throw new JMSException("mMessageId = " + messageId, e.getMessage());
     }
   }
 
@@ -781,7 +769,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mPriority = priority", e.getMessage());
+      throw new JMSException("mPriority = " + priority, e.getMessage());
     }
   }
 
@@ -811,7 +799,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mRedelivered = redelivered", e.getMessage());
+      throw new JMSException("mRedelivered = " + redelivered, e.getMessage());
     }
   }
 
@@ -841,7 +829,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mReplyTo = replyTo", e.getMessage());
+      throw new JMSException("mReplyTo = " + StringUtils.asString(replyTo), e.getMessage());
     }
   }
 
@@ -871,7 +859,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mTimestamp = timestamp", e.getMessage());
+      throw new JMSException("mTimestamp = " + timestamp, e.getMessage());
     }
   }
 
@@ -901,7 +889,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     }
     catch (Exception e)
     {
-      throw new JMSException("mType = type", e.getMessage());
+      throw new JMSException("mType = " + type, e.getMessage());
     }
   }
   
@@ -910,7 +898,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    * 
    * @throws JMSException if message body is not readable
    */
-  protected void assertBodyReadable() throws JMSException
+  protected void internalAssertBodyReadable() throws JMSException
   {
     if (mBodyMode == EReadWriteMode.cWriteOnly)
       throw new MessageNotReadableException("Message body is in " + mBodyMode.toString() + " mode");
@@ -921,7 +909,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    * 
    * @throws JMSException if message properties are not readable
    */
-  protected void assertPropertiesReadable() throws JMSException
+  protected void internalAssertPropertiesReadable() throws JMSException
   {
     if (mPropsMode == EReadWriteMode.cWriteOnly)
       throw new MessageNotReadableException("Message properties are in " + mBodyMode.toString() + " mode");
@@ -932,7 +920,7 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    * 
    * @throws JMSException if message body is not writeable
    */
-  protected void assertBodyWriteable() throws JMSException
+  protected void internalAssertBodyWriteable() throws JMSException
   {
     if (mBodyMode == EReadWriteMode.cReadOnly)
       throw new MessageNotWriteableException("Message body is in " + mBodyMode.toString() + " mode");
@@ -943,10 +931,27 @@ public class KasqMessage extends AKasObject implements IKasqMessage
    * 
    * @throws JMSException if message properties are not writeable
    */
-  protected void assertPropertiesWriteable() throws JMSException
+  protected void internalAssertPropertiesWriteable() throws JMSException
   {
     if (mPropsMode == EReadWriteMode.cReadOnly)
       throw new MessageNotWriteableException("Message properties are in " + mBodyMode.toString() + " mode");
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public String toString()
+  {
+    return new StringBuffer()
+      .append(name())
+      .append("JMSMessageID=[")
+      .append(StringUtils.asString(mMessageId))
+      .append("],JMSTimestamp=[")
+      .append(mTimestamp)
+      .append("],JMSDestination=[")
+      .append(StringUtils.asString(mDestination))
+      .append("]")
+      .toString();
   }
   
   /***************************************************************************************************************
@@ -957,8 +962,8 @@ public class KasqMessage extends AKasObject implements IKasqMessage
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  MessageId=").append(mMessageId.toString()).append("\n")
-      .append(pad).append("  CorrelationId=").append(mCorrelationId.toString()).append("\n")
+      .append(pad).append("  MessageId=").append(StringUtils.asString(mMessageId)).append("\n")
+      .append(pad).append("  CorrelationId=").append(StringUtils.asString(mCorrelationId)).append("\n")
       .append(pad).append("  DeliveryMode=").append(KasqUtils.getFormattedDeliveryMode(mDeliveryMode)).append("\n")
       .append(pad).append("  DeliveryTime=").append(mDeliveryTime).append("\n")
       .append(pad).append("  Destination=").append(StringUtils.asString(mDestination)).append("\n")
@@ -971,17 +976,5 @@ public class KasqMessage extends AKasObject implements IKasqMessage
       .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   * 
-   */
-  public String toString()
-  {
-    return new StringBuffer()
-      .append(name())
-      .append("UniqueID:")
-      .append(mMessageId == null ? "null" : mMessageId.toString())
-      .toString();
   }
 }

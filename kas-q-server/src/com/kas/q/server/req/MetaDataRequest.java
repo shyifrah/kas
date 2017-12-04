@@ -5,6 +5,7 @@ import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ProductVersion;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -77,7 +78,7 @@ final public class MetaDataRequest extends AKasObject implements IRequestProcess
       ConnectionMetaData metaData = new KasqConnectionMetaData(version);
       
       KasqMessage message = new KasqMessage();
-      
+      message.setJMSMessageID("ID:" + UniqueId.generate().toString());
       message.setJMSCorrelationID(mJmsMessageId);
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, IKasqConstants.cPropertyResponseCode_Okay);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, "");

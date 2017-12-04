@@ -36,7 +36,7 @@ public class KasqReceiverTask extends AKasThread
   }
   
   /***************************************************************************************************************
-   * Main receiver task loop.
+   * Main receiver task loop.<br>
    * The receiver task runs as long as it wasn't interrupted for some reason. It reads messages from
    * the connection's messenger and place them in the appropriate consumer queues (temporary queues which
    * are created upon {@code MessageConsumer} creation.
@@ -88,9 +88,14 @@ public class KasqReceiverTask extends AKasThread
             mLogger.debug("KasqReceiverTask::run() - Got a message to be sent to origin: " + StringUtils.asString(tempq));
             KasqQueue q = mTempQueues.get(tempq);
             if (q == null)
+            {
               mLogger.debug("KasqReceiverTask::run() - Origin queue does not exist, or was deleted");
+            }
             else
+            {
+              message.setLongProperty("JMSXRcvTimestamp", System.currentTimeMillis());
               q.put(message);
+            }
           }
         }
       }

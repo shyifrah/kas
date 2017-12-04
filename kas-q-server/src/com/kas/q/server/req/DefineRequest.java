@@ -4,6 +4,7 @@ import java.io.IOException;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -124,8 +125,9 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
       }
       
       IKasqMessage message = new KasqMessage();
-      message.setJMSDestination(mJmsDestination);
+      message.setJMSMessageID("ID:" + UniqueId.generate().toString());
       message.setJMSCorrelationID(mJmsMessageId);
+      message.setJMSDestination(mJmsDestination);
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
         
