@@ -64,7 +64,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public boolean getBoolean(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     boolean result;
     try
     {
@@ -83,7 +83,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setBoolean(String name, boolean value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setBoolProperty(name, value);
@@ -100,7 +100,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public byte getByte(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     byte result;
     try
     {
@@ -119,7 +119,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setByte(String name, byte value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setByteProperty(name, value);
@@ -136,7 +136,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public byte[] getBytes(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     byte [] result;
     try
     {
@@ -155,7 +155,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setBytes(String name, byte[] value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setObjectProperty(name, value);
@@ -172,7 +172,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setBytes(String name, byte[] value, int offset, int length) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       byte [] newvalue = new byte [length];
@@ -191,7 +191,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public char getChar(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     char result;
     try
     {
@@ -210,7 +210,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setChar(String name, char value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setObjectProperty(name, value);
@@ -227,7 +227,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public double getDouble(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     double result;
     try
     {
@@ -246,7 +246,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setDouble(String name, double value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setDoubleProperty(name, value);
@@ -263,7 +263,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public float getFloat(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     float result;
     try
     {
@@ -282,7 +282,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setFloat(String name, float value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setFloatProperty(name, value);
@@ -299,7 +299,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public int getInt(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     int result;
     try
     {
@@ -318,7 +318,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setInt(String name, int value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setIntProperty(name, value);
@@ -335,7 +335,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public long getLong(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     long result;
     try
     {
@@ -354,7 +354,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setLong(String name, long value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setLongProperty(name, value);
@@ -371,7 +371,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public Object getObject(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     Object result;
     try
     {
@@ -390,7 +390,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setObject(String name, Object value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setObjectProperty(name, value);
@@ -407,7 +407,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public short getShort(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     short result;
     try
     {
@@ -426,7 +426,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setShort(String name, short value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setShortProperty(name, value);
@@ -443,7 +443,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public String getString(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     String result;
     try
     {
@@ -462,7 +462,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public void setString(String name, String value) throws JMSException
   {
     internalVerify(name);
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mBody.setStringProperty(name, value);
@@ -479,7 +479,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   public boolean itemExists(String name) throws JMSException
   {
     internalVerify(name);
-    assertBodyReadable();
+    internalAssertBodyReadable();
     return mBody.containsKey(name);
   }
 
@@ -488,7 +488,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
    */
   public Enumeration<?> getMapNames() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     Enumeration<?> result;
     try
     {
@@ -533,7 +533,7 @@ public class KasqMapMessage extends KasqMessage implements MapMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     
     if (mBody == null)
       return null;

@@ -78,7 +78,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public boolean readBoolean() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     boolean result;
     try
     {
@@ -96,7 +96,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeBoolean(boolean value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeBoolean(value);
@@ -112,7 +112,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public byte readByte() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     byte result;
     try
     {
@@ -130,7 +130,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeByte(byte value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeByte(value);
@@ -146,7 +146,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public int readBytes(byte[] value) throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     int result;
     try
     {
@@ -164,7 +164,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeBytes(byte[] value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.write(value);
@@ -180,7 +180,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public int readBytes(byte[] value, int length) throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     int result;
     try
     {
@@ -198,7 +198,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeBytes(byte[] value, int offset, int length) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.write(value, offset, length);
@@ -214,7 +214,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public char readChar() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     char result;
     try
     {
@@ -232,7 +232,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeChar(char value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeChar(value);
@@ -248,7 +248,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public double readDouble() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     double result;
     try
     {
@@ -266,7 +266,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeDouble(double value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeDouble(value);
@@ -282,7 +282,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public float readFloat() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     float result;
     try
     {
@@ -300,7 +300,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeFloat(float value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeFloat(value);
@@ -316,7 +316,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public int readInt() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     int result;
     try
     {
@@ -334,7 +334,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeInt(int value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeInt(value);
@@ -350,7 +350,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public long readLong() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     long result;
     try
     {
@@ -368,7 +368,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeLong(long value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeLong(value);
@@ -384,7 +384,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public short readShort() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     short result;
     try
     {
@@ -402,7 +402,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeShort(short value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeShort(value);
@@ -418,7 +418,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public String readUTF() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     String result;
     try
     {
@@ -436,7 +436,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeUTF(String value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeUTF(value);
@@ -452,7 +452,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public int readUnsignedByte() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     int result;
     try
     {
@@ -470,7 +470,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public int readUnsignedShort() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     int result;
     try
     {
@@ -488,7 +488,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public void writeObject(Object value) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     try
     {
       mOutputStream.writeObject(value);
@@ -527,7 +527,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
    */
   public long getBodyLength() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     return mBody.length;
   }
 
@@ -580,7 +580,7 @@ public class KasqBytesMessage extends KasqMessage implements BytesMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     
     if (mBody == null)
       return null;

@@ -86,7 +86,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
    */
   public String getText() throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     return mBody;
   }
 
@@ -95,7 +95,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
    */
   public void setText(String text) throws JMSException
   {
-    assertBodyWriteable();
+    internalAssertBodyWriteable();
     mBody = text;
   }
   
@@ -114,7 +114,7 @@ public class KasqTextMessage extends KasqMessage implements TextMessage
   @SuppressWarnings("unchecked")
   public <T> T getBody(Class<T> c) throws JMSException
   {
-    assertBodyReadable();
+    internalAssertBodyReadable();
     
     if (mBody == null)
       return null;
