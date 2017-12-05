@@ -13,11 +13,11 @@ public interface IRequest extends IObject
   public abstract ERequestType getRequestType();
   
   /***************************************************************************************************************
-   * Create a request message
+   * Get the request message generated
    * 
    * @return the request message
    */
-  public abstract IKasqMessage createRequestMessage();
+  public abstract IKasqMessage getRequestMessage();
   
   /***************************************************************************************************************
    * A short version of the {@link com.kas.infra.base.IObject#toPrintableString(int) IObject#toPrintableString(int)}

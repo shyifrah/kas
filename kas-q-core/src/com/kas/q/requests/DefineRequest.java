@@ -1,60 +1,57 @@
 package com.kas.q.requests;
 
+import javax.jms.JMSException;
+import com.kas.infra.base.UniqueId;
 import com.kas.q.KasqQueue;
 import com.kas.q.KasqTopic;
 import com.kas.q.ext.EDestinationType;
+import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
-import com.kas.q.ext.IKasqMessage;
 
 public class DefineRequest extends ARequest
 {
   /***************************************************************************************************************
    *  
    */
-  private String  mName;
-  private EDestinationType mType;
+  private String  mDestName;
+  private EDestinationType mDestType;
   
   /***************************************************************************************************************
    *  
    */
-  public DefineRequest(String name, EDestinationType type)
+  public DefineRequest(String destName, EDestinationType destType) throws JMSException
   {
-    super();
-    mName   = name;
-    mType   = type;
+    super(ERequestType.cDefine);
+    mDestName = destName;
+    mDestType = destType;
+    
+    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
+    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
   }
   
   /***************************************************************************************************************
    *  
    */
-  public void setRequestProperties(IKasqMessage requestMessage)
+  public void setup()
   {
-    mLogger.debug("DefineRequest::setRequestProperties() - IN");
+    mLogger.debug("DefineRequest::setup() - IN");
     
     try
     {
       IKasqDestination dest;
-      if (mType == EDestinationType.cQueue)
-        dest = new KasqQueue(mName, "");
+      if (mDestType == EDestinationType.cQueue)
+        dest = new KasqQueue(mDestName, "");
       else
-        dest = new KasqTopic(mName, "");
+        dest = new KasqTopic(mDestName, "");
       
-      requestMessage.setJMSDestination(dest);
+      mMessage.setJMSDestination(dest);
     }
     catch (Throwable e)
     {
-      mLogger.debug("DefineRequest::setRequestProperties() - JMSException caught: ", e);
+      mLogger.debug("DefineRequest::setup() - JMSException caught: ", e);
     }
     
-    mLogger.debug("DefineRequest::setRequestProperties() - OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public ERequestType getRequestType()
-  {
-    return ERequestType.cDefine;
+    mLogger.debug("DefineRequest::setup() - OUT");
   }
   
   /***************************************************************************************************************

@@ -26,36 +26,30 @@ public class RequestProcessorFactory
     try
     {
       ERequestType type = ERequestType.fromInt(ord);
+      sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating processor for request of type: " + type.toString());
       
       switch (type)
       {
         case cGet:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new GetRequestProcessor(message);
           break;
         case cAuthenticate:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new AuthRequestProcessor(message);
           break;
         case cHalt:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new HaltRequestProcessor(message);
           break;
         case cDefine:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new DefineRequestProcessor(message);
           break;
         case cLocate:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new LocateRequestProcessor(message);
           break;
         case cMetaData:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new MetaRequestProcessor(message);
           break;
         case cPut:
         default:
-          sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating request: " + type.toString());
           request = new PutRequestProcessor(message);
           break;
       }

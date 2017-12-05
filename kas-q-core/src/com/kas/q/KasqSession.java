@@ -486,7 +486,7 @@ public class KasqSession extends AKasObject implements Session
     try
     {
       DefineRequest defRequest = new DefineRequest(name, type);
-      IKasqMessage requestMessage = defRequest.createRequestMessage();
+      IKasqMessage requestMessage = defRequest.getRequestMessage();
       
       sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + requestMessage.toPrintableString(0));
       IKasqMessage defineResponse = mConnection.internalSendAndReceive(requestMessage);
@@ -561,7 +561,7 @@ public class KasqSession extends AKasObject implements Session
     try
     {
       LocateRequest locateRequest = new LocateRequest(name, type);
-      IKasqMessage requestMessage = locateRequest.createRequestMessage();
+      IKasqMessage requestMessage = locateRequest.getRequestMessage();
       
       sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + requestMessage.toPrintableString(0));
       IKasqMessage locateResponse = mConnection.internalSendAndReceive(requestMessage);

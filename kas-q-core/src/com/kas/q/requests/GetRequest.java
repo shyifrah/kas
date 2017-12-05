@@ -1,8 +1,9 @@
 package com.kas.q.requests;
 
+import javax.jms.JMSException;
+import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
-import com.kas.q.ext.IKasqMessage;
 
 public class GetRequest extends ARequest
 {
@@ -19,53 +20,48 @@ public class GetRequest extends ARequest
   /***************************************************************************************************************
    *  
    */
-  public GetRequest(String destName, EDestinationType destType, boolean noLocal, String selector, String consQueue, String consSess)
+  public GetRequest(String destName, EDestinationType destType, boolean noLocal, String selector, String consQueue, String consSess) throws JMSException
   {
-    super();
+    super(ERequestType.cGet);
     mDestName = destName;
     mDestType = destType;
     mNoLocal = noLocal;
     mSelector = selector;
     mConsumerQueue = consQueue;
     mConsumerSession = consSess;
+    
+    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
+    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
   }
   
   /***************************************************************************************************************
    *  
    */
-  public void setRequestProperties(IKasqMessage requestMessage)
+  public void setup()
   {
-    mLogger.debug("GetRequest::setRequestProperties() - IN");
+    mLogger.debug("GetRequest::setup() - IN");
     
     try
     {
       // message destination
-      requestMessage.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestName);
-      requestMessage.setIntProperty(IKasqConstants.cPropertyDestinationType, mDestType.ordinal());
+      mMessage.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestName);
+      mMessage.setIntProperty(IKasqConstants.cPropertyDestinationType, mDestType.ordinal());
       
       // message origin
-      requestMessage.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue);
-      requestMessage.setStringProperty(IKasqConstants.cPropertyConsumerSession, mConsumerSession);
+      mMessage.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue);
+      mMessage.setStringProperty(IKasqConstants.cPropertyConsumerSession, mConsumerSession);
       
       // filtering criteria
-      requestMessage.setStringProperty(IKasqConstants.cPropertyConsumerMessageSelector, mSelector);
-      requestMessage.setBooleanProperty(IKasqConstants.cPropertyConsumerNoLocal, mNoLocal);
+      mMessage.setStringProperty(IKasqConstants.cPropertyConsumerMessageSelector, mSelector);
+      mMessage.setBooleanProperty(IKasqConstants.cPropertyConsumerNoLocal, mNoLocal);
 
     }
     catch (Throwable e)
     {
-      mLogger.debug("GetRequest::setRequestProperties() - JMSException caught: ", e);
+      mLogger.debug("GetRequest::setup() - JMSException caught: ", e);
     }
     
-    mLogger.debug("GetRequest::setRequestProperties() - OUT"); 
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public ERequestType getRequestType()
-  {
-    return ERequestType.cGet;
+    mLogger.debug("GetRequest::setup() - OUT"); 
   }
   
   /***************************************************************************************************************

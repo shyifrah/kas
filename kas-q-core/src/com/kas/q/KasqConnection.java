@@ -330,9 +330,9 @@ public class KasqConnection extends AKasObject implements Connection
     try
     {
       AuthRequest authRequest = new AuthRequest(userName, password);
-      IKasqMessage requestMessage = authRequest.createRequestMessage();
+      IKasqMessage requestMessage = authRequest.getRequestMessage();
       
-      sLogger.debug("KasqConnection::internalAuthenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
+      sLogger.debug("KasqConnection::internalAuthenticate() - Sending authenticate request via message: " + requestMessage.toPrintableString(0));
       IKasqMessage authResponse = internalSendAndReceive(requestMessage);
       
       sLogger.debug("KasqConnection::internalAuthenticate() - Got response: " + authResponse.toPrintableString(0));
@@ -435,7 +435,7 @@ public class KasqConnection extends AKasObject implements Connection
     try
     {
       MetaRequest metaRequest = new MetaRequest();
-      IKasqMessage requestMessage = metaRequest.createRequestMessage();
+      IKasqMessage requestMessage = metaRequest.getRequestMessage();
       
       sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + requestMessage.toPrintableString(0));
       IKasqMessage metaResponse = internalSendAndReceive(requestMessage);

@@ -1,7 +1,8 @@
 package com.kas.q.requests;
 
+import javax.jms.JMSException;
+import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.IKasqConstants;
-import com.kas.q.ext.IKasqMessage;
 
 public class AuthRequest extends ARequest
 {
@@ -20,43 +21,37 @@ public class AuthRequest extends ARequest
   /***************************************************************************************************************
    *  
    */
-  public AuthRequest(String userName, String password)
+  public AuthRequest(String userName, String password) throws JMSException
   {
-    super();
+    super(ERequestType.cAuthenticate);
     mUserName = userName;
     mPassword = password;
-    
     if (cAdminUser.equals(mUserName))
       mAdmin = true;
+    
+    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
+    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
   }
   
   /***************************************************************************************************************
    *  
    */
-  public void setRequestProperties(IKasqMessage requestMessage)
+  public void setup()
   {
-    mLogger.debug("AuthRequest::setRequestProperties() - IN");
+    mLogger.debug("AuthRequest::setup() - IN");
     
     try
     {
-      requestMessage.setStringProperty(IKasqConstants.cPropertyUserName, mUserName);
-      requestMessage.setStringProperty(IKasqConstants.cPropertyPassword, mPassword);
-      requestMessage.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mAdmin);
+      mMessage.setStringProperty(IKasqConstants.cPropertyUserName, mUserName);
+      mMessage.setStringProperty(IKasqConstants.cPropertyPassword, mPassword);
+      mMessage.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mAdmin);
     }
     catch (Throwable e)
     {
-      mLogger.debug("AuthRequest::setRequestProperties() - JMSException caught: ", e);
+      mLogger.debug("AuthRequest::setup() - JMSException caught: ", e);
     }
     
-    mLogger.debug("AuthRequest::setRequestProperties() - OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public ERequestType getRequestType()
-  {
-    return ERequestType.cAuthenticate;
+    mLogger.debug("AuthRequest::setup() - OUT");
   }
   
   /***************************************************************************************************************

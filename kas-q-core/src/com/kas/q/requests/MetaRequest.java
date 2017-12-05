@@ -1,31 +1,28 @@
 package com.kas.q.requests;
 
-import com.kas.q.ext.IKasqMessage;
+import javax.jms.JMSException;
+import com.kas.infra.base.UniqueId;
+import com.kas.q.ext.IKasqConstants;
 
 public class MetaRequest extends ARequest
 {
   /***************************************************************************************************************
    *  
    */
-  public MetaRequest()
+  public MetaRequest() throws JMSException
   {
-    super();
+    super(ERequestType.cMetaData);
+    
+    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
+    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
   }
   
   /***************************************************************************************************************
    *  
    */
-  public void setRequestProperties(IKasqMessage requestMessage)
+  public void setup()
   {
-    mLogger.debug("MetaRequest::setRequestProperties() - IN/OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public ERequestType getRequestType()
-  {
-    return ERequestType.cMetaData;
+    mLogger.debug("MetaRequest::setup() - IN/OUT");
   }
   
   /***************************************************************************************************************

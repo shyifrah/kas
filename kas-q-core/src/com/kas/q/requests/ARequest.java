@@ -1,12 +1,11 @@
 package com.kas.q.requests;
 
+import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
-import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 
 public abstract class ARequest extends AKasObject implements IRequest
@@ -15,57 +14,62 @@ public abstract class ARequest extends AKasObject implements IRequest
    *  
    */
   protected ILogger mLogger;
+  protected ERequestType mType;
+  protected IKasqMessage mMessage;
   
   /***************************************************************************************************************
    *  
    */
-  ARequest()
+  ARequest(ERequestType type) throws JMSException
+  {
+    this (type, new KasqMessage());
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  ARequest(ERequestType type, IKasqMessage message) throws JMSException
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
+    mType   = type;
+    mMessage = message;
   }
   
   /***************************************************************************************************************
    *  
    */
-  public abstract ERequestType getRequestType();
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public abstract void setRequestProperties(IKasqMessage requestMessage);
-
-  /***************************************************************************************************************
-   *  
-   */
-  public IKasqMessage createRequestMessage()
+  public IKasqMessage getRequestMessage()
   {
-    mLogger.debug("ARequest::createRequestMessage() - IN");
+    mLogger.debug("ARequest::getRequestMessage() - IN");
     
-    IKasqMessage requestMessage = null;
-    
-    if (getRequestType() == ERequestType.cPut)
+    try
     {
-      setRequestProperties(requestMessage);
+      setup();
     }
-    else
+    catch (Throwable e)
     {
-      try
-      {
-        requestMessage = new KasqMessage();
-        requestMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
-        requestMessage.setIntProperty(IKasqConstants.cPropertyRequestType, getRequestType().ordinal());
-        
-        setRequestProperties(requestMessage);
-      }
-      catch (Throwable e)
-      {
-        mLogger.debug("ARequest::createRequestMessage() - JMSException caught: ", e);
-      }
+      mLogger.debug("ARequest::getRequestMessage() - JMSException caught: ", e);
     }
     
-    mLogger.debug("ARequest::createRequestMessage() - OUT, requestMessage=" + StringUtils.asPrintableString(requestMessage));
-    return requestMessage;
+    mLogger.debug("ARequest::getRequestMessage() - OUT, requestMessage=" + StringUtils.asPrintableString(mMessage));
+    return mMessage;
+  }
+  
+  /***************************************************************************************************************
+   *  
+   */
+  public ERequestType getRequestType()
+  {
+    return mType;
   }
 
+  /***************************************************************************************************************
+   *  
+   */
+  public abstract void setup();
+
+  /***************************************************************************************************************
+   *  
+   */
   public abstract String toPrintableString(int level);
 }

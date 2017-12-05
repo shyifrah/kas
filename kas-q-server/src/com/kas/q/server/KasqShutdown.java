@@ -89,7 +89,7 @@ public class KasqShutdown extends KasqClient
     MessageProducer   prod    = sess.createProducer(null);
     
     HaltRequest haltRequest = new HaltRequest();
-    Message msg = haltRequest.createRequestMessage();
+    Message msg = haltRequest.getRequestMessage();
     prod.send(msg);
     
     try

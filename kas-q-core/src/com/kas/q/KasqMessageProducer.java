@@ -277,9 +277,23 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   {
     sLogger.debug("KasqMessageProducer::internalSetup() - IN");
     
+    // verify not a null message
     if (message == null)
       throw new JMSException("Cannot send a null message");
     
+    // verify KAS/Q message
+    boolean isKasqMessage = false;
+    try
+    {
+      isKasqMessage = message.getBooleanProperty(IKasqConstants.cKasqEyeCatcher);
+    }
+    catch (Throwable e) {}
+    if (!isKasqMessage)
+    {
+      throw new JMSException("Cannot send message. Not a KAS/Q message");
+    }
+    
+    // if not privileged message - verify destination
     boolean admin = false;
     try
     {
@@ -289,7 +303,7 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
     
     if (admin)
     {
-      sLogger.debug("KasqMessageProducer::internalSetup() - Priviliged message, skipping destination verification");
+      sLogger.debug("KasqMessageProducer::internalSetup() - Privileged message, skipping destination verification");
     }
     else
     {
@@ -298,6 +312,7 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
         throw new JMSException("Cannot send message. Null destination");
     }
     
+    // verify send arguments
     if ((deliveryMode != DeliveryMode.PERSISTENT) && (deliveryMode != DeliveryMode.NON_PERSISTENT))
       throw new JMSException("Invalid DeliveryMode: " + deliveryMode);
     
@@ -324,9 +339,9 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   private void internalSend(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
     sLogger.debug("KasqMessageProducer::internalSend() - IN");
-    
-    PutRequest putRequest = new PutRequest(this, destination, message, deliveryMode, priority, timeToLive);
-    IKasqMessage requestMessage = putRequest.createRequestMessage();
+    IKasqMessage requestMessage = (IKasqMessage)message;
+    PutRequest putRequest = new PutRequest(this, destination, requestMessage, deliveryMode, priority, timeToLive);
+    requestMessage = putRequest.getRequestMessage();
     mSession.internalSend(requestMessage);
     
     sLogger.debug("KasqMessageProducer::internalSend() - OUT");

@@ -1,53 +1,49 @@
 package com.kas.q.requests;
 
+import javax.jms.JMSException;
+import com.kas.infra.base.UniqueId;
 import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
-import com.kas.q.ext.IKasqMessage;
 
 public class LocateRequest extends ARequest
 {
   /***************************************************************************************************************
    *  
    */
-  private String  mName;
-  private EDestinationType mType;
+  private String  mDestName;
+  private EDestinationType mDestType;
   
   /***************************************************************************************************************
    *  
    */
-  public LocateRequest(String name, EDestinationType type)
+  public LocateRequest(String destName, EDestinationType destType) throws JMSException
   {
-    super();
-    mName = name;
-    mType = type;
+    super(ERequestType.cLocate);
+    mDestName = destName;
+    mDestType = destType;
+    
+    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
+    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
   }
   
   /***************************************************************************************************************
    *  
    */
-  public void setRequestProperties(IKasqMessage requestMessage)
+  public void setup()
   {
-    mLogger.debug("LocateRequest::setRequestProperties() - IN");
+    mLogger.debug("LocateRequest::setup() - IN");
     
     try
     {
-      requestMessage.setStringProperty(IKasqConstants.cPropertyDestinationName, mName);
-      requestMessage.setIntProperty(IKasqConstants.cPropertyDestinationType, mType.ordinal());
+      mMessage.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestName);
+      mMessage.setIntProperty(IKasqConstants.cPropertyDestinationType, mDestType.ordinal());
     }
     catch (Throwable e)
     {
-      mLogger.debug("LocateRequest::setRequestProperties() - JMSException caught: ", e);
+      mLogger.debug("LocateRequest::setup() - JMSException caught: ", e);
     }
     
-    mLogger.debug("LocateRequest::setRequestProperties() - OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public ERequestType getRequestType()
-  {
-    return ERequestType.cLocate;
+    mLogger.debug("LocateRequest::setup() - OUT");
   }
   
   /***************************************************************************************************************

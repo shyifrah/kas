@@ -177,7 +177,7 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     for (long i = 0; ((i < repeat) || (infinite)) && (message == null) && (!closing); ++i)
     {
       GetRequest getRequest = new GetRequest(mDestination.getName(), mDestination.getType(), mNoLocal, mMessageSelector, mConsumerQueue.getName(), mSession.getSessionId());
-      IKasqMessage requestMessage = getRequest.createRequestMessage();
+      IKasqMessage requestMessage = getRequest.getRequestMessage();
       if (requestMessage == null)
         throw new JMSException("Failed to receive message. Could not create a consume request");
      
