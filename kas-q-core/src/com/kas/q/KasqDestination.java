@@ -80,7 +80,8 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     mManagerName = managerName;
     mBackupFile = null;
     mSession = session;
-    mQueues  = new MessageDeque [10];
+    
+    mQueues = new MessageDeque [10];
     for (int i = 0; i < mQueues.length; ++i)
       mQueues[i] = new MessageDeque();
   }
@@ -95,7 +96,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     
     if (mQueues == null)
     {
-      mQueues  = new MessageDeque [10];
+      mQueues = new MessageDeque [10];
       for (int i = 0; i < mQueues.length; ++i)
         mQueues[i] = new MessageDeque();
     }
@@ -490,7 +491,13 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append("  Type=").append(getType().toString()).append("\n")
-      .append(pad).append("  Size=").append(size()).append("\n")
+      .append(pad).append("  Queues=(\n");
+    
+    for (int i = 0; i < mQueues.length; ++i)
+      sb.append(pad).append("    P").append(String.format("%02d", i)).append("-size=[").append(mQueues[i].size()).append("]\n");
+    
+    sb.append(pad).append("  )\n")
+      .append(pad).append("  TotalSize=").append(size()).append("\n")
       .append(pad).append(")\n");
     return sb.toString();
   }
