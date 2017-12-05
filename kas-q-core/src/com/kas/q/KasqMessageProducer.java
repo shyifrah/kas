@@ -233,6 +233,12 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
       internalSetup(destination, message, deliveryMode, priority, timeToLive);
       internalSend(destination, message, deliveryMode, priority, timeToLive);
       
+      //
+      // TODO: the MessageProducer should keep a list of all sent messages and only after the server
+      //       sends an ACK for a sent message, this message should be removed from the unacknowledged messages.
+      //       then, and only then, one of the completionListener' call-backs should be invoked
+      //
+      
       if (completionListener != null)
       {
         completionListener.onCompletion(message);

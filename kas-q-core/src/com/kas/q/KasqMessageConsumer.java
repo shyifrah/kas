@@ -194,6 +194,14 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       sLogger.debug("Got response: " + StringUtils.asPrintableString(message));
     }
     
+    
+    
+    if ((message != null) && (mMessageListener != null))
+    {
+      sLogger.trace("Calling message listener with Message: " + StringUtils.asString(message));
+      mMessageListener.onMessage(message);
+    }
+    
     sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
     
     mExecutingThread = null;

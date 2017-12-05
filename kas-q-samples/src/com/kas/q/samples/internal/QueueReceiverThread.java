@@ -14,6 +14,8 @@ public class QueueReceiverThread extends AThread
   public static final String cProperty_ReceiveMode_InfiniteWait = "infinite";
   public static final String cProperty_ReceiveTimeout = "receive_timeout";
   
+  private MessageTrigger mTrigger = new MessageTrigger();
+  
   public QueueReceiverThread(Properties threadParams) throws KasException
   {
     super(threadParams);
@@ -32,6 +34,7 @@ public class QueueReceiverThread extends AThread
       {
         consumer = mSession.createConsumer(mQueue);
       }
+      consumer.setMessageListener(mTrigger);
       
       for (int i = 1; i <= mNumOfMessages; i++)
       {
