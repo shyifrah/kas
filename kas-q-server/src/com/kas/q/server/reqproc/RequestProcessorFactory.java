@@ -15,17 +15,18 @@ public class RequestProcessorFactory
   {
     sLogger.debug("RequestProcessorFactory::createRequestProcessor() - IN");
     
-    int ord = 0;
+    ERequestType type = ERequestType.cPut;
     try
     {
-      ord = message.getIntProperty(IKasqConstants.cPropertyRequestType);
+      int ord = message.getIntProperty(IKasqConstants.cPropertyRequestType);
+      type = ERequestType.fromInt(ord);
     }
     catch (JMSException e) {}
     
     IRequestProcessor request = null;
     try
     {
-      ERequestType type = ERequestType.fromInt(ord);
+      
       sLogger.debug("RequestProcessorFactory::createRequestProcessor() - Creating processor for request of type: " + type.toString());
       
       switch (type)

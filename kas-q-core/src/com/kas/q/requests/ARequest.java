@@ -31,6 +31,7 @@ public abstract class ARequest extends AKasObject implements IRequest
   ARequest(ERequestType type, IKasqMessage message) throws JMSException
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger.debug("ARequest::ARequest - IN, Type=" + type.toString());
     mType   = type;
     mMessage = message;
   }

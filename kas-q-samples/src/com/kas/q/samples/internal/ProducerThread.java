@@ -39,11 +39,12 @@ public class ProducerThread extends AThread
     
     String text = "shyifrah-" + i;
     TextMessage msg = mSession.createTextMessage(text);
-    System.out.println("Sending message " + i + ": " + msg.toString());
     
     if (sendDelay > 0)
       RunTimeUtils.sleep(sendDelay);
     
     producer.send(msg);
+    
+    System.out.println("Sending message " + i + ": " + msg.toString());
   }
 }

@@ -7,6 +7,7 @@ import javax.jms.Queue;
 import javax.jms.Session;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
 import com.kas.q.samples.internal.AThread;
 import com.kas.q.samples.internal.ProducerThread;
@@ -46,7 +47,7 @@ public class MessageProducerDriver
   //============================================================================================================================================
   private void run(String [] args) throws KasException
   {
-    System.out.println("Driver::run() - IN");
+    System.out.println("Driver::run() - IN, PID=[" + RunTimeUtils.getProcessId() + "]");
     
     String userName = "kas";
     String password = "kas";

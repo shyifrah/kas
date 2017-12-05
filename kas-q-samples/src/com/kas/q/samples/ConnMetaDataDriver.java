@@ -5,6 +5,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 import com.kas.infra.base.KasException;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.q.ext.KasqClient;
 
 public class ConnMetaDataDriver
@@ -41,7 +42,7 @@ public class ConnMetaDataDriver
   //============================================================================================================================================
   private void run(String [] args) throws KasException
   {
-    System.out.println("Driver::run() - IN");
+    System.out.println("Driver::run() - IN, PID=[" + RunTimeUtils.getProcessId() + "]");
     
     String userName = "kas";
     String password = "kas";

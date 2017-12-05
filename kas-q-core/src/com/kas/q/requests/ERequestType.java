@@ -8,7 +8,7 @@ public enum ERequestType
   cDefine,
   cHalt,
   cGet,
-  cPut, 
+  cPut,
   ;
   
   private static final ERequestType [] cValues = ERequestType.values();
