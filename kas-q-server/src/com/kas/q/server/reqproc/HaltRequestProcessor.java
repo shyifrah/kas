@@ -1,4 +1,4 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.JMSException;
@@ -7,16 +7,17 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.IClientController;
 import com.kas.q.server.KasqServer;
 
-final public class ShutdownRequest extends AKasObject implements IRequestProcessor
+final public class HaltRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(ShutdownRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(HaltRequestProcessor.class);
   private static IClientController sController = KasqServer.getInstance().getController();
   
   /***************************************************************************************************************
@@ -25,14 +26,14 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
   private boolean mAdmin;
   
   /***************************************************************************************************************
-   * Construct a {@code ShutdownRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code HaltRequestProcessor} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
    * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the client.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  ShutdownRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  HaltRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     Boolean admin = null;
     try
@@ -43,8 +44,8 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
     
     if (admin == null)
     {
-      sLogger.warn("Received ShutdownRequest without admin property");
-      throw new IllegalArgumentException("Invalid ShutdownRequest: null admin property");
+      sLogger.warn("Received HaltRequest without admin property");
+      throw new IllegalArgumentException("Invalid HaltRequest: null admin property");
     }
     
     mAdmin = admin;
@@ -65,17 +66,17 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("ShutdownRequest::process() - IN");
+    sLogger.debug("HaltRequestProcessor::process() - IN");
     
     boolean result = false;
     if (!handler.isAuthenticated())
     {
-      sLogger.debug("ShutdownRequest::process() - ClientHandler was not authenticated, cannot continue");
+      sLogger.debug("HaltRequestProcessor::process() - ClientHandler was not authenticated, cannot continue");
     }
     else
     if (!mAdmin)
     {
-      sLogger.warn("Received shutdown request from non-authorized client. Ignoring...");
+      sLogger.warn("Received halt request from non-authorized client. Ignoring...");
       result = true;
     }
     else
@@ -84,7 +85,7 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
       result = true;
     }
     
-    sLogger.debug("ShutdownRequest::process() - OUT, Result=" + result);
+    sLogger.debug("HaltRequestProcessor::process() - OUT, Result=" + result);
     return result;
   }
   
@@ -93,7 +94,7 @@ final public class ShutdownRequest extends AKasObject implements IRequestProcess
    */
   public ERequestType getRequestType()
   {
-    return ERequestType.cShutdown;
+    return ERequestType.cHalt;
   }
   
   /***************************************************************************************************************

@@ -30,6 +30,8 @@ import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.DefineRequest;
+import com.kas.q.requests.LocateRequest;
 
 public class KasqSession extends AKasObject implements Session
 {
@@ -477,24 +479,17 @@ public class KasqSession extends AKasObject implements Session
     if (name == null)
       throw new JMSException("Failed to create destination: Invalid destination name: [" + StringUtils.asString(name) + "]");
     
-    IKasqDestination dest;
+    IKasqDestination dest = null;
     int responseCode = IKasqConstants.cPropertyResponseCode_Fail;
     String msg = null;
     
-    if (type == EDestinationType.cQueue)
-      dest = new KasqQueue(name, "");
-    else
-      dest = new KasqTopic(name, "");
-    
     try
     {
-      KasqMessage defineRequest = new KasqMessage();
-      defineRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
-      defineRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Define);
-      defineRequest.setJMSDestination(dest);
+      DefineRequest defRequest = new DefineRequest(name, type);
+      IKasqMessage requestMessage = defRequest.createRequestMessage();
       
-      sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + defineRequest.toPrintableString(0));
-      IKasqMessage defineResponse = mConnection.internalSendAndReceive(defineRequest);
+      sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + requestMessage.toPrintableString(0));
+      IKasqMessage defineResponse = mConnection.internalSendAndReceive(requestMessage);
       
       sLogger.debug("KasqSession::internalCreateDestination() - Got response: " + defineResponse.toPrintableString(0));
       responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
@@ -565,14 +560,11 @@ public class KasqSession extends AKasObject implements Session
     
     try
     {
-      KasqMessage locateRequest = new KasqMessage();
-      locateRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
-      locateRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Locate);
-      locateRequest.setStringProperty(IKasqConstants.cPropertyDestinationName, name);
-      locateRequest.setIntProperty(IKasqConstants.cPropertyDestinationType, type.ordinal());
+      LocateRequest locateRequest = new LocateRequest(name, type);
+      IKasqMessage requestMessage = locateRequest.createRequestMessage();
       
-      sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + locateRequest.toPrintableString(0));
-      IKasqMessage locateResponse = mConnection.internalSendAndReceive(locateRequest);
+      sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + requestMessage.toPrintableString(0));
+      IKasqMessage locateResponse = mConnection.internalSendAndReceive(requestMessage);
       
       sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + locateResponse.toPrintableString(0));
       responseCode = locateResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
@@ -582,7 +574,7 @@ public class KasqSession extends AKasObject implements Session
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqSession::internalCreateDestination() - Exception caught: ", e);
+      sLogger.debug("KasqSession::internalLocateDestination() - Exception caught: ", e);
     }
     
     sLogger.debug("KasqSession::internalLocateDestination() - OUT, Result=" + StringUtils.asString(dest));

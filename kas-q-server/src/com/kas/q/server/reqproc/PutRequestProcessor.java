@@ -1,4 +1,4 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.Destination;
@@ -10,16 +10,17 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqQueue;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
 
-final public class PutRequest extends AKasObject implements IRequestProcessor
+final public class PutRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(PutRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(PutRequestProcessor.class);
   private static KasqRepository sRepository = KasqServer.getInstance().getRepository();
   
   /***************************************************************************************************************
@@ -29,14 +30,14 @@ final public class PutRequest extends AKasObject implements IRequestProcessor
   private IKasqDestination mDestination = null;
   
   /***************************************************************************************************************
-   * Construct a {@code PutRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code PutRequestProcessor} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
    * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the MessageConsumer.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  PutRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  PutRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     mMessage  = requestMessage;
     Destination jmsDest = null;
@@ -86,16 +87,16 @@ final public class PutRequest extends AKasObject implements IRequestProcessor
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("PutRequest::process() - IN");
+    sLogger.debug("PutRequestProcessor::process() - IN");
     
     boolean result = false;
     if (!handler.isAuthenticated())
     {
-      sLogger.debug("PutRequest::process() - ClientHandler was not authenticated, cannot continue");
+      sLogger.debug("PutRequestProcessor::process() - ClientHandler was not authenticated, cannot continue");
     }
     else
     {
-      sLogger.debug("PutRequest::process() - Message destination is managed by KAS/Q. Name=[" + mDestination.getFormattedName() + "]");
+      sLogger.debug("PutRequestProcessor::process() - Message destination is managed by KAS/Q. Name=[" + mDestination.getFormattedName() + "]");
       
       String destinationName = mDestination.getName();
       IKasqDestination destinationFromRepo = sRepository.locate(destinationName);
@@ -105,14 +106,14 @@ final public class PutRequest extends AKasObject implements IRequestProcessor
       }
       else
       {
-        sLogger.debug("PutRequest::process() - Destination is not defined, sending to DEADQ...");
+        sLogger.debug("PutRequestProcessor::process() - Destination is not defined, sending to DEADQ...");
         KasqQueue deadq = sRepository.getDeadQueue();
         deadq.put(mMessage);
       }
       result = true;
     }
     
-    sLogger.debug("PutRequest::process() - OUT, Result=" + result);
+    sLogger.debug("PutRequestProcessor::process() - OUT, Result=" + result);
     return result;
   }
   

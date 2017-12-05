@@ -1,4 +1,4 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.JMSException;
@@ -10,14 +10,15 @@ import com.kas.logging.LoggerFactory;
 import com.kas.q.KasqMessage;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 
-final public class AuthenticateRequest extends AKasObject implements IRequestProcessor
+final public class AuthRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(AuthenticateRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(AuthRequestProcessor.class);
   
   /***************************************************************************************************************
    * 
@@ -28,14 +29,14 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
   private String  mJmsMessageId;
   
   /***************************************************************************************************************
-   * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code AuthRequestProcessor} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
    * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the MessageConsumer.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  AuthenticateRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  AuthRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  userName = null;
     String  password = null;
@@ -58,32 +59,32 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
     
     if (userName == null)
     {
-      sLogger.warn("Received AuthenticateRequest with invalid user: name=[" + StringUtils.asString(userName) + "]");
-      throw new IllegalArgumentException("Invalid AuthenticateRequest: null user name");
+      sLogger.warn("Received AuthRequest with invalid user: name=[" + StringUtils.asString(userName) + "]");
+      throw new IllegalArgumentException("Invalid AuthRequest: null user name");
     }
     
     if (userName.length() == 0)
     {
-      sLogger.warn("Received AuthenticateRequest with invalid user: name=[" + StringUtils.asString(userName) + "]");
-      throw new IllegalArgumentException("Invalid AuthenticateRequest: user name is empty string");
+      sLogger.warn("Received AuthRequest with invalid user: name=[" + StringUtils.asString(userName) + "]");
+      throw new IllegalArgumentException("Invalid AuthRequest: user name is empty string");
     }
     
     if (password == null)
     {
-      sLogger.warn("Received AuthenticateRequest with invalid password: type=[" + StringUtils.asString(password) + "]");
-      throw new IllegalArgumentException("Invalid AuthenticateRequest: null password");
+      sLogger.warn("Received AuthRequest with invalid password: type=[" + StringUtils.asString(password) + "]");
+      throw new IllegalArgumentException("Invalid AuthRequest: null password");
     }
     
     if (jmsMsgId == null)
     {
-      sLogger.warn("Received AuthenticateRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
-      throw new IllegalArgumentException("Invalid AuthenticateRequest: null JMS message ID");
+      sLogger.warn("Received AuthRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
+      throw new IllegalArgumentException("Invalid AuthRequest: null JMS message ID");
     }
     
     if (jmsMsgId.length() == 0)
     {
-      sLogger.warn("Received AuthenticateRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
-      throw new IllegalArgumentException("Invalid AuthenticateRequest: JMS message ID is empty string");
+      sLogger.warn("Received AuthRequest with invalid JMS Message ID: id=[" + StringUtils.asString(jmsMsgId) + "]");
+      throw new IllegalArgumentException("Invalid AuthRequest: JMS message ID is empty string");
     }
     
     mUserName = userName;
@@ -137,13 +138,13 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("AuthenticateRequest::process() - IN");
+    sLogger.debug("AuthRequestProcessor::process() - IN");
     boolean authenticated = false;
     
     //String userName = request.getUserName();
     //String password = request.getPassword();
     // TODO: address some security manager and find out if the credentials are okay
-    //       if they are okay, set authenticated to "true" and code to "Fail"
+    //       if they are okay, set authenticated to "true".
     //
     authenticated = true;
     String msg = "";
@@ -155,10 +156,10 @@ final public class AuthenticateRequest extends AKasObject implements IRequestPro
     response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
     
-    sLogger.diag("AuthenticateRequest::process() - Sending response message: " + response.toPrintableString(0));
+    sLogger.diag("AuthRequestProcessor::process() - Sending response message: " + response.toPrintableString(0));
     handler.send(response);
     
-    sLogger.debug("AuthenticateRequest::process() - OUT, Result=" + authenticated);
+    sLogger.debug("AuthRequestProcessor::process() - OUT, Result=" + authenticated);
     return authenticated;
   }
   

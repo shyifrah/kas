@@ -8,12 +8,12 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.PutRequest;
 
 public class KasqMessageProducer extends AKasObject implements MessageProducer
 {
@@ -252,7 +252,17 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   }
 
   /***************************************************************************************************************
-   * Verifies the validity of message headers prior to send operation
+   * Gets the {@code KasqSession} associated with the {@code KasqMessageProducer}.
+   * 
+   * @return the {@code KasqSession} associated with the {@code KasqMessageProducer}.
+   */
+  public KasqSession getSession()
+  {
+    return mSession;
+  }
+  
+  /***************************************************************************************************************
+   * Verifies the validity of message headers prior to send operation.<br>
    * Admin messages are processed on the spot by the KAS/Q server, so we allow null destination
    * 
    * @param destination message destination
@@ -315,39 +325,9 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   {
     sLogger.debug("KasqMessageProducer::internalSend() - IN");
     
-    if (mDisableMessageId)                                                    // Message ID
-      message.setJMSMessageID(null);                                          //   ..
-    else                                                                      //     ..
-      message.setJMSMessageID("ID:" + UniqueId.generate().toString());        //       ..
-    
-    long timestamp = System.currentTimeMillis();                              // Timestamp
-    if (mDisableMessageTimestamp)                                             //   ..
-      message.setJMSTimestamp(0);                                             //     ..
-    else                                                                      //       ..
-      message.setJMSTimestamp(timestamp);                                     //         ..
-    
-    message.setJMSDestination(destination);                                   // Destination
-    message.setJMSDeliveryMode(deliveryMode);                                 // Delivery Mode
-    message.setJMSPriority(priority);                                         // Priority
-    message.setJMSExpiration(timeToLive == 0 ? 0 : timestamp + timeToLive);   // Expiration
-    message.setJMSDeliveryTime(timestamp + mDeliveryDelay);                   // Delivery Time
-    
-    boolean eyeCatcher = message.getBooleanProperty(IKasqConstants.cKasqEyeCatcher);
-    if (eyeCatcher)
-    {
-      IKasqMessage iMessage = (IKasqMessage)message;
-      
-      iMessage.setStringProperty(IKasqConstants.cPropertyProducerSession, mSession.getSessionId());
-      iMessage.setLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay, mDeliveryDelay);
-      iMessage.setLongProperty(IKasqConstants.cPropertyProducerTimestamp, timestamp);
-      
-      sLogger.debug("KasqMessageProducer::internalSend() - Sending message: " + iMessage.toPrintableString(0));
-      mSession.internalSend(iMessage);
-    }
-    else
-    {
-      sLogger.debug("KasqMessageProducer::internalSend() - Not a KAS/Q message, cannot send");      
-    }
+    PutRequest putRequest = new PutRequest(this, destination, message, deliveryMode, priority, timeToLive);
+    IKasqMessage requestMessage = putRequest.createRequestMessage();
+    mSession.internalSend(requestMessage);
     
     sLogger.debug("KasqMessageProducer::internalSend() - OUT");
   }

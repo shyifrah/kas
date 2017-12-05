@@ -1,8 +1,9 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.JMSException;
 import com.kas.infra.base.IObject;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 
 public interface IRequestProcessor extends IObject

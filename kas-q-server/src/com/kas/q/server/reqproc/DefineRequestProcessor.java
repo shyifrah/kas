@@ -1,4 +1,4 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.Destination;
@@ -12,16 +12,17 @@ import com.kas.q.KasqMessage;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
 
-final public class DefineRequest extends AKasObject implements IRequestProcessor
+final public class DefineRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(DefineRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(DefineRequestProcessor.class);
   private static KasqRepository sRepository = KasqServer.getInstance().getRepository();
   
   /***************************************************************************************************************
@@ -31,14 +32,14 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
   private String  mJmsMessageId;
   
   /***************************************************************************************************************
-   * Construct a {@code DefineRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code DefineRequestProcessor} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
    * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the client.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  DefineRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  DefineRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     Destination dest = null;
     String  jmsMsgId = null;
@@ -102,12 +103,12 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("DefineRequest::process() - IN");
+    sLogger.debug("DefineRequestProcessor::process() - IN");
     
     boolean result = false;
     if (!handler.isAuthenticated())
     {
-      sLogger.debug("DefineRequest::process() - ClientHandler was not authenticated, cannot continue");
+      sLogger.debug("DefineRequestProcessor::process() - ClientHandler was not authenticated, cannot continue");
     }
     else
     {
@@ -131,12 +132,12 @@ final public class DefineRequest extends AKasObject implements IRequestProcessor
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
         
-      sLogger.diag("DefineRequest::process() - Sending to origin response: " + message.toPrintableString(0));
+      sLogger.diag("DefineRequestProcessor::process() - Sending to origin response: " + message.toPrintableString(0));
       handler.send(message);
       result = true;
     }
     
-    sLogger.debug("DefineRequest::process() - OUT, Result=" + result);
+    sLogger.debug("DefineRequestProcessor::process() - OUT, Result=" + result);
     return result;
   }
   

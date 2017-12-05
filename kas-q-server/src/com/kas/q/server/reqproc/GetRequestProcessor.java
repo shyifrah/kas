@@ -1,4 +1,4 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.JMSException;
@@ -12,16 +12,17 @@ import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
 
-final public class GetRequest extends AKasObject implements IRequestProcessor
+final public class GetRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(GetRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(GetRequestProcessor.class);
   private static KasqRepository sRepository = KasqServer.getInstance().getRepository();
   
   /***************************************************************************************************************
@@ -36,14 +37,14 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
   private String           mSelector;
   
   /***************************************************************************************************************
-   * Construct a {@code GetRequest} out of a {@link IKasqMessage}.
+   * Construct a {@code GetRequestProcessor} out of a {@link IKasqMessage}.
    * The construction includes extraction of several message properties and then verify their validity.
    * 
    * @param requestMessage the {@code IKasqMessage} that the ClientHandler received from the client.
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  GetRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  GetRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  destName = null;
     Integer type = null;
@@ -175,12 +176,12 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("GetRequest::process() - IN");
+    sLogger.debug("GetRequestProcessor::process() - IN");
     
     boolean result = false;
     if (!handler.isAuthenticated())
     {
-      sLogger.debug("GetRequest::process() - ClientHandler was not authenticated, cannot continue");
+      sLogger.debug("GetRequestProcessor::process() - ClientHandler was not authenticated, cannot continue");
     }
     else
     {
@@ -190,7 +191,7 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       String msg = "Failed to retrieve a message";
       
       // now we address the repository and locate the destination
-      sLogger.debug("LocateRequest::process() - Destination type is " + mDestinationType.toString());
+      sLogger.debug("GetRequestProcessor::process() - Destination type is " + mDestinationType.toString());
       switch (mDestinationType)
       {
         case cQueue:
@@ -205,14 +206,14 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
 
       if (message == null)
       {
-        sLogger.debug("GetRequest::process() - Failed to get a message from destination " + dest.getFormattedName());
+        sLogger.debug("GetRequestProcessor::process() - Failed to get a message from destination " + dest.getFormattedName());
         message = new KasqMessage();
         message.setJMSMessageID("ID:" + UniqueId.generate().toString());
         message.setJMSCorrelationID(mJmsMessageId);
       }
       else
       {
-        sLogger.debug("GetRequest::process() - Got a message from destination " + dest.getFormattedName());
+        sLogger.debug("GetRequestProcessor::process() - Got a message from destination " + dest.getFormattedName());
         code = IKasqConstants.cPropertyResponseCode_Okay;
         msg  = "";
         message.setStringProperty(IKasqConstants.cPropertyConsumerQueue, mConsumerQueue);
@@ -221,12 +222,12 @@ final public class GetRequest extends AKasObject implements IRequestProcessor
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
         
-      sLogger.diag("GetRequest::process() - Sending to origin consumed message: " + message.toPrintableString(0));
+      sLogger.diag("GetRequestProcessor::process() - Sending to origin consumed message: " + message.toPrintableString(0));
       handler.send(message);
       result = true;
     }
     
-    sLogger.debug("GetRequest::process() - OUT, Result=" + result);
+    sLogger.debug("GetRequestProcessor::process() - OUT, Result=" + result);
     return result;
   }
   

@@ -3,12 +3,12 @@ package com.kas.q.requests;
 public enum ERequestType
 {
   cAuthenticate,
-  //cPut,
-  //cGet,
-  //cShutdown,
-  //cDefine,
-  //cLocate,
-  //cMetaData,
+  cMetaData,
+  cLocate,
+  cDefine,
+  cHalt,
+  cGet,
+  cPut,
   ;
   
   private static final ERequestType [] cValues = ERequestType.values();

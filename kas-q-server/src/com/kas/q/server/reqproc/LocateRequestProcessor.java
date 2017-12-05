@@ -1,4 +1,4 @@
-package com.kas.q.server.req;
+package com.kas.q.server.reqproc;
 
 import java.io.IOException;
 import javax.jms.JMSException;
@@ -12,16 +12,17 @@ import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.KasqRepository;
 import com.kas.q.server.KasqServer;
 
-final public class LocateRequest extends AKasObject implements IRequestProcessor
+final public class LocateRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(LocateRequest.class);
+  private static ILogger sLogger = LoggerFactory.getLogger(LocateRequestProcessor.class);
   private static KasqRepository sRepository = KasqServer.getInstance().getRepository();
   
   /***************************************************************************************************************
@@ -39,7 +40,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
    * 
    * @throws IllegalArgumentException if one of the extracted properties is invalid
    */
-  LocateRequest(IKasqMessage requestMessage) throws IllegalArgumentException
+  LocateRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
     String  destName = null;
     Integer type = null;
@@ -123,12 +124,12 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
   {
-    sLogger.debug("LocateRequest::process() - IN");
+    sLogger.debug("LocateRequestProcessor::process() - IN");
     
     boolean result = false;
     if (!handler.isAuthenticated())
     {
-      sLogger.debug("LocateRequest::process() - ClientHandler was not authenticated, cannot continue");
+      sLogger.debug("LocateRequestProcessor::process() - ClientHandler was not authenticated, cannot continue");
     }
     else
     {
@@ -137,7 +138,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       String msg = "";
       
       // now we address the repository and locate the destination
-      sLogger.debug("LocateRequest::process() - Destination type is " + mDestinationType.toString());
+      sLogger.debug("LocateRequestProcessor::process() - Destination type is " + mDestinationType.toString());
       switch (mDestinationType)
       {
         case cQueue:
@@ -148,7 +149,7 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
           break;
       }
       
-      sLogger.debug("LocateRequest::process() - Located destination: " + StringUtils.asPrintableString(dest));
+      sLogger.debug("LocateRequestProcessor::process() - Located destination: " + StringUtils.asPrintableString(dest));
       
       if (dest == null)
       {
@@ -166,12 +167,12 @@ final public class LocateRequest extends AKasObject implements IRequestProcessor
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
         
-      sLogger.diag("LocateRequest::process() - Sending to origin response message: " + message.toPrintableString(0));
+      sLogger.diag("LocateRequestProcessor::process() - Sending to origin response message: " + message.toPrintableString(0));
       handler.send(message);
       result = true;
     }
     
-    sLogger.debug("LocateRequest::process() - OUT, Result=" + result);
+    sLogger.debug("LocateRequestProcessor::process() - OUT, Result=" + result);
     return result;
   }
   

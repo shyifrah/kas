@@ -11,12 +11,12 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.ext.KasqMessageFactory;
+import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
 import com.kas.q.server.IClientController;
 import com.kas.q.server.KasqServer;
-import com.kas.q.server.req.ERequestType;
-import com.kas.q.server.req.IRequestProcessor;
-import com.kas.q.server.req.RequestFactory;
+import com.kas.q.server.reqproc.IRequestProcessor;
+import com.kas.q.server.reqproc.RequestProcessorFactory;
 
 public class ClientHandler extends AKasObject implements IClientHandler
 {
@@ -96,7 +96,7 @@ public class ClientHandler extends AKasObject implements IClientHandler
         }
         else
         {
-          IRequestProcessor request = RequestFactory.createRequest((IKasqMessage)packet);
+          IRequestProcessor request = RequestProcessorFactory.createRequestProcessor((IKasqMessage)packet);
           sLogger.debug("ClientHandler::run() - Got request: " + request.toString());
           
           boolean success = request.process(this);

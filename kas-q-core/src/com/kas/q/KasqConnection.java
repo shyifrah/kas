@@ -30,7 +30,7 @@ import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.KasqMessageFactory;
 import com.kas.q.ext.KasqReceiverTask;
 import com.kas.q.requests.AuthRequest;
-import com.kas.q.requests.IRequest;
+import com.kas.q.requests.MetaRequest;
 
 public class KasqConnection extends AKasObject implements Connection
 {
@@ -434,12 +434,11 @@ public class KasqConnection extends AKasObject implements Connection
     
     try
     {
-      KasqMessage metaRequest = new KasqMessage();
-      metaRequest.setJMSMessageID("ID:" + UniqueId.generate().toString());
-      metaRequest.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_MetaData);
+      MetaRequest metaRequest = new MetaRequest();
+      IKasqMessage requestMessage = metaRequest.createRequestMessage();
       
-      sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + metaRequest.toPrintableString(0));
-      IKasqMessage metaResponse = internalSendAndReceive(metaRequest);
+      sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + requestMessage.toPrintableString(0));
+      IKasqMessage metaResponse = internalSendAndReceive(requestMessage);
       
       sLogger.debug("KasqConnection::internalGetMetaData() - Got response: " + metaResponse.toPrintableString(0));
       int responseCode = metaResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
@@ -450,7 +449,7 @@ public class KasqConnection extends AKasObject implements Connection
     }
     catch (Throwable e)
     {
-      sLogger.debug("KasqConnection::internalAuthenticate() - Exception caught: ", e);
+      sLogger.debug("KasqConnection::internalGetMetaData() - Exception caught: ", e);
     }
     
     sLogger.debug("KasqConnection::internalGetMetaData() - OUT, Result=" + StringUtils.asString(metaData));

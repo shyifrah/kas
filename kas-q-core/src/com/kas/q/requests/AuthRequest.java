@@ -1,15 +1,9 @@
 package com.kas.q.requests;
 
-import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
-import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
-import com.kas.q.KasqMessage;
 import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 
-public class AuthRequest extends AKasObject implements IRequest
+public class AuthRequest extends ARequest
 {
   /***************************************************************************************************************
    *  
@@ -19,7 +13,6 @@ public class AuthRequest extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
-  private ILogger mLogger;
   private String  mUserName;
   private String  mPassword;
   private boolean mAdmin;
@@ -29,7 +22,7 @@ public class AuthRequest extends AKasObject implements IRequest
    */
   public AuthRequest(String userName, String password)
   {
-    mLogger   = LoggerFactory.getLogger(this.getClass());
+    super();
     mUserName = userName;
     mPassword = password;
     
@@ -40,28 +33,22 @@ public class AuthRequest extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
-  public IKasqMessage createRequestMessage()
+  public void setRequestProperties(IKasqMessage requestMessage)
   {
-    mLogger.debug("AuthRequest::createRequestMessage() - IN");
-    
-    IKasqMessage requestMessage = null;
+    mLogger.debug("AuthRequest::setRequestProperties() - IN");
     
     try
     {
-      requestMessage = new KasqMessage();
-      requestMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
-      requestMessage.setIntProperty(IKasqConstants.cPropertyRequestType, getRequestType().ordinal());
       requestMessage.setStringProperty(IKasqConstants.cPropertyUserName, mUserName);
       requestMessage.setStringProperty(IKasqConstants.cPropertyPassword, mPassword);
       requestMessage.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mAdmin);
     }
     catch (Throwable e)
     {
-      mLogger.debug("KasqConnection::createRequestMessage() - JMSException caught: ", e);
+      mLogger.debug("AuthRequest::setRequestProperties() - JMSException caught: ", e);
     }
     
-    mLogger.debug("AuthRequest::createRequestMessage() - OUT, requestMessage=" + StringUtils.asPrintableString(requestMessage));
-    return requestMessage;
+    mLogger.debug("AuthRequest::setRequestProperties() - OUT");
   }
   
   /***************************************************************************************************************
@@ -80,14 +67,6 @@ public class AuthRequest extends AKasObject implements IRequest
   public boolean isAdmin()
   {
     return mAdmin;
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toString()
-  {
-    return null;
   }
   
   /***************************************************************************************************************

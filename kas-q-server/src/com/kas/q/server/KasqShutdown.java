@@ -7,9 +7,8 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
-import com.kas.infra.base.UniqueId;
-import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.KasqClient;
+import com.kas.q.requests.HaltRequest;
 
 public class KasqShutdown extends KasqClient
 {
@@ -88,12 +87,9 @@ public class KasqShutdown extends KasqClient
     Connection        conn    = factory.createConnection(userName, password);
     Session           sess    = conn.createSession();
     MessageProducer   prod    = sess.createProducer(null);
-    Message           msg     = sess.createMessage();
     
-    msg.setJMSMessageID("ID:" + UniqueId.generate().toString());
-    msg.setIntProperty(IKasqConstants.cPropertyRequestType, IKasqConstants.cPropertyRequestType_Shutdown);
-    msg.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
-    
+    HaltRequest haltRequest = new HaltRequest();
+    Message msg = haltRequest.createRequestMessage();
     prod.send(msg);
     
     try
