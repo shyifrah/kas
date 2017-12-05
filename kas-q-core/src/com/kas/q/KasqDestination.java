@@ -16,6 +16,7 @@ import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.q.ext.EDestinationType;
@@ -51,7 +52,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
   private String  mManagerName;
   
   protected transient KasqSession  mSession;
-  protected transient MessageDeque mQueue;
+  protected transient MessageDeque [] mQueues;
   protected transient File    mBackupFile;
   protected transient String  mBackupFileName = null;
   
@@ -79,7 +80,9 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     mManagerName = managerName;
     mBackupFile = null;
     mSession = session;
-    mQueue  = new MessageDeque();
+    mQueues  = new MessageDeque [10];
+    for (int i = 0; i < mQueues.length; ++i)
+      mQueues[i] = new MessageDeque();
   }
   
   /***************************************************************************************************************
@@ -87,16 +90,21 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   public boolean init()
   {
-    sLogger.debug("AKasqDestination::init() - IN, name=[" + mName + "]");
+    sLogger.debug("KasqDestination::init() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    if (mQueue == null) mQueue = new MessageDeque();
+    if (mQueues == null)
+    {
+      mQueues  = new MessageDeque [10];
+      for (int i = 0; i < mQueues.length; ++i)
+        mQueues[i] = new MessageDeque();
+    }
     
     sLogger.info("Starting initialization for " + mName);
     try
     {
       String fileName = getBackupFileName();
-      sLogger.debug("AKasqDestination::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
+      sLogger.debug("KasqDestination::init() - Check if backup file exists. Backup file=[" + fileName + "]...");
       mBackupFile = new File(fileName);
       if (mBackupFile.exists())
       {
@@ -120,7 +128,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
           }
           catch (Throwable e)
           {
-            sLogger.debug("AKasqDestination::init() - Exception caught while trying to restore " + mName + " contents ", e);
+            sLogger.debug("KasqDestination::init() - Exception caught while trying to restore " + mName + " contents ", e);
             error = true;
           }
         }
@@ -145,16 +153,16 @@ public class KasqDestination extends AKasObject implements IKasqDestination
           sLogger.warn("Failed to delete backup file " + abspath + ", exception: ", e);
         }
         
-        sLogger.trace("Contents successfully restored; Total read messages [" + mQueue.size() + "]");
+        sLogger.trace("Contents successfully restored; Total read messages [" + size() + "]");
       }
     }
     catch (Throwable e)
     {
-      sLogger.debug("AKasqDestination::init() - Exception caught during initialization. Name=" + mName + "; Exception: ", e);
+      sLogger.debug("KasqDestination::init() - Exception caught during initialization. Name=" + mName + "; Exception: ", e);
       success = false;
     }
     
-    sLogger.debug("AKasqDestination::init() - OUT, Returns=" + success);
+    sLogger.debug("KasqDestination::init() - OUT, Returns=" + success);
     return success;
   }
   
@@ -163,13 +171,13 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   public boolean term()
   {
-    sLogger.debug("AKasqDestination::term() - IN, name=[" + mName + "]");
+    sLogger.debug("KasqDestination::term() - IN, name=[" + mName + "]");
     boolean success = true;
     
     sLogger.info("Starting termination for " + mName);
     try
     {
-      if (!mQueue.isEmpty())
+      if (!isEmpty())
       {
         String fileName = getBackupFileName();
         sLogger.trace(mName + " is not empty. Saving messages to backup file=[" + fileName + "]");
@@ -189,15 +197,19 @@ public class KasqDestination extends AKasObject implements IKasqDestination
           int msgCounter = 0;
           FileOutputStream fos = new FileOutputStream(mBackupFile);
           ObjectOutputStream ostream = new ObjectOutputStream(fos);
-          while (!mQueue.isEmpty())
+          for (int i = 0; i < mQueues.length; ++i)
           {
-            IKasqMessage msg = mQueue.poll();
-            
-            PacketHeader header = msg.createHeader();
-            header.serialize(ostream);
-            msg.serialize(ostream);
-            
-            ++msgCounter;
+            MessageDeque msgDeq = mQueues[i];
+            while (!msgDeq.isEmpty())
+            {
+              IKasqMessage msg = msgDeq.poll();
+              
+              PacketHeader header = msg.createHeader();
+              header.serialize(ostream);
+              msg.serialize(ostream);
+              
+              ++msgCounter;
+            }
           }
           
           // cleanup
@@ -215,11 +227,11 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     }
     catch (Throwable e)
     {
-      sLogger.debug("AKasqDestination::term() - Exception caught during termination. Name=" + mName + "; Exception: ", e);
+      sLogger.debug("KasqDestination::term() - Exception caught during termination. Name=" + mName + "; Exception: ", e);
       success = false;
     }
     
-    sLogger.debug("AKasqDestination::term() - OUT, Returns=" + success);
+    sLogger.debug("KasqDestination::term() - OUT, Returns=" + success);
     return success;
   }
   
@@ -242,9 +254,10 @@ public class KasqDestination extends AKasObject implements IKasqDestination
   /***************************************************************************************************************
    * 
    */
-  public void put(IKasqMessage message)
+  public void put(IKasqMessage message) throws JMSException
   {
-    mQueue.offer(message);
+    int prio = message.getJMSPriority();
+    mQueues[prio].offer(message);
   }
   
   /***************************************************************************************************************
@@ -252,9 +265,15 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   public IKasqMessage get(long timeout) throws InterruptedException
   {
-    IKasqMessage message = null;
-    message = mQueue.poll(timeout, TimeUnit.MILLISECONDS);
-    return message;
+    MessageDeque msgDeq = null;
+    for (int i = 9; i >= 0; --i)
+    {
+      msgDeq = mQueues[i];
+      if (!msgDeq.isEmpty())
+        break;
+    }
+    
+    return msgDeq.poll(timeout, TimeUnit.MILLISECONDS);
   }
   
   /***************************************************************************************************************
@@ -262,8 +281,35 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   public IKasqMessage getMatching(boolean noLocal, String session, String selector)
   {
+    sLogger.debug("KasqDestination::getMatching() - IN");
+    
     IKasqMessage message = null;
-    for (IKasqMessage candidate : mQueue)
+    MessageDeque msgDeq = null;
+    for (int i = 9; i >= 0; --i)
+    {
+      sLogger.debug("KasqDestination::getMatching() - Looking for matches in Queue P" + i);
+      msgDeq = mQueues[i];
+      if (!msgDeq.isEmpty())
+      {
+        message = getMatchingMessage(msgDeq, noLocal, session, selector);
+        if (message != null)
+          break;
+      }
+    }
+    
+    sLogger.debug("KasqDestination::getMatching() - OUT, Result=" + StringUtils.asPrintableString(message));
+    return message;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  private IKasqMessage getMatchingMessage(MessageDeque queue, boolean noLocal, String session, String selector)
+  {
+    sLogger.diag("KasqDestination::getMatchingMessage() - IN");
+    
+    IKasqMessage message = null;
+    for (IKasqMessage candidate : queue)
     {
       String prodSession = null;
       Long prodDeliveryDelay = null;
@@ -282,7 +328,10 @@ public class KasqDestination extends AKasObject implements IKasqDestination
       if ((noLocal) && (session != null))
       {
         if (session.equals(prodSession))
+        {
+          sLogger.diag("KasqDestination::getMatchingMessage() - NoLocal messages are forbidden, continue...");
           continue;
+        }
       }
       
       long now = System.currentTimeMillis();
@@ -291,20 +340,27 @@ public class KasqDestination extends AKasObject implements IKasqDestination
       if ((prodDeliveryDelay != null) && (prodTimestamp != null))
       {
         if (now < prodTimestamp + prodDeliveryDelay)
+        {
+          sLogger.diag("KasqDestination::getMatchingMessage() - DeliveryDelay not yet expired, continue...");
           continue;
+        }
       }
       
       // if candidate message has expiration date and it's expired - skip this message
       if ((expirationTimestamp != null) && (expirationTimestamp > 0))
       {
         if (now > expirationTimestamp)
+        {
+          sLogger.diag("KasqDestination::getMatchingMessage() - Cannot deliver expired message, continue...");
           continue;
+        }
       }
       
       // if candidate message does not pass selector - skip this message;
       if (selector != null)
       {
         // TODO: implement message selection
+        sLogger.diag("KasqDestination::getMatchingMessage() - Message not matching selector, continue...");
         continue;
       }
       
@@ -314,9 +370,37 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     
     // if loop was broken because we found a message, remove it from queue
     if (message != null)
-      mQueue.remove(message);
+      remove(message);
     
+    sLogger.diag("KasqDestination::getMatchingMessage() - OUT, Result=" + StringUtils.asPrintableString(message));
     return message;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  private void remove(IKasqMessage message)
+  {
+    boolean removed = false;
+    for (MessageDeque q : mQueues)
+    {
+      removed = q.remove(message);
+      if (removed)
+        return;
+    }
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public boolean isEmpty()
+  {
+    for (MessageDeque q : mQueues)
+    {
+      if (q.size() > 0)
+        return false;
+    }
+    return true;
   }
   
   /***************************************************************************************************************
@@ -324,7 +408,12 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   public int size()
   {
-    return mQueue.size();
+    int sum = 0;
+    for (MessageDeque q : mQueues)
+    {
+      sum += q.size();
+    }
+    return sum;
   }
 
   /***************************************************************************************************************
@@ -336,14 +425,14 @@ public class KasqDestination extends AKasObject implements IKasqDestination
    */
   protected void internalDelete() throws JMSException
   {
-    sLogger.debug("AKasqDestination::internalLocateDestination() - IN");
+    sLogger.debug("KasqDestination::internalLocateDestination() - IN");
     
     if ((mSession != null) && (mName.startsWith("KAS.TEMP.")))
     {
       mSession.internalDeleteTemporaryDestination(mName, mType);
     }
     
-    sLogger.debug("AKasqDestination::internalLocateDestination() - OUT");
+    sLogger.debug("KasqDestination::internalLocateDestination() - OUT");
   }
   
   /***************************************************************************************************************
@@ -401,7 +490,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append("  Type=").append(getType().toString()).append("\n")
-      .append(pad).append("  Size=").append(mQueue.size()).append("\n")
+      .append(pad).append("  Size=").append(size()).append("\n")
       .append(pad).append(")\n");
     return sb.toString();
   }

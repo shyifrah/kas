@@ -2,6 +2,7 @@ package com.kas.q.ext;
 
 import java.io.Serializable;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 
@@ -11,8 +12,10 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
    * Put a {@code IKasqMessage} to the destination.
    * 
    * @param message the {@code IKasqMessage} to be placed in the destination.
+   * 
+   * @throws JMSException if a failure occurred while trying to obtain the Message's priority
    */
-  public abstract void put(IKasqMessage message);
+  public abstract void put(IKasqMessage message) throws JMSException;
   
   /***************************************************************************************************************
    * Get and remove a {@code IKasqMessage} from the destination.<br>
