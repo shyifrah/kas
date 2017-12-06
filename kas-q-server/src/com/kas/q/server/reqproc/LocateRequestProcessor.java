@@ -28,6 +28,7 @@ final public class LocateRequestProcessor extends AKasObject implements IRequest
   /***************************************************************************************************************
    * 
    */
+  private IKasqMessage     mMessage;
   private String           mDestinationName;
   private EDestinationType mDestinationType;
   private String           mJmsMessageId;
@@ -42,6 +43,7 @@ final public class LocateRequestProcessor extends AKasObject implements IRequest
    */
   LocateRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
+    mMessage = requestMessage;
     String  destName = null;
     Integer type = null;
     String  jmsMsgId = null;
@@ -126,6 +128,8 @@ final public class LocateRequestProcessor extends AKasObject implements IRequest
   {
     sLogger.debug("LocateRequestProcessor::process() - IN");
     
+    sLogger.debug("LocateRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     boolean result = false;
     if (!handler.isAuthenticated())
     {
@@ -166,8 +170,8 @@ final public class LocateRequestProcessor extends AKasObject implements IRequest
       message.setJMSDestination(dest);
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
-        
-      sLogger.diag("LocateRequestProcessor::process() - Sending to origin response message: " + message.toPrintableString(0));
+      
+      sLogger.debug("LocateRequestProcessor::process() - Sending response message: " + message.toPrintableString(0));
       handler.send(message);
       result = true;
     }
@@ -187,25 +191,12 @@ final public class LocateRequestProcessor extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
-  public String toString()
-  {
-    StringBuffer sb = new StringBuffer();
-    sb.append(name())
-      .append("(Dest=").append(mDestinationType.toString()).append(":///").append(mDestinationName).append(")");
-    return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Destintation Name=(").append(mDestinationName).append(")\n")
-      .append(pad).append("  Destintation Type=(").append(mDestinationType.toString()).append(")\n")
-      .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
+      .append(pad).append("  Dest=(").append(mDestinationType).append(":///").append(mDestinationName).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

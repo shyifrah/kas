@@ -23,6 +23,7 @@ final public class HaltRequestProcessor extends AKasObject implements IRequestPr
   /***************************************************************************************************************
    * 
    */
+  private IKasqMessage mMessage;
   private boolean mAdmin;
   
   /***************************************************************************************************************
@@ -35,6 +36,7 @@ final public class HaltRequestProcessor extends AKasObject implements IRequestPr
    */
   HaltRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
+    mMessage = requestMessage;
     Boolean admin = null;
     try
     {
@@ -68,6 +70,8 @@ final public class HaltRequestProcessor extends AKasObject implements IRequestPr
   {
     sLogger.debug("HaltRequestProcessor::process() - IN");
     
+    sLogger.debug("HaltRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     boolean result = false;
     if (!handler.isAuthenticated())
     {
@@ -100,23 +104,12 @@ final public class HaltRequestProcessor extends AKasObject implements IRequestPr
   /***************************************************************************************************************
    *  
    */
-  public String toString()
-  {
-    StringBuffer sb = new StringBuffer();
-    sb.append(name())
-      .append("(ByAdmin=").append(mAdmin).append(")");
-    return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Admin=(").append(mAdmin).append(")\n")
+      .append(pad).append("  ByAdmin=(").append(mAdmin).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

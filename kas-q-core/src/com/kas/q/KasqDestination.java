@@ -360,9 +360,16 @@ public class KasqDestination extends AKasObject implements IKasqDestination
       // if candidate message does not pass selector - skip this message;
       if (selector != null)
       {
-        // TODO: implement message selection
-        sLogger.diag("KasqDestination::getMatchingMessage() - Message not matching selector, continue...");
-        continue;
+        //
+        // TODO: implement
+        // need to verify if the candidate message matches the selector expression
+        //
+        boolean matched = true;
+        if (!matched)
+        {
+          sLogger.diag("KasqDestination::getMatchingMessage() - Message not matching selector, continue...");
+          continue;
+        }
       }
       
       message = candidate;

@@ -28,6 +28,7 @@ final public class GetRequestProcessor extends AKasObject implements IRequestPro
   /***************************************************************************************************************
    * 
    */
+  private IKasqMessage     mMessage;
   private String           mDestinationName;
   private EDestinationType mDestinationType;
   private String           mJmsMessageId;
@@ -46,6 +47,7 @@ final public class GetRequestProcessor extends AKasObject implements IRequestPro
    */
   GetRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
+    mMessage = requestMessage;
     String  destName = null;
     Integer type = null;
     String  jmsMsgId = null;
@@ -178,6 +180,8 @@ final public class GetRequestProcessor extends AKasObject implements IRequestPro
   {
     sLogger.debug("GetRequestProcessor::process() - IN");
     
+    sLogger.debug("GetRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     boolean result = false;
     if (!handler.isAuthenticated())
     {
@@ -221,8 +225,8 @@ final public class GetRequestProcessor extends AKasObject implements IRequestPro
       
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
-        
-      sLogger.diag("GetRequestProcessor::process() - Sending to origin consumed message: " + message.toPrintableString(0));
+      
+      sLogger.debug("GetRequestProcessor::process() - Sending response message: " + message.toPrintableString(0));
       handler.send(message);
       result = true;
     }
@@ -242,25 +246,12 @@ final public class GetRequestProcessor extends AKasObject implements IRequestPro
   /***************************************************************************************************************
    *  
    */
-  public String toString()
-  {
-    StringBuffer sb = new StringBuffer();
-    sb.append(name())
-      .append("(FromDest=").append(mDestinationType.toString()).append(":///").append(mDestinationName).append(")");
-    return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Destintation Name=(").append(mDestinationName).append(")\n")
-      .append(pad).append("  Destintation Type=(").append(mDestinationType).append(")\n")
-      .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
+      .append(pad).append("  Dest=(").append(mDestinationType).append(":///").append(mDestinationName).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

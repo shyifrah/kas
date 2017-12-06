@@ -27,6 +27,7 @@ final public class MetaRequestProcessor extends AKasObject implements IRequestPr
   /***************************************************************************************************************
    * 
    */
+  private IKasqMessage mMessage;
   private String  mJmsMessageId;
   
   /***************************************************************************************************************
@@ -39,6 +40,7 @@ final public class MetaRequestProcessor extends AKasObject implements IRequestPr
    */
   MetaRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
+    mMessage = requestMessage;
     String  jmsMsgId = null;
     try
     {
@@ -68,6 +70,8 @@ final public class MetaRequestProcessor extends AKasObject implements IRequestPr
   {
     sLogger.debug("MetaRequestProcessor::process() - IN");
     
+    sLogger.debug("MetaRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     boolean result = false;
     if (!handler.isAuthenticated())
     {
@@ -85,9 +89,8 @@ final public class MetaRequestProcessor extends AKasObject implements IRequestPr
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, "");
       message.setObjectProperty(IKasqConstants.cPropertyMetaData, metaData);
         
-      sLogger.diag("MetaRequestProcessor::process() -  Sending to origin response message: " + message.toPrintableString(0));
+      sLogger.debug("MetaRequestProcessor::process() - Sending response message: " + message.toPrintableString(0));
       handler.send(message);
-      
       result = true;
     }
     
@@ -101,14 +104,6 @@ final public class MetaRequestProcessor extends AKasObject implements IRequestPr
   public ERequestType getRequestType()
   {
     return ERequestType.cMetaData;
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toString()
-  {
-    return name();
   }
   
   /***************************************************************************************************************

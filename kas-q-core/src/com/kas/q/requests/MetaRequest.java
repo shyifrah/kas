@@ -13,23 +13,7 @@ public class MetaRequest extends ARequest
   {
     super(ERequestType.cMetaData);
     
-    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
-    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public void setup()
-  {
-    mLogger.debug("MetaRequest::setup() - IN/OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toPrintableString(int level)
-  {
-    return null;
+    setJMSMessageID("ID:" + UniqueId.generate().toString());
+    setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
   }
 }

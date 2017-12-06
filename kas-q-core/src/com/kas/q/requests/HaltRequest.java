@@ -13,34 +13,8 @@ public class HaltRequest extends ARequest
   {
     super(ERequestType.cHalt);
     
-    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
-    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public void setup()
-  {
-    mLogger.debug("HaltRequest::setup() - IN");
-    
-    try
-    {
-      mMessage.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
-    }
-    catch (Throwable e)
-    {
-      mLogger.debug("HaltRequest::setup() - JMSException caught: ", e);
-    }
-    
-    mLogger.debug("HaltRequest::setup() - OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toPrintableString(int level)
-  {
-    return null;
+    setJMSMessageID("ID:" + UniqueId.generate().toString());
+    setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
+    setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
   }
 }

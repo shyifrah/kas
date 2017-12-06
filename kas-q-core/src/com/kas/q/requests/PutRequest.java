@@ -9,79 +9,41 @@ import com.kas.q.ext.IKasqMessage;
 
 public class PutRequest extends ARequest
 {
-  /***************************************************************************************************************
-   *  
-   */
-  private KasqMessageProducer mProducer;
-  private Destination         mDestination;
-  private int                 mDeliveryMode;
-  private int                 mPriority;
-  private long                mTimeToLive;
+  private IKasqMessage mMessage;
   
   /***************************************************************************************************************
    *  
    */
   public PutRequest(KasqMessageProducer producer, Destination destination, IKasqMessage message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
-    super(ERequestType.cPut, message);
-    mProducer = producer;
-    mDestination = destination;
-    mDeliveryMode = deliveryMode;
-    mPriority = priority;
-    mTimeToLive = timeToLive;
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public void setup()
-  {
-    mLogger.debug("PutRequest::setup() - IN");
+    super(ERequestType.cPut);
     
-    try
-    {
-      if (mProducer.getDisableMessageID())                                        // Message ID
-        mMessage.setJMSMessageID(null);                                           //   ..
-      else                                                                        //     ..
-        mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());         //       ..
-      
-      long timestamp = System.currentTimeMillis();                                // Timestamp
-      if (mProducer.getDisableMessageTimestamp())                                 //   ..
-        mMessage.setJMSTimestamp(0);                                              //     ..
-      else                                                                        //       ..
-        mMessage.setJMSTimestamp(timestamp);                                      //         ..
-      
-      mMessage.setJMSDestination(mDestination);                                   // Destination
-      mMessage.setJMSDeliveryMode(mDeliveryMode);                                 // Delivery Mode
-      mMessage.setJMSPriority(mPriority);                                         // Priority
-      mMessage.setJMSExpiration(mTimeToLive == 0 ? 0 : timestamp + mTimeToLive);  // Expiration
-      mMessage.setJMSDeliveryTime(timestamp + mProducer.getDeliveryDelay());      // Delivery Time
-      
-      mMessage.setStringProperty(IKasqConstants.cPropertyProducerSession, mProducer.getSession().getSessionId());
-      mMessage.setLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay, mProducer.getDeliveryDelay());
-      mMessage.setLongProperty(IKasqConstants.cPropertyProducerTimestamp, timestamp);
-    }
-    catch (Throwable e)
-    {
-      mLogger.debug("PutRequest::setup() - JMSException caught: ", e);
-    }
+    if (producer.getDisableMessageID())                                         // Message ID
+      message.setJMSMessageID(null);                                           //   ..
+    else                                                                        //     ..
+      message.setJMSMessageID("ID:" + UniqueId.generate().toString());         //       ..
     
-    mLogger.debug("PutRequest::setup() - OUT"); 
+    long timestamp = System.currentTimeMillis();                                // Timestamp
+    if (producer.getDisableMessageTimestamp())                                  //   ..
+      message.setJMSTimestamp(0);                                              //     ..
+    else                                                                        //       ..
+      message.setJMSTimestamp(timestamp);                                      //         ..
+    
+    message.setJMSDestination(destination);                                    // Destination
+    message.setJMSDeliveryMode(deliveryMode);                                  // Delivery Mode
+    message.setJMSPriority(priority);                                          // Priority
+    message.setJMSExpiration(timeToLive == 0 ? 0 : timestamp + timeToLive);    // Expiration
+    message.setJMSDeliveryTime(timestamp + producer.getDeliveryDelay());       // Delivery Time
+    
+    message.setStringProperty(IKasqConstants.cPropertyProducerSession, producer.getSession().getSessionId());
+    message.setLongProperty(IKasqConstants.cPropertyProducerDeliveryDelay, producer.getDeliveryDelay());
+    message.setLongProperty(IKasqConstants.cPropertyProducerTimestamp, timestamp);
+    
+    mMessage = message;
   }
   
-  /***************************************************************************************************************
-   *  
-   */
-  public ERequestType getRequestType()
+  public IKasqMessage getMessage()
   {
-    return ERequestType.cPut;
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toPrintableString(int level)
-  {
-    return null;
+    return mMessage;
   }
 }

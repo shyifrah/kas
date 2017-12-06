@@ -26,11 +26,4 @@ public interface IRequestProcessor extends IObject
    *   but from the server point of view the request was successfully processed.
    */
   public abstract boolean process(IClientHandler handler) throws IOException, JMSException;
-  
-  /***************************************************************************************************************
-   * A short version of the {@link com.kas.infra.base.IObject#toPrintableString(int) IObject#toPrintableString(int)}
-   * 
-   * @return a string representation of the request
-   */
-  public abstract String toString();
 }

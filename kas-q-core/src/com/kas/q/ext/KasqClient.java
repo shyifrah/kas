@@ -18,7 +18,7 @@ import com.kas.q.KasqTopic;
 
 public class KasqClient extends AKasObject implements IInitializable
 {
-  private ILogger   mLogger;
+  protected ILogger mLogger;
   private boolean   mInitialized;
   
   private KasqConnectionFactory mConnectionFactory;
