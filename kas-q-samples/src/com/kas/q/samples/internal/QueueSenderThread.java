@@ -49,6 +49,7 @@ public class QueueSenderThread extends AThread
     
     String text = "shyifrah-" + i;
     TextMessage msg = mSession.createTextMessage(text);
+    msg.setJMSExpiration(System.currentTimeMillis() + 120000);
     
     if (sendDelay > 0)
       RunTimeUtils.sleep(sendDelay);
