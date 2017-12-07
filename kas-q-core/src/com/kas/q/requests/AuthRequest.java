@@ -14,8 +14,6 @@ public class AuthRequest extends ARequest
   /***************************************************************************************************************
    *  
    */
-  private String  mUserName;
-  private String  mPassword;
   private boolean mAdmin;
   
   /***************************************************************************************************************
@@ -24,34 +22,15 @@ public class AuthRequest extends ARequest
   public AuthRequest(String userName, String password) throws JMSException
   {
     super(ERequestType.cAuthenticate);
-    mUserName = userName;
-    mPassword = password;
-    if (cAdminUser.equals(mUserName))
+    
+    if (cAdminUser.equals(userName))
       mAdmin = true;
     
-    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
-    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public void setup()
-  {
-    mLogger.debug("AuthRequest::setup() - IN");
-    
-    try
-    {
-      mMessage.setStringProperty(IKasqConstants.cPropertyUserName, mUserName);
-      mMessage.setStringProperty(IKasqConstants.cPropertyPassword, mPassword);
-      mMessage.setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mAdmin);
-    }
-    catch (Throwable e)
-    {
-      mLogger.debug("AuthRequest::setup() - JMSException caught: ", e);
-    }
-    
-    mLogger.debug("AuthRequest::setup() - OUT");
+    setJMSMessageID("ID:" + UniqueId.generate().toString());
+    setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
+    setStringProperty(IKasqConstants.cPropertyUserName, userName);
+    setStringProperty(IKasqConstants.cPropertyPassword, password);
+    setBooleanProperty(IKasqConstants.cPropertyAdminMessage, mAdmin);
   }
   
   /***************************************************************************************************************
@@ -62,13 +41,5 @@ public class AuthRequest extends ARequest
   public boolean isAdmin()
   {
     return mAdmin;
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toPrintableString(int level)
-  {
-    return null;
   }
 }

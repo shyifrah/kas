@@ -64,8 +64,6 @@ public class KasqSession extends AKasObject implements Session
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
    * 
-   * Parameters transacted and acknowledgeMode are not supported.
-   * 
    * @param connection the associated {@code Connection}
    * @param transacted indicates whether the session will use a local transaction
    * @param acknowledgeMode when transacted is false, indicates how messages received by the session will be acknowledged
@@ -77,8 +75,6 @@ public class KasqSession extends AKasObject implements Session
   
   /***************************************************************************************************************
    * Constructs a {@code KasqSession} object associated with the specified {@code Connection}
-   * 
-   * Parameter sessionMode is not supported.
    * 
    * @param connection the associated {@code Connection}
    * @param sessionMode the session mode that will be used
@@ -179,6 +175,7 @@ public class KasqSession extends AKasObject implements Session
   public void commit() throws JMSException
   {
     // TODO: implement
+    // need to acknowledge the receipt of all received messages since previous commit 
     throw new JMSException("Unsupported method: Session.commit()");
   }
 
@@ -486,10 +483,9 @@ public class KasqSession extends AKasObject implements Session
     try
     {
       DefineRequest defRequest = new DefineRequest(name, type);
-      IKasqMessage requestMessage = defRequest.getRequestMessage();
       
-      sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + requestMessage.toPrintableString(0));
-      IKasqMessage defineResponse = mConnection.internalSendAndReceive(requestMessage);
+      sLogger.debug("KasqSession::internalCreateDestination() - Sending define request via message: " + defRequest.toPrintableString(0));
+      IKasqMessage defineResponse = mConnection.internalSendAndReceive(defRequest);
       
       sLogger.debug("KasqSession::internalCreateDestination() - Got response: " + defineResponse.toPrintableString(0));
       responseCode = defineResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
@@ -561,10 +557,9 @@ public class KasqSession extends AKasObject implements Session
     try
     {
       LocateRequest locateRequest = new LocateRequest(name, type);
-      IKasqMessage requestMessage = locateRequest.getRequestMessage();
       
-      sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + requestMessage.toPrintableString(0));
-      IKasqMessage locateResponse = mConnection.internalSendAndReceive(requestMessage);
+      sLogger.debug("KasqSession::internalLocateDestination() - Sending locate request via message: " + locateRequest.toPrintableString(0));
+      IKasqMessage locateResponse = mConnection.internalSendAndReceive(locateRequest);
       
       sLogger.debug("KasqSession::internalLocateDestination() - Got response: " + locateResponse.toPrintableString(0));
       responseCode = locateResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);

@@ -1,5 +1,6 @@
 package com.kas.q.samples.internal;
 
+import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
 import javax.jms.MessageProducer;
 import javax.jms.TextMessage;
@@ -52,7 +53,7 @@ public class QueueSenderThread extends AThread
     if (sendDelay > 0)
       RunTimeUtils.sleep(sendDelay);
     
-    producer.send(msg);
+    producer.send(msg, DeliveryMode.PERSISTENT, i%10, 0L);
     
     System.out.println("Sendt message " + i + ": " + msg.toString());
   }

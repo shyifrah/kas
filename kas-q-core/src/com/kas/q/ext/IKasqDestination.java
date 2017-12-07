@@ -45,7 +45,15 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
   public abstract IKasqMessage getMatching(boolean noLocal, String session, String selector);
   
   /***************************************************************************************************************
-   * Returns the number of messages held in the destination.
+   * Returns whether the destination has at least one message.<br>
+   * 
+   * @return true if the destination contains at least one message, false otherwise
+   */
+  public abstract boolean isEmpty();
+  
+  /***************************************************************************************************************
+   * Returns the number of messages held in the destination.<br>
+   * The queue is not synchronized, so the returned value might not be exactly the destination size. 
    * 
    * @return number of messages in destination
    */

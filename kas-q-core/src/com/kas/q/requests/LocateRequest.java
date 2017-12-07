@@ -10,47 +10,13 @@ public class LocateRequest extends ARequest
   /***************************************************************************************************************
    *  
    */
-  private String  mDestName;
-  private EDestinationType mDestType;
-  
-  /***************************************************************************************************************
-   *  
-   */
   public LocateRequest(String destName, EDestinationType destType) throws JMSException
   {
     super(ERequestType.cLocate);
-    mDestName = destName;
-    mDestType = destType;
-    
-    mMessage.setJMSMessageID("ID:" + UniqueId.generate().toString());
-    mMessage.setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public void setup()
-  {
-    mLogger.debug("LocateRequest::setup() - IN");
-    
-    try
-    {
-      mMessage.setStringProperty(IKasqConstants.cPropertyDestinationName, mDestName);
-      mMessage.setIntProperty(IKasqConstants.cPropertyDestinationType, mDestType.ordinal());
-    }
-    catch (Throwable e)
-    {
-      mLogger.debug("LocateRequest::setup() - JMSException caught: ", e);
-    }
-    
-    mLogger.debug("LocateRequest::setup() - OUT");
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public String toPrintableString(int level)
-  {
-    return null;
+
+    setJMSMessageID("ID:" + UniqueId.generate().toString());
+    setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
+    setStringProperty(IKasqConstants.cPropertyDestinationName, destName);
+    setIntProperty(IKasqConstants.cPropertyDestinationType, destType.ordinal());
   }
 }

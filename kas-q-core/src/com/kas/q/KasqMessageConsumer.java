@@ -85,8 +85,8 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     
     mNoLocal = noLocal;
     mMessageSelector = messageSelector;
-    if ((messageSelector != null) && (messageSelector.length() == 0))
-      mMessageSelector = null;
+    if (messageSelector == null)
+      mMessageSelector = "";
     
     mConsumerId = UniqueId.generate();
     mConsumerQueue = (KasqQueue)mSession.createTemporaryQueue();
@@ -177,12 +177,9 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     for (long i = 0; ((i < repeat) || (infinite)) && (message == null) && (!closing); ++i)
     {
       GetRequest getRequest = new GetRequest(mDestination.getName(), mDestination.getType(), mNoLocal, mMessageSelector, mConsumerQueue.getName(), mSession.getSessionId());
-      IKasqMessage requestMessage = getRequest.getRequestMessage();
-      if (requestMessage == null)
-        throw new JMSException("Failed to receive message. Could not create a consume request");
      
-      sLogger.debug("Sending get request via message: " + requestMessage.toPrintableString(0));
-      mSession.internalSend(requestMessage);
+      sLogger.debug("Sending get request via message: " + getRequest.toPrintableString(0));
+      mSession.internalSend(getRequest);
       try
       {
         message = mConsumerQueue.get(1000);
@@ -194,18 +191,15 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
       sLogger.debug("Got response: " + StringUtils.asPrintableString(message));
     }
     
-    
-    
     if ((message != null) && (mMessageListener != null))
     {
       sLogger.trace("Calling message listener with Message: " + StringUtils.asString(message));
       mMessageListener.onMessage(message);
     }
     
-    sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
-    
     mExecutingThread = null;
     
+    sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
     return message;
   }
   

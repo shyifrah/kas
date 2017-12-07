@@ -345,10 +345,12 @@ public class KasqMessageProducer extends AKasObject implements MessageProducer
   private void internalSend(Destination destination, Message message, int deliveryMode, int priority, long timeToLive) throws JMSException
   {
     sLogger.debug("KasqMessageProducer::internalSend() - IN");
+    
     IKasqMessage requestMessage = (IKasqMessage)message;
     PutRequest putRequest = new PutRequest(this, destination, requestMessage, deliveryMode, priority, timeToLive);
-    requestMessage = putRequest.getRequestMessage();
-    mSession.internalSend(requestMessage);
+    
+    sLogger.debug("KasqMessageProducer::internalSend() - Sending message: " + putRequest.getMessage());
+    mSession.internalSend(putRequest.getMessage());
     
     sLogger.debug("KasqMessageProducer::internalSend() - OUT");
   }

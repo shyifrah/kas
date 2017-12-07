@@ -89,6 +89,8 @@ final public class PutRequestProcessor extends AKasObject implements IRequestPro
   {
     sLogger.debug("PutRequestProcessor::process() - IN");
     
+    sLogger.debug("PutRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     boolean result = false;
     if (!handler.isAuthenticated())
     {
@@ -128,17 +130,6 @@ final public class PutRequestProcessor extends AKasObject implements IRequestPro
   /***************************************************************************************************************
    *  
    */
-  public String toString()
-  {
-    StringBuffer sb = new StringBuffer();
-    sb.append(name())
-      .append("(ToDest=").append(mDestination.getName()).append(")");
-    return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public String toPrintableString(int level)
   {
     String msgId = "unknown";
@@ -152,7 +143,7 @@ final public class PutRequestProcessor extends AKasObject implements IRequestPro
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
       .append(pad).append("  MessageId=").append(msgId).append("\n")
-      .append(pad).append("  Destination=").append(mDestination.getName()).append("\n")
+      .append(pad).append("  InDest(=").append(mDestination.getFormattedName()).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

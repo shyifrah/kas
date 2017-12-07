@@ -330,10 +330,9 @@ public class KasqConnection extends AKasObject implements Connection
     try
     {
       AuthRequest authRequest = new AuthRequest(userName, password);
-      IKasqMessage requestMessage = authRequest.getRequestMessage();
       
-      sLogger.debug("KasqConnection::internalAuthenticate() - Sending authenticate request via message: " + requestMessage.toPrintableString(0));
-      IKasqMessage authResponse = internalSendAndReceive(requestMessage);
+      sLogger.debug("KasqConnection::internalAuthenticate() - Sending authenticate request via message: " + authRequest.toPrintableString(0));
+      IKasqMessage authResponse = internalSendAndReceive(authRequest);
       
       sLogger.debug("KasqConnection::internalAuthenticate() - Got response: " + authResponse.toPrintableString(0));
       int responseCode = authResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);
@@ -435,10 +434,9 @@ public class KasqConnection extends AKasObject implements Connection
     try
     {
       MetaRequest metaRequest = new MetaRequest();
-      IKasqMessage requestMessage = metaRequest.getRequestMessage();
       
-      sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + requestMessage.toPrintableString(0));
-      IKasqMessage metaResponse = internalSendAndReceive(requestMessage);
+      sLogger.debug("KasqConnection::internalGetMetaData() - Sending metadata request via message: " + metaRequest.toPrintableString(0));
+      IKasqMessage metaResponse = internalSendAndReceive(metaRequest);
       
       sLogger.debug("KasqConnection::internalGetMetaData() - Got response: " + metaResponse.toPrintableString(0));
       int responseCode = metaResponse.getIntProperty(IKasqConstants.cPropertyResponseCode);

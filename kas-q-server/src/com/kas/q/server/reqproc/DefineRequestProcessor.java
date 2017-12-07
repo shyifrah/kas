@@ -28,6 +28,7 @@ final public class DefineRequestProcessor extends AKasObject implements IRequest
   /***************************************************************************************************************
    * 
    */
+  private IKasqMessage mMessage;
   private IKasqDestination mJmsDestination;
   private String  mJmsMessageId;
   
@@ -41,6 +42,7 @@ final public class DefineRequestProcessor extends AKasObject implements IRequest
    */
   DefineRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
+    mMessage = requestMessage;
     Destination dest = null;
     String  jmsMsgId = null;
     try
@@ -105,6 +107,8 @@ final public class DefineRequestProcessor extends AKasObject implements IRequest
   {
     sLogger.debug("DefineRequestProcessor::process() - IN");
     
+    sLogger.debug("DefineRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     boolean result = false;
     if (!handler.isAuthenticated())
     {
@@ -132,7 +136,7 @@ final public class DefineRequestProcessor extends AKasObject implements IRequest
       message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
       message.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
         
-      sLogger.diag("DefineRequestProcessor::process() - Sending to origin response: " + message.toPrintableString(0));
+      sLogger.debug("DefineRequestProcessor::process() - Sending response message: " + message.toPrintableString(0));
       handler.send(message);
       result = true;
     }
@@ -152,24 +156,12 @@ final public class DefineRequestProcessor extends AKasObject implements IRequest
   /***************************************************************************************************************
    *  
    */
-  public String toString()
-  {
-    StringBuffer sb = new StringBuffer();
-    sb.append(name())
-      .append("(Dest=").append(mJmsDestination.getFormattedName()).append(")");
-    return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Destintation=(").append(mJmsDestination.toPrintableString(level+1)).append(")\n")
-      .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
+      .append(pad).append("  Dest=(").append(mJmsDestination.getFormattedName()).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

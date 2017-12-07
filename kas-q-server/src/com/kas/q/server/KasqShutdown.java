@@ -4,7 +4,6 @@ import java.io.IOException;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 import com.kas.q.ext.KasqClient;
@@ -80,6 +79,8 @@ public class KasqShutdown extends KasqClient
    */
   private void shutdown() throws JMSException
   {
+    mLogger.debug("KasqShutdown::shutdown() - IN");
+
     String userName = "admin";
     String password = "admin";
     
@@ -89,13 +90,16 @@ public class KasqShutdown extends KasqClient
     MessageProducer   prod    = sess.createProducer(null);
     
     HaltRequest haltRequest = new HaltRequest();
-    Message msg = haltRequest.getRequestMessage();
-    prod.send(msg);
+    mLogger.debug("KasqShutdown::shutdown() - Created a HaltRequest: " + haltRequest.toPrintableString(0));
+    
+    prod.send(haltRequest);
     
     try
     {
       Thread.sleep(3000);
     }
     catch (Throwable e) {}
+    
+    mLogger.debug("KasqShutdown::shutdown() - OUT");
   }
 }

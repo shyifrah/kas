@@ -23,6 +23,7 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
   /***************************************************************************************************************
    * 
    */
+  private IKasqMessage mMessage;
   private String  mUserName;
   private String  mPassword;
   private boolean mAdmin;
@@ -38,6 +39,7 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
    */
   AuthRequestProcessor(IKasqMessage requestMessage) throws IllegalArgumentException
   {
+    mMessage = requestMessage;
     String  userName = null;
     String  password = null;
     Boolean admin    = false;
@@ -146,6 +148,8 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
     // TODO: address some security manager and find out if the credentials are okay
     //       if they are okay, set authenticated to "true".
     //
+    sLogger.debug("AuthRequestProcessor::process() - Processing request: " + mMessage.toPrintableString(0));
+    
     authenticated = true;
     String msg = "";
     int code = IKasqConstants.cPropertyResponseCode_Okay;
@@ -156,7 +160,7 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
     response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
     
-    sLogger.diag("AuthRequestProcessor::process() - Sending response message: " + response.toPrintableString(0));
+    sLogger.debug("AuthRequestProcessor::process() - Sending response message: " + response.toPrintableString(0));
     handler.send(response);
     
     sLogger.debug("AuthRequestProcessor::process() - OUT, Result=" + authenticated);
@@ -174,18 +178,6 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
   /***************************************************************************************************************
    *  
    */
-  public String toString()
-  {
-    StringBuffer sb = new StringBuffer();
-    sb.append(name())
-      .append("(UserName=").append(mUserName)
-      .append(" Password=").append(mPassword).append(")");
-    return sb.toString();
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
@@ -194,7 +186,6 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
       .append(pad).append("  UserName=(").append(mUserName).append(")\n")
       .append(pad).append("  Password=(").append(mPassword).append(")\n")
       .append(pad).append("  Admin=(").append(mAdmin).append(")\n")
-      .append(pad).append("  Request MessageId=(").append(mJmsMessageId).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
