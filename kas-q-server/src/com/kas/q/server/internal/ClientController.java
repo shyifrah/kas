@@ -95,7 +95,7 @@ public class ClientController extends AKasObject implements IClientController
   }
   
   /***************************************************************************************************************
-   * 
+   * Terminating all active ClientHandlers
    */
   public void closeAll()
   {
