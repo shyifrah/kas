@@ -7,7 +7,6 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.KasqQueue;
 import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.requests.ERequestType;
@@ -109,7 +108,7 @@ final public class PutRequestProcessor extends AKasObject implements IRequestPro
       else
       {
         sLogger.debug("PutRequestProcessor::process() - Destination is not defined, sending to DEADQ...");
-        KasqQueue deadq = sRepository.getDeadQueue();
+        IKasqDestination deadq = sRepository.getDeadQueue();
         deadq.put(mMessage);
       }
       result = true;
