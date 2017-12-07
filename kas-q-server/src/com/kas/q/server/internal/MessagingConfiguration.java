@@ -13,12 +13,15 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
    * 
    */
   private static final String  cMessagingConfigPrefix  = "kas.q.";
+  private static final String  cMessagingHouseKeeperConfigPrefix  = "kas.q.housekeeper.";
   
   public  static final boolean cDefaultEnabled        = true;
   public  static final int     cDefaultListenPort     = 14560;
   public  static final String  cDefaultManagerName    = "qmgr";
   public  static final String  cDefaultDeadQueueName  = "local.dead";
   public  static final String  cDefaultAdminQueueName = "local.admin";
+  private static final long    cDefaultHouseKeeperDelay    = 60000L;
+  private static final long    cDefaultHouseKeeperInterval = 3600000L;
   
   
   /***************************************************************************************************************
@@ -29,6 +32,8 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
   private String  mManagerName = cDefaultManagerName;
   private String  mDeadQueue   = cDefaultDeadQueueName;
   private String  mAdminQueue  = cDefaultAdminQueueName;
+  private long    mHouseKeeperDelay    = cDefaultHouseKeeperDelay;
+  private long    mHouseKeeperInterval = cDefaultHouseKeeperInterval;
       
   private HashSet<WeakRef<IListener>> mRemoteManagers = new HashSet<WeakRef<IListener>>();
   
@@ -37,11 +42,14 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
    */
   public void refresh()
   {
-    mEnabled          = mMainConfig.getBoolProperty   ( cMessagingConfigPrefix + "enabled"     , mEnabled     );
-    mPort             = mMainConfig.getIntProperty    ( cMessagingConfigPrefix + "port"        , mPort        );
-    mManagerName      = mMainConfig.getStringProperty ( cMessagingConfigPrefix + "managerName" , mManagerName );
-    mDeadQueue        = mMainConfig.getStringProperty ( cMessagingConfigPrefix + "deadq"       , mDeadQueue   );
-    mAdminQueue       = mMainConfig.getStringProperty ( cMessagingConfigPrefix + "adminq"      , mAdminQueue  );
+    mEnabled          = mMainConfig.getBoolProperty    ( cMessagingConfigPrefix + "enabled"     , mEnabled     );
+    mPort             = mMainConfig.getIntProperty     ( cMessagingConfigPrefix + "port"        , mPort        );
+    mManagerName      = mMainConfig.getStringProperty  ( cMessagingConfigPrefix + "managerName" , mManagerName );
+    mDeadQueue        = mMainConfig.getStringProperty  ( cMessagingConfigPrefix + "deadq"       , mDeadQueue   );
+    mAdminQueue       = mMainConfig.getStringProperty  ( cMessagingConfigPrefix + "adminq"      , mAdminQueue  );
+    
+    mHouseKeeperDelay    = mMainConfig.getLongProperty ( cMessagingHouseKeeperConfigPrefix + "delay"    , mHouseKeeperDelay    );
+    mHouseKeeperInterval = mMainConfig.getLongProperty ( cMessagingHouseKeeperConfigPrefix + "interval" , mHouseKeeperInterval );
     
     synchronized (mRemoteManagers)
     {
@@ -132,6 +140,26 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
   }
   
   /***************************************************************************************************************
+   * Gets the number of milliseconds since {@code KasqRepository} startup to start performing housekeeping
+   * 
+   * @return the housekeeper task's delay in milliseconds
+   */
+  public long getHouseKeeperDelay()
+  {
+    return mHouseKeeperDelay;
+  }
+  
+  /***************************************************************************************************************
+   * Gets number of milliseconds between housekeeping executions
+   * 
+   * @return the housekeeper task's interval in milliseconds
+   */
+  public long getHouseKeeperInterval()
+  {
+    return mHouseKeeperInterval;
+  }
+  
+  /***************************************************************************************************************
    * 
    */
   public String toPrintableString(int level)
@@ -145,6 +173,10 @@ public class MessagingConfiguration extends AConfiguration implements IRegistrar
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  DeadQueue=").append(mDeadQueue).append("\n")
       .append(pad).append("  AdminQueue=").append(mAdminQueue).append("\n")
+      .append(pad).append("  HouseKeeping=(")
+      .append(pad).append("    Delay=").append(mHouseKeeperDelay).append(" minutes\n")
+      .append(pad).append("    Interval=").append(mHouseKeeperInterval).append(" minutes\n")
+      .append(pad).append("  )")
       .append(pad).append("  RemoteManagers=(\n")
       .append(StringUtils.asPrintableString(mRemoteManagers, level + 2)).append("\n")
       .append(pad).append("  )\n")
