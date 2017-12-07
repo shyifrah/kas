@@ -196,23 +196,6 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     return mConfigDir;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  //private String getProperty(String key)
-  //{
-  //  String result = null;
-  //  if (mProperties == null)
-  //  {
-  //    throw new NullPointerException("Configuration not initialized or terminated");
-  //  }
-  //  else
-  //  {
-  //    result = mProperties.getProperty(key);
-  //  }
-  //  return result;
-  //}
-  //
   ///------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
