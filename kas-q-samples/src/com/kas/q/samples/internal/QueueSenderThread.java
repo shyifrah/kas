@@ -49,12 +49,11 @@ public class QueueSenderThread extends AThread
     
     String text = "shyifrah-" + i;
     TextMessage msg = mSession.createTextMessage(text);
-    msg.setJMSExpiration(System.currentTimeMillis() + 120000);
     
     if (sendDelay > 0)
       RunTimeUtils.sleep(sendDelay);
     
-    producer.send(msg, DeliveryMode.PERSISTENT, i%10, 0L);
+    producer.send(msg, DeliveryMode.PERSISTENT, i%10, 120000L);
     
     System.out.println("Sendt message " + i + ": " + msg.toString());
   }
