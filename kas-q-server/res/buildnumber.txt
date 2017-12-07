@@ -1,6 +1,0 @@
-#Build Number for ANT. Do not edit!
-#Tue Dec 05 11:18:03 IST 2017
-build.number=473
->>>>>>>=20a3a76c34c9cd83b83faa2880aa35b7b63f9724
-<<<<<<<=HEAD
-=\=\=\=\=\=\=
