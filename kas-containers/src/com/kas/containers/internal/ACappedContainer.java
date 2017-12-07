@@ -61,4 +61,15 @@ public abstract class ACappedContainer extends AKasObject
     if (mListener != null)
       mListener.onSuspend();
   }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  public String toString()
+  {
+    StringBuffer sb = new StringBuffer()
+      .append(name())
+      .append("[Path=").append(mPath).append(", Threshold=").append(mThreshold).append(']');
+    return sb.toString();
+  }
 }
