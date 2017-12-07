@@ -178,52 +178,49 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     sLogger.info("Starting termination for " + mName);
     try
     {
-      if (!isEmpty())
+      String fileName = getBackupFileName();
+      sLogger.trace(mName + ": saving messages to backup file=[" + fileName + "]");
+      mBackupFile = new File(fileName);
+      if (!mBackupFile.exists())
       {
-        String fileName = getBackupFileName();
-        sLogger.trace(mName + " is not empty. Saving messages to backup file=[" + fileName + "]");
-        mBackupFile = new File(fileName);
-        if (!mBackupFile.exists())
+        success = mBackupFile.createNewFile();
+        if (!success)
         {
-          success = mBackupFile.createNewFile();
-          if (!success)
-          {
-            sLogger.warn("Failed to create file: " + fileName);
-          }
+          sLogger.warn("Failed to create file: " + fileName);
         }
+      }
 
-        if (success)
+      if (success)
+      {
+        // save all messages to file
+        int msgCounter = 0;
+        FileOutputStream fos = new FileOutputStream(mBackupFile);
+        ObjectOutputStream ostream = new ObjectOutputStream(fos);
+        for (int i = 0; i < mQueues.length; ++i)
         {
-          // save all messages to file
-          int msgCounter = 0;
-          FileOutputStream fos = new FileOutputStream(mBackupFile);
-          ObjectOutputStream ostream = new ObjectOutputStream(fos);
-          for (int i = 0; i < mQueues.length; ++i)
+          MessageDeque msgDeq = mQueues[i];
+          while (!msgDeq.isEmpty())
           {
-            MessageDeque msgDeq = mQueues[i];
-            while (!msgDeq.isEmpty())
-            {
-              IKasqMessage msg = msgDeq.poll();
-              
-              PacketHeader header = msg.createHeader();
-              header.serialize(ostream);
-              msg.serialize(ostream);
-              
-              ++msgCounter;
-            }
+            IKasqMessage msg = msgDeq.poll();
+            
+            PacketHeader header = msg.createHeader();
+            header.serialize(ostream);
+            msg.serialize(ostream);
+            
+            ++msgCounter;
           }
-          
-          // cleanup
-          try
-          {
-            ostream.flush();
-            ostream.close();
-            fos.flush();
-            fos.close();
-          }
-          catch (Throwable e) {}
-          sLogger.trace("Total messages saved to file: " + msgCounter);
         }
+        
+        // cleanup
+        try
+        {
+          ostream.flush();
+          ostream.close();
+          fos.flush();
+          fos.close();
+        }
+        catch (Throwable e) {}
+        sLogger.trace("Total messages saved to file: " + msgCounter);
       }
     }
     catch (Throwable e)
@@ -325,8 +322,8 @@ public class KasqDestination extends AKasObject implements IKasqDestination
       }
       catch (JMSException e) {}
       
-      // if no-local messages are allowed AND consumer & producer sessions are the same - skip this message
-      if ((noLocal) && (session != null))
+      // if topic AND local messages are prohibited AND consumer & producer sessions are the same - skip this message
+      if ((mType == EDestinationType.cTopic) && (noLocal) && (session != null))
       {
         if (session.equals(prodSession))
         {
@@ -357,7 +354,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
         }
       }
       
-      // if candidate message does not pass selector - skip this message;
+      // if candidate message does not pass selector - skip this message
       if (selector != null)
       {
         //
