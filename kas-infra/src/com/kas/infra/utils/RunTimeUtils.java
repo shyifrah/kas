@@ -164,16 +164,20 @@ public class RunTimeUtils
   }
   
   /***************************************************************************************************************
-   * Suspend current Thread execution for {@code seconds} seconds
+   * Suspend current Thread execution for {@code seconds} seconds.<br>
+   * If the number of seconds is lower or equal than 0, this method does nothing.
    * 
    * @param seconds the number of seconds to delay the current Thread
    */
   public static void sleep(int seconds)
   {
-    try
+    if (seconds > 0)
     {
-      Thread.sleep((long)(seconds * 1000));
+      try
+      {
+        Thread.sleep((long)(seconds * 1000));
+      }
+      catch (Throwable e) {}
     }
-    catch (Throwable e) {}
   }
 }
