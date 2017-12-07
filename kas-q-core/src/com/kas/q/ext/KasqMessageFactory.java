@@ -31,6 +31,8 @@ public class KasqMessageFactory implements IPacketFactory
    */
   public IPacket createFromStream(ObjectInputStream istream) throws IOException
   {
+    sLogger.diag("KasqMessageFactory::createFromStream() - IN");
+    
     IPacket message = null;
     try
     {
@@ -39,7 +41,7 @@ public class KasqMessageFactory implements IPacketFactory
       { 
         int type = header.getType();
         EMessageType messageType = EMessageType.fromInt(type);
-        sLogger.debug("KasqMessageFactory::createFromStream() - MessageType=" + messageType.toString());
+        sLogger.diag("KasqMessageFactory::createFromStream() - MessageType=" + messageType.toString());
         
         switch (messageType)
         {
@@ -75,8 +77,7 @@ public class KasqMessageFactory implements IPacketFactory
       throw new IOException(e);
     }
     
-    sLogger.diag("KasqMessageFactory::createFromStream() - Message=" + StringUtils.asPrintableString(message));
-    
+    sLogger.diag("KasqMessageFactory::createFromStream() - OUT, Message=" + StringUtils.asPrintableString(message));
     return message;
   }
 }
