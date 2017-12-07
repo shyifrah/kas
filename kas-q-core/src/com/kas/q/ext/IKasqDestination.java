@@ -60,6 +60,15 @@ public interface IKasqDestination extends IInitializable, Serializable, Destinat
   public abstract int size();
   
   /***************************************************************************************************************
+   * Remove expired messages from destination.<br>
+   * This method will scan all messages in the destination and remove messages which their expiration date
+   * has expired.
+   * 
+   * @return number of messages removed
+   */
+  public abstract int expire();
+  
+  /***************************************************************************************************************
    * Returns the type of the destination.
    * 
    * @return cQueue if the destination is queue, cTopic if it's a topic

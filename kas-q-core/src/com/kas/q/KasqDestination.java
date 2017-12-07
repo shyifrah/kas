@@ -401,6 +401,37 @@ public class KasqDestination extends AKasObject implements IKasqDestination
   /***************************************************************************************************************
    * 
    */
+  public int expire()
+  {
+    int totalMessages = 0;
+    
+    // scan all priority queues
+    for (MessageDeque q : mQueues)
+    {
+      // for each queue: take the message at the head of the queue and check if it's expired.
+      // if it does, count one more expired message. if it's not - put it back at the tail of the queue. 
+      long now = System.currentTimeMillis();
+      IKasqMessage message = q.poll();
+      IKasqMessage first   = null;
+      while ((message != null) && (!message.equals(first)))
+      {
+        if (message.isExpired(now))
+          ++totalMessages;
+        else
+          q.offer(message);
+        
+        if (first == null)
+          first = message;
+        
+        message = q.poll();
+      }
+    }
+    return totalMessages;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
   public boolean isEmpty()
   {
     for (MessageDeque q : mQueues)

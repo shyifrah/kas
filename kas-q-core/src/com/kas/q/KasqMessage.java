@@ -154,7 +154,33 @@ public class KasqMessage extends AKasObject implements IKasqMessage
   public EMessageType getType()
   {
     return EMessageType.cKasqMessage;
-  }  
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public boolean isExpired()
+  {
+    return isExpired(System.currentTimeMillis());
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  public boolean isExpired(long timestamp)
+  {
+    long exp;
+    try
+    {
+      exp = getJMSExpiration();
+    }
+    catch (JMSException e)
+    {
+      return true;
+    }
+    
+    return exp < timestamp;
+  }
   
   /***************************************************************************************************************
    * 
