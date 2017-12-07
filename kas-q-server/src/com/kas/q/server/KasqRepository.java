@@ -346,11 +346,11 @@ public class KasqRepository extends AKasObject implements IInitializable
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Queues=(")
-      .append(StringUtils.asPrintableString(mQueuesMap, level+2))
+      .append(pad).append("  Queues=(\n")
+      .append(StringUtils.asPrintableString(mQueuesMap, level+2)).append("\n")
       .append(pad).append("  )\n")
-      .append(pad).append("  Topics=(")
-      .append(StringUtils.asPrintableString(mTopicsMap, level+2))
+      .append(pad).append("  Topics=(\n")
+      .append(StringUtils.asPrintableString(mTopicsMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
