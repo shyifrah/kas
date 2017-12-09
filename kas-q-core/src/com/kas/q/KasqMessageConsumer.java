@@ -90,6 +90,9 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     
     mConsumerId = UniqueId.generate();
     mConsumerQueue = (KasqQueue)mSession.createTemporaryQueue();
+    
+    if (mDestination.getType() == EDestinationType.cTopic)
+      internalSubscribe();
   }
   
   /***************************************************************************************************************
@@ -201,6 +204,18 @@ public class KasqMessageConsumer extends AKasObject implements MessageConsumer
     
     sLogger.debug("KasqMessageConsumer::internalReceive() - OUT, Result=" + StringUtils.asString(message));
     return message;
+  }
+  
+  /***************************************************************************************************************
+   * 
+   */
+  private void internalSubscribe() throws JMSException
+  {
+    sLogger.debug("KasqMessageConsumer::internalSubscribe() - IN");
+    
+    
+    
+    sLogger.debug("KasqMessageConsumer::internalSubscribe() - OUT");
   }
   
   /***************************************************************************************************************
