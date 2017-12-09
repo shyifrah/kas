@@ -1,11 +1,15 @@
 package com.kas.q.server.admin;
 
+import com.kas.q.ext.KasqClient;
+
 public class DefineProcessor implements Runnable
 {
-  private String [] mArgs;
+  private KasqClient mClient;
+  private String []  mArgs;
   
-  public DefineProcessor(String [] args)
+  public DefineProcessor(KasqClient client, String [] args)
   {
+    mClient = client;
     mArgs = args;
   }
   

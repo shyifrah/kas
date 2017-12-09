@@ -1,12 +1,13 @@
 package com.kas.q.server;
 
 import java.util.Scanner;
+import com.kas.q.ext.KasqClient;
 import com.kas.q.server.admin.DefineProcessor;
 import com.kas.q.server.admin.DeleteProcessor;
 import com.kas.q.server.admin.HelpProcessor;
 import com.kas.q.server.admin.QueryProcessor;
 
-public class KasqAdmin
+public class KasqAdmin extends KasqClient
 {
   public static final String cVerbExit   = "exit";
   public static final String cVerbDefine = "define";
@@ -21,31 +22,39 @@ public class KasqAdmin
    */
   public static void main(String [] args)
   {
-    KasqAdmin admin = new KasqAdmin();
-    admin.run(args);
-  }
-  
-  private void run(String [] args)
-  {
-    write("KAS/Q Admin Command Processor started");
-    write(" ");
-    
-    if (args.length == 0)
+    if (args.length != 2)
     {
-      // interactive mode
-      interactive();
+      writeln("Invalid number of arguments");
+      writeln("Usage: java -cp <...> " + KasqAdmin.class.getName() + " <hostname> <port>");
     }
     else
     {
-      process(args);
+      String host = args[0];
+      int    port = -1;
+      try
+      {
+        port = Integer.valueOf(args[1]);
+      }
+      catch (Throwable e) {}
+      
+      KasqAdmin admin = new KasqAdmin(host, port);
+      
+      admin.init();
+      admin.run(args);
+      admin.term();
     }
-    
-    write(" ");
-    write("KAS/Q Admin Command Processor ended");
   }
   
-  private void interactive()
+  private KasqAdmin(String host, int port)
   {
+    super(host, port);
+  }
+
+  private void run(String [] args)
+  {
+    writeln("KAS/Q Admin Command Processor started");
+    writeln(" ");
+    
     Scanner scanner = null;
     try
     {
@@ -68,53 +77,67 @@ public class KasqAdmin
       if (scanner != null)
         scanner.close();
     }
+    
+    writeln(" ");
+    writeln("KAS/Q Admin Command Processor ended");
   }
   
   private boolean process(String [] cmdWords)
   {
     boolean stop = false;
-    String cmd = cmdWords[0];
-    if (cVerbExit.equalsIgnoreCase(cmd))
+    if ((cmdWords.length == 0) || ("".equalsIgnoreCase(cmdWords[0])))
+    {
+      writeln(" ");
+    }
+    else
+    if (cVerbExit.equalsIgnoreCase(cmdWords[0]))
     {
       stop = true;
     }
     else
-    if (cVerbDefine.equalsIgnoreCase(cmd))
+    if (cVerbDefine.equalsIgnoreCase(cmdWords[0]))
     {
-      DefineProcessor processor = new DefineProcessor(cmdWords);
+      DefineProcessor processor = new DefineProcessor(this, cmdWords);
       processor.run();
     }
     else
-    if (cVerbDelete.equalsIgnoreCase(cmd))
+    if (cVerbDelete.equalsIgnoreCase(cmdWords[0]))
     {
-      DeleteProcessor processor = new DeleteProcessor(cmdWords);
+      DeleteProcessor processor = new DeleteProcessor(this, cmdWords);
       processor.run();
     }
     else
-    if (cVerbQuery.equalsIgnoreCase(cmd))
+    if (cVerbQuery.equalsIgnoreCase(cmdWords[0]))
     {
-      QueryProcessor processor = new QueryProcessor(cmdWords);
+      QueryProcessor processor = new QueryProcessor(this, cmdWords);
       processor.run();
     }
     else
-    if (cVerbHelp.equalsIgnoreCase(cmd))
+    if (cVerbHelp.equalsIgnoreCase(cmdWords[0]))
     {
       HelpProcessor processor = new HelpProcessor(cmdWords);
       processor.run();
     }
     else
     {
-      write("Unknown command verb: [" + cmd + "]");
+      writeln("Unknown command verb: [" + cmdWords[0] + "]");
+      writeln(" ");
     }
     return stop;
   }
   
-  private String read(Scanner scanner)
+  private static String read(Scanner scanner)
   {
+    write("KAS/Q> ");
     return scanner.nextLine();
   }
   
-  private void write(String message)
+  private static void write(String message)
+  {
+    System.out.print(message);
+  }
+  
+  private static void writeln(String message)
   {
     System.out.println(message);
   }

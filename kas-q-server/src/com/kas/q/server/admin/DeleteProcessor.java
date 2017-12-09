@@ -1,11 +1,15 @@
 package com.kas.q.server.admin;
 
+import com.kas.q.ext.KasqClient;
+
 public class DeleteProcessor implements Runnable
 {
-  private String [] mArgs;
+  private KasqClient mClient;
+  private String []  mArgs;
   
-  public DeleteProcessor(String [] args)
+  public DeleteProcessor(KasqClient client, String [] args)
   {
+    mClient = client;
     mArgs = args;
   }
   
