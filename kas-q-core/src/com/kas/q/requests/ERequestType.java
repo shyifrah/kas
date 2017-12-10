@@ -7,6 +7,7 @@ public enum ERequestType
   cLocate,
   cDefine,
   cHalt,
+  cQuery,
   cGet,
   cPut,
   ;
@@ -26,6 +27,6 @@ public enum ERequestType
     if (isValid(ord))
       return cValues[ord];
     
-    throw new IllegalArgumentException(ord + " not a valid RequestType ordinal");
+    throw new IllegalArgumentException(ord + " not a valid ERequestType ordinal");
   }
 }

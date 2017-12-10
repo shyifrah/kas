@@ -4,6 +4,7 @@ public enum EDestinationType
 {
   cQueue ("queue"),
   cTopic ("topic"),
+  cAll ("all"),
   ;
   
   private String mName;
@@ -32,6 +33,6 @@ public enum EDestinationType
     if (isValid(ord))
       return cValues[ord];
     
-    throw new IllegalArgumentException(ord + " not a valid MessageType ordinal");
+    throw new IllegalArgumentException(ord + " not a valid EDestinationType ordinal");
   }
 }

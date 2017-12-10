@@ -28,4 +28,6 @@ public interface IKasqConstants
   static final String cPropertyAdminMessage = "JMS_KasQ_Admin";
   
   static final String cPropertyMetaData = "JMS_KasQ_MetaData";
+  
+  static final String cPropertyPriority = "JMS_KasQ_Priority";
 }

@@ -24,6 +24,6 @@ public enum EMessageType
     if (isValid(ord))
       return cValues[ord];
     
-    throw new IllegalArgumentException(ord + " not a valid MessageType ordinal");
+    throw new IllegalArgumentException(ord + " not a valid EMessageType ordinal");
   }
 }

@@ -66,7 +66,7 @@ public class HelpProcessor implements Runnable
   {
     writeln("   Command syntax:");
     writeln(" ");
-    writeln("      >>--- DEFINE ---+--- QUEUE ---+--- name ---><");
+    writeln("      >>--- DEFINE ---+--- QUEUE ---+--- 'name' ---><");
     writeln("                      |             |");
     writeln("                      +--- TOPIC ---+");
     writeln(" ");
@@ -90,7 +90,7 @@ public class HelpProcessor implements Runnable
   {
     writeln("   Command syntax:");
     writeln(" ");
-    writeln("      >>--- QUERY ---+--- QUEUE ---+---+--- name ---+---+----------+---+---><");
+    writeln("      >>--- QUERY ---+--- QUEUE ---+---+-- 'name' --+---+----------+---+---><");
     writeln("                     |             |   |            |   |          |   |");
     writeln("                     +--- TOPIC ---+   +--- ALL ----+   +--- Pn ---+   |");
     writeln("                     |                                                 |");
@@ -103,7 +103,7 @@ public class HelpProcessor implements Runnable
       writeln("      name.........: The name of the destination to be queried.");
       writeln("      Pn...........: The priority sub-queue to be queried, where 'n' is a value between 0 to 9.");
       writeln(" ");
-      writeln("   Purpose:");
+      writeln("   Purpose:"); 
       writeln(" ");
       writeln("      Query information on a specific destination or the entire repository.");
       writeln(" ");
@@ -125,7 +125,7 @@ public class HelpProcessor implements Runnable
   {
     writeln("   Command syntax:");
     writeln(" ");
-    writeln("      >>--- DELETE ---+--- QUEUE ---+--- name ---><");
+    writeln("      >>--- DELETE ---+--- QUEUE ---+--- 'name' ---><");
     writeln("                      |             |");
     writeln("                      +--- TOPIC ---+");
     writeln(" ");

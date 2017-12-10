@@ -23,8 +23,10 @@ public class DefineRequest extends ARequest
     IKasqDestination dest;
     if (destType == EDestinationType.cQueue)
       dest = new KasqQueue(destName, "");
-    else
+    else if (destType == EDestinationType.cTopic)
       dest = new KasqTopic(destName, "");
+    else
+      throw new JMSException("Failed to define destination: Invalid destination type: [" + destType + "]");
     
     setJMSDestination(dest);
   }
