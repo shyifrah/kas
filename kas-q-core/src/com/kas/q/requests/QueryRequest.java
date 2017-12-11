@@ -32,6 +32,7 @@ public class QueryRequest extends ARequest
     
     setJMSMessageID("ID:" + UniqueId.generate().toString());
     setIntProperty(IKasqConstants.cPropertyRequestType, mType.ordinal());
+    setBooleanProperty(IKasqConstants.cPropertyAdminMessage, true);
     setIntProperty(IKasqConstants.cPropertyDestinationType, destType.ordinal());
     if (destName != null)
       setStringProperty(IKasqConstants.cPropertyDestinationName, destName);

@@ -109,8 +109,16 @@ public class KasqAdmin extends KasqClient
     else
     if (cVerbQuery.equalsIgnoreCase(cmdWords[0]))
     {
-      QueryProcessor processor = new QueryProcessor(this, cmdWords);
-      processor.run();
+      try
+      {
+        QueryProcessor processor = new QueryProcessor(this, cmdWords);
+        processor.run();
+      }
+      catch (Throwable e)
+      {
+        writeln("Exception caught while processing QUERY command: ");
+        e.printStackTrace();
+      }
     }
     else
     if (cVerbHelp.equalsIgnoreCase(cmdWords[0]))

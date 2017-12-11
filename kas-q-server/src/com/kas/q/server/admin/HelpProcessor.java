@@ -90,18 +90,17 @@ public class HelpProcessor implements Runnable
   {
     writeln("   Command syntax:");
     writeln(" ");
-    writeln("      >>--- QUERY ---+--- QUEUE ---+---+-- 'name' --+---+----------+---+---><");
-    writeln("                     |             |   |            |   |          |   |");
-    writeln("                     +--- TOPIC ---+   +--- ALL ----+   +--- Pn ---+   |");
-    writeln("                     |                                                 |");
-    writeln("                     +--- ALL -----------------------------------------+");
+    writeln("      >>--- QUERY ---+--- QUEUE ---+---+-- 'name' --+---+---><");
+    writeln("                     |             |   |            |   |");
+    writeln("                     +--- TOPIC ---+   +--- ALL ----+   |");
+    writeln("                     |                                  |");
+    writeln("                     +--- ALL --------------------------+");
     writeln(" ");
     if (extensive)
     {
       writeln("   Where:");
       writeln(" ");
       writeln("      name.........: The name of the destination to be queried.");
-      writeln("      Pn...........: The priority sub-queue to be queried, where 'n' is a value between 0 to 9.");
       writeln(" ");
       writeln("   Purpose:"); 
       writeln(" ");
@@ -114,9 +113,6 @@ public class HelpProcessor implements Runnable
       writeln("      If destination type is specified, the next token can be one of two:");
       writeln("        ALL  - if information should be queried on all destinations of the specified type.");
       writeln("        name - if information should be queried for the specific destination.");
-      writeln(" ");
-      writeln("      The last optional token is the Pn, which simply requests information to be limitted for the specific");
-      writeln("      priority queue.");
       writeln(" ");
     }
   }

@@ -200,6 +200,25 @@ public class KasqClient extends AKasObject implements IInitializable
     return (KasqTopic)mClientSession.locateTopic(name);
   }
   
+  
+  /***************************************************************************************************************
+   * Returns the admin queue defined in the KAS/Q server to which this client is connected
+   * 
+   * @return the admin queue 
+   * 
+   * @throws JMSException if client's session initialization failed
+   */
+  public KasqQueue getAdminQueue() throws JMSException
+  {
+    initClientSession();
+    if (!mSessionInitialized)
+    {
+      throw new JMSException("Cannot get admin queue. Client session failed initialization");
+    }
+    
+    return mClientConnection.getAdminQueue();
+  }
+  
   /***************************************************************************************************************
    * Initialize the client's Session and Connection which are used for locating resources in the KAS/Q server.
    * 

@@ -151,6 +151,8 @@ final public class LocateRequestProcessor extends AKasObject implements IRequest
         case cTopic:
           dest = sRepository.locateTopic(mDestinationName);
           break;
+        default:
+          break;
       }
       
       sLogger.debug("LocateRequestProcessor::process() - Located destination: " + StringUtils.asPrintableString(dest));

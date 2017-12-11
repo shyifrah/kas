@@ -206,6 +206,8 @@ final public class GetRequestProcessor extends AKasObject implements IRequestPro
           dest = sRepository.locateTopic(mDestinationName);
           message = dest.getMatching(mNoLocal, mConsumerSession, mSelector);
           break;
+        default:
+          break;
       }
 
       if (message == null)

@@ -26,6 +26,7 @@ public interface IKasqConstants
   static final String cPropertyPassword = "JMS_KasQ_Password";
   
   static final String cPropertyAdminMessage = "JMS_KasQ_Admin";
+  static final String cPropertyAdminQueue = "JMS_KasQ_AdminQueue";
   
   static final String cPropertyMetaData = "JMS_KasQ_MetaData";
   

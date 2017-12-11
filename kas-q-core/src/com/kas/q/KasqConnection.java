@@ -51,8 +51,9 @@ public class KasqConnection extends AKasObject implements Connection
   protected boolean mStarted  = false;
   protected String  mClientId = null;
   
-  protected String  mUserName = null;
-  protected boolean mPriviliged = false;
+  protected String    mUserName = null;
+  protected boolean   mPriviliged = false;
+  protected KasqQueue mAdminQueue = null;
   
   protected List<KasqSession> mSessions;
   protected Map<String, KasqQueue> mTempQueues;
@@ -151,6 +152,16 @@ public class KasqConnection extends AKasObject implements Connection
   public boolean isStarted()
   {
     return mStarted;
+  }
+  
+  /***************************************************************************************************************
+   * Returns the admin queue defined in the KAS/Q server to which this connection is connected
+   * 
+   * @return the admin queue or null if this connection is not privileged
+   */
+  public KasqQueue getAdminQueue()
+  {
+    return mAdminQueue;
   }
   
   /***************************************************************************************************************
@@ -340,6 +351,8 @@ public class KasqConnection extends AKasObject implements Connection
       {
         result = true;
         mPriviliged = authRequest.isAdmin();
+        if (mPriviliged)
+          mAdminQueue = (KasqQueue)authResponse.getObjectProperty(IKasqConstants.cPropertyAdminQueue);
       }
     }
     catch (Throwable e)

@@ -1,6 +1,13 @@
 package com.kas.q.server.admin;
 
 import javax.jms.JMSException;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueRequestor;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.KasqClient;
 import com.kas.q.requests.QueryRequest;
@@ -33,14 +40,12 @@ public class QueryProcessor
       String qArg1 = mArgs[1].toLowerCase();
       destType = EDestinationType.valueOf(EDestinationType.class, qArg1);
       
-      if (destType == EDestinationType.cAll)
+      if (destType != EDestinationType.cAll)
       {
-        queryRequest = new QueryRequest(destType);
+        throw new IllegalArgumentException("Missing destination name or ALL for QUERY QUEUE/TOPIC command");
       }
-      else
-      {
-        throw new IllegalArgumentException("Missing destination name or ALL for QUERY QUEUE/TOPIC command"); 
-      }
+      
+      queryRequest = new QueryRequest(destType);
     }
     else
     if (mArgs.length == 3)
@@ -53,7 +58,7 @@ public class QueryProcessor
       {
         throw new IllegalArgumentException("Excessive tokens following ALL: " + qArg2);
       }
-      else
+      
       if (qArg2.equals("all"))
       {
         queryRequest = new QueryRequest(destType);
@@ -66,79 +71,28 @@ public class QueryProcessor
       }
       else
       {
-        throw new IllegalArgumentException("Invalid destination name: " + qArg2 + ". Must be enclosed with apostrpohes");
-      }
-    }
-    else
-    if (mArgs.length == 4)
-    {
-      String qArg1 = mArgs[1].toLowerCase();
-      String qArg2 = mArgs[2].toLowerCase();
-      String qArg3 = mArgs[3].toLowerCase();
-      destType = EDestinationType.valueOf(EDestinationType.class, qArg1.toLowerCase());
-      destName = qArg2.substring(1, qArg2.length());
-      
-      if (destType == EDestinationType.cAll)
-      {
-        throw new IllegalArgumentException("Excessive tokens following ALL: " + qArg2 + ", " + qArg3);
-      }
-      
-      if (qArg2.equals("all"))
-      {
-        throw new IllegalArgumentException("Excessive tokens following ALL: " + qArg3);
-      }
-      
-      if ((!qArg2.startsWith("'")) || (!qArg2.startsWith("'")) || (qArg2.length() <= 2))
-      {
-        throw new IllegalArgumentException("Invalid destination name: " + qArg2 + ". Must be enclosed with apostrpohes");
-      }
-      
-      if ((qArg3.length() != 2) || !qArg3.startsWith("p"))
-      {
-        throw new IllegalArgumentException("Invalid priority: " + qArg3 + ". Must be one of P0-P9");
-      }
-
-      destName = qArg2.substring(1, qArg2.length());
-      int priority = -1;
-      try
-      {
-        priority = Integer.valueOf(qArg3.substring(1));
-      }
-      catch (NumberFormatException e) {}
-      
-      if (priority == -1)
-      {
-        throw new IllegalArgumentException("Invalid priority: " + qArg3 + ". Must be one of P0-P9");
-      }
-      else
-      {
-        queryRequest = new QueryRequest(destType, destName, priority);
+        throw new IllegalArgumentException("Invalid destination name: " + qArg2 + ". Must be ALL or name enclosed with apostrpohes");
       }
     }
     else
     {
-      throw new IllegalArgumentException("Unknown command");
+      throw new IllegalArgumentException("Invalid QUERY request. Too many tokens");
     }
     
-    //
-    //String userName = "admin";
-    //String password = "admin";
-    //
-    //try
-    //{
-    //  ConnectionFactory factory = mClient.getConnectionFactory();
-    //  Connection        conn    = factory.createConnection(userName, password);
-    //  Session           sess    = conn.createSession();
-    //  MessageProducer   prod    = sess.createProducer(null);
-    //  
-    //  HaltRequest haltRequest = new HaltRequest();
-    //  
-    //  prod.send(haltRequest);
-    //}
-    //catch (JMSException e) {}
+    String userName = "admin";
+    String password = "admin";
+    
+    QueueConnectionFactory factory = mClient.getQueueConnectionFactory();
+    QueueConnection   conn    = factory.createQueueConnection(userName, password);
+    QueueSession      sess    = conn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+    Queue             queue   = mClient.getAdminQueue();
+    QueueRequestor    req     = new QueueRequestor(sess, queue);
+    TextMessage response = (TextMessage)req.request(queryRequest);
+    String text = response.getText();
+    writeln(text);
   }
   
-  private void writeln(String message)
+  private static void writeln(String message)
   {
     System.out.println(message);
   }
