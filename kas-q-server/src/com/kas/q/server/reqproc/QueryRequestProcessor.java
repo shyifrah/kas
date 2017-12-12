@@ -3,14 +3,12 @@ package com.kas.q.server.reqproc;
 import java.io.IOException;
 import javax.jms.JMSException;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.q.KasqMessage;
+import com.kas.q.KasqTextMessage;
 import com.kas.q.ext.EDestinationType;
 import com.kas.q.ext.IKasqConstants;
-import com.kas.q.ext.IKasqDestination;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
@@ -32,7 +30,6 @@ final public class QueryRequestProcessor extends AKasObject implements IRequestP
   private String           mJmsMessageId;
   private EDestinationType mDestinationType;
   private String           mDestinationName;
-  private Integer          mPriority;
   
   /***************************************************************************************************************
    * Construct a {@code GetRequestProcessor} out of a {@link IKasqMessage}.
@@ -48,13 +45,11 @@ final public class QueryRequestProcessor extends AKasObject implements IRequestP
     Integer type = null;
     String  jmsMsgId = null;
     String  destName = null;
-    Integer priority = null;
     try
     {
       jmsMsgId = requestMessage.getJMSMessageID();
       type     = requestMessage.getIntProperty(IKasqConstants.cPropertyDestinationType);
       destName = requestMessage.getStringProperty(IKasqConstants.cPropertyDestinationName);
-      priority = requestMessage.getIntProperty(IKasqConstants.cPropertyPriority);
     }
     catch (Throwable e) {}
     
@@ -85,13 +80,6 @@ final public class QueryRequestProcessor extends AKasObject implements IRequestP
     }
     catch (Throwable e) {}
     mDestinationName = destName;
-    
-    try
-    {
-      priority = requestMessage.getIntProperty(IKasqConstants.cPropertyPriority);
-    }
-    catch (Throwable e) {}
-    mPriority = priority;
   }
   
   /***************************************************************************************************************
@@ -125,16 +113,6 @@ final public class QueryRequestProcessor extends AKasObject implements IRequestP
   }
   
   /***************************************************************************************************************
-   * Get the consumer queue name
-   * 
-   * @return the consumer queue name
-   */
-  public Integer getPriority()
-  {
-    return mPriority;
-  }
-  
-  /***************************************************************************************************************
    *  
    */
   public boolean process(IClientHandler handler) throws JMSException, IOException
@@ -153,7 +131,11 @@ final public class QueryRequestProcessor extends AKasObject implements IRequestP
       IKasqMessage message = null;
       int code = IKasqConstants.cPropertyResponseCode_Fail;
       
-      
+      String text = sRepository.query(mDestinationType, mDestinationName);
+      message = new KasqTextMessage(text);
+      message.setJMSCorrelationID(mJmsMessageId);
+      message.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
+      message.setStringProperty(IKasqConstants.cPropertyResponseMessage, "");
       
       // now we address the repository and locate the destination
       sLogger.debug("QueryRequestProcessor::process() - Sending response message: " + message.toPrintableString(0));

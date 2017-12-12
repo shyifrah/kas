@@ -12,13 +12,16 @@ import com.kas.q.ext.IKasqConstants;
 import com.kas.q.ext.IKasqMessage;
 import com.kas.q.requests.ERequestType;
 import com.kas.q.server.IClientHandler;
+import com.kas.q.server.KasqRepository;
+import com.kas.q.server.KasqServer;
 
 final public class AuthRequestProcessor extends AKasObject implements IRequestProcessor
 {
   /***************************************************************************************************************
    * 
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(AuthRequestProcessor.class);
+  private static ILogger        sLogger     = LoggerFactory.getLogger(AuthRequestProcessor.class);
+  private static KasqRepository sRepository = KasqServer.getInstance().getRepository();
   
   /***************************************************************************************************************
    * 
@@ -159,6 +162,7 @@ final public class AuthRequestProcessor extends AKasObject implements IRequestPr
     response.setJMSCorrelationID(mJmsMessageId);
     response.setIntProperty(IKasqConstants.cPropertyResponseCode, code);
     response.setStringProperty(IKasqConstants.cPropertyResponseMessage, msg);
+    response.setObjectProperty(IKasqConstants.cPropertyAdminQueue, sRepository.getAdminQueue());
     
     sLogger.debug("AuthRequestProcessor::process() - Sending response message: " + response.toPrintableString(0));
     handler.send(response);

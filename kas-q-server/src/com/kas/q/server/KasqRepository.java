@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.concurrent.TimeUnit;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.WeakRef;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -29,8 +28,8 @@ public class KasqRepository extends AKasObject implements IInitializable
   private DestinationsMap mQueuesMap;
   private DestinationsMap mTopicsMap;
   
-  private WeakRef<IKasqDestination> mDeadQueue;
-  private WeakRef<IKasqDestination> mAdminQueue;
+  private IKasqDestination mDeadQueue;
+  private IKasqDestination mAdminQueue;
   
   private RepositoryHousekeeperTask mHouseKeeper;
   
@@ -90,16 +89,16 @@ public class KasqRepository extends AKasObject implements IInitializable
         {
           String destName = entry.substring(0, entry.lastIndexOf('.'));
           mLogger.trace("KasqRepository::init() - Restoring contents of " + destType.toString() + " [" + destName + ']');
-          define(destName, mConfig.getManagerName(), destType);
+          define(destType, destName, mConfig.getManagerName());
         }
       }
       
       IKasqDestination q;
       q = defineQueueIfNeeded(mConfig.getDeadQueue());
-      mDeadQueue = new WeakRef<IKasqDestination>(q);
+      mDeadQueue = q;
       
       q = defineQueueIfNeeded(mConfig.getAdminQueue());
-      mAdminQueue = new WeakRef<IKasqDestination>(q);
+      mAdminQueue = q;
       
       mHouseKeeper = new RepositoryHousekeeperTask(mQueuesMap, mTopicsMap);
       ThreadPool.scheduleAtFixedRate(mHouseKeeper, mConfig.getHouseKeeperDelay(), mConfig.getHouseKeeperInterval(), TimeUnit.MINUTES);
@@ -161,7 +160,7 @@ public class KasqRepository extends AKasObject implements IInitializable
     if (queue == null)
     {
       mLogger.trace("KasqRepository::init() - Queue [" + name + "] could not be located, define it now");
-      define(name, mConfig.getManagerName(), EDestinationType.cQueue);
+      queue = define(EDestinationType.cQueue, name, mConfig.getManagerName());
     }
     
     return queue;
@@ -225,42 +224,36 @@ public class KasqRepository extends AKasObject implements IInitializable
   }
   
   /***************************************************************************************************************
-   * Define and initialize a topic/queue in the repository, specifying the name of the topic/queue and the its manager
+   * Define and initialize a topic/queue in the repository, specifying the name of the topic/queue
+   * and the its manager
    * 
    * @param name the name of the topic/queue
    * @param managerName of the manager in which this topic/queue defined
    * @param type the destination type
    * 
-   * @return true if topic/queue definition was successful
+   * @return the newly-defined destination or null if definition failed
    */
-  private boolean define(String name, String managerName, EDestinationType type)
+  private IKasqDestination define(EDestinationType type, String name, String managerName)
   {
     mLogger.debug("KasqRepository::define() - IN");
-    boolean success = true;
+    IKasqDestination destination = null;
     
     mLogger.info("Define " + type.toString() + " with name=[" + name + "] at manager=[" + managerName + "]");
+    boolean success;
     
     try
     {
       switch (type)
       {
         case cQueue:
-          IKasqDestination queue = mQueuesMap.get(name);
-          if (queue == null)
-          {
-            queue = new KasqQueue(name, managerName);
-            success = queue.init();
-            if (success) mQueuesMap.put(name, queue);
-          }
+          destination = new KasqQueue(name, managerName);
+          success = destination.init();
+          if (success) mQueuesMap.put(name, destination);
           break;
         case cTopic:
-          IKasqDestination topic = mTopicsMap.get(name);
-          if (topic == null)
-          {
-            topic = new KasqTopic(name, managerName);
-            success = topic.init();
-            if (success) mTopicsMap.put(name, topic);
-          }
+          destination = new KasqTopic(name, managerName);
+          success = destination.init();
+          if (success) mTopicsMap.put(name, destination);
           break;
         default:
           break;
@@ -272,8 +265,8 @@ public class KasqRepository extends AKasObject implements IInitializable
       success = false;
     }
     
-    mLogger.debug("KasqRepository::define() - OUT, Returns=" + success);
-    return success;
+    mLogger.debug("KasqRepository::define() - OUT, Returns=" + (destination != null));
+    return destination;
   }
   
   /***************************************************************************************************************
@@ -283,7 +276,7 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   public IKasqDestination getDeadQueue()
   {
-    return mDeadQueue.get();
+    return mDeadQueue;
   }
   
   /***************************************************************************************************************
@@ -293,7 +286,7 @@ public class KasqRepository extends AKasObject implements IInitializable
    */
   public IKasqDestination getAdminQueue()
   {
-    return mAdminQueue.get();
+    return mAdminQueue;
   }
   
   /***************************************************************************************************************
@@ -399,6 +392,8 @@ public class KasqRepository extends AKasObject implements IInitializable
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
     sb.append(name()).append("(\n")
+      .append(pad).append("  AdminQueue=(").append(mAdminQueue.toPrintableString(level+1)).append(")\n")
+      .append(pad).append("  DeadQueue=(").append(mDeadQueue.toPrintableString(level+1)).append(")\n")
       .append(pad).append("  Queues=(\n")
       .append(StringUtils.asPrintableString(mQueuesMap, level+2)).append("\n")
       .append(pad).append("  )\n")

@@ -38,7 +38,7 @@ public class QueryProcessor
     if (mArgs.length == 2)
     {
       String qArg1 = mArgs[1].toLowerCase();
-      destType = EDestinationType.valueOf(EDestinationType.class, qArg1);
+      destType = EDestinationType.fromString(qArg1);
       
       if (destType != EDestinationType.cAll)
       {
@@ -52,7 +52,7 @@ public class QueryProcessor
     {
       String qArg1 = mArgs[1].toLowerCase();
       String qArg2 = mArgs[2].toLowerCase();
-      destType = EDestinationType.valueOf(EDestinationType.class, qArg1.toLowerCase());
+      destType = EDestinationType.fromString(qArg1);
       
       if (destType == EDestinationType.cAll)
       {

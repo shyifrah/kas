@@ -4,13 +4,13 @@ import com.kas.q.ext.KasqClient;
 
 public class DefineProcessor implements Runnable
 {
-  private KasqClient mClient;
-  private String []  mArgs;
+  //private KasqClient mClient;
+  //private String []  mArgs;
   
   public DefineProcessor(KasqClient client, String [] args)
   {
-    mClient = client;
-    mArgs = args;
+    //mClient = client;
+    //mArgs = args;
   }
   
   public void run()
@@ -18,8 +18,8 @@ public class DefineProcessor implements Runnable
     
   }
   
-  private void write(String message)
-  {
-    System.out.println(message);
-  }
+  //private void writeln(String message)
+  //{
+  //  System.out.println(message);
+  //}
 }

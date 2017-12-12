@@ -49,6 +49,9 @@ public class RequestProcessorFactory
         case cMetaData:
           request = new MetaRequestProcessor(message);
           break;
+        case cQuery:
+          request = new QueryRequestProcessor(message);
+          break;
         case cPut:
         default:
           request = new PutRequestProcessor(message);

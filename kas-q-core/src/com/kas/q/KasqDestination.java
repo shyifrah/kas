@@ -533,7 +533,7 @@ public class KasqDestination extends AKasObject implements IKasqDestination
     
     sb.append(pad).append("  )\n")
       .append(pad).append("  TotalSize=").append(size()).append("\n")
-      .append(pad).append(")\n");
+      .append(pad).append(")");
     return sb.toString();
   }
 }

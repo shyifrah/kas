@@ -228,7 +228,7 @@ public class KasqClient extends AKasObject implements IInitializable
   {
     if (!mSessionInitialized)
     {
-      mClientConnection = (KasqConnection)mConnectionFactory.createConnection();
+      mClientConnection = (KasqConnection)mConnectionFactory.createConnection("admin", "admin");
       mClientSession = (KasqSession)mClientConnection.createSession();
       mSessionInitialized = true;
     }
