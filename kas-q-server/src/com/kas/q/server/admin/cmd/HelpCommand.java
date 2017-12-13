@@ -1,49 +1,61 @@
-package com.kas.q.server.admin;
+package com.kas.q.server.admin.cmd;
 
-import com.kas.q.server.KasqAdmin;
+import java.util.Queue;
+import com.kas.q.server.admin.KasqAdmin;
 
-public class HelpProcessor implements Runnable
+public class HelpCommand implements Runnable
 {
-  private String [] mArgs;
+  private Queue<String>       mCommandArgs;
   
-  public HelpProcessor(String [] args)
+  public HelpCommand(Queue<String> args)
   {
-    mArgs = args;
+    mCommandArgs = args;
   }
   
-  public void run()
+ public void run()
   {
-    if (mArgs.length == 1)
+    if (mCommandArgs.isEmpty())
     {
       help();
     }
     else
-    if (KasqAdmin.cVerbExit.equalsIgnoreCase(mArgs[1]))
     {
-      helpExit(true);
-    }
-    else
-    if (KasqAdmin.cVerbDefine.equalsIgnoreCase(mArgs[1]))
-    {
-      helpDefine(true);
-    }
-    else if (KasqAdmin.cVerbDelete.equalsIgnoreCase(mArgs[1]))
-    {
-      helpDelete(true);
-    }
-    else if (KasqAdmin.cVerbQuery.equalsIgnoreCase(mArgs[1]))
-    {
-      helpQuery(true);
-    }
-    else if (KasqAdmin.cVerbHelp.equalsIgnoreCase(mArgs[1]))
-    {
-      helpHelp(true);
-    }
-    else
-    {
-      writeln("Unknown command verb: [" + mArgs[1] + "]");
-      writeln("Type \"help\" to display the help screen");
-      writeln(" ");
+      String helpVerb = mCommandArgs.poll();
+      String temp     = mCommandArgs.poll();
+      if (temp != null)
+      {
+        writeln("Invalid HELP command. Excessive token encountered: [" + temp + "]");
+        writeln("Type \"HELP\" to display the help screen");
+        writeln(" ");
+      }
+      else
+      if (KasqAdmin.cVerbExit.equalsIgnoreCase(helpVerb))
+      {
+        helpExit(true);
+      }
+      else
+      if (KasqAdmin.cVerbDefine.equalsIgnoreCase(helpVerb))
+      {
+        helpDefine(true);
+      }
+      else if (KasqAdmin.cVerbDelete.equalsIgnoreCase(helpVerb))
+      {
+        helpDelete(true);
+      }
+      else if (KasqAdmin.cVerbQuery.equalsIgnoreCase(helpVerb))
+      {
+        helpQuery(true);
+      }
+      else if (KasqAdmin.cVerbHelp.equalsIgnoreCase(helpVerb))
+      {
+        helpHelp(true);
+      }
+      else
+      {
+        writeln("Unknown command verb: [" + helpVerb + "]");
+        writeln("Type \"HELP\" to display the help screen");
+        writeln(" ");
+      }
     }
   }
   

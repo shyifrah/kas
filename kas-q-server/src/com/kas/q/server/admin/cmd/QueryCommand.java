@@ -1,35 +1,27 @@
-package com.kas.q.server.admin;
+package com.kas.q.server.admin.cmd;
 
-import javax.jms.JMSException;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueRequestor;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import com.kas.q.ext.EDestinationType;
-import com.kas.q.ext.KasqClient;
-import com.kas.q.requests.QueryRequest;
+import java.util.Queue;
+import com.kas.q.server.admin.KasqAdminConnection;
 
-public class QueryProcessor
+public class QueryCommand implements Runnable
 {
-  private KasqClient mClient;
-  private String []  mArgs;
+  //private KasqAdminConnection mConnection;
+  //private Queue<String>       mCommandArgs;
   
-  public QueryProcessor(KasqClient client, String [] args)
+  public QueryCommand(KasqAdminConnection conn, Queue<String> args)
   {
-    mClient = client;
-    mArgs = args;
+    //mConnection  = conn;
+    //mCommandArgs = args;
   }
   
-  public void run() throws IllegalArgumentException, JMSException
+  public void run()
   {
     // first argument was already verified by KasqAdmin class - it is QUERY 
-    QueryRequest queryRequest = null;
-    EDestinationType destType;
-    String destName;
+    //QueryRequest queryRequest = null;
+    //EDestinationType destType;
+    //String destName;
     
+    /*
     if (mArgs.length == 1)
     {
       throw new IllegalArgumentException("Destination type is missing");
@@ -90,10 +82,6 @@ public class QueryProcessor
     TextMessage response = (TextMessage)req.request(queryRequest);
     String text = response.getText();
     writeln(text);
-  }
-  
-  private static void writeln(String message)
-  {
-    System.out.println(message);
+    */
   }
 }

@@ -72,7 +72,7 @@ public class KasqConnection extends AKasObject implements Connection
    * 
    * @throws JMSException 
    */
-  KasqConnection(String host, int port) throws JMSException
+  protected KasqConnection(String host, int port) throws JMSException
   {
     this(host, port, cDefaultUserName, cDefaultPassword);
   }
@@ -87,7 +87,7 @@ public class KasqConnection extends AKasObject implements Connection
    * 
    * @throws JMSException  
    */
-  KasqConnection(String host, int port, String userName, String password) throws JMSException
+  protected KasqConnection(String host, int port, String userName, String password) throws JMSException
   {
     sLogger.debug("KasqConnection::KasqConnection() - IN");
     try
@@ -107,7 +107,7 @@ public class KasqConnection extends AKasObject implements Connection
     }
     catch (IOException e)
     {
-      throw new JMSException("Connection creation failed", e.getMessage());
+      throw new JMSException("Connection failed KAS/Q server at address: " + host + ':' + port);
     }
     
     boolean authenticated = internalAuthenticate(userName, password);
