@@ -10,23 +10,7 @@ public class QueryRequest extends ARequest
   /***************************************************************************************************************
    *  
    */
-  public QueryRequest(EDestinationType destType) throws JMSException
-  {
-    this(destType, null);
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
   public QueryRequest(EDestinationType destType, String destName) throws JMSException
-  {
-    this(destType, destName, null);
-  }
-  
-  /***************************************************************************************************************
-   *  
-   */
-  public QueryRequest(EDestinationType destType, String destName, Integer priority) throws JMSException
   {
     super(ERequestType.cQuery);
     
@@ -36,7 +20,5 @@ public class QueryRequest extends ARequest
     setIntProperty(IKasqConstants.cPropertyDestinationType, destType.ordinal());
     if (destName != null)
       setStringProperty(IKasqConstants.cPropertyDestinationName, destName);
-    if (priority != null)
-      setIntProperty(IKasqConstants.cPropertyPriority, priority);
   }
 }

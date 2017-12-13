@@ -64,6 +64,9 @@ public class KasqConnection extends AKasObject implements Connection
   protected IMessenger mMessenger;
   protected KasqReceiverTask mReceiverTask;
   
+  protected String mHost;
+  protected int    mPort;
+  
   /***************************************************************************************************************
    * Constructs a Connection object to the specified host/port combination, using the default user identity
    * 
@@ -92,6 +95,8 @@ public class KasqConnection extends AKasObject implements Connection
     sLogger.debug("KasqConnection::KasqConnection() - IN");
     try
     {
+      mHost = host;
+      mPort = port;
       mUserName = userName;
       
       mMessenger = MessengerFactory.create(host, port, new KasqMessageFactory());
@@ -475,7 +480,7 @@ public class KasqConnection extends AKasObject implements Connection
    * 
    * @throws JMSException if an I/O exception occurs 
    */
-  synchronized void internalSend(IKasqMessage message) throws JMSException
+  protected synchronized void internalSend(IKasqMessage message) throws JMSException
   {
     // setting some mandatory and optional properties
     message.setStringProperty("JMSXUserID", mUserName);
@@ -502,7 +507,7 @@ public class KasqConnection extends AKasObject implements Connection
    * 
    * @throws JMSException if an I/O exception occurs 
    */
-  synchronized IKasqMessage internalSendAndReceive(IKasqMessage message) throws JMSException
+  protected synchronized IKasqMessage internalSendAndReceive(IKasqMessage message) throws JMSException
   {
     // setting some mandatory and optional properties 
     message.setStringProperty("JMSXUserID", mUserName);

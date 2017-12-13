@@ -126,22 +126,14 @@ public class KasqAdmin
       else
       if (cVerbQuery.equalsIgnoreCase(verb))
       {
-        try
-        {
-          QueryCommand processor = new QueryCommand(mConnection, cmdWords);
-          processor.run();
-        }
-        catch (Throwable e)
-        {
-          writeln("Exception caught while processing QUERY command: ");
-          e.printStackTrace();
-        }
+        QueryCommand command = new QueryCommand(mConnection, cmdWords);
+        command.run();
       }
       else
       if (cVerbHelp.equalsIgnoreCase(verb))
       {
-        HelpCommand processor = new HelpCommand(cmdWords);
-        processor.run();
+        HelpCommand command = new HelpCommand(cmdWords);
+        command.run();
       }
       else
       {

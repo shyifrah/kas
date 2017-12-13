@@ -1,87 +1,98 @@
 package com.kas.q.server.admin.cmd;
 
 import java.util.Queue;
+import javax.jms.JMSException;
+import com.kas.q.ext.EDestinationType;
+import com.kas.q.requests.QueryRequest;
 import com.kas.q.server.admin.KasqAdminConnection;
 
 public class QueryCommand implements Runnable
 {
-  //private KasqAdminConnection mConnection;
-  //private Queue<String>       mCommandArgs;
+  private KasqAdminConnection mConnection;
+  private Queue<String>       mCommandArgs;
   
   public QueryCommand(KasqAdminConnection conn, Queue<String> args)
   {
-    //mConnection  = conn;
-    //mCommandArgs = args;
+    mConnection  = conn;
+    mCommandArgs = args;
   }
   
   public void run()
   {
-    // first argument was already verified by KasqAdmin class - it is QUERY 
-    //QueryRequest queryRequest = null;
-    //EDestinationType destType;
-    //String destName;
-    
-    /*
-    if (mArgs.length == 1)
+    String pDestType = mCommandArgs.poll();
+    EDestinationType destType = null;
+    if (pDestType == null)
     {
       throw new IllegalArgumentException("Destination type is missing");
     }
-    else
-    if (mArgs.length == 2)
+    
+    destType = EDestinationType.fromString(pDestType);
+    String pDestName = mCommandArgs.poll();
+    
+    if ((destType == EDestinationType.cAll) && (pDestName != null))
     {
-      String qArg1 = mArgs[1].toLowerCase();
-      destType = EDestinationType.fromString(qArg1);
-      
-      if (destType != EDestinationType.cAll)
-      {
-        throw new IllegalArgumentException("Missing destination name or ALL for QUERY QUEUE/TOPIC command");
-      }
-      
-      queryRequest = new QueryRequest(destType);
+      throw new IllegalArgumentException("Exessive token following ALL: " + pDestName);
     }
     else
-    if (mArgs.length == 3)
+    if (destType == EDestinationType.cAll)
     {
-      String qArg1 = mArgs[1].toLowerCase();
-      String qArg2 = mArgs[2].toLowerCase();
-      destType = EDestinationType.fromString(qArg1);
-      
-      if (destType == EDestinationType.cAll)
+      execute(destType);
+    }
+    else
+    if ((!pDestName.startsWith("'")) || (!pDestName.endsWith("'")) || (pDestName.length() <= 2))
+    {
+      throw new IllegalArgumentException("Invalid destination name: " + pDestName + ". Must be ALL or name enclosed with apostrpohes");
+    }
+    else
+    {
+      String destName = pDestName.substring(1, pDestName.length());
+      String temp = mCommandArgs.poll();
+      if (temp != null)
       {
-        throw new IllegalArgumentException("Excessive tokens following ALL: " + qArg2);
-      }
-      
-      if (qArg2.equals("all"))
-      {
-        queryRequest = new QueryRequest(destType);
-      }
-      else
-      if ((qArg2.startsWith("'")) && (qArg2.endsWith("'")) && (qArg2.length() > 2))
-      {
-        destName = qArg2.substring(1, qArg2.length());
-        queryRequest = new QueryRequest(destType, destName);
+        throw new IllegalArgumentException("Excessive token following destination name: " + temp);
       }
       else
       {
-        throw new IllegalArgumentException("Invalid destination name: " + qArg2 + ". Must be ALL or name enclosed with apostrpohes");
+        execute(destType, destName);
       }
     }
-    else
+  }
+  
+  protected void execute(EDestinationType type)
+  {
+    execute(type, null);
+  }
+  
+  protected void execute(EDestinationType type, String name)
+  {
+    QueryRequest request = null;
+    boolean success = false;
+    try
     {
-      throw new IllegalArgumentException("Invalid QUERY request. Too many tokens");
+      request = new QueryRequest(type, name);
+    }
+    catch (JMSException e) {}
+    
+    if (request != null)
+    {
+      String output = mConnection.query(request);
+      if (output != null)
+      {
+        writeln(output);
+        writeln(" ");
+        success = true;
+      }
     }
     
-    String userName = "admin";
-    String password = "admin";
-    
-    QueueConnectionFactory factory = mClient.getQueueConnectionFactory();
-    QueueConnection   conn    = factory.createQueueConnection(userName, password);
-    QueueSession      sess    = conn.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-    Queue             queue   = mClient.getAdminQueue();
-    QueueRequestor    req     = new QueueRequestor(sess, queue);
-    TextMessage response = (TextMessage)req.request(queryRequest);
-    String text = response.getText();
-    writeln(text);
-    */
+    if (!success)
+    {
+      writeln("Error occured while trying to execute query command");
+      writeln(" ");
+    }
+  }
+  
+  private static void writeln(String message)
+  {
+    System.out.println(message);
   }
 }
