@@ -6,15 +6,11 @@ import com.kas.q.ext.EDestinationType;
 import com.kas.q.requests.QueryRequest;
 import com.kas.q.server.admin.KasqAdminConnection;
 
-public class QueryCommand implements Runnable
+public class QueryCommand extends ACommand
 {
-  private KasqAdminConnection mConnection;
-  private Queue<String>       mCommandArgs;
-  
   public QueryCommand(KasqAdminConnection conn, Queue<String> args)
   {
-    mConnection  = conn;
-    mCommandArgs = args;
+    super(conn, args);
   }
   
   public void run()
@@ -37,6 +33,11 @@ public class QueryCommand implements Runnable
     if (destType == EDestinationType.cAll)
     {
       execute(destType);
+    }
+    else
+    if (pDestName == null)
+    {
+      throw new IllegalArgumentException("Destination name is missing");
     }
     else
     if (pDestName.equalsIgnoreCase("all"))
@@ -101,8 +102,8 @@ public class QueryCommand implements Runnable
     }
   }
   
-  private static void writeln(String message)
+  public String toPrintableString(int level)
   {
-    System.out.println(message);
+    return null;
   }
 }

@@ -371,15 +371,21 @@ public class KasqRepository extends AKasObject implements IInitializable
     if (type == EDestinationType.cTopic)
     {
       IKasqDestination topic = locateTopic(name);
-      sb.append(topic.toPrintableString(0))
-        .append("\n--------------------------------------------------------------------------\n");
+      if (topic == null)
+        sb.append("Topic ").append(name).append(" does not exist");
+      else
+        sb.append(topic.toPrintableString(0))
+          .append("\n--------------------------------------------------------------------------\n");
     }
     else                                 // QUERY QUEUE name
     if (type == EDestinationType.cQueue)
     {
       IKasqDestination queue = locateQueue(name);
-      sb.append(queue.toPrintableString(0))
-        .append("\n--------------------------------------------------------------------------\n");
+      if (queue == null)
+        sb.append("Queue ").append(name).append(" does not exist");
+      else
+        sb.append(queue.toPrintableString(0))
+          .append("\n--------------------------------------------------------------------------\n");
     }
     return sb.toString();
   }

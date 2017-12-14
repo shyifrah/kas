@@ -2,14 +2,13 @@ package com.kas.q.server.admin.cmd;
 
 import java.util.Queue;
 import com.kas.q.server.admin.KasqAdmin;
+import com.kas.q.server.admin.KasqAdminConnection;
 
-public class HelpCommand implements Runnable
+public class HelpCommand extends ACommand
 {
-  private Queue<String>       mCommandArgs;
-  
-  public HelpCommand(Queue<String> args)
+  public HelpCommand(KasqAdminConnection conn, Queue<String> args)
   {
-    mCommandArgs = args;
+    super(conn, args);
   }
   
  public void run()
@@ -190,9 +189,9 @@ public class HelpCommand implements Runnable
       writeln(" ");
     }
   }
-  
-  private static void writeln(String message)
+
+  public String toPrintableString(int level)
   {
-    System.out.println(message);
+    return null;
   }
 }

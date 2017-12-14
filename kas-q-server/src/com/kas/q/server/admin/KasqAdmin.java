@@ -139,7 +139,7 @@ public class KasqAdmin
       else
       if (cVerbHelp.equalsIgnoreCase(verb))
       {
-        HelpCommand command = new HelpCommand(cmdWords);
+        HelpCommand command = new HelpCommand(mConnection, cmdWords);
         command.run();
       }
       else
