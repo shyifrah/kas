@@ -33,10 +33,20 @@ public class QueryCommand implements Runnable
     {
       throw new IllegalArgumentException("Exessive token following ALL: " + pDestName);
     }
-    else
+    
     if (destType == EDestinationType.cAll)
     {
       execute(destType);
+    }
+    else
+    if (pDestName.equalsIgnoreCase("all"))
+    {
+      String temp = mCommandArgs.poll();
+      if (temp != null)
+      {
+        throw new IllegalArgumentException("Excessive token following ALL: " + temp);
+      }
+      execute(destType, null);
     }
     else
     if ((!pDestName.startsWith("'")) || (!pDestName.endsWith("'")) || (pDestName.length() <= 2))
@@ -45,7 +55,7 @@ public class QueryCommand implements Runnable
     }
     else
     {
-      String destName = pDestName.substring(1, pDestName.length());
+      String destName = pDestName.substring(1, pDestName.length()-1);
       String temp = mCommandArgs.poll();
       if (temp != null)
       {

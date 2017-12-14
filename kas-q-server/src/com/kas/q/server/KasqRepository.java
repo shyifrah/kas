@@ -348,38 +348,38 @@ public class KasqRepository extends AKasObject implements IInitializable
     {
       for (IKasqDestination queue : mQueuesMap.values())
         sb.append(queue.toPrintableString(0))
-          .append("--------------------------------------------------------------------------");
+          .append("\n--------------------------------------------------------------------------\n");
       for (IKasqDestination topic : mTopicsMap.values())
         sb.append(topic.toPrintableString(0))
-          .append("--------------------------------------------------------------------------");
+          .append("\n--------------------------------------------------------------------------\n");
     }
     else                                 // QUERY TOPIC ALL
     if ((type == EDestinationType.cTopic) && (name == null))
     {
       for (IKasqDestination topic : mTopicsMap.values())
         sb.append(topic.toPrintableString(0))
-          .append("--------------------------------------------------------------------------");
+          .append("\n--------------------------------------------------------------------------\n");
     }
     else                                 // QUERY QUEUE ALL
     if ((type == EDestinationType.cQueue) && (name == null))
     {
       for (IKasqDestination queue : mQueuesMap.values())
         sb.append(queue.toPrintableString(0))
-          .append("--------------------------------------------------------------------------");
+          .append("\n--------------------------------------------------------------------------\n");
     }
     else                                 // QUERY TOPIC name
     if (type == EDestinationType.cTopic)
     {
       IKasqDestination topic = locateTopic(name);
       sb.append(topic.toPrintableString(0))
-        .append("--------------------------------------------------------------------------");
+        .append("\n--------------------------------------------------------------------------\n");
     }
     else                                 // QUERY QUEUE name
     if (type == EDestinationType.cQueue)
     {
       IKasqDestination queue = locateQueue(name);
       sb.append(queue.toPrintableString(0))
-        .append("--------------------------------------------------------------------------");
+        .append("\n--------------------------------------------------------------------------\n");
     }
     return sb.toString();
   }

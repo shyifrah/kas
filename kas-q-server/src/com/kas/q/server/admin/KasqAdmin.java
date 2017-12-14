@@ -126,8 +126,15 @@ public class KasqAdmin
       else
       if (cVerbQuery.equalsIgnoreCase(verb))
       {
-        QueryCommand command = new QueryCommand(mConnection, cmdWords);
-        command.run();
+        try
+        {
+          QueryCommand command = new QueryCommand(mConnection, cmdWords);
+          command.run();
+        }
+        catch (IllegalArgumentException e)
+        {
+          writeln("Error occurred while running QUERY command: " + e.getMessage());
+        }
       }
       else
       if (cVerbHelp.equalsIgnoreCase(verb))
