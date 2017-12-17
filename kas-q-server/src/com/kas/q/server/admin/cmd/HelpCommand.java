@@ -1,12 +1,12 @@
 package com.kas.q.server.admin.cmd;
 
-import java.util.Queue;
 import com.kas.q.server.admin.KasqAdmin;
 import com.kas.q.server.admin.KasqAdminConnection;
+import com.kas.q.server.typedef.CommandQueue;
 
 public class HelpCommand extends ACommand
 {
-  public HelpCommand(KasqAdminConnection conn, Queue<String> args)
+  public HelpCommand(KasqAdminConnection conn, CommandQueue args)
   {
     super(conn, args);
   }
@@ -188,10 +188,5 @@ public class HelpCommand extends ACommand
       writeln("      Terminates the KAS/Q Admin Command Processor.");
       writeln(" ");
     }
-  }
-
-  public String toPrintableString(int level)
-  {
-    return null;
   }
 }

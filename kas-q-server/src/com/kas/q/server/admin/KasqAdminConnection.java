@@ -9,7 +9,7 @@ import com.kas.q.ext.IKasqMessage;
 import com.kas.q.requests.HaltRequest;
 import com.kas.q.requests.QueryRequest;
 
-public class KasqAdminConnection extends KasqConnection
+final public class KasqAdminConnection extends KasqConnection
 {
   private static ILogger sLogger = LoggerFactory.getLogger(KasqAdminConnection.class);
   
@@ -22,29 +22,42 @@ public class KasqAdminConnection extends KasqConnection
   
   public void shutdown()
   {
+    sLogger.debug("KasqAdminConnection::shutdown() - IN");
+    
     try
     {
       HaltRequest request = new HaltRequest();
+      sLogger.debug("KasqAdminConnection::shutdown() - Sending shutdown request via message: " + request.toPrintableString(0));
+      
       internalSend(request);
     }
     catch (JMSException e)
     {
       sLogger.info("Failed to shutdown KAS/Q server at " + mHost + ':' + mPort + ". Exception caught: ", e);
     }
+    
+    sLogger.debug("KasqAdminConnection::shutdown() - OUT");
   }
   
   public String query(QueryRequest request)
   {
-    String output = null;
+    sLogger.debug("KasqAdminConnection::query() - IN");
+    
+    String output = "";
     try
     {
+      sLogger.debug("KasqAdminConnection::query() - Sending shutdown query via message: " + request.toPrintableString(0));
       IKasqMessage response = internalSendAndReceive(request);
+      sLogger.debug("KasqAdminConnection::query() - Got response: " + response.toPrintableString(0));
+      
       output = ((KasqTextMessage)response).getText();
     }
     catch (JMSException e)
     {
       sLogger.info("Failed to query KAS/Q server at " + mHost + ':' + mPort + ". Exception caught: ", e);
     }
+    
+    sLogger.debug("KasqAdminConnection::query() - OUT, Output length=" + output.length());
     return output;
   }
 }

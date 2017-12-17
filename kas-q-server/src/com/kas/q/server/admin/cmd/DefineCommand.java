@@ -1,14 +1,14 @@
 package com.kas.q.server.admin.cmd;
 
-import java.util.Queue;
 import com.kas.q.server.admin.KasqAdminConnection;
+import com.kas.q.server.typedef.CommandQueue;
 
 public class DefineCommand extends ACommand
 {
   //private KasqAdminConnection mConnection;
   //private Queue<String>       mCommandArgs;
   
-  public DefineCommand(KasqAdminConnection conn, Queue<String> args)
+  public DefineCommand(KasqAdminConnection conn, CommandQueue args)
   {
     super(conn, args);
   }
@@ -16,10 +16,5 @@ public class DefineCommand extends ACommand
   public void run()
   {
     
-  }
-  
-  public String toPrintableString(int level)
-  {
-    return null;
   }
 }

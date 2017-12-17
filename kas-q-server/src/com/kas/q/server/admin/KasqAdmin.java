@@ -1,7 +1,5 @@
 package com.kas.q.server.admin;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
 import java.util.Scanner;
 import javax.jms.JMSException;
 import com.kas.config.MainConfiguration;
@@ -10,6 +8,7 @@ import com.kas.q.server.admin.cmd.DefineCommand;
 import com.kas.q.server.admin.cmd.DeleteCommand;
 import com.kas.q.server.admin.cmd.HelpCommand;
 import com.kas.q.server.admin.cmd.QueryCommand;
+import com.kas.q.server.typedef.CommandQueue;
 
 public class KasqAdmin
 {
@@ -67,6 +66,11 @@ public class KasqAdmin
     mConnection = new KasqAdminConnection(host, port);
   }
 
+  /***************************************************************************************************************
+   * {@code KasqAdmin} execution method
+   * 
+   * @param args arguments passed to {@code main} function
+   */
   private void run(String [] args)
   {
     writeln("KAS/Q Admin Command Processor started");
@@ -76,7 +80,7 @@ public class KasqAdmin
     try
     {
       scanner = new Scanner(System.in);
-      Queue<String> command = read(scanner);
+      CommandQueue command = read(scanner);
       boolean stop = false;
       while (!stop)
       {
@@ -97,7 +101,16 @@ public class KasqAdmin
     writeln("KAS/Q Admin Command Processor ended");
   }
   
-  private boolean process(Queue<String> cmdWords)
+  /***************************************************************************************************************
+   * Process a command represented by a queue of tokens.<br>
+   * According to the first element in the queue - the command verb - we determine which type of Command object
+   * should be created and then we execute it.
+   * 
+   * @param cmdWords the queue containing the command tokens
+   * 
+   * @return true if processing ended successfully, false otherwise
+   */
+  private boolean process(CommandQueue cmdWords)
   {
     boolean stop = false;
     if (cmdWords.isEmpty() || cmdWords.peek().equals(""))
@@ -114,14 +127,14 @@ public class KasqAdmin
       else
       if (cVerbDefine.equalsIgnoreCase(verb))
       {
-        DefineCommand processor = new DefineCommand(mConnection, cmdWords);
-        processor.run();
+        DefineCommand command = new DefineCommand(mConnection, cmdWords);
+        command.run();
       }
       else
       if (cVerbDelete.equalsIgnoreCase(verb))
       {
-        DeleteCommand processor = new DeleteCommand(mConnection, cmdWords);
-        processor.run();
+        DeleteCommand command = new DeleteCommand(mConnection, cmdWords);
+        command.run();
       }
       else
       if (cVerbQuery.equalsIgnoreCase(verb))
@@ -152,23 +165,39 @@ public class KasqAdmin
     return stop;
   }
   
-  
-  private static Queue<String> read(Scanner scanner)
+  /***************************************************************************************************************
+   * Reading a command (one line) from STDIN and return it as a queue of tokens.
+   * 
+   * @param scanner the Scanner object associated with STDIN
+   * 
+   * @return a queue in which each element is a token from the read line
+   */
+  private static CommandQueue read(Scanner scanner)
   {
     write("KAS/Q> ");
     String cmd = scanner.nextLine();
     String [] a = cmd.split(" ");
-    Queue<String> q = new ArrayDeque<String>();
+    CommandQueue q = new CommandQueue();
     for (String word : a)
       q.offer(word);
     return q;
   }
   
+  /***************************************************************************************************************
+   * Writing a message to STDOUT.
+   * 
+   * @param message the message to print
+   */
   private static void write(String message)
   {
     System.out.print(message);
   }
   
+  /***************************************************************************************************************
+   * Writing a message to STDOUT. The message will be followed by a Newline character.
+   * 
+   * @param message the message to print
+   */
   private static void writeln(String message)
   {
     System.out.println(message);

@@ -1,18 +1,38 @@
 package com.kas.q.server.admin.cmd;
 
-import java.util.Queue;
 import javax.jms.JMSException;
 import com.kas.q.ext.EDestinationType;
 import com.kas.q.requests.QueryRequest;
 import com.kas.q.server.admin.KasqAdminConnection;
+import com.kas.q.server.typedef.CommandQueue;
 
 public class QueryCommand extends ACommand
 {
-  public QueryCommand(KasqAdminConnection conn, Queue<String> args)
+  /***************************************************************************************************************
+   * Constructs a {@code QueryCommand} object, specifying the administrator connection object and the queue
+   * representing the command arguments. The construction is simply passing the arguments to the super class.
+   * 
+   * @param conn the {@code KasqAdminCommand} which will be used to process the command
+   * @param args the command arguments
+   */
+  public QueryCommand(KasqAdminConnection conn, CommandQueue args)
   {
     super(conn, args);
   }
   
+  /***************************************************************************************************************
+   * Running the Query command.
+   * The use-cases that are handled (QUEUE can be replaced with TOPIC):
+   *   "QUERY"                     > IllegalArgumentException
+   *   "QUERY unknown_type"        > IllegalArgumentException
+   *   "QUERY ALL ..."             > IllegalArgumentException
+   *   "QUERY ALL"                 > execute
+   *   "QUERY QUEUE"               > IllegalArgumentException
+   *   "QUERY QUEUE ALL"           > execute
+   *   "QUERY QUEUE name"          > IllegalArgumentException
+   *   "QUERY QUEUE 'name' ..."    > IllegalArgumentException
+   *   "QUERY QUEUE 'name'"        > execute
+   */
   public void run()
   {
     String pDestType = mCommandArgs.poll();
@@ -69,11 +89,23 @@ public class QueryCommand extends ACommand
     }
   }
   
+  /***************************************************************************************************************
+   * Command execution.
+   * 
+   * @param type the destination type
+   */
   protected void execute(EDestinationType type)
   {
     execute(type, null);
   }
   
+  /***************************************************************************************************************
+   * Command execution.<br>
+   * Creating a new {@code QueryRequest} object and call {@link KasqAdminConnection#query(QueryRequest)}.
+   * 
+   * @param type the destination type
+   * @param name the destination name
+   */
   protected void execute(EDestinationType type, String name)
   {
     QueryRequest request = null;
@@ -87,12 +119,9 @@ public class QueryCommand extends ACommand
     if (request != null)
     {
       String output = mConnection.query(request);
-      if (output != null)
-      {
-        writeln(output);
-        writeln(" ");
-        success = true;
-      }
+      writeln(output);
+      writeln(" ");
+      success = true;
     }
     
     if (!success)
@@ -100,10 +129,5 @@ public class QueryCommand extends ACommand
       writeln("Error occured while trying to execute query command");
       writeln(" ");
     }
-  }
-  
-  public String toPrintableString(int level)
-  {
-    return null;
   }
 }
