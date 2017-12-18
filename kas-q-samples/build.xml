@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-q-driver" default="Main" basedir=".">
+<project name="kas-q-samples" default="Main" basedir=".">
   
   <property name="src"     location="src"/>
   <property name="res"     location="res"/>
   <property name="bin"     location="bin"/>
   <property name="lib"     location="lib"/>
+  <property name="3rd"     location="thirdparty"/>
   <property name="conf"    location="conf"/>
   <property name="logs"    location="logs"/>
   <property name="repo"    location="repo"/>
@@ -22,7 +23,7 @@
   <property name="containers.jar" location="../kas-containers/lib/kas-containers.jar"/>
   <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/>
   <property name="q-core.jar"     location="../kas-q-core/lib/kas-q-core.jar"/>
-  <property name="jms.jar"        location="../kas-q-core/thirdparty/javax.jms-2.0.jar"/>
+  <property name="jms.jar"        location="thirdparty/javax.jms-2.0.jar"/>
 	
   <!-- debugging information -->
   <property name="debug"      value="true" />
@@ -36,6 +37,7 @@
   <target name="Clean" description="clean up old outputs">
     <delete dir="${bin}"/>
     <delete dir="${lib}"/>
+    <delete dir="${3rd}"/>
     <delete dir="${conf}"/>
     <delete dir="${logs}"/>
     <delete dir="${repo}"/>
@@ -46,6 +48,9 @@
     <mkdir dir="${lib}"/>
     <mkdir dir="${logs}"/>
     <mkdir dir="${repo}"/>
+    <copy todir="${3rd}">
+      <fileset dir="../kas-data/thirdparty" />
+    </copy>
     <buildnumber file="${res}/buildnumber.txt"/>
     <subant target="Main">
       <fileset dir="${infra}"      includes="build.xml"/>
