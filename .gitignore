@@ -1,7 +1,8 @@
 *.class 
+*.log 
+*.log.* 
 *.jar
-*.log
-*.log.*
-.metadata/
-.recommenders/
+.metadata/ 
+.recommenders/ 
 RemoteSystemsTempFiles/ 
+
