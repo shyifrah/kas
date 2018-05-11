@@ -57,7 +57,7 @@ public class TimeStamp extends AKasObject
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public String toRawString()
+  private String toRawString()
   {
     return Long.toString(mTimeInMilliSeconds);
   }
@@ -67,15 +67,7 @@ public class TimeStamp extends AKasObject
   //------------------------------------------------------------------------------------------------------------------
   public String toString()
   {
-    return String.format("%02d-%02d-%04d %02d:%02d:%02d,%03d", mDay, mMonth, mYear, mHour, mMinute, mSecond, mMilliseconds);
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public String getSortableDateString()
-  {
-    return String.format("%04d%02d%02d", mYear, mMonth, mDay);
+    return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", mYear, mMonth, mDay, mHour, mMinute, mSecond, mMilliseconds);
   }
   
   //------------------------------------------------------------------------------------------------------------------
@@ -91,7 +83,7 @@ public class TimeStamp extends AKasObject
   //------------------------------------------------------------------------------------------------------------------
   public String getDateString(String seperator)
   {
-    return String.format("%02d" + seperator + "%02d" + seperator + "%04d", mDay, mMonth, mYear);
+    return String.format("%04d" + seperator + "%02d" + seperator + "%02d", mYear, mMonth, mDay);
   }
   
   //------------------------------------------------------------------------------------------------------------------

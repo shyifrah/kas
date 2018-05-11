@@ -41,7 +41,7 @@ public class FileAppender extends AAppender
     mFileName = RunTimeUtils.getProductHomeDir() + File.separator + "logs" + File.separator + mConfig.getFileNamePattern()
       .replaceAll("%p", Integer.toString(RunTimeUtils.getProcessId()))
       .replaceAll("%u", RunTimeUtils.getUserId())
-      .replaceAll("%d", ts.getSortableDateString())
+      .replaceAll("%d", ts.getDateString())
       .replaceAll("%t", ts.getTimeString());
     
     mLogFile = initLogFile();

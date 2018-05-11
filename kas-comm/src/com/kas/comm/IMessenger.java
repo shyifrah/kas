@@ -7,7 +7,6 @@ public interface IMessenger extends IObject
 {
   /***************************************************************************************************************
    * Perform cleanup: flush stream, close them, close the socket etc.
-   * 
    */
   public abstract void cleanup();
   

@@ -27,7 +27,6 @@ public class Messenger extends AKasObject implements IMessenger
   
   protected IPacketFactory    mPacketFactory;
   
-  protected boolean  mConnected;
   protected String   mHost;
   protected int      mPort;
   
@@ -46,7 +45,6 @@ public class Messenger extends AKasObject implements IMessenger
     mHost = host;
     mPort = port;
     mSocket = socket;
-    mConnected = true;
     mPacketFactory = factory;
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
@@ -66,7 +64,6 @@ public class Messenger extends AKasObject implements IMessenger
       mOutputStream.close();
       mInputStream.close();
       mSocket.close();
-      mConnected = false;
     }
     catch (IOException e) {}
     
@@ -79,8 +76,6 @@ public class Messenger extends AKasObject implements IMessenger
   public void send(IPacket packet) throws IOException
   {
     sLogger.debug("Messenger::send() - IN");
-    
-    verifyConnected();
     
     PacketHeader header = packet.createHeader();
     header.serialize(mOutputStream);
@@ -103,8 +98,6 @@ public class Messenger extends AKasObject implements IMessenger
   public IPacket receive(int timeout) throws IOException
   {
     sLogger.debug("Messenger::receive() - IN");
-    
-    verifyConnected();
     
     IPacket packet = null;
     mSocket.setSoTimeout(timeout);
@@ -145,17 +138,6 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /***************************************************************************************************************
-   * Verify the messenger's state
-   * 
-   * @throws IllegalStateException if the messenger is not connected
-   */
-  private void verifyConnected() throws IllegalStateException
-  {
-    if (!mConnected)
-      throw new IllegalStateException("Messenger not connected");
-  }
-  
-  /***************************************************************************************************************
    * 
    */
   public String toString()
@@ -180,7 +162,6 @@ public class Messenger extends AKasObject implements IMessenger
     sb.append(name()).append("(\n")
       .append(pad).append("  Host=").append(mHost).append("\n")
       .append(pad).append("  Port=").append(mPort).append("\n")
-      .append(pad).append("  Connected=").append(mConnected).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

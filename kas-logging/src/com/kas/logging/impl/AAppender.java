@@ -44,5 +44,9 @@ public abstract class AAppender extends AKasObject implements IAppender
   //
   //------------------------------------------------------------------------------------------------------------------
   protected abstract void write(String logger, String message, ELogLevel level);
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
   public abstract String toPrintableString(int level);
 }
