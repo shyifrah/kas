@@ -163,19 +163,37 @@ public class RunTimeUtils
     return sProductHomeDir;
   }
   
-  /***************************************************************************************************************
+  /**
    * Suspend current Thread execution for {@code seconds} seconds.<br>
    * If the number of seconds is lower or equal than 0, this method does nothing.
    * 
-   * @param seconds the number of seconds to delay the current Thread
+   * @param seconds The number of seconds to delay the current Thread
    */
-  public static void sleep(int seconds)
+  public static void sleepForSeconds(int seconds)
   {
     if (seconds > 0)
     {
       try
       {
         Thread.sleep((long)(seconds * 1000));
+      }
+      catch (Throwable e) {}
+    }
+  }
+  
+  /**
+   * Suspend current Thread execution for {@code milliseconds} milliseconds.<br>
+   * If the number of milliseconds is lower or equal than 0, this method does nothing.
+   * 
+   * @param milliseconds The number of milliseconds to delay the current Thread
+   */
+  public static void sleepForMilliSeconds(long milliseconds)
+  {
+    if (milliseconds > 0)
+    {
+      try
+      {
+        Thread.sleep(milliseconds);
       }
       catch (Throwable e) {}
     }

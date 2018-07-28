@@ -123,17 +123,16 @@ public class StringUtils
     return sb.toString();
   }
   
-  /***************************************************************************************************************
-   * Duplicate a specified string, a specified number of times
+  /**
+   * Duplicate <code>str</code> a specified <code>number</code> of times.<br>
+   * <br>
+   * If <code>number</code> has a negative value, a <code>null</code> string is returned.<br>
+   * If <code>number</code> is 0, an empty string is returned.<br>
+   * If <code>number</code> is 1, no duplication takes place, and <code>str</code> is returned as is.<br>
+   * For all other <code>number</code> values, <code>str</code> is duplicated <code>number</code> of times and returned.<br>
    * 
-   * If {@code number} has a negative value, a {@code null} string is returned.
-   * If {@code number} is 0, an empty string is returned.
-   * If {@code number} is 1, no duplication takes place, and {@code str} is returned as is.
-   * for all other {@code number} values, {@code str} is duplicated {@code number} of times and returned.
-   * 
-   * @param str the string to be duplicated
-   * @param number the number of times to duplicate it
-   * 
+   * @param str The string to be duplicated
+   * @param number The number of times to duplicate it
    * @return the duplicated string 
    */
   public static String duplicate(String str, int number)
@@ -152,6 +151,28 @@ public class StringUtils
     for (int i = 0; i < number; ++i)
       sb.append(str);
       
+    return sb.toString();
+  }
+  
+  /**
+   * Frame a text with equal signs.<br> 
+   * <br>
+   * @param str The string to be framed
+   * @return the duplicated string 
+   */
+  public static String title(String str)
+  {
+    if (str == null)
+      return null;
+    
+    StringBuilder sb = new StringBuilder();
+    
+    int len = str.length();
+    String banner = StringUtils.duplicate("=", len + 16);
+    sb.append(banner).append('\n')                                     // =========================
+      .append("===     ").append(str).append("     ===").append('\n')  // ===     Shy Ifrah     ===
+      .append(banner);                                                 // =========================
+    
     return sb.toString();
   }
 }

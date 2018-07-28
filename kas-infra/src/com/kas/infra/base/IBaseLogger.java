@@ -1,8 +1,6 @@
-package com.kas.logging;
+package com.kas.infra.base;
 
-import com.kas.infra.base.IBaseLogger;
-
-public interface ILogger extends IBaseLogger
+public interface IBaseLogger extends IObject
 {
   public void diag (String message);
   public void debug(String message);
