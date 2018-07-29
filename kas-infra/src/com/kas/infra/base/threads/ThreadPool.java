@@ -1,5 +1,6 @@
 package com.kas.infra.base.threads;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,6 +29,14 @@ public class ThreadPool
   public static ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)
   {
     return sSchedExecutor.scheduleAtFixedRate(command, initialDelay, period, unit);
+  }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  public static ScheduledFuture<?> schedule(Callable<?> command, long delay, TimeUnit unit)
+  {
+    return sSchedExecutor.schedule(command, delay, unit);
   }
   
   //------------------------------------------------------------------------------------------------------------------
