@@ -97,7 +97,6 @@ public class RunTimeUtils
    * @see #getProperty(String, String)
    * 
    * @param variable the system property name
-   * @param defaultValue the default value to be returned if no value was obtained
    * 
    * @return the value of the {@code variable} property or {@code defaultValue}
    */
@@ -106,7 +105,7 @@ public class RunTimeUtils
     return getProperty(variable, null);
   }
   
-  /***************************************************************************************************************
+  /**
    * Get the value of the property from System properties.
    * If a value was found, return it, otherwise, replace the period (".") chars  with underscores ("_") and
    * try obtain the value of an environment variable with the new name.
@@ -137,8 +136,9 @@ public class RunTimeUtils
     return defaultValue;
   }
   
-  /***************************************************************************************************************
-   * Get the home directory from kas.home property and obtain its absolute path.
+  /**
+   * Get the home directory from kas.home property and obtain its absolute path.<br>
+   * <br>
    * This method is called upon static initialization to be used by {@link #getProductHomeDir()}
    * 
    * @return the KAS home directory
@@ -153,7 +153,7 @@ public class RunTimeUtils
     return path;
   }
   
-  /***************************************************************************************************************
+  /**
    * Return the KAS home directory
    * 
    * @return the KAS home directory

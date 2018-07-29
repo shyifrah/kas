@@ -102,6 +102,27 @@ public class TimeStamp extends AKasObject
     return String.format("%02d" + seperator + "%02d" + seperator + "%02d", mHour, mMinute, mSecond);
   }
   
+  /**
+   * Return the difference, in milliseconds, between this TimeStamp object and other one<br>
+   * <br>
+   * @param other A second timestamp represented by milliseconds
+   * @return The difference, expressed in milliseconds
+   */
+  public long diff(long other)
+  {
+    return (other > mTimeInMilliSeconds ? other - mTimeInMilliSeconds : mTimeInMilliSeconds - other);
+  }
+  
+  public long diff(TimeStamp other)
+  {
+    return diff(other.mTimeInMilliSeconds);
+  }
+  
+  static public long diff(TimeStamp first, TimeStamp second)
+  {
+    return (first.mTimeInMilliSeconds > second.mTimeInMilliSeconds ? first.mTimeInMilliSeconds - second.mTimeInMilliSeconds : second.mTimeInMilliSeconds - first.mTimeInMilliSeconds);
+  }
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------

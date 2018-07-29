@@ -15,8 +15,10 @@ public class MethodTest
     mExpectedResult = exr;
   }
   
-  public void test()
+  public boolean test()
   {
+    boolean succeeded = false;
+    
     mLogger.trace("Testing: " + mMethodRun.toString());
     mMethodRun.run();
     if (!mMethodRun.isSuccessful())
@@ -28,32 +30,20 @@ public class MethodTest
       Object result = mMethodRun.getResult();
       mLogger.trace("Execution of method ended successfully. Result: " + result);
       
-      boolean succeeded;
       if ((mExpectedResult == null) && (result == null))
-      {
         succeeded = true;
-      }
       else if (mExpectedResult == null)
-      {
         succeeded = false;
-      }
       else if (mExpectedResult.equals(result))
-      {
         succeeded = true;
-      }
       else
-      {
         succeeded = false;
-      }
       
       if (succeeded)
-      {
         mLogger.trace("Method run ended with a value identical to the expected result. Test succeeded");
-      }
       else
-      {
         mLogger.trace("Method run ended with a value different from the expected result. Test failed");
-      }
     }
+    return succeeded;
   }
 }

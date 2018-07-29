@@ -124,12 +124,12 @@ public class StringUtils
   }
   
   /**
-   * Duplicate <code>str</code> a specified <code>number</code> of times.<br>
+   * Duplicate {@code str} a specified {@code number} of times.<br>
    * <br>
-   * If <code>number</code> has a negative value, a <code>null</code> string is returned.<br>
-   * If <code>number</code> is 0, an empty string is returned.<br>
-   * If <code>number</code> is 1, no duplication takes place, and <code>str</code> is returned as is.<br>
-   * For all other <code>number</code> values, <code>str</code> is duplicated <code>number</code> of times and returned.<br>
+   * If {@code number} has a negative value, a {@code null} string is returned.<br>
+   * If {@code number} is 0, an empty string is returned.<br>
+   * If {@code number} is 1, no duplication takes place, and {@code str} is returned as is.<br>
+   * For all other {@code number} values, {@code str} is duplicated {@code number} of times and returned.<br>
    * 
    * @param str The string to be duplicated
    * @param number The number of times to duplicate it

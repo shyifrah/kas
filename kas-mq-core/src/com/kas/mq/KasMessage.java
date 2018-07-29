@@ -3,6 +3,12 @@ package com.kas.mq;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 
+/**
+ * A KAS/MQ base message.<br>
+ * <br>
+ * Each message has an unique ID - that differentiates it from other messages in this KAS/MQ system, a payload,
+ * and a few other characteristics such as priority that determines the behavior of KAS/MQ system when processing the message.
+ */
 public class KasMessage extends AKasObject
 {
   public static final int cMinimumPriority = 0;

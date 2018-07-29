@@ -5,11 +5,13 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.RunTimeUtils;
 
+/**
+ * A {@code KasQueue} object is the simplest destination that is managed by the KAS/MQ system.
+ */
 public class KasQueue extends AKasObject
 {
   /**
    * Name of this message queue
-   * 
    */
   private String mName;
   
@@ -19,23 +21,23 @@ public class KasQueue extends AKasObject
   private UniqueId mQueueId;
   
   /**
-   * The actual message container. An array of <code>KasMessageDeque</code> objects, one for each priority.<br>
+   * The actual message container. An array of {@link KasMessageDeque} objects, one for each priority.<br>
    * <br>
-   * When a message with priority of 0 is received by this <code>KasQueue</code> object, it is stored in the 
-   * <code>KasMessageDeque</code> at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
+   * When a message with priority of 0 is received by this {@code KasQueue} object, it is stored in the 
+   * {@link KasMessageDeque} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
   protected transient KasMessageDeque [] mQueueArray;
   
   /**
-   * The file backing up this <code>KasQueue</code> object.
+   * The file backing up this {@code KasQueue} object.
    */
   protected transient File    mBackupFile = null;
   protected transient String  mBackupFileName = null;
   
   /**
-   * Constructing a <code>KasQueue</code> object with the specified name.
+   * Constructing a {@code KasQueue} object with the specified name.
    * 
-   * @param name The name of this <code>KasQueue</code> object.
+   * @param name The name of this {@code KasQueue} object.
    */
   public KasQueue(String name)
   {
@@ -47,10 +49,10 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Put a message into this <code>KasQueue</code> object.
+   * Put a message into this {@code KasQueue} object.
    * 
-   * @param message The message that should be stored at this <code>KasQueue</code> object.
-   * @return <code>true</code> if message was added, <code>false</code> otherwise.
+   * @param message The message that should be stored at this {@code KasQueue} object.
+   * @return {@code true} if message was added, {@code false} otherwise.
    */
   public boolean put(KasMessage message)
   {
@@ -62,10 +64,10 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Gets a message with a specific priority from this <code>KasQueue</code> object
+   * Gets a message with a specific priority from this {@code KasQueue} object
    * 
-   * @param priority The priority of the message to be retrieved. Default value is <code>0</code>.
-   * @return the returned message or <code>null</code> if there is no message with the specified priority.
+   * @param priority The priority of the message to be retrieved. Default value is 0.
+   * @return the returned message or {@code null} if there is no message with the specified priority.
    */
   public KasMessage get()
   {
@@ -81,9 +83,9 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Gets a message with a specific priority from this <code>KasQueue</code> object, and wait indefinitely if one is not available.
+   * Gets a message with a specific priority from this {@code KasQueue} object, and wait indefinitely if one is not available.
    * 
-   * @param priority The priority of the message to be retrieved. Default value is <code>0</code>.
+   * @param priority The priority of the message to be retrieved. Default value is 0
    * @return the returned message
    */
   public KasMessage getAndWait()
@@ -106,17 +108,17 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Gets a message with a specific priority from this <code>KasQueue</code> object. If a message is not available immediately
-   * wait for <code>timeout</code> milliseconds at most.<br>
+   * Gets a message with a specific priority from this {@code KasQueue} object. If a message is not available immediately
+   * wait for {@code timeout} milliseconds at most.<br>
    * <br>
-   * Because this operation is done in a manner of polling, the thread is delayed for <code>interval</code> milliseconds after each
+   * Because this operation is done in a manner of polling, the thread is delayed for {@code interval} milliseconds after each
    * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
    * exceeded the timeout value or a message was retrieved.
    * 
-   * @param priority The priority of the message to be retrieved. Default value is <code>0</code>.
-   * @param interval The number of milliseconds to delay between each polling operation. Default value is <code>1</code> second.
+   * @param priority The priority of the message to be retrieved. Default value is 0
+   * @param interval The number of milliseconds to delay between each polling operation. Default value is 1 second
    * @param timeout The number of milliseconds to wait until the get operation is aborted.
-   * @return the returned message or <code>null</code> if timeout occurred. 
+   * @return the returned message or {@code null} if timeout occurred. 
    */
   public KasMessage getAndWaitWithTimeout(long timeout)
   {
@@ -153,6 +155,8 @@ public class KasQueue extends AKasObject
    * 
    * @param level The string padding level
    * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {
