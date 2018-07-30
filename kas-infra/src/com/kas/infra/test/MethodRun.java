@@ -1,11 +1,11 @@
-package com.kas.infra.test;
+package  com.kas.infra.test;
 
 import java.lang.reflect.Method;
 
 /**
  * A method execution.
  */
-public class MethodTestRun implements Runnable
+public class MethodRun implements Runnable
 {
   /**
    * Object against which the method is executed
@@ -34,7 +34,7 @@ public class MethodTestRun implements Runnable
   private Exception mException = null;
   
   /**
-   * Create a {@code MethodTestRun} object.<br>
+   * Create a {@code MethodRun} object.<br>
    * <br>
    * The run consisting of a {@link java.lang.reflect.Method} object, the {@code object} on which it is invoked, and a list
    * of arguments to pass the method.
@@ -43,7 +43,7 @@ public class MethodTestRun implements Runnable
    * @param object An object on which the method is invoked
    * @param args A variable list of arguments to pass the method
    */
-  public MethodTestRun(Method method, Object object, Object ... args)
+  public MethodRun(Method method, Object object, Object ... args)
   {
     mMethod = method;
     mObject = object;
@@ -53,7 +53,7 @@ public class MethodTestRun implements Runnable
   /**
    * Run the method.<br>
    * <br>
-   * First we make sure the method is accessible (because it is possible that the {@code MethodTestRun} object was created
+   * First we make sure the method is accessible (because it is possible that the {@code MethodRun} object was created
    * for a private method. Then we invoke the method via reflection mechanism. Finally, we save the result and the
    * exception, if one was thrown, that the invocation generated.
    */
@@ -115,6 +115,7 @@ public class MethodTestRun implements Runnable
     String returnType = mMethod.getReturnType().getSimpleName();
     
     sb.append(returnType)
+      .append(' ')
       .append(methodName)
       .append('(');
     

@@ -21,17 +21,23 @@ public class TestSet
   /**
    * Start timestamp. This is the time the {@link run()} method received control.
    */
-  private TimeStamp   mStartTimestamp = null;
+  private TimeStamp mStartTimestamp = null;
   
   /**
    * End timestamp. This is the time the {@link run()} method ended tests execution.
    */
-  private TimeStamp   mEndTimestamp = null;
+  private TimeStamp mEndTimestamp = null;
   
   /**
    * The object against which the tests are executed.
    */
-  private Object      mTestedObject;
+  private Object mTestedObject;
+  
+  /**
+   * Number of test repetitions
+   */
+  private int    mRepetitions;
+  
   
   /**
    * The set of tests to be executed.
@@ -46,8 +52,21 @@ public class TestSet
    */
   public TestSet(IBaseLogger logger, Object object)
   {
+    this(logger, object, 1);
+  }
+  
+  /**
+   * Construct a {@code TestSet} object.<br>
+   * <br>
+   * @param logger The {@code IBaseLogger} object to which messages are sent
+   * @param object The {@code Object} against which tests will be executed
+   * @param repetitions The number of times each test will be executed
+   */
+  public TestSet(IBaseLogger logger, Object object, int repetitions)
+  {
     mLogger = logger;
     mTestedObject = object;
+    mRepetitions = repetitions;
   }
   
   /**
@@ -97,7 +116,7 @@ public class TestSet
     try
     {
       Method method = mTestedObject.getClass().getDeclaredMethod(name, classes);
-      MethodTest test = new MethodTest(mLogger, exr, new MethodTestRun(method, mTestedObject, args));
+      MethodTest test = new MethodTest(mLogger, exr, new MethodRun(method, mTestedObject, args));
       mTests.add(test);
       mLogger.trace("Added test for method '" + name + "' with specified arguments");
     }
@@ -127,24 +146,27 @@ public class TestSet
     
     mStartTimestamp = new TimeStamp();
     
-    for (MethodTest test : mTests)
+    for (int i = 0; i < mRepetitions; ++i)
     {
-      ++totalTests;
-      boolean success = test.test();
-      if (success)
-        ++totalSuccessTests;
+      for (MethodTest test : mTests)
+      {
+        ++totalTests;
+        boolean success = test.test();
+        if (success)
+          ++totalSuccessTests;
+      }
     }
     
     mEndTimestamp = new TimeStamp();
     
-    mLogger.trace("\n");
+    mLogger.trace(" ");
     mLogger.trace("Test set statistics:");
     mLogger.trace("    Total method executions..............: " + totalTests);
     mLogger.trace("    Successes............................: " + totalSuccessTests);
     mLogger.trace("    Failures.............................: " + (totalTests-totalSuccessTests));
     mLogger.trace("    Started..............................: " + mStartTimestamp.toString());
     mLogger.trace("    Ended................................: " + mEndTimestamp.toString());
-    mLogger.trace("    Total test set time..................: " + TimeStamp.diff(mEndTimestamp, mStartTimestamp));
-    mLogger.trace("\n");
+    mLogger.trace("    Total test set time (MilliSeconds)...: " + TimeStamp.diff(mEndTimestamp, mStartTimestamp));
+    mLogger.trace(" ");
   }
 }
