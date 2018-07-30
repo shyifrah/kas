@@ -72,6 +72,8 @@ public class KasMessage extends AKasObject
    * 
    * @param level The string padding level
    * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {

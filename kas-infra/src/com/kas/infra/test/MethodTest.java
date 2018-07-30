@@ -3,7 +3,11 @@ package  com.kas.infra.test;
 import com.kas.infra.base.IBaseLogger;
 
 /**
- * A method test
+ * A method test.
+ * 
+ * @see com.kas.infra.test.TestSet
+ * @author Pippo
+ *
  */
 public class MethodTest
 {

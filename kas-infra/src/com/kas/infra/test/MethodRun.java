@@ -4,6 +4,10 @@ import java.lang.reflect.Method;
 
 /**
  * A method execution.
+ * 
+ * @see com.kas.infra.test.MethodTest
+ * @author Pippo
+ *
  */
 public class MethodRun implements Runnable
 {
