@@ -1,16 +1,23 @@
 package  com.kas.infra.test;
 
+import com.kas.infra.base.AStatsCollector;
 import com.kas.infra.base.IBaseLogger;
+import com.kas.infra.base.Statistics;
 
 /**
  * A method test.
  * 
  * @see com.kas.infra.test.ObjectTest
  * @author Pippo
- *
  */
-public class MethodTest
+public class MethodTest extends AStatsCollector
 {
+  static private final String cMethodTotalExecutions     = "MethodTest - method total executions";
+  static private final String cMethodFailedExecutions    = "MethodTest - method failed executions";
+  static private final String cMethodSucceededExecutions = "MethodTest - method succeeded executions";
+  static private final String cMethodFailedTests         = "MethodTest - method failed tests";
+  static private final String cMethodSucceededTests      = "MethodTest - method succeeded tests";
+  
   /**
    * A Logger
    */
@@ -38,6 +45,13 @@ public class MethodTest
     mMethodRun      = run;
     mExpectedResult = exr;
     mLogger         = new ConsoleLogger(this.getClass().getSimpleName());
+    
+    mStats = new Statistics();
+    mStats.newCounter(cMethodTotalExecutions);
+    mStats.newCounter(cMethodFailedExecutions);
+    mStats.newCounter(cMethodSucceededExecutions);
+    mStats.newCounter(cMethodFailedTests);
+    mStats.newCounter(cMethodSucceededTests);
   }
   
   /**
@@ -55,12 +69,15 @@ public class MethodTest
     boolean succeeded = false;
     
     mMethodRun.run();
+    mStats.increment(cMethodTotalExecutions);
     if (!mMethodRun.isSuccessful())
     {
+      mStats.increment(cMethodFailedExecutions);
       mLogger.trace("Method execution ended abnormally. Exception: ", mMethodRun.getException());
     }
     else
     {
+      mStats.increment(cMethodSucceededExecutions);
       Object result = mMethodRun.getResult();
       succeeded = analyze(result);
     }
@@ -78,10 +95,6 @@ public class MethodTest
    */
   private boolean analyze(Object result)
   {
-    mLogger.trace("Method execution ended normally. Analyzing: ");
-    mLogger.trace("    Actual result......: " + (result == null ? "null" : result.toString()));
-    mLogger.trace("    Expected result....: " + (mExpectedResult == null ? "null" : mExpectedResult.toString()));
-    
     boolean success;
     
     if ((mExpectedResult == null) && (result == null))
@@ -91,7 +104,33 @@ public class MethodTest
     else
       success = false;
     
-    mLogger.trace("    Expected and Actual results " + (success ? "match" : "do not match"));
+    if (success)
+      mStats.increment(cMethodSucceededTests);
+    else
+      mStats.increment(cMethodFailedTests);
+    
     return success;
+  }
+  
+  /**
+   * Get the object's detailed string representation.
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @see #toString()
+   */
+  public String toPrintableString(int level)
+  {
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    
+    sb.append(name()).append("(\n")
+      .append(pad).append("  ").append("Method=[").append(mMethodRun.toString()).append("]\n")
+      .append(pad).append("  ").append("Expected=[").append(mExpectedResult.toString()).append("]\n")
+      .append(pad).append(")");
+    
+    return sb.toString();
   }
 }

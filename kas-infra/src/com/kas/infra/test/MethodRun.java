@@ -1,15 +1,15 @@
 package  com.kas.infra.test;
 
 import java.lang.reflect.Method;
+import com.kas.infra.base.AKasObject;
 
 /**
  * A method execution.
  * 
  * @see com.kas.infra.test.MethodTest
  * @author Pippo
- *
  */
-public class MethodRun implements Runnable
+public class MethodRun extends AKasObject implements Runnable
 {
   /**
    * Object against which the method is executed
@@ -107,6 +107,16 @@ public class MethodRun implements Runnable
   }
   
   /**
+   * Get the method name
+   * 
+   * @return the method name
+   */
+  public String getMethodName()
+  {
+    return mMethod.getName();
+  }
+  
+  /**
    * Get the method signature.
    * 
    * @return the method signature
@@ -136,5 +146,20 @@ public class MethodRun implements Runnable
     
     sb.append(')');
     return sb.toString();
+  }
+  
+  /**
+   * Get the object's detailed string representation. For {@code MethodRun}, this method returns the same 
+   * result as {@link #toString()}.
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @see #toString()
+   */
+  public String toPrintableString(int level)
+  {
+    return toString();
   }
 }

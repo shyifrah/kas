@@ -2,8 +2,8 @@ package com.kas.infra.base;
 
 public class TestProperties
 {
-  static boolean compare(UniqueId first, UniqueId second)
+  static public void main(String [] args)
   {
-    return first.getUuid().equals(second.getUuid());
+    //ObjectTest set = new ObjectTest)
   }
 }
