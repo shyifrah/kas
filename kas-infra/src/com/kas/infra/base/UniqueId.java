@@ -65,11 +65,11 @@ public class UniqueId extends AKasObject implements Serializable
   /***************************************************************************************************************
    * 
    */
-  public boolean equals(Object other)
+  public boolean equals(UniqueId other)
   {
-    if (other instanceof UniqueId)
+    //if (other instanceof UniqueId)
       return mUuid.equals(((UniqueId)other).mUuid);
-    return false;
+    //return false;
   }
   
   /***************************************************************************************************************

@@ -5,7 +5,7 @@ import com.kas.infra.base.IBaseLogger;
 /**
  * A method test.
  * 
- * @see com.kas.infra.test.TestSet
+ * @see com.kas.infra.test.ObjectTest
  * @author Pippo
  *
  */
@@ -33,11 +33,11 @@ public class MethodTest
    * of type {@code void} or the expected value is {@code null}.
    * @param run The method execution object.
    */
-  public MethodTest(IBaseLogger logger, Object exr, MethodRun run)
+  public MethodTest(Object exr, MethodRun run)
   {
     mMethodRun      = run;
     mExpectedResult = exr;
-    mLogger         = logger;
+    mLogger         = new ConsoleLogger();
   }
   
   /**

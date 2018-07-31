@@ -8,10 +8,10 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * A {@code TestSet} is a collection of tests that are executed against a specified object.<br>
+ * An {@code ObjectTest} is a collection of tests that are executed against a specified object.<br>
  * Tests are scheduled for execution via the {@link #add(String, Object, Object...)} method, and are executed via the {@link #run()} method.
  */
-public class TestSet
+public class ObjectTest
 {
   /**
    * A Logger
@@ -34,15 +34,9 @@ public class TestSet
   private Object mTestedObject;
   
   /**
-   * Number of test repetitions
-   */
-  private int    mRepetitions;
-  
-  
-  /**
    * The set of tests to be executed.
    */
-  private List<MethodTest> mTests = new ArrayList<MethodTest>();
+  private List<MethodTest> mMethodTests = new ArrayList<MethodTest>();
   
   /**
    * Construct a {@code TestSet} object.<br>
@@ -50,23 +44,10 @@ public class TestSet
    * @param logger The {@code IBaseLogger} object to which messages are sent
    * @param object The {@code Object} against which tests will be executed
    */
-  public TestSet(IBaseLogger logger, Object object)
+  public ObjectTest(Object object)
   {
-    this(logger, object, 1);
-  }
-  
-  /**
-   * Construct a {@code TestSet} object.<br>
-   * <br>
-   * @param logger The {@code IBaseLogger} object to which messages are sent
-   * @param object The {@code Object} against which tests will be executed
-   * @param repetitions The number of times each test will be executed
-   */
-  public TestSet(IBaseLogger logger, Object object, int repetitions)
-  {
-    mLogger = logger;
+    mLogger = new ConsoleLogger();
     mTestedObject = object;
-    mRepetitions = repetitions;
   }
   
   /**
@@ -116,8 +97,8 @@ public class TestSet
     try
     {
       Method method = mTestedObject.getClass().getDeclaredMethod(name, classes);
-      MethodTest test = new MethodTest(mLogger, exr, new MethodRun(method, mTestedObject, args));
-      mTests.add(test);
+      MethodTest test = new MethodTest(exr, new MethodRun(method, mTestedObject, args));
+      mMethodTests.add(test);
       mLogger.trace("Added test for method '" + name + "' with specified arguments");
     }
     catch (Exception e)
@@ -146,15 +127,12 @@ public class TestSet
     
     mStartTimestamp = new TimeStamp();
     
-    for (int i = 0; i < mRepetitions; ++i)
+    for (MethodTest test : mMethodTests)
     {
-      for (MethodTest test : mTests)
-      {
-        ++totalTests;
-        boolean success = test.test();
-        if (success)
-          ++totalSuccessTests;
-      }
+      ++totalTests;
+      boolean success = test.test();
+      if (success)
+        ++totalSuccessTests;
     }
     
     mEndTimestamp = new TimeStamp();

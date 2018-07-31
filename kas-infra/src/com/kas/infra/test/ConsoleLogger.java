@@ -19,7 +19,8 @@ public class ConsoleLogger implements IBaseLogger
   private void stdout(String level, String message)
   {
     TimeStamp ts = new TimeStamp();
-    String.format("%s (%s) %-5s %s", ts.toString(), name(), level, message);
+    String msg = String.format("%s (%s) %-5s %s", ts.toString(), name(), level, message);
+    System.out.println(msg);
   }
 
   public void diag(String message)
@@ -59,29 +60,43 @@ public class ConsoleLogger implements IBaseLogger
 
   public void diag(String message, Throwable e)
   {
+    stdout("DIAG", message);
+    e.printStackTrace();
   }
 
   public void debug(String message, Throwable e)
   {
+    stdout("DEBUG", message);
+    e.printStackTrace();
   }
 
   public void trace(String message, Throwable e)
   {
+    stdout("TRACE", message);
+    e.printStackTrace();
   }
 
   public void info(String message, Throwable e)
   {
+    stdout("INFO", message);
+    e.printStackTrace();
   }
 
   public void warn(String message, Throwable e)
   {
+    stdout("WARN", message);
+    e.printStackTrace();
   }
 
   public void error(String message, Throwable e)
   {
+    stdout("ERROR", message);
+    e.printStackTrace();
   }
 
   public void fatal(String message, Throwable e)
   {
+    stdout("FATAL", message);
+    e.printStackTrace();
   }
 }
