@@ -37,7 +37,7 @@ public class MethodTest
   {
     mMethodRun      = run;
     mExpectedResult = exr;
-    mLogger         = new ConsoleLogger();
+    mLogger         = new ConsoleLogger(this.getClass().getSimpleName());
   }
   
   /**

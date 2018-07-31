@@ -5,6 +5,17 @@ import com.kas.infra.base.TimeStamp;
 
 public class ConsoleLogger implements IBaseLogger
 {
+  private String mLoggerName;
+  
+  public ConsoleLogger(String name)
+  {
+    mLoggerName = name;
+  }
+  
+  public String getLoggerName()
+  {
+    return mLoggerName;
+  }
   
   public String name()
   {
@@ -19,7 +30,7 @@ public class ConsoleLogger implements IBaseLogger
   private void stdout(String level, String message)
   {
     TimeStamp ts = new TimeStamp();
-    String msg = String.format("%s (%s) %-5s %s", ts.toString(), name(), level, message);
+    String msg = String.format("%s (%s) %-5s %s", ts.toString(), mLoggerName, level, message);
     System.out.println(msg);
   }
 

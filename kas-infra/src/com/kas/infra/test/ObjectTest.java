@@ -46,7 +46,7 @@ public class ObjectTest
    */
   public ObjectTest(Object object)
   {
-    mLogger = new ConsoleLogger();
+    mLogger = new ConsoleLogger(this.getClass().getSimpleName());
     mTestedObject = object;
   }
   
