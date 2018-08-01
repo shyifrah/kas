@@ -6,11 +6,10 @@ import com.kas.infra.base.IObject;
 
 public class StringUtils
 {
-  /***************************************************************************************************************
+  /**
    * Return object's toString() value, or "null" if object is null
    * 
    * @param obj the object
-   * 
    * @return Object's toString() value, or "null"
    */
   public static String asString(Object obj)
@@ -18,11 +17,10 @@ public class StringUtils
     return (obj == null ? "null" : obj.toString());
   }
   
-  /***************************************************************************************************************
+  /**
    * Return IObject's toPrintableString() value, or "null" if object is null
    * 
    * @param obj the IObject
-   * 
    * @return IObject's toPrintableString() value, or "null"
    */
   public static String asPrintableString(IObject obj)
@@ -30,12 +28,11 @@ public class StringUtils
     return (obj == null ? "null" : obj.toPrintableString(0));
   }
   
-  /***************************************************************************************************************
+  /**
    * Return a "key=value" string for a map entry
    * 
    * @param key entry's key
    * @param value entry's value
-   * 
    * @return "key=value" string
    */
   public static String asString(Object key, Object value)
@@ -47,13 +44,12 @@ public class StringUtils
     return sb.toString();
   }
   
-  /***************************************************************************************************************
+  /**
    * Return the printable String value for a Map object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
    * @param map the {@code Map}
    * @param level padding level
-   * 
    * @return the object's printable string representation 
    */
   public static String asPrintableString(Map<?, ?> map, int level)
@@ -77,13 +73,12 @@ public class StringUtils
     return sb.toString();
   }
   
-  /***************************************************************************************************************
+  /**
    * Return the printable String value for a Collection object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
    * @param collection the {@code Collection}
    * @param level padding level
-   * 
    * @return the object's printable string representation 
    */
   public static String asPrintableString(Collection<?> collection, int level)
@@ -107,11 +102,10 @@ public class StringUtils
     return sb.toString();
   }
   
-  /***************************************************************************************************************
+  /**
    * Calculate the padding String base on the specified level
    * 
    * @param level padding level
-   * 
    * @return the padding string 
    */
   public static String getPadding(int level)
@@ -129,7 +123,7 @@ public class StringUtils
    * If {@code number} has a negative value, a {@code null} string is returned.<br>
    * If {@code number} is 0, an empty string is returned.<br>
    * If {@code number} is 1, no duplication takes place, and {@code str} is returned as is.<br>
-   * For all other {@code number} values, {@code str} is duplicated {@code number} of times and returned.<br>
+   * For all other {@code number} values, {@code str} is duplicated {@code number} of times and returned.
    * 
    * @param str The string to be duplicated
    * @param number The number of times to duplicate it
@@ -155,8 +149,8 @@ public class StringUtils
   }
   
   /**
-   * Frame a text with equal signs.<br> 
-   * <br>
+   * Frame a text with equal signs
+   * 
    * @param str The string to be framed
    * @return the duplicated string 
    */

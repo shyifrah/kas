@@ -2,6 +2,7 @@ package com.kas.infra.base;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.kas.infra.test.ConsoleLogger;
 
 /**
  * A statistics object is a collection of counters
@@ -16,8 +17,8 @@ public class Statistics extends AKasObject
   private Map<String, Counter> mCounters = new ConcurrentHashMap<String, Counter>();
   
   /**
-   * Add a new counter to the map.<br>
-   * <br>
+   * Add a new counter to the map.
+   * 
    * @param name The name of the new counter to add
    * @return the counter associated with the name. This can be a newly created one or the existing one
    */
@@ -46,7 +47,7 @@ public class Statistics extends AKasObject
   
   /**
    * Increment a specific counter.
-   * <br>
+   * 
    * @param name The name of the counter to increment
    * 
    * @throws RuntimeException if the name of the counter does not exist in the map.
@@ -58,6 +59,19 @@ public class Statistics extends AKasObject
       throw new RuntimeException("Counter " + name + " does not exist");
     else
       counter.increment();
+  }
+  
+  /**
+   * Print statistics.
+   * @param name The name of the counter to increment
+   * 
+   * @throws RuntimeException if the name of the counter does not exist in the map.
+   */
+  public void print()
+  {
+    IBaseLogger logger = new ConsoleLogger(this.getClass().getSimpleName());
+    StringBuilder sb = new StringBuilder("Collected statistics:\n").append(toString());
+    logger.trace(sb.toString());
   }
   
   /**

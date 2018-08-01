@@ -3,7 +3,9 @@ package com.kas.infra.test;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import com.kas.infra.base.AStatsCollector;
 import com.kas.infra.base.IBaseLogger;
+import com.kas.infra.base.Statistics;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 
@@ -11,8 +13,12 @@ import com.kas.infra.utils.StringUtils;
  * An {@code ObjectTest} is a collection of tests that are executed against a specified object.<br>
  * Tests are scheduled for execution via the {@link #add(String, Object, Object...)} method, and are executed via the {@link #run()} method.
  */
-public class ObjectTest
+public class ObjectTest extends AStatsCollector
 {
+  static private final String cMethodTestAdded     = "Object Test - method tests added";
+  static private final String cMethodsNotFound     = "Object Test - method tests added";
+  static private final String cMethodsInaccessible = "Object Test - method tests added";
+  
   /**
    * A Logger
    */
@@ -48,6 +54,11 @@ public class ObjectTest
   {
     mLogger = new ConsoleLogger(this.getClass().getSimpleName());
     mTestedObject = object;
+    
+    mStats = new Statistics();
+    mStats.newCounter(cMethodTestAdded);
+    mStats.newCounter(cMethodsNotFound);
+    mStats.newCounter(cMethodsInaccessible);
   }
   
   /**
@@ -71,9 +82,7 @@ public class ObjectTest
       classes = new Class<?> [args.length];
       for (int i = 0; i < args.length; ++i)
       {
-        /* 
-         * special handling for primitives: byte, short, int, long, float, double, boolean, char
-         */
+        // special handling for primitives: byte, short, int, long, float, double, boolean, char
         classes[i] = args[i].getClass();
         if (classes[i].equals(java.lang.Byte.class))
           classes[i] = byte.class;
@@ -94,16 +103,21 @@ public class ObjectTest
       }
     }
     
+    Method method;
     try
     {
-      Method method = mTestedObject.getClass().getDeclaredMethod(name, classes);
+      method = mTestedObject.getClass().getDeclaredMethod(name, classes);
       MethodTest test = new MethodTest(exr, new MethodRun(method, mTestedObject, args));
       mMethodTests.add(test);
-      mLogger.trace("Added test for method '" + name + "' with specified arguments");
+      mStats.increment(cMethodTestAdded);
     }
-    catch (Exception e)
+    catch (NoSuchMethodException e)
     {
-      mLogger.trace("Failed to retrieve method '" + name + "' with specified arguments. Exception: " + e.getMessage());
+      mStats.increment(cMethodsNotFound);
+    }
+    catch (SecurityException e)
+    {
+      mStats.increment(cMethodsInaccessible);
     }
   }
   
@@ -120,8 +134,6 @@ public class ObjectTest
    */
   public void run()
   {
-    int totalSuccessTests = 0, totalTests = 0;
-    
     String msg = StringUtils.title("Testing object of class " + mTestedObject.getClass().getName());
     mLogger.trace('\n' + msg);
     
@@ -129,22 +141,35 @@ public class ObjectTest
     
     for (MethodTest test : mMethodTests)
     {
-      ++totalTests;
-      boolean success = test.test();
-      if (success)
-        ++totalSuccessTests;
+      test.test();
+      mStats.put(test.getStats());
     }
     
     mEndTimestamp = new TimeStamp();
     
-    mLogger.trace(" ");
-    mLogger.trace("Test set statistics:");
-    mLogger.trace("    Total method executions..............: " + totalTests);
-    mLogger.trace("    Successes............................: " + totalSuccessTests);
-    mLogger.trace("    Failures.............................: " + (totalTests-totalSuccessTests));
-    mLogger.trace("    Started..............................: " + mStartTimestamp.toString());
-    mLogger.trace("    Ended................................: " + mEndTimestamp.toString());
-    mLogger.trace("    Total test set time (MilliSeconds)...: " + TimeStamp.diff(mEndTimestamp, mStartTimestamp));
-    mLogger.trace(" ");
+    mStats.print();
+  }
+
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
+  public String toPrintableString(int level)
+  {
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  Started=").append(mStartTimestamp.toString()).append("\n")
+      .append(pad).append("  Ended=").append(mEndTimestamp.toString()).append("\n")
+      .append(pad).append("  Tested Object=").append(mTestedObject.toString()).append("\n")
+      .append(pad).append("  Method Tests=(\n")
+      .append(StringUtils.asPrintableString(mMethodTests, level+2)).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append(")");
+    return sb.toString();
   }
 }

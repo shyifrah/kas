@@ -9,9 +9,8 @@ public abstract class AConfiguration extends AKasObject implements IListener
   protected MainConfiguration mMainConfig = null;
   private   boolean           mInitialized = false;
   
-  /***************************************************************************************************************
-   * Terminate the configuration object
-   * 
+  /**
+   * Initialize the configuration object
    */
   public void init()
   {

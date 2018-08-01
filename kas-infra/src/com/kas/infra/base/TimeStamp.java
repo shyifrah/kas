@@ -65,14 +65,6 @@ public class TimeStamp extends AKasObject
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public String toString()
-  {
-    return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", mYear, mMonth, mDay, mHour, mMinute, mSecond, mMilliseconds);
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
   public String getDateString()
   {
     return getDateString("");
@@ -103,8 +95,8 @@ public class TimeStamp extends AKasObject
   }
   
   /**
-   * Return the difference, in milliseconds, between this TimeStamp object and other one<br>
-   * <br>
+   * Return the difference, in milliseconds, between this TimeStamp object and other one
+   * 
    * @param other A second timestamp represented by milliseconds
    * @return The difference, expressed in milliseconds
    */
@@ -121,6 +113,14 @@ public class TimeStamp extends AKasObject
   static public long diff(TimeStamp first, TimeStamp second)
   {
     return (first.mTimeInMilliSeconds > second.mTimeInMilliSeconds ? first.mTimeInMilliSeconds - second.mTimeInMilliSeconds : second.mTimeInMilliSeconds - first.mTimeInMilliSeconds);
+  }
+  
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  public String toString()
+  {
+    return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", mYear, mMonth, mDay, mHour, mMinute, mSecond, mMilliseconds);
   }
   
   //------------------------------------------------------------------------------------------------------------------
