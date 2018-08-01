@@ -1,8 +1,7 @@
 package com.kas.infra.base;
 
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import com.kas.infra.test.ConsoleLogger;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * A statistics object is a collection of counters
@@ -14,7 +13,7 @@ public class Statistics extends AKasObject
   /**
    * A map of name to {@code Counter}.
    */
-  private Map<String, Counter> mCounters = new ConcurrentHashMap<String, Counter>();
+  private Map<String, Counter> mCounters = new ConcurrentSkipListMap<String, Counter>();
   
   /**
    * Add a new counter to the map.
@@ -34,15 +33,41 @@ public class Statistics extends AKasObject
   }
   
   /**
+   * Get counter value by its {@code name}.
+   * 
+   * @param name The name of the counter
+   * @return the value of the counter associated with the name.
+   * 
+   * @throws RuntimeException in case {@code name} is not associated with any {@code Counter} in the map.
+   */
+  public int getValue(String name)
+  {
+    Counter counter = mCounters.get(name);
+    if (counter == null)
+      throw new RuntimeException("Counter '" + name + "' not found");
+    
+    return counter.getValue();
+  }
+  
+  /**
    * Add a set of counters hold by a {@code Statistics} object to this object.<br>
    * <br>
-   * Note that if a counter with a specified name already exists in this object's map, it is replaced.
+   * If a counter with a specified name already exists in this object's map, their values are summed.
+   * Otherwise, the counter is simply added to this {@code Statistics} object.
    * 
    * @param stats A {@code Statistics} object that contains zero or more counters
    */
-  public void put(Statistics stats)
+  public void put(Statistics other)
   {
-    mCounters.putAll(stats.mCounters);
+    for (Counter counterInOtherMap : other.mCounters.values())
+    {
+      String name = counterInOtherMap.getName();
+      Counter counterInThisMap = mCounters.get(name);
+      if (counterInThisMap == null)
+        mCounters.put(name, counterInOtherMap);
+      else
+        counterInThisMap.increment(counterInOtherMap.getValue());
+    }
   }
   
   /**
@@ -62,23 +87,10 @@ public class Statistics extends AKasObject
   }
   
   /**
-   * Print statistics.
-   * @param name The name of the counter to increment
-   * 
-   * @throws RuntimeException if the name of the counter does not exist in the map.
-   */
-  public void print()
-  {
-    IBaseLogger logger = new ConsoleLogger(this.getClass().getSimpleName());
-    StringBuilder sb = new StringBuilder("Collected statistics:\n").append(toString());
-    logger.trace(sb.toString());
-  }
-  
-  /**
    * Get the string representation of the counter.<br>
    * <br>
    * The string is in the format of A=B, where:<br>
-   *   A - the name of the counter
+   *   A - the name of the counter<br>
    *   B - the counter value
    * 
    * @return a line per counter in the format of name=[value].

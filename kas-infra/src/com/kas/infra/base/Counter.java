@@ -1,5 +1,7 @@
 package com.kas.infra.base;
 
+import java.util.Comparator;
+
 /**
  * A counter used to count events.
  * 
@@ -8,6 +10,14 @@ package com.kas.infra.base;
  */
 public class Counter extends AKasObject
 {
+  static class CounterComparator implements Comparator<Counter>
+  {
+    public int compare(Counter o1, Counter o2)
+    {
+      return o1.mName.compareTo(o2.mName);
+    }
+  }
+  
   /**
    * Counter name
    */
@@ -67,7 +77,18 @@ public class Counter extends AKasObject
    */
   public void increment()
   {
-    ++mValue;
+    increment(1);
+  }
+  
+  /**
+   * Increment the counter value by the specified value;
+   *
+   * @param add The value by which to increment the counter
+   * @return the counter value
+   */
+  public void increment(int add)
+  {
+    mValue += add;
   }
   
   /**

@@ -16,8 +16,8 @@ import com.kas.infra.utils.StringUtils;
 public class ObjectTest extends AStatsCollector
 {
   static private final String cMethodTestAdded     = "Object Test - method tests added";
-  static private final String cMethodsNotFound     = "Object Test - method tests added";
-  static private final String cMethodsInaccessible = "Object Test - method tests added";
+  static private final String cMethodsNotFound     = "Object Test - methods not found";
+  static private final String cMethodsInaccessible = "Object Test - methods inaccessible";
   
   /**
    * A Logger
@@ -147,7 +147,18 @@ public class ObjectTest extends AStatsCollector
     
     mEndTimestamp = new TimeStamp();
     
-    mStats.print();
+    mLogger.trace("Collected statistics:");
+    printStats();
+  }
+  
+  /**
+   * Print collected statistics.
+   */
+  public void printStats()
+  {
+    mLogger.trace(cMethodTestAdded + "...: " + mStats.getValue(cMethodTestAdded));
+    mLogger.trace(cMethodsNotFound + "...: " + mStats.getValue(cMethodsNotFound));
+    mLogger.trace(cMethodsInaccessible + "...: " + mStats.getValue(cMethodsInaccessible));
   }
 
   /**

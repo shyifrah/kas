@@ -18,6 +18,11 @@ public abstract class AStatsCollector extends AKasObject
   }
   
   /**
+   * Print collected statistics
+   */
+  public abstract void printStats();
+  
+  /**
    * Get the object's detailed string representation. 
    * 
    * @param level The string padding level
