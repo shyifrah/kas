@@ -190,15 +190,15 @@ public class ObjectTest extends AStatsCollector
   public void printStats()
   {
     mLogger.trace("Object statistics for: " + mTestedObject.toString());
-    mLogger.trace(StringUtils.trunc(cMethodTestAdded   , 45, '.') + ':' + mStats.getValue(cMethodTestAdded));
-    mLogger.trace("   " + StringUtils.trunc(cMethodNotFound    , 40, '.') + ':' + mStats.getValue(cMethodNotFound));
-    mLogger.trace("   " + StringUtils.trunc(cMethodInaccessible, 40, '.') + ':' + mStats.getValue(cMethodInaccessible));
-    mLogger.trace(StringUtils.trunc(cMethodExecuted    , 45, '.') + ':' + mStats.getValue(cMethodExecuted));
-    mLogger.trace("   " + StringUtils.trunc(cMethodExecFailed   , 40, '.') + ':' + mStats.getValue(cMethodExecFailed));
-    mLogger.trace("   " + StringUtils.trunc(cMethodExecSucceeded, 40, '.') + ':' + mStats.getValue(cMethodExecSucceeded));
+    mLogger.trace(StringUtils.trunc(cMethodTestAdded   , 45, '.') + ": " + mStats.getValue(cMethodTestAdded));
+    mLogger.trace("   " + StringUtils.trunc(cMethodNotFound    , 42, '.') + ": " + mStats.getValue(cMethodNotFound));
+    mLogger.trace("   " + StringUtils.trunc(cMethodInaccessible, 42, '.') + ": " + mStats.getValue(cMethodInaccessible));
+    mLogger.trace(StringUtils.trunc(cMethodExecuted    , 45, '.') + ": " + mStats.getValue(cMethodExecuted));
+    mLogger.trace("   " + StringUtils.trunc(cMethodExecFailed   , 42, '.') + ": " + mStats.getValue(cMethodExecFailed));
+    mLogger.trace("   " + StringUtils.trunc(cMethodExecSucceeded, 42, '.') + ": " + mStats.getValue(cMethodExecSucceeded));
     mLogger.trace("   ");
-    mLogger.trace(StringUtils.trunc(cMethodTestFailed   , 45, '.') + ':' + mStats.getValue(cMethodTestFailed));
-    mLogger.trace(StringUtils.trunc(cMethodTestSucceeded, 45, '.') + ':' + mStats.getValue(cMethodTestSucceeded));
+    mLogger.trace(StringUtils.trunc(cMethodTestFailed   , 45, '.') + ": " + mStats.getValue(cMethodTestFailed));
+    mLogger.trace(StringUtils.trunc(cMethodTestSucceeded, 45, '.') + ": " + mStats.getValue(cMethodTestSucceeded));
   }
   
   /**

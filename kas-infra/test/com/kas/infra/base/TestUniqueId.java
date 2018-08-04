@@ -24,6 +24,7 @@ public class TestUniqueId
     
     oTest = new ObjectTest(copyOfRandomUuid);
     oTest.add("getUuid", randomUuid);
+    oTest.add("read", randomUuid);
     oTest.run();
     
     
