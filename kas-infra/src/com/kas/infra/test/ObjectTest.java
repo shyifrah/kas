@@ -1,8 +1,8 @@
 package com.kas.infra.test;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AStatsCollector;
 import com.kas.infra.base.IBaseLogger;
 import com.kas.infra.base.Statistics;
@@ -15,9 +15,18 @@ import com.kas.infra.utils.StringUtils;
  */
 public class ObjectTest extends AStatsCollector
 {
-  static private final String cMethodTestAdded     = "Object Test - method tests added";
-  static private final String cMethodsNotFound     = "Object Test - methods not found";
-  static private final String cMethodsInaccessible = "Object Test - methods inaccessible";
+  /**
+   * Counters
+   */
+  static private final String cMethodTestAdded     = "Method test added";
+  static private final String cMethodNotFound      = "Method not found";
+  static private final String cMethodInaccessible  = "Method inaccessible";
+  
+  static private final String cMethodExecuted      = "Method executed";
+  static private final String cMethodExecFailed    = "Method execution failed";
+  static private final String cMethodExecSucceeded = "Method execution succeeded";
+  static private final String cMethodTestFailed    = "Method test failed";
+  static private final String cMethodTestSucceeded = "Method test succeeded";
   
   /**
    * A Logger
@@ -40,9 +49,9 @@ public class ObjectTest extends AStatsCollector
   private Object mTestedObject;
   
   /**
-   * The set of tests to be executed.
+   * A map of method executions vs the expected result
    */
-  private List<MethodTest> mMethodTests = new ArrayList<MethodTest>();
+  private Map<MethodExec, Object> mMethodTests = new ConcurrentHashMap<MethodExec, Object>();
   
   /**
    * Construct a {@code TestSet} object.<br>
@@ -57,8 +66,13 @@ public class ObjectTest extends AStatsCollector
     
     mStats = new Statistics();
     mStats.newCounter(cMethodTestAdded);
-    mStats.newCounter(cMethodsNotFound);
-    mStats.newCounter(cMethodsInaccessible);
+    mStats.newCounter(cMethodNotFound);
+    mStats.newCounter(cMethodInaccessible);
+    mStats.newCounter(cMethodExecuted);
+    mStats.newCounter(cMethodExecFailed);
+    mStats.newCounter(cMethodExecSucceeded);
+    mStats.newCounter(cMethodTestFailed);
+    mStats.newCounter(cMethodTestSucceeded);
   }
   
   /**
@@ -107,17 +121,17 @@ public class ObjectTest extends AStatsCollector
     try
     {
       method = mTestedObject.getClass().getDeclaredMethod(name, classes);
-      MethodTest test = new MethodTest(exr, new MethodRun(method, mTestedObject, args));
-      mMethodTests.add(test);
+      MethodExec exec = new MethodExec(method, mTestedObject, args);
+      mMethodTests.put(exec, exr);
       mStats.increment(cMethodTestAdded);
     }
     catch (NoSuchMethodException e)
     {
-      mStats.increment(cMethodsNotFound);
+      mStats.increment(cMethodNotFound);
     }
     catch (SecurityException e)
     {
-      mStats.increment(cMethodsInaccessible);
+      mStats.increment(cMethodInaccessible);
     }
   }
   
@@ -139,10 +153,29 @@ public class ObjectTest extends AStatsCollector
     
     mStartTimestamp = new TimeStamp();
     
-    for (MethodTest test : mMethodTests)
+    for (Map.Entry<MethodExec, Object> entry : mMethodTests.entrySet())
     {
-      test.test();
-      mStats.put(test.getStats());
+      MethodExec exec = entry.getKey();
+      Object     exr  = entry.getValue();
+      
+      exec.run();
+      mStats.increment(cMethodExecuted);
+      if (!exec.isSuccessful())
+      {
+        mStats.increment(cMethodExecFailed);
+        mLogger.trace("Method execution ended abnormally. Exception: ", exec.getException());
+      }
+      else
+      {
+        mStats.increment(cMethodExecSucceeded);
+        Object res = exec.getResult();
+        if ((exr == null) && (res == null))
+          mStats.increment(cMethodTestSucceeded);
+        else if ((exr != null) && (exr.equals(res)))
+          mStats.increment(cMethodTestSucceeded);
+        else
+          mStats.increment(cMethodTestFailed);
+      }
     }
     
     mEndTimestamp = new TimeStamp();
@@ -157,12 +190,27 @@ public class ObjectTest extends AStatsCollector
   public void printStats()
   {
     mLogger.trace("Object statistics for: " + mTestedObject.toString());
-    mLogger.trace(StringUtils.trunc(cMethodTestAdded, 45, '.') + ':' + mStats.getValue(cMethodTestAdded));
-    mLogger.trace(StringUtils.trunc(cMethodsNotFound, 45, '.') + ':' + mStats.getValue(cMethodsNotFound));
-    mLogger.trace(StringUtils.trunc(cMethodsInaccessible, 45, '.') + ':' + mStats.getValue(cMethodsInaccessible));
-    
-    for (MethodTest test : mMethodTests)
-      test.printStats();
+    mLogger.trace(StringUtils.trunc(cMethodTestAdded   , 45, '.') + ':' + mStats.getValue(cMethodTestAdded));
+    mLogger.trace("   " + StringUtils.trunc(cMethodNotFound    , 40, '.') + ':' + mStats.getValue(cMethodNotFound));
+    mLogger.trace("   " + StringUtils.trunc(cMethodInaccessible, 40, '.') + ':' + mStats.getValue(cMethodInaccessible));
+    mLogger.trace(StringUtils.trunc(cMethodExecuted    , 45, '.') + ':' + mStats.getValue(cMethodExecuted));
+    mLogger.trace("   " + StringUtils.trunc(cMethodExecFailed   , 40, '.') + ':' + mStats.getValue(cMethodExecFailed));
+    mLogger.trace("   " + StringUtils.trunc(cMethodExecSucceeded, 40, '.') + ':' + mStats.getValue(cMethodExecSucceeded));
+    mLogger.trace("   ");
+    mLogger.trace(StringUtils.trunc(cMethodTestFailed   , 45, '.') + ':' + mStats.getValue(cMethodTestFailed));
+    mLogger.trace(StringUtils.trunc(cMethodTestSucceeded, 45, '.') + ':' + mStats.getValue(cMethodTestSucceeded));
+  }
+  
+  /**
+   * Returns a replica of this {@link ObjectTest}.
+   * 
+   * @return a replica of this {@link ObjectTest}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public ObjectTest replicate()
+  {
+    return new ObjectTest(mTestedObject);
   }
 
   /**

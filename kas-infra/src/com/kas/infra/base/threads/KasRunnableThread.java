@@ -1,10 +1,11 @@
 package com.kas.infra.base.threads;
 
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.IRunnable;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * A KasRunnableThread is a Thread which accepts the Runnable object that will be executed
+ * A KasRunnableThread is a Thread which accepts a {@link Runnable} object to be executed
  * upon calling to run() method
  */
 public class KasRunnableThread extends Thread implements IObject
@@ -12,7 +13,7 @@ public class KasRunnableThread extends Thread implements IObject
   /**
    * The {@code Runnable} object to be handled by this {@code Thread}
    */
-  private Runnable mCommand;
+  private IRunnable mCommand;
   
   /**
    * Construct a {@link #KasRunnableThread} with the given name and {@code Runnable}
@@ -20,7 +21,7 @@ public class KasRunnableThread extends Thread implements IObject
    * @param name The {@code Thread} name
    * @param cmd The {@code Runnable} object
    */
-  public KasRunnableThread(String name, Runnable cmd)
+  public KasRunnableThread(String name, IRunnable cmd)
   {
     super(cmd, name);
     mCommand = cmd;
@@ -35,7 +36,7 @@ public class KasRunnableThread extends Thread implements IObject
    */
   public KasRunnableThread replicate()
   {
-    return new KasRunnableThread(getName(), mCommand);
+    return new KasRunnableThread(getName(), mCommand.replicate());
   }
   
   /**

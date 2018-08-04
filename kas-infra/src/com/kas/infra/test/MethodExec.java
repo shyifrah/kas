@@ -9,7 +9,7 @@ import com.kas.infra.base.AKasObject;
  * @see com.kas.infra.test.MethodTest
  * @author Pippo
  */
-public class MethodRun extends AKasObject implements Runnable
+public class MethodExec extends AKasObject implements Runnable
 {
   /**
    * Object against which the method is executed
@@ -47,7 +47,7 @@ public class MethodRun extends AKasObject implements Runnable
    * @param object An object on which the method is invoked
    * @param args A variable list of arguments to pass the method
    */
-  MethodRun(Method method, Object object, Object ... args)
+  MethodExec(Method method, Object object, Object ... args)
   {
     mMethod = method;
     mObject = object;
@@ -146,6 +146,20 @@ public class MethodRun extends AKasObject implements Runnable
     
     sb.append(')');
     return sb.toString();
+  }
+  
+  /**
+   * Returns a replica of this {@link #MethodExec}.<br>
+   * <br>
+   * Note that the new {@link MethodExec} holds <b>the same</b> {@code Method}, object instance and arguments.
+   * 
+   * @return a replica of this {@link #ProductVersion}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public MethodExec replicate()
+  {
+    return new MethodExec(mMethod, mObject, mArguments);
   }
   
   /**
