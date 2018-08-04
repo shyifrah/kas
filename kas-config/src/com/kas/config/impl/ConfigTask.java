@@ -4,10 +4,11 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IRunnable;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.utils.StringUtils;
 
-final public class ConfigTask extends AKasObject implements Runnable
+final public class ConfigTask extends AKasObject implements IRunnable
 {
   private IMainConfiguration mMainConfig;
   private Map<String, Long>  mMonitoredFilesMap;
@@ -66,9 +67,26 @@ final public class ConfigTask extends AKasObject implements Runnable
     if (reload) mMainConfig.reload();
   }
   
-  //----------------------------------------------------------------------------------------------------
-  //
-  //----------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link ConfigTask}.
+   * 
+   * @return a replica of this {@link ConfigTask}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public ConfigTask replicate()
+  {
+    return new ConfigTask(mMainConfig);
+  }
+  
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

@@ -13,33 +13,63 @@ import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.config.IRegistrar;
 import com.kas.infra.utils.RunTimeUtils;
 
+/**
+ * The {@link MainConfiguration} object class.<br>
+ * <br>
+ * This is a singleton class.
+ * 
+ * @author Pippo
+ */
 final public class MainConfiguration extends AKasObject implements IMainConfiguration, IRegistrar 
 {
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
   private static final long cDefaultMonitoringDelay    = 10000L;
   private static final long cDefaultMonitoringInterval = 10000L;
-  
   private static final String cMainConfigFileName = "kas.properties";
   private static final String cConfigPropPrefix   = "kas.config.";
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private static MainConfiguration    sInstance      = new MainConfiguration();
+  /**
+   * The {@link MainConfiguration} singleton instance
+   */
+  private static MainConfiguration sInstance = new MainConfiguration();
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private boolean        mInitialized = false;
-  private String         mConfigDir   = RunTimeUtils.getProductHomeDir() + File.separatorChar + "conf";
+  /**
+   * A boolean stating if this configuration object was initialized
+   */
+  private boolean mInitialized = false;
+  
+  /**
+   * The configuration directory
+   */
+  private String mConfigDir = RunTimeUtils.getProductHomeDir() + File.separatorChar + "conf";
+  
+  /**
+   * A collection of {@link IListener} objects that are listening for configuration changes
+   */
   private Set<IListener> mListeners   = new HashSet<IListener>();
-  private Set<String>    mConfigFiles = new HashSet<String>();
-  private Properties     mProperties  = null;
-  private ConfigTask     mConfigTask  = null;
   
-  private long mConfigMonitoringDelay    = cDefaultMonitoringDelay;
+  /**
+   * A collection of configuration files
+   */
+  private Set<String> mConfigFiles = new HashSet<String>();
+  
+  /**
+   * A {@link Properties} object holding all KAS properties read from configuration files
+   */
+  private Properties mProperties = null;
+  
+  /**
+   * A {@link ConfigTask} which is responsible for monitoring configuration files for changes
+   */
+  private ConfigTask mConfigTask = null;
+  
+  /**
+   * How many milliseconds to delay configuration changes monitoring
+   */
+  private long mConfigMonitoringDelay = cDefaultMonitoringDelay;
+  
+  /**
+   * Interval to wait before subsequent monitoring operation
+   */
   private long mConfigMonitoringInterval = cDefaultMonitoringInterval;
   
   //------------------------------------------------------------------------------------------------------------------
@@ -235,10 +265,29 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   {
     return mProperties.getSubset(keyPrefix);
   }
-
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  
+  /**
+   * Returns a replica of this {@link MainConfiguration}.
+   * 
+   * @return a replica of this {@link MainConfiguration}
+   * 
+   * @throws RuntimeException Always. Cannot replicate single objects.
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public MainConfiguration replicate()
+  {
+    throw new RuntimeException("Cannot replicate MainConfiguration object as it is a singleton");
+  }
+  
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
