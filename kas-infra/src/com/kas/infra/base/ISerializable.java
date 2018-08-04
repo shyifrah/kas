@@ -5,7 +5,7 @@ import java.io.ObjectOutputStream;
 
 public interface ISerializable extends IObject
 {
-  /***************************************************************************************************************
+  /**
    * Serialize an object to the specified output stream
    * 
    * @param ostream OutputStream to which the object will be serialized

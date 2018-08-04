@@ -169,4 +169,49 @@ public class StringUtils
     
     return sb.toString();
   }
+  
+  /**
+   * Truncate a string to a specified length.<br>
+   * <br>
+   * If the given string is longer than the requested length, it is truncated, and if it is shorter, it is
+   * padded with the specified padding character. If one is not specified, space is used.<br>
+   * 
+   * @param str The string to be truncated/padded
+   * @param len The requested length of the new string
+   * @param pad The padding character
+   * @return the truncated string
+   * 
+   * @throws IllegalArgumentException if {@code len} is negative or if {@code str} is null
+   */
+  public static String trunc(String str, int len)
+  {
+    return trunc(str, len, ' ');
+  }
+  
+  public static String trunc(String str, int len, char pad)
+  {
+    if (str == null)
+      throw new IllegalArgumentException("Cannot truncate a null string");
+    if (len < 0)
+      throw new IllegalArgumentException("Cannot truncate a string to a negative value");
+    
+    // requested length is str length
+    if (len == str.length())
+    {
+      return str;
+    }
+
+    // requested length is lower than str length
+    if (len < str.length())
+    {
+      return str.substring(0, len);
+    }
+    
+    // requested length is larger than str length
+    StringBuilder sb = new StringBuilder(str);
+    for (int i = 0; i < len - str.length(); ++i)
+      sb.append(pad);
+    
+    return sb.toString();
+  }
 }

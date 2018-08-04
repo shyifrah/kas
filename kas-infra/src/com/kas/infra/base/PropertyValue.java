@@ -8,7 +8,7 @@ class PropertyValue extends AKasObject
   //
   //------------------------------------------------------------------------------------------------------------------
   private String  mRawValue;
-  private String  mActualValue;
+  private String  mActualValue = null;
   private boolean mResolved = false;
   
   //------------------------------------------------------------------------------------------------------------------
@@ -65,6 +65,21 @@ class PropertyValue extends AKasObject
       mActualValue = resolve();
     
     return mActualValue;
+  }
+  
+  /**
+   * Returns a replica of this {@link #PropertyValue}.
+   * 
+   * @return a replica of this {@link #PropertyValue}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public PropertyValue replicate()
+  {
+    PropertyValue pv = new PropertyValue(mRawValue);
+    pv.mResolved = mResolved;
+    pv.mActualValue = mActualValue;
+    return pv;
   }
   
   //------------------------------------------------------------------------------------------------------------------

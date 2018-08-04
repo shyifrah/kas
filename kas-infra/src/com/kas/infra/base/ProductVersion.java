@@ -26,6 +26,22 @@ public class ProductVersion extends AKasObject implements Serializable
   private int    mBuildNumber;
   
   /**
+   * Construct a version based on four integer values.
+   * 
+   * @param major
+   * @param minor
+   * @param modification
+   * @param build
+   */
+  public ProductVersion(int major, int minor, int modification, int build)
+  {
+    mMajorVersion = major;
+    mMinorVersion = minor;
+    mModification = modification;
+    mBuildNumber  = build;
+  }
+  
+  /**
    * Construct a version based on a class file residing in KAS JAR file.
    * 
    * @param cls The class name to locate
@@ -153,6 +169,18 @@ public class ProductVersion extends AKasObject implements Serializable
   public String toString()
   {
     return String.format("%d-%d-%d-%d", mMajorVersion, mMinorVersion, mModification, mBuildNumber);
+  }
+  
+  /**
+   * Returns a replica of this {@link #ProductVersion}.
+   * 
+   * @return a replica of this {@link #ProductVersion}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public ProductVersion replicate()
+  {
+    return new ProductVersion(mMajorVersion, mMinorVersion, mModification, mBuildNumber);
   }
   
   /**

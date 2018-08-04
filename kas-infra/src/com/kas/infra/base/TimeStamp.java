@@ -123,6 +123,18 @@ public class TimeStamp extends AKasObject
     return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", mYear, mMonth, mDay, mHour, mMinute, mSecond, mMilliseconds);
   }
   
+  /**
+   * Returns a replica of this {@link #TimeStamp}.
+   * 
+   * @return a replica of this {@link #TimeStamp}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public TimeStamp replicate()
+  {
+    return new TimeStamp(mTimeInMilliSeconds);
+  }
+  
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------

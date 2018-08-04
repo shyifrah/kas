@@ -156,9 +156,13 @@ public class ObjectTest extends AStatsCollector
    */
   public void printStats()
   {
-    mLogger.trace(cMethodTestAdded + "...: " + mStats.getValue(cMethodTestAdded));
-    mLogger.trace(cMethodsNotFound + "...: " + mStats.getValue(cMethodsNotFound));
-    mLogger.trace(cMethodsInaccessible + "...: " + mStats.getValue(cMethodsInaccessible));
+    mLogger.trace("Object statistics for: " + mTestedObject.toString());
+    mLogger.trace(StringUtils.trunc(cMethodTestAdded, 45, '.') + ':' + mStats.getValue(cMethodTestAdded));
+    mLogger.trace(StringUtils.trunc(cMethodsNotFound, 45, '.') + ':' + mStats.getValue(cMethodsNotFound));
+    mLogger.trace(StringUtils.trunc(cMethodsInaccessible, 45, '.') + ':' + mStats.getValue(cMethodsInaccessible));
+    
+    for (MethodTest test : mMethodTests)
+      test.printStats();
   }
 
   /**

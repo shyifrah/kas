@@ -568,9 +568,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return sb.toString();
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link #Properties}.
+   * 
+   * @return a replica of this {@link #Properties}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public Properties replicate()
+  {
+    return new Properties(this);
+  }
+  
+  /**
+   * Get the object's detailed string representation.
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @see #toString()
+   */
   public String toPrintableString(int level)
   {
     String pad = getPadding(level);

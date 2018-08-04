@@ -14,12 +14,12 @@ public class MethodRun extends AKasObject implements Runnable
   /**
    * Object against which the method is executed
    */
-  private Object    mObject;
+  private Object mObject;
   
   /**
    * Method to invoke
    */
-  private Method    mMethod;
+  private Method mMethod;
   
   /**
    * List of arguments to pass the method
@@ -30,7 +30,7 @@ public class MethodRun extends AKasObject implements Runnable
    * The return value resulted by the method invocation.<br>
    * A {@code null} value can represent both a {@code null} returned by the method, and {@code void} returned value.
    */
-  private Object    mResult = null;
+  private Object mResult = null;
   
   /**
    * The exception thrown by the method invocation
@@ -47,7 +47,7 @@ public class MethodRun extends AKasObject implements Runnable
    * @param object An object on which the method is invoked
    * @param args A variable list of arguments to pass the method
    */
-  public MethodRun(Method method, Object object, Object ... args)
+  MethodRun(Method method, Object object, Object ... args)
   {
     mMethod = method;
     mObject = object;

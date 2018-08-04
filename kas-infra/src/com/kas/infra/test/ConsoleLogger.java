@@ -17,6 +17,11 @@ public class ConsoleLogger implements IBaseLogger
     return mLoggerName;
   }
   
+  public ConsoleLogger replicate()
+  {
+    return new ConsoleLogger(mLoggerName);
+  }
+  
   public String name()
   {
     return this.getClass().getSimpleName();

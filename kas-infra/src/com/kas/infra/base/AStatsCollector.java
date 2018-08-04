@@ -23,6 +23,15 @@ public abstract class AStatsCollector extends AKasObject
   public abstract void printStats();
   
   /**
+   * Returns a replica of this {@link #AStatsCollector}.
+   * 
+   * @return a replica of this {@link #AStatsCollector}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public abstract AStatsCollector replicate();
+  
+  /**
    * Get the object's detailed string representation. 
    * 
    * @param level The string padding level

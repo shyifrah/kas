@@ -62,17 +62,15 @@ public class UniqueId extends AKasObject implements Serializable
     return mUuid;
   }
   
-  /***************************************************************************************************************
+  /**
    * 
    */
   public boolean equals(UniqueId other)
   {
-    //if (other instanceof UniqueId)
-      return mUuid.equals(((UniqueId)other).mUuid);
-    //return false;
+    return mUuid.equals(((UniqueId)other).mUuid);
   }
   
-  /***************************************************************************************************************
+  /**
    * 
    */
   public int hashCode()
@@ -108,6 +106,26 @@ public class UniqueId extends AKasObject implements Serializable
     UUID uuid = UUID.fromString(str);
     return new UniqueId(uuid);
   }
+
+  //------------------------------------------------------------------------------------------------------------------
+  //
+  //------------------------------------------------------------------------------------------------------------------
+  public String toString()
+  {
+    return mUuid.toString();
+  }
+  
+  /**
+   * Returns a replica of this {@link #UniqueId}.
+   * 
+   * @return a replica of this {@link #UniqueId}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public UniqueId replicate()
+  {
+    return new UniqueId(this);
+  }
   
   //------------------------------------------------------------------------------------------------------------------
   //
@@ -115,13 +133,5 @@ public class UniqueId extends AKasObject implements Serializable
   public String toPrintableString(int level)
   {
     return toString();
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public String toString()
-  {
-    return mUuid.toString();
   }
 }

@@ -109,6 +109,20 @@ public class Statistics extends AKasObject
   }
   
   /**
+   * Returns a replica of this {@link #Statistics}.
+   * 
+   * @return a replica of this {@link #Statistics}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public Statistics replicate()
+  {
+    Statistics stats = new Statistics();
+    stats.put(this);
+    return stats;
+  }
+  
+  /**
    * Get the object's detailed string representation. For {@code Statistics}, this method returns the same 
    * result as {@link #toString()}.
    * 

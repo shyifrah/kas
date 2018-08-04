@@ -3,6 +3,7 @@ package  com.kas.infra.test;
 import com.kas.infra.base.AStatsCollector;
 import com.kas.infra.base.IBaseLogger;
 import com.kas.infra.base.Statistics;
+import com.kas.infra.utils.StringUtils;
 
 /**
  * A method test.
@@ -40,7 +41,7 @@ public class MethodTest extends AStatsCollector
    * of type {@code void} or the expected value is {@code null}.
    * @param run The method execution object.
    */
-  public MethodTest(Object exr, MethodRun run)
+  MethodTest(Object exr, MethodRun run)
   {
     mMethodRun      = run;
     mExpectedResult = exr;
@@ -110,6 +111,19 @@ public class MethodTest extends AStatsCollector
       mStats.increment(cMethodFailedTests);
     
     return success;
+  }
+  
+  /**
+   * Print collected statistics.
+   */
+  public void printStats()
+  {
+    mLogger.trace("   Method statistics for: [" + mMethodRun.toString() + "]");
+    mLogger.trace("   " + StringUtils.trunc(cMethodTotalExecutions, 50, '.') + ':' + mStats.getValue(cMethodTotalExecutions));
+    mLogger.trace("   " + StringUtils.trunc(cMethodSucceededExecutions, 50, '.') + ':' + mStats.getValue(cMethodSucceededExecutions));
+    mLogger.trace("   " + StringUtils.trunc(cMethodFailedExecutions, 50, '.') + ':' + mStats.getValue(cMethodFailedExecutions));
+    mLogger.trace("   " + StringUtils.trunc(cMethodSucceededTests, 50, '.') + ':' + mStats.getValue(cMethodSucceededTests));
+    mLogger.trace("   " + StringUtils.trunc(cMethodFailedTests, 50, '.') + ':' + mStats.getValue(cMethodFailedTests)); 
   }
   
   /**

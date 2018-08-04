@@ -10,6 +10,13 @@ public interface IObject
   public String name();
   
   /**
+   * Returns a replica of this {@link #IObject}.
+   * 
+   * @return a replica of this {@link #IObject}
+   */
+  public IObject replicate();
+  
+  /**
    * Returns the {@link #IObject} string representation.
    * 
    * @param level the required level padding
