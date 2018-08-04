@@ -1,5 +1,10 @@
 package com.kas.infra.base;
 
+/**
+ * Base KAS system object.
+ * 
+ * @author Pippo
+ */
 public interface IObject
 {
   /**
@@ -7,14 +12,14 @@ public interface IObject
    * 
    * @return class name enclosed with chevrons.
    */
-  public String name();
+  public abstract String name();
   
   /**
    * Returns a replica of this {@link #IObject}.
    * 
    * @return a replica of this {@link #IObject}
    */
-  public IObject replicate();
+  public abstract IObject replicate();
   
   /**
    * Returns the {@link #IObject} string representation.
@@ -23,5 +28,5 @@ public interface IObject
    * 
    * @return the object's printable string representation
    */
-  public String toPrintableString(int level);
+  public abstract String toPrintableString(int level);
 }

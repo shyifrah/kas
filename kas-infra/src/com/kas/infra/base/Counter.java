@@ -6,7 +6,6 @@ import java.util.Comparator;
  * A counter used to count events.
  * 
  * @author Pippo
- *
  */
 public class Counter extends AKasObject
 {

@@ -7,11 +7,8 @@ package com.kas.infra.base;
  */
 public class KasException extends Exception
 {
-  /**
-   * 
-   */
-  private static final long   serialVersionUID = 1L;
-  private static final String cDefaultMessage = "KAS Exception";
+  static private final long   serialVersionUID = 1L;
+  static private final String cDefaultMessage = "KAS Exception";
 
   /**
    * Construct a default {@code KasException} object.
