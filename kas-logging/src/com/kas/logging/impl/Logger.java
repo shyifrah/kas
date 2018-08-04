@@ -1,6 +1,7 @@
 package com.kas.logging.impl;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.logging.ELogLevel;
 import com.kas.logging.ILogger;
 
 public class Logger extends AKasObject implements ILogger

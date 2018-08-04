@@ -2,6 +2,7 @@ package com.kas.logging.impl;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ThrowableFormatter;
+import com.kas.infra.logging.ELogLevel;
 
 public abstract class AAppender extends AKasObject implements IAppender
 {

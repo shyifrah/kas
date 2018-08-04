@@ -1,4 +1,4 @@
-package com.kas.logging.impl;
+package com.kas.infra.logging;
 
 public enum ELogLevel
 {

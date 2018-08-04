@@ -4,9 +4,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AStatsCollector;
-import com.kas.infra.base.IBaseLogger;
 import com.kas.infra.base.Statistics;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 
 /**

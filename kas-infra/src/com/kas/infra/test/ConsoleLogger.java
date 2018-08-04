@@ -1,7 +1,7 @@
 package com.kas.infra.test;
 
-import com.kas.infra.base.IBaseLogger;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.logging.IBaseLogger;
 
 public class ConsoleLogger implements IBaseLogger
 {

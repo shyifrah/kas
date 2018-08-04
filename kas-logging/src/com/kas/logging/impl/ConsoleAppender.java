@@ -2,6 +2,7 @@ package com.kas.logging.impl;
 
 import java.io.PrintStream;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.RunTimeUtils;
 
 public class ConsoleAppender extends AAppender

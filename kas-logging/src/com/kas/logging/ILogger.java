@@ -1,6 +1,6 @@
 package com.kas.logging;
 
-import com.kas.infra.base.IBaseLogger;
+import com.kas.infra.logging.IBaseLogger;
 
 public interface ILogger extends IBaseLogger
 {

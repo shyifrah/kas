@@ -4,6 +4,7 @@ import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IMainConfiguration;
+import com.kas.infra.logging.ELogLevel;
 
 public abstract class AAppenderConfiguration extends AKasObject implements IListener
 {
