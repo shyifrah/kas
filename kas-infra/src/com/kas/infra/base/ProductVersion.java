@@ -15,7 +15,7 @@ import java.util.jar.Manifest;
  */
 public class ProductVersion extends AKasObject implements Serializable
 {
-  private static final long serialVersionUID = 1L;
+  static private final long serialVersionUID = 1L;
   
   /**
    * The version consists of four integer values in the format: major-minor-modification-build 
@@ -28,10 +28,10 @@ public class ProductVersion extends AKasObject implements Serializable
   /**
    * Construct a version based on four integer values.
    * 
-   * @param major
-   * @param minor
-   * @param modification
-   * @param build
+   * @param major Major version number
+   * @param minor Minor version number
+   * @param modification Modification level
+   * @param build Build number
    */
   public ProductVersion(int major, int minor, int modification, int build)
   {
@@ -54,7 +54,6 @@ public class ProductVersion extends AKasObject implements Serializable
   
   /**
    * Initialize the version to zeroes
-   * 
    */
   private void init()
   {

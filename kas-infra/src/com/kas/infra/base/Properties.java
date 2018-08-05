@@ -13,28 +13,38 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  public  static final String cIncludeKey      = "kas.include";
-  private static final long   serialVersionUID = 1L;
+  static public  final String cIncludeKey      = "kas.include";
+  static private final long   serialVersionUID = 1L;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Construct an empty set of properties
+   */
   public Properties()
   {
     super();
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Construct a set of properties from a different set.<br>
+   * <br>
+   * After construction, this {@link Properties} object will have the same contents as {@code other}.
+   * 
+   * @param other The other {@link Properties} object.
+   */
   public Properties(Properties other)
   {
     super(other);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a property from the map.<br>
+   * <br>
+   * If {@code key} is {@code null}, a return value of {@code null} is returned.<br>
+   * Otherwise, the returned value is the same as defined in {@link java.util.concurrent.ConcurrentHashMap#get(Object)}.
+   * 
+   * @param key The property's key.
+   * @return the property value
+   */
   public Object getProperty(Object key)
   {
     if (key == null)
@@ -43,9 +53,17 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return super.get(key);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Boolean property.<br>
+   * <br>
+   * If the property does not exist, an exception is thrown.<br>
+   * If the property does not designate a valid {@code boolean} value, {@code false} is returned. 
+   * 
+   * @param key The name of the property
+   * @return {@code true} if the value is not null and is equal, ignoring case, to the string "true". {@code false} otherwise
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public boolean getBoolProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -70,9 +88,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Boolean property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
     boolean value = defaultValue;
@@ -84,17 +106,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a Boolean property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setBoolProperty(String key, boolean value)
   {
     put(key, new Boolean(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Integer property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code int} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Integer} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public int getIntProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -119,9 +151,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Integer property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public int getIntProperty(String key, int defaultValue)
   {
     int value = defaultValue;
@@ -133,17 +169,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set an Integer property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setIntProperty(String key, int value)
   {
     put(key, new Integer(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a String property.<br>
+   * <br>
+   * If the property does not exist, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code String} value or the {@code Object}'s {@link java.lang.Object#toString()} value 
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public String getStringProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -167,9 +213,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a String property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public String getStringProperty(String key, String defaultValue)
   {
     String value = defaultValue;
@@ -181,17 +231,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a String property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setStringProperty(String key, String value)
   {
     put(key, value);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Long property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code long} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Long} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public long getLongProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -216,9 +276,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Long property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public long getLongProperty(String key, long defaultValue)
   {
     long value = defaultValue;
@@ -230,17 +294,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a Long property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setLongProperty(String key, long value)
   {
     put(key, new Long(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Byte property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code byte} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Byte} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public byte getByteProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -265,9 +339,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Byte property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public byte getByteProperty(String key, byte defaultValue)
   {
     byte value = defaultValue;
@@ -279,17 +357,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a Byte property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setByteProperty(String key, byte value)
   {
     put(key, new Byte(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Double property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code double} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Double} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public double getDoubleProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -314,9 +402,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Double property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public double getDoubleProperty(String key, double defaultValue)
   {
     double value = defaultValue;
@@ -328,17 +420,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a Double property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setDoubleProperty(String key, double value)
   {
     put(key, new Double(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Float property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code float} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Float} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public float getFloatProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -363,9 +465,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Float property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public float getFloatProperty(String key, float defaultValue)
   {
     float value = defaultValue;
@@ -377,17 +483,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a Float property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setFloatProperty(String key, float value)
   {
     put(key, new Float(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Object property.<br>
+   * <br>
+   * If the property does not exist, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Object} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public Object getObjectProperty(String key) throws KasException
   {
     Object result = getProperty(key);
@@ -397,9 +513,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Object property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public Object getObjectProperty(String key, Object defaultValue)
   {
     Object value = defaultValue;
@@ -411,17 +531,27 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set an Object property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setObjectProperty(String key, Object value)
   {
     put(key, value);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Short property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code short} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@code Short} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
   public short getShortProperty(String key) throws KasException
   {
     Object objResult = getProperty(key);
@@ -446,9 +576,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return result;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a Short property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
   public short getShortProperty(String key, short defaultValue)
   {
     short value = defaultValue;
@@ -460,17 +594,25 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return value;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Set a Short property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
   public void setShortProperty(String key, short value)
   {
     put(key, new Short(value));
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Return a subset of the entire {@link Properties} object.<br>
+   * <br>
+   * All properties in the subset have a common prefix specified by {@code keyPrefix}.
+   * 
+   * @param keyPrefix The prefix of the keys to include in the subset
+   * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
+   */
   public Properties getSubset(String keyPrefix)
   {
     if (keyPrefix == null)
@@ -488,17 +630,28 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     return subset;
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Load the properties defined in file {@code fileName} into this {@link Properties} object.<br>
+   * <br>
+   * This method is used by outside callers to allow properties refresh.  
+   * 
+   * @param fileName The fully-pathed name of the file to be loaded
+   */
   public void load(String fileName)
   {
     load(fileName, this);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Load the properties defined in file {@code fileName} into {@code properties}.<br>
+   * <br>
+   * Lines in {@code fileName} are processed one at a time. Comments are ignored and lines are checked
+   * to have valid syntax. That is, non-comment lines should have a format of key=value.<br>
+   * When {@code include} statement is encountered, it actually points to a new file that should be loaded as well.  
+   * 
+   * @param fileName The fully-pathed name of the file to be loaded
+   * @param properties The {@link Properties} object into which keys will be mapped to values.
+   */
   private void load(String fileName, Properties properties)
   {
     // now try to load the properties inside this file
@@ -544,21 +697,11 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  protected String getPadding(int level)
-  {
-    StringBuffer sb = new StringBuffer("");
-    for (int i = 0; i < level; ++i)
-      sb.append("  ");
-    
-    return sb.toString();
-  }
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the {@link Properties} simple class name enclosed with chevrons.
+   * 
+   * @return class name enclosed with chevrons.
+   */
   public String name()
   {
     StringBuffer sb = new StringBuffer();
@@ -591,7 +734,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    */
   public String toPrintableString(int level)
   {
-    String pad = getPadding(level);
+    String pad = StringUtils.getPadding(level);
     StringBuffer sb = new StringBuffer();
     
     sb.append(name()).append("(\n")
