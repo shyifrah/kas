@@ -30,7 +30,7 @@ public interface IRunnable extends IObject, Runnable
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public abstract IObject replicate();
+  public abstract IRunnable replicate();
   
   /**
    * Returns the {@link #IRunnable} string representation.
