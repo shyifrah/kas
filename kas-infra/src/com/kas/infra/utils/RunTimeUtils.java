@@ -7,27 +7,29 @@ import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 
+/**
+ * Utility functions
+ * 
+ * @author Pippo
+ */
 public class RunTimeUtils
 {
-  /***************************************************************************************************************
-   * 
-   */
-  private static final String cProductHomeDirProperty = "kas.home";
-  private static final String cUserNameProperty       = "user.name";
+  static private final String cProductHomeDirProperty = "kas.home";
+  static private final String cUserNameProperty       = "user.name";
   
-  /***************************************************************************************************************
-   * 
+  /**
+   * The product home directory
    */
-  private static String sProductHomeDir = initProductHomeDir();
+  static private String sProductHomeDir = initProductHomeDir();
   
-  /***************************************************************************************************************
+  /**
    * Get the current host name
    * We first try and obtain the host name by means of {@code InetAddress.getLocalHost()}. If that doesn't work
    * we execute the {@code hostname} system command and read its output. 
    * 
    * @return the host name
    */
-  public static String getHostName()
+  static public String getHostName()
   {
     String host = null;
     try
@@ -58,12 +60,12 @@ public class RunTimeUtils
     return host;
   }
   
-  /***************************************************************************************************************
+  /**
    * Get the current Process ID
    * 
    * @return the ID of the current Process
    */
-  public static int getProcessId()
+  static public int getProcessId()
   {
     // may not work on all JVMs
     String name = ManagementFactory.getRuntimeMXBean().getName(); //742912@localhost
@@ -71,36 +73,35 @@ public class RunTimeUtils
     return Integer.valueOf(tokens[0]);
   }
   
-  /***************************************************************************************************************
+  /**
    * Get the current Thread ID
    * 
    * @return the ID of the current Thread
    */
-  public static long getThreadId()
+  static public long getThreadId()
   {
     return Thread.currentThread().getId();
   }
   
-  /***************************************************************************************************************
+  /**
    * Get the current user name
    * 
    * @return the name of the current user
    */
-  public static String getUserId()
+  static public String getUserId()
   {
     return getProperty(cUserNameProperty);
   }
   
-  /***************************************************************************************************************
+  /**
    * Get the value of the property from System properties.
    * 
-   * @see #getProperty(String, String)
-   * 
    * @param variable the system property name
-   * 
    * @return the value of the {@code variable} property or {@code defaultValue}
+   * 
+   * @see #getProperty(String, String)
    */
-  public static String getProperty(String variable)
+  static public String getProperty(String variable)
   {
     return getProperty(variable, null);
   }
@@ -116,7 +117,7 @@ public class RunTimeUtils
    * 
    * @return the value of the {@code variable} property or {@code defaultValue}
    */
-  public static String getProperty(String variable, String defaultValue)
+  static public String getProperty(String variable, String defaultValue)
   {
     // try obtaining it from system variable ("-D")
     String result = System.getProperty(variable);
@@ -143,7 +144,7 @@ public class RunTimeUtils
    * 
    * @return the KAS home directory
    */
-  private static String initProductHomeDir()
+  static private String initProductHomeDir()
   {
     String path = getProperty(cProductHomeDirProperty, ".");
     
@@ -158,7 +159,7 @@ public class RunTimeUtils
    * 
    * @return the KAS home directory
    */
-  public static String getProductHomeDir()
+  static public String getProductHomeDir()
   {
     return sProductHomeDir;
   }
@@ -169,7 +170,7 @@ public class RunTimeUtils
    * 
    * @param seconds The number of seconds to delay the current Thread
    */
-  public static void sleepForSeconds(int seconds)
+  static public void sleepForSeconds(int seconds)
   {
     if (seconds > 0)
     {
@@ -187,7 +188,7 @@ public class RunTimeUtils
    * 
    * @param milliseconds The number of milliseconds to delay the current Thread
    */
-  public static void sleepForMilliSeconds(long milliseconds)
+  static public void sleepForMilliSeconds(long milliseconds)
   {
     if (milliseconds > 0)
     {

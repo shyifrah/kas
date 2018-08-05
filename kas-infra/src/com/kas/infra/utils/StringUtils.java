@@ -4,26 +4,31 @@ import java.util.Collection;
 import java.util.Map;
 import com.kas.infra.base.IObject;
 
+/**
+ * Utility functions
+ * 
+ * @author Pippo
+ */
 public class StringUtils
 {
   /**
-   * Return object's toString() value, or "null" if object is null
+   * Return {@link Object#toString()} value, or "null" if object is null
    * 
    * @param obj the object
    * @return Object's toString() value, or "null"
    */
-  public static String asString(Object obj)
+  static public String asString(Object obj)
   {
     return (obj == null ? "null" : obj.toString());
   }
   
   /**
-   * Return IObject's toPrintableString() value, or "null" if object is null
+   * Return {@link IObject#toPrintableString(int)} value, or "null" if object is null
    * 
-   * @param obj the IObject
+   * @param obj The IObject
    * @return IObject's toPrintableString() value, or "null"
    */
-  public static String asPrintableString(IObject obj)
+  static public String asPrintableString(IObject obj)
   {
     return (obj == null ? "null" : obj.toPrintableString(0));
   }
@@ -31,11 +36,11 @@ public class StringUtils
   /**
    * Return a "key=value" string for a map entry
    * 
-   * @param key entry's key
-   * @param value entry's value
+   * @param key Entry's key
+   * @param value Entry's value
    * @return "key=value" string
    */
-  public static String asString(Object key, Object value)
+  static public String asString(Object key, Object value)
   {
     StringBuilder sb = new StringBuilder();
     sb.append(asString(key));
@@ -48,11 +53,11 @@ public class StringUtils
    * Return the printable String value for a Map object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
-   * @param map the {@code Map}
-   * @param level padding level
+   * @param map The {@code Map}
+   * @param level Padding level
    * @return the object's printable string representation 
    */
-  public static String asPrintableString(Map<?, ?> map, int level)
+  static public String asPrintableString(Map<?, ?> map, int level)
   {
     String pad = getPadding(level);
     StringBuilder sb = new StringBuilder();
@@ -75,13 +80,13 @@ public class StringUtils
   
   /**
    * Return the printable String value for a Collection object, just as if it had the 
-   * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
+   * {@link com.kas.infra.base.IObject#toPrintableString(int)} method as part of it.
    * 
-   * @param collection the {@code Collection}
-   * @param level padding level
+   * @param collection The {@code Collection}
+   * @param level Padding level
    * @return the object's printable string representation 
    */
-  public static String asPrintableString(Collection<?> collection, int level)
+  static public String asPrintableString(Collection<?> collection, int level)
   {
     String pad = getPadding(level);
     StringBuilder sb = new StringBuilder();
@@ -108,7 +113,7 @@ public class StringUtils
    * @param level padding level
    * @return the padding string 
    */
-  public static String getPadding(int level)
+  static public String getPadding(int level)
   {
     StringBuffer sb = new StringBuffer("");
     for (int i = 0; i < level; ++i)
@@ -129,7 +134,7 @@ public class StringUtils
    * @param number The number of times to duplicate it
    * @return the duplicated string 
    */
-  public static String duplicate(String str, int number)
+  static public String duplicate(String str, int number)
   {
     if (number < 0)
       return null;
@@ -154,7 +159,7 @@ public class StringUtils
    * @param str The string to be framed
    * @return the duplicated string 
    */
-  public static String title(String str)
+  static public String title(String str)
   {
     if (str == null)
       return null;
@@ -183,12 +188,12 @@ public class StringUtils
    * 
    * @throws IllegalArgumentException if {@code len} is negative or if {@code str} is null
    */
-  public static String trunc(String str, int len)
+  static public String trunc(String str, int len)
   {
     return trunc(str, len, ' ');
   }
   
-  public static String trunc(String str, int len, char pad)
+  static public String trunc(String str, int len, char pad)
   {
     if (str == null)
       throw new IllegalArgumentException("Cannot truncate a null string");
@@ -197,15 +202,11 @@ public class StringUtils
     
     // requested length is str length
     if (len == str.length())
-    {
       return str;
-    }
-
+    
     // requested length is lower than str length
     if (len < str.length())
-    {
       return str.substring(0, len);
-    }
     
     // requested length is larger than str length
     StringBuilder sb = new StringBuilder(str);
