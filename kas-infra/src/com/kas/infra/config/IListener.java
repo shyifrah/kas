@@ -14,5 +14,28 @@ public interface IListener extends IObject
    * <br>
    * When called, the object should update its configuration
    */
-  public void refresh();
+  public abstract void refresh();
+  
+  /**
+   * Returns the {@link #IListener} simple class name enclosed with chevrons.
+   * 
+   * @return class name enclosed with chevrons.
+   */
+  public abstract String name();
+  
+  /**
+   * Returns a replica of this {@link #IListener}.
+   * 
+   * @return a replica of this {@link #IListener}
+   */
+  public abstract IObject replicate();
+  
+  /**
+   * Returns the {@link #IListener} string representation.
+   * 
+   * @param level the required level padding
+   * 
+   * @return the object's printable string representation
+   */
+  public abstract String toPrintableString(int level);
 }

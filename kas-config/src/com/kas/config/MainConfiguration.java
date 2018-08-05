@@ -258,14 +258,6 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     return mProperties.getBoolProperty(key, defaultValue);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public Properties getSubset(String keyPrefix)
-  {
-    return mProperties.getSubset(keyPrefix);
-  }
-  
   /**
    * Returns a replica of this {@link MainConfiguration}.
    * 

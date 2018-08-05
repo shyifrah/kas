@@ -1,25 +1,49 @@
 package com.kas.infra.config;
 
+import com.kas.infra.base.IObject;
+
 /**
  * A {@code IRegistrar} is an object to which other objects, objects that implements the {@link IListener} interface,
  * are registered and unregistered from in order to be notified about events happening in the {@code IRegistrar}.
  * 
  * @author Pippo
- * 
  */
-public interface IRegistrar
+public interface IRegistrar extends IObject
 {
   /**
    * Register a new listener
    * 
    * @param listener the listener to register with the registrar
    */
-  public void register(IListener listener);
+  public abstract void register(IListener listener);
   
   /**
    * Unregister a listener
    * 
    * @param listener the listener to unregister with the registrar
    */
-  public void unregister(IListener listener);
+  public abstract void unregister(IListener listener);
+  
+  /**
+   * Returns the {@link #IRegistrar} simple class name enclosed with chevrons.
+   * 
+   * @return class name enclosed with chevrons.
+   */
+  public abstract String name();
+  
+  /**
+   * Returns a replica of this {@link #IRegistrar}.
+   * 
+   * @return a replica of this {@link #IRegistrar}
+   */
+  public abstract IObject replicate();
+  
+  /**
+   * Returns the {@link #IRegistrar} string representation.
+   * 
+   * @param level the required level padding
+   * 
+   * @return the object's printable string representation
+   */
+  public abstract String toPrintableString(int level);
 }
