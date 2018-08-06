@@ -4,7 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/kas-q-core/thirdparty/javax.jms-2.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-config"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-containers"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-q-core"/>

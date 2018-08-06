@@ -7,6 +7,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-comm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-config"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-containers"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

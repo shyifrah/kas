@@ -72,25 +72,35 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    */
   private long mConfigMonitoringInterval = cDefaultMonitoringInterval;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the singleton
+   * 
+   * @return the {@link MainConfiguration} singleton instance
+   */
   public static MainConfiguration getInstance()
   {
     return sInstance;
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the object's initialization status
+   * 
+   * @return {@code true} if the object was successfully initialized, {@code false} otherwise
+   */
   public boolean isInitialized()
   {
     return mInitialized;
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Initialize the main configuration object.<br>
+   * <br>
+   * Initialization includes loading the properties and starting the configuration monitor task.
+   * 
+   * @return the initialization value of the object. If initialization succeeded, this method will return {@code true}.
+   * 
+   * @see com.kas.infra.base.IInitializable#init()
+   */
   public boolean init()
   {
     if (!mInitialized)
@@ -114,9 +124,15 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     return true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Terminate the main configuration object.<br>
+   * <br>
+   * Termination includes clearing all properties and canceling the configuration task
+   * 
+   * @return the initialization value of the object. If termination succeeded, this method will return {@code false}.
+   * 
+   * @see com.kas.infra.base.IInitializable#term()
+   */
   public boolean term()
   {
     if (mInitialized)
@@ -131,9 +147,11 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     return mInitialized;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Load configuration properties
+   * 
+   * @return {@code false} if the properties are empty or no configuration files could be found, {@code true} otherwise 
+   */
   private boolean load()
   {
     // reloading configuration to new object and switch. old object will be gc'ed
@@ -162,9 +180,9 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     return true;
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Reload configuration properties
+   */
   public void reload()
   {
     // load new properties
@@ -183,18 +201,26 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Register a configuration listener
+   * 
+   * @param listener A configuration listener to register in this {@link IRegistrar} object.
+   * 
+   * @see com.kas.infra.config.IRegistrar#register(IListener)
+   */
   public synchronized void register(IListener listener)
   {
     mListeners.add(listener);
     listener.refresh();
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Unregister a configuration listener
+   * 
+   * @param listener A configuration listener to unregister from this {@link IRegistrar} object.
+   * 
+   * @see com.kas.infra.config.IRegistrar#unregister(IListener)
+   */
   public synchronized void unregister(IListener listener)
   {
     synchronized (mListeners)
@@ -210,49 +236,76 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     }
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get a {@link Set} containing all configuration files composing this configuration object.<br>
+   * <br>
+   * This includes the main configuration file - kas.properties - as well as all configuration files
+   * that are included via the {@code kas.include} statement.
+   * 
+   * @return a set of the configuration files
+   */
   public Set<String> getConfigFiles()
   {
     return mConfigFiles;
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the configuration directory path
+   * 
+   * @return the configuration directory path
+   */
   public String getConfigDir()
   {
     return mConfigDir;
   }
   
-  ///------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the value of a string configuration property
+   * 
+   * @param key The name of the configuration property
+   * @param defaultValue The default value that will be returned if the configuration property does not exist
+   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
+   * if the property does not exist.
+   */
   public String getStringProperty(String key, String defaultValue)
   {
     return mProperties.getStringProperty(key, defaultValue);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the value of an integer configuration property
+   * 
+   * @param key The name of the configuration property
+   * @param defaultValue The default value that will be returned if the configuration property does not exist
+   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
+   * if the property does not exist.
+   */
   public int getIntProperty(String key, int defaultValue)
   {
     return mProperties.getIntProperty(key, defaultValue);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the value of a long configuration property
+   * 
+   * @param key The name of the configuration property
+   * @param defaultValue The default value that will be returned if the configuration property does not exist
+   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
+   * if the property does not exist.
+   */
   public long getLongProperty(String key, long defaultValue)
   {
     return mProperties.getLongProperty(key, defaultValue);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns the value of a boolean configuration property
+   * 
+   * @param key The name of the configuration property
+   * @param defaultValue The default value that will be returned if the configuration property does not exist
+   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
+   * if the property does not exist.
+   */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
     return mProperties.getBoolProperty(key, defaultValue);
