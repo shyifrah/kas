@@ -59,6 +59,8 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
    * <br>
    * When this method is called, it calls the {@link com.kas.config.MainConfiguration MainConfiguration} in order to re-read the values
    * of the relevant properties.
+   * 
+   * @see AAppenderConfiguration#refresh()
    */
   public void refresh()
   {

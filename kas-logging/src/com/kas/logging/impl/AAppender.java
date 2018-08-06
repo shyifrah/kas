@@ -40,32 +40,22 @@ public abstract class AAppender extends AKasObject implements IAppender
   }
   
   /**
-   * Initialize the appender.<br>
-   * <br>
-   * Note this is a placeholder.
+   * Initialize the appender
    * 
-   * @return always {@code true}
+   * @return {@code true} if appender was successfully initialized, {@code false} otherwise
    * 
    * @see IInitializable#init()
    */
-  public boolean init()
-  {
-    return true;
-  }
+  public abstract boolean init();
   
   /**
-   * Terminate the appender.<br>
-   * <br>
-   * Note this is a placeholder.
+   * Terminate the appender
    * 
-   * @return always {@code true}
+   * @return {@code true} if appender was successfully terminated, {@code false} otherwise
    * 
-   * @see IInitializable#term()
+   * @see IInitializable#term();
    */
-  public boolean term()
-  {
-    return true;
-  }
+  public abstract boolean term();
   
   /**
    * Internal implementation of the message writing procedure

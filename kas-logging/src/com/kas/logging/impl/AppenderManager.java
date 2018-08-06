@@ -1,41 +1,59 @@
 package com.kas.logging.impl;
 
 import java.util.HashMap;
+import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
+/**
+ * A singleton class for managing all appenders
+ * 
+ * @author Pippo
+ */
 public class AppenderManager extends AKasObject
 {
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public static final String cFileAppenderName   = "file";
-  public static final String cStdoutAppenderName = "stdout";
-  public static final String cStderrAppenderName = "stderr";
+  static public final String cFileAppenderName   = "file";
+  static public final String cStdoutAppenderName = "stdout";
+  static public final String cStderrAppenderName = "stderr";
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private static AppenderManager      sInstance = new AppenderManager();
-  private static LoggingConfiguration sConfig   = new LoggingConfiguration();
+  /**
+   * The {@link MainConfiguration} singleton instance
+   */
+  static private AppenderManager sInstance = new AppenderManager();
+  
+  /**
+   * The {@link LoggingConfiguration} singleton instance
+   */
+  static private LoggingConfiguration sConfig = new LoggingConfiguration();
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Name to {@link IAppender} map
+   */
   private HashMap<String, IAppender> mAppenders = new HashMap<String, IAppender>();
-  private boolean  mAppendersLoaded = false;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public static AppenderManager getInstance()
+  /**
+   * An indicator whether appenders were loaded or not
+   */
+  private boolean mAppendersLoaded = false;
+  
+  /**
+   * Get the instance of the {@link AppenderManager}
+   */
+  static public AppenderManager getInstance()
   {
     return sInstance;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get an appender by requestor class.<br>
+   * <br>
+   * If this is the first time the {@link LoggingConfiguration} is accessed, it is first initialized.<br>
+   * If appender's weren't loaded yet, first load them.
+   * 
+   * @param requestorClass The name of the class that created the {@link ILogger} object
+   * @return the {@link IAppender} assigned to the class' package or {@code null} if no such assignment exists
+   */
   public IAppender getAppender(Class<?> requestorClass)
   {
     if (!sConfig.isInitialized())
@@ -52,9 +70,15 @@ public class AppenderManager extends AKasObject
     return mAppenders.get(name);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get an appender by name.<br>
+   * <br>
+   * If this is the first time the {@link LoggingConfiguration} is accessed, it is first initialized.<br>
+   * If appender's weren't loaded yet, first load them.
+   * 
+   * @param name The name of the appender
+   * @return the {@link IAppender} assigned to the class' package or {@code null} if no such assignment exists
+   */
   public IAppender getAppender(String name)
   {
     if (!sConfig.isInitialized())
@@ -70,9 +94,9 @@ public class AppenderManager extends AKasObject
     return mAppenders.get(name);
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Load all available appenders and place them in the map.
+   */
   private synchronized void load()
   {
     // File appender
@@ -99,9 +123,28 @@ public class AppenderManager extends AKasObject
     mAppendersLoaded = true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link AppenderManager}.
+   * 
+   * @return a replica of this {@link AppenderManager}
+   * 
+   * @throws RuntimeException Always. Cannot replicate single objects.
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public AppenderManager replicate()
+  {
+    throw new RuntimeException("Cannot replicate AppenderManager object as it is a singleton");
+  }
+  
+  /**
+   * Returns the {@link AppenderManager} string representation.
+   * 
+   * @param level the required level padding
+   * @return the object's printable string representation
+   * 
+   * @see IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

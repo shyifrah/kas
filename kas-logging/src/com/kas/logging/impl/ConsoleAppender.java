@@ -1,47 +1,79 @@
 package com.kas.logging.impl;
 
 import java.io.PrintStream;
+import com.kas.infra.base.IInitializable;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.RunTimeUtils;
 
+/**
+ * A console appender
+ * 
+ * @author Pippo
+ */
 public class ConsoleAppender extends AAppender
 {
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private ConsoleAppenderConfiguration mConfig = null;
-  private PrintStream                  mPrintStream = null;
+  /**
+   * The appender's configuration
+   */
+  protected ConsoleAppenderConfiguration mConfig = null;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * The print stream to which messages are written
+   */
+  private PrintStream mPrintStream = null;
+  
+  /**
+   * Construct the console appender
+   * 
+   * @param cac The {@link ConsoleAppenderConfiguration}
+   * @param pstream The {@link PrintStream} to which messages are directed
+   */
   protected ConsoleAppender(ConsoleAppenderConfiguration cac, PrintStream pstream)
   {
     mConfig      = cac;
     mPrintStream = pstream;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public synchronized boolean init()
+  /**
+   * Initialize the appender.<br>
+   * <br>
+   * Note this is a placeholder. If any initialization is required in the specific console appender,
+   * you should override this method.
+   * 
+   * @return always {@code true}
+   * 
+   * @see IInitializable#init()
+   */
+  public boolean init()
   {
     return true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public synchronized boolean term()
+  /**
+   * Terminate the appender.<br>
+   * <br>
+   * Note this is a placeholder. If any termination is required in the specific console appender,
+   * you should override this method.
+   * 
+   * @return always {@code true}
+   * 
+   * @see IInitializable#term()
+   */
+  public boolean term()
   {
     return true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  protected void write(String logger, String message, ELogLevel messageLevel)
+  /**
+   * Write a message to the console
+   * 
+   * @param logger The name of the logger
+   * @param level the {@link ELogLevel} of the message
+   * @param message The message text to write
+   */
+  protected void write(String logger, ELogLevel messageLevel, String message)
   {
     if (mConfig.isEnabled())
     {
@@ -59,9 +91,26 @@ public class ConsoleAppender extends AAppender
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link ConsoleAppender}.
+   * 
+   * @return a replica of this {@link ConsoleAppender}
+   * 
+   * @see IObject#replicate()
+   */
+  public ConsoleAppender replicate()
+  {
+    return new ConsoleAppender(mConfig, mPrintStream);
+  }
+  
+  /**
+   * Returns the {@link FileAppenderConfiguration} string representation.
+   * 
+   * @param level the required level padding
+   * @return the object's printable string representation
+   * 
+   * @see IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);

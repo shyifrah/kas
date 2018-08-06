@@ -22,15 +22,15 @@ import com.kas.infra.utils.RunTimeUtils;
  */
 final public class MainConfiguration extends AKasObject implements IMainConfiguration, IRegistrar 
 {
-  private static final long cDefaultMonitoringDelay    = 10000L;
-  private static final long cDefaultMonitoringInterval = 10000L;
-  private static final String cMainConfigFileName = "kas.properties";
-  private static final String cConfigPropPrefix   = "kas.config.";
+  static private final long cDefaultMonitoringDelay    = 10000L;
+  static private final long cDefaultMonitoringInterval = 10000L;
+  static private final String cMainConfigFileName = "kas.properties";
+  static private final String cConfigPropPrefix   = "kas.config.";
   
   /**
    * The {@link MainConfiguration} singleton instance
    */
-  private static MainConfiguration sInstance = new MainConfiguration();
+  static private MainConfiguration sInstance = new MainConfiguration();
   
   /**
    * A boolean stating if this configuration object was initialized
