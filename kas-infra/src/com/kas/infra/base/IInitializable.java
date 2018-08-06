@@ -44,7 +44,6 @@ public interface IInitializable extends IObject
    * Returns the {@link #IInitializable} string representation.
    * 
    * @param level the required level padding
-   * 
    * @return the object's printable string representation
    * 
    * @see com.kas.infra.base.IObject#toPrintableString(int)

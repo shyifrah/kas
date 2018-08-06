@@ -4,37 +4,75 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import com.kas.infra.base.IInitializable;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 
+/**
+ * The Appender that responsible for writing to the log file
+ * 
+ * @author Pippo
+ */
 public class FileAppender extends AAppender
 {
-  private static final int cBytesPerMB = 1024 * 1024;
+  static private final int cBytesPerMB = 1024 * 1024;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private FileAppenderConfiguration mConfig          = null;
-  private FileWriter                mFileWriter      = null;
-  private BufferedWriter            mBufferedWriter  = null;
-  private int                       mErrorCount      = 0;
-  private int                       mWriteCount      = 0;
-  private String                    mFileName        = FileAppenderConfiguration.cDefaultLogFileName;
-  private File                      mLogFile         = null;
+  /**
+   * The appender's configuration
+   */
+  private FileAppenderConfiguration mConfig = null;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * The {@link FileWriter}
+   */
+  private FileWriter mFileWriter = null;
+  
+  /**
+   * The {@link BufferedWriter}
+   */
+  private BufferedWriter mBufferedWriter = null;
+  
+  /**
+   * Number of errors occurred during writing
+   */
+  private int mErrorCount = 0;
+  
+  /**
+   * Number of write operations
+   */
+  private int mWriteCount = 0;
+  
+  /**
+   * The name of the log file
+   */
+  private String mFileName = FileAppenderConfiguration.cDefaultLogFileName;
+  
+  /**
+   * The {@link File} referncing the log file
+   */
+  private File mLogFile = null;
+  
+  /**
+   * Construct a {@link FileAppender} with the specified configuration
+   * 
+   * @param fac The {@link FileAppenderConfiguration}
+   */
   public FileAppender(FileAppenderConfiguration fac)
   {
     mConfig = fac;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Initialize the {@link FileAppender}
+   * 
+   * @param fac The {@link FileAppenderConfiguration}
+   * @return {@code true} always.
+   * 
+   * @see IInitializable#init()
+   */
   public synchronized boolean init()
   {
     TimeStamp ts = new TimeStamp();
@@ -53,9 +91,13 @@ public class FileAppender extends AAppender
     return true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Terminate the {@link FileAppender}
+   * 
+   * @return {@code true} always.
+   * 
+   * @see IInitializable#term()
+   */
   public synchronized boolean term()
   {
     try
@@ -75,9 +117,11 @@ public class FileAppender extends AAppender
     return true;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Initialize a log file
+   * 
+   * @return the {@link File} referencing the log file
+   */
   private File initLogFile()
   {
     mLogFile = new File(mFileName);
@@ -103,10 +147,14 @@ public class FileAppender extends AAppender
     return mLogFile;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  protected synchronized void write(String logger, String message, ELogLevel messageLevel)
+  /**
+   * Write a message to the log file
+   * 
+   * @param logger The name of the logger
+   * @param level the {@link ELogLevel} of the message
+   * @param message The message text to write
+   */
+  protected synchronized void write(String logger, ELogLevel messageLevel, String message)
   {
     if (mConfig.isEnabled())
     {
@@ -138,9 +186,11 @@ public class FileAppender extends AAppender
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Flush writings and archive current log file if necessary
+   *  
+   * @throws IOException if an I/O error occurs
+   */
   private void flushAndArchive() throws IOException
   {
     boolean flushed = flush();
@@ -150,9 +200,15 @@ public class FileAppender extends AAppender
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Flush buffered writings.<br>
+   * <br>
+   * Flushing takes place every few writing operations, as configured.
+   * 
+   * @return {@code true} if the {@link BufferedWriter#flush()} was called, {@code false} otherwise
+   * 
+   * @see FileAppenderConfiguration#getFlushRate()
+   */
   private boolean flush()
   {
     boolean flushed = false;
@@ -168,9 +224,19 @@ public class FileAppender extends AAppender
     return flushed;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Archive current log file.<br>
+   * <br>
+   * When a log file size has reached the maximum size, as configured, it is archived by renaming
+   * its suffix to .X, where "X" is a number between 1 to a value configured.<br>
+   * The oldest log file, if necessary, are deleted.
+   * 
+   * @throws IOException if an I/O error occurs
+   * 
+   * @see FileAppenderConfiguration#getArchiveTestSizeRate()
+   * @see FileAppenderConfiguration#getArchiveMaxGenerations()
+   * @see FileAppenderConfiguration#getArchiveMaxFileSizeMb()
+   */
   private void archive() throws IOException
   {
     if (mWriteCount % mConfig.getArchiveTestSizeRate() == 0) // should test file size?
@@ -238,21 +304,34 @@ public class FileAppender extends AAppender
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link #FileAppender}.
+   * 
+   * @return a replica of this {@link #FileAppender}
+   */
+  public FileAppender replicate()
+  {
+    return new FileAppender(mConfig);
+  }
+  
+  /**
+   * Returns the {@link FileAppender} string representation.
+   * 
+   * @param level the required level padding
+   * @return the object's printable string representation
+   * 
+   * @see IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
     StringBuffer sb = new StringBuffer();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  ").append("Config=").append(mConfig.toPrintableString(level+1)).append("\n")
       .append(pad).append("  ").append("LogFile=").append(mLogFile.getAbsolutePath()).append("\n")
       .append(pad).append("  ").append("WriteCount=").append(mWriteCount).append("\n")
       .append(pad).append("  ").append("ErrorCount=").append(mErrorCount).append("\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

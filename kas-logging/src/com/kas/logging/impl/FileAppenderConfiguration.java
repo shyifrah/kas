@@ -1,5 +1,12 @@
 package com.kas.logging.impl;
 
+import com.kas.infra.base.IObject;
+
+/**
+ * The {@link FileAppender} configuration object.
+ * 
+ * @author Pippo
+ */
 public class FileAppenderConfiguration extends AAppenderConfiguration
 {
   static final String cDefaultLogFileName           = "kas-%p-%d.log";
@@ -9,27 +16,50 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   static final int    cDefaultArchiveMaxGenerations = 5;
   static final int    cDefaultArchiveTestSizeRate   = 20;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  private String mFileNamePattern       = cDefaultLogFileName;
-  private int    mMaxWriteErrors        = cDefaultMaxWriteErrors;
-  private int    mFlushRate             = cDefaultFlushRate;
-  private int    mArchiveMaxFileSizeMb  = cDefaultArchiveMaxFileSizeMb;
-  private int    mArchiveMaxGenerations = cDefaultArchiveMaxGenerations;
-  private int    mArchiveTestSizeRate   = cDefaultArchiveTestSizeRate;
+  /**
+   * The log file name pattern
+   */
+  private String mFileNamePattern = cDefaultLogFileName;
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * The maximum number of write errors
+   */
+  private int mMaxWriteErrors = cDefaultMaxWriteErrors;
+  
+  /**
+   * The number of write operations before flushing the appender
+   */
+  private int mFlushRate = cDefaultFlushRate;
+  
+  /**
+   * The maximum log file size before archiving
+   */
+  private int mArchiveMaxFileSizeMb = cDefaultArchiveMaxFileSizeMb;
+  
+  /**
+   * The maximum number of log file generations 
+   */
+  private int mArchiveMaxGenerations = cDefaultArchiveMaxGenerations;
+  
+  /**
+   * The number of write operations before testing if the log file should be archived 
+   */
+  private int mArchiveTestSizeRate = cDefaultArchiveTestSizeRate;
+  
+  /**
+   * Construct the appender's configuration, providing the {@link LoggingConfiguration}
+   */
   public FileAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
     super(AppenderManager.cFileAppenderName, loggingConfig);
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Refreshing the appender's configuration.<br>
+   * <br>
+   * When this method is called, it calls the {@link com.kas.config.MainConfiguration MainConfiguration} in order to re-read the values
+   * of the relevant properties.
+   */
   public void refresh()
   {
     super.refresh();
@@ -42,57 +72,84 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
     mArchiveTestSizeRate   = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.testSizeRate"   , mArchiveTestSizeRate   );
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the maximum number of write errors before shutting down the logger
+   * 
+   * @return the maximum number of write errors before shutting down the logger
+   */
   public int getMaxWriteErrors()
   {
     return mMaxWriteErrors;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the number of writes before a flushing the {@link java.io.BufferedWriter BufferedWriter}
+   * 
+   * @return the number of writes before a flushing the {@link java.io.BufferedWriter BufferedWriter}
+   */
   public int getFlushRate()
   {
     return mFlushRate;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the maximum size of a file, in MBs, before it's eligible for archiving
+   * 
+   * @return the maximum size of a file, in MBs, before it's eligible for archiving
+   */
   public int getArchiveMaxFileSizeMb()
   {
     return mArchiveMaxFileSizeMb;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the number of archive files
+   * 
+   * @return the number of archive files
+   */
   public int getArchiveMaxGenerations()
   {
     return mArchiveMaxGenerations;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the number of writes before checking if a log file should be archived
+   * 
+   * @return the number of writes before checking if a log file should be archived
+   */
   public int getArchiveTestSizeRate()
   {
     return mArchiveTestSizeRate;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get the log file name pattern
+   * 
+   * @return the log file name pattern
+   */
   public String getFileNamePattern()
   {
     return mFileNamePattern;
   }
 
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link FileAppenderConfiguration}.
+   * 
+   * @return a replica of this {@link FileAppenderConfiguration}
+   */
+  public FileAppenderConfiguration replicate()
+  {
+    return new FileAppenderConfiguration(mLoggingConfig);
+  }
+  
+  /**
+   * Returns the {@link FileAppenderConfiguration} string representation.
+   * 
+   * @param level the required level padding
+   * @return the object's printable string representation
+   * 
+   * @see IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
