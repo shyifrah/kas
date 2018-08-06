@@ -6,6 +6,11 @@ import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.AKasObject;
 
+/**
+ * A packet header is the beginning of a message transmitted, prefixing the actual packet.
+ * 
+ * @author Pippo
+ */
 public class PacketHeader extends AKasObject implements ISerializable
 {
   static public final String cEyeCatcher = "KAS";
