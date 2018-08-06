@@ -15,7 +15,7 @@ public interface ISerializable extends IObject
    * 
    * @param ostream {@link ObjectOutputStream} to which the object will be serialized
    * 
-   * @throws IOException 
+   * @throws IOException if an I/O error occurs
    */
   public abstract void serialize(ObjectOutputStream ostream) throws IOException;
   

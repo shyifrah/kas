@@ -8,38 +8,41 @@ import com.kas.infra.base.AKasObject;
 
 public class PacketHeader extends AKasObject implements ISerializable
 {
-  /***************************************************************************************************************
-   * 
+  static public final String cEyeCatcher = "KAS";
+  static public final int    cTypeUnknown    = -1;
+  static public final int    cClassIdUnknown = 0;
+  static public final int    cClassIdKasq    = 1;
+  
+  /**
+   * A packet header is marked with an eye-catcher that contains the string "KAS"
    */
-  public static final String cEyeCatcher = "KAS";
+  private String mEyeCatcher;
   
-  public static final int cTypeUnknown    = -1;
-  
-  public static final int cClassIdUnknown = 0;
-  public static final int cClassIdKasq    = 1;
-  
-  /***************************************************************************************************************
-   * 
+  /**
+   * The packet's class ID
    */
-  private String  mEyeCatcher;
-  private int     mClassId;
-  private int     mType;
+  private int mClassId;
   
-  /***************************************************************************************************************
-   * Construct a {@code PacketHeader}, specifying only the class ID
+  /**
+   * The packet's type
+   */
+  private int mType;
+  
+  /**
+   * Construct a {@link PacketHeader}, specifying only the class ID
    *  
-   * @param id the class ID of the packet
+   * @param id The class ID of the packet
    */
   protected PacketHeader(int id)
   {
     this(id, cTypeUnknown);
   }
   
-  /***************************************************************************************************************
-   * Construct a {@code PacketHeader}
+  /**
+   * Construct a {@link PacketHeader}
    *  
-   * @param id the class ID of the packet
-   * @param type the message type. this is an integer which is managed outside of the communication layer
+   * @param id The class ID of the packet
+   * @param type The packet's type. this is an integer which is managed outside of the communication layer
    */
   protected PacketHeader(int id, int type)
   {
@@ -48,12 +51,12 @@ public class PacketHeader extends AKasObject implements ISerializable
     mType    = type;
   }
   
-  /***************************************************************************************************************
-   * Constructs a {@code PacketHeader} object from {@code ObjectInputStream}
+  /**
+   * Constructs a {@link PacketHeader} object from {@link ObjectInputStream}
    * 
-   * @param istream the {@code ObjectInputStream}
+   * @param istream The {@link ObjectInputStream}
    * 
-   * @throws IOException
+   * @throws IOException if I/O error occurs
    */
   public PacketHeader(ObjectInputStream istream) throws IOException
   {
@@ -73,8 +76,12 @@ public class PacketHeader extends AKasObject implements ISerializable
     }
   }
   
-  /***************************************************************************************************************
+  /**
+   * Serialize the {@link PacketHeader} to the specified {@link ObjectOutputStream}
    * 
+   * @param ostream The {@link ObjectOutputStream} to which the header will be serialized
+   * 
+   * @throws IOException if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -86,8 +93,8 @@ public class PacketHeader extends AKasObject implements ISerializable
     ostream.reset();
   }
   
-  /***************************************************************************************************************
-   * Return the eye-catcher
+  /**
+   * Get the eye-catcher
    *  
    * @return the eye-catcher
    */
@@ -96,8 +103,8 @@ public class PacketHeader extends AKasObject implements ISerializable
     return mEyeCatcher;
   }
   
-  /***************************************************************************************************************
-   * Return the class ID of the appended packet
+  /**
+   * Get the class ID of the appended packet
    *  
    * @return the class ID
    */
@@ -106,30 +113,49 @@ public class PacketHeader extends AKasObject implements ISerializable
     return mClassId;
   }
   
-  /***************************************************************************************************************
-   * Return the type of the appended packet
+  /**
+   * Return the type of the appended packet.<br>
+   * <br>
    * The type of a packet is used by various factories to determine the specific type of the packet.
    *  
-   * @return the type
+   * @return the packet's type
    */
   public int getType()
   {
     return mType;
   }
   
-  /***************************************************************************************************************
-   * Verify this {@code PacketHeader} is a valid header.
-   * Verification is done by comparing the eye-catcher.
+  /**
+   * Verify this {@link PacketHeader} is a valid header.<br>
+   * <br>
+   * Verification is done by comparing the eye-catcher to the value "KAS"
    * 
-   * @return true if this header is valid, false otherwise
+   * @return {@code true} if this header is valid, {@code false} otherwise
    */
   public boolean verify()
   {
     return mEyeCatcher.equals(cEyeCatcher);
   }
   
-  /***************************************************************************************************************
+  /**
+   * Returns a replica of this {@link #PacketHeader}.
    * 
+   * @return a replica of this {@link #PacketHeader}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public PacketHeader replicate()
+  {
+    return new PacketHeader(mClassId, mType);
+  }
+  
+  /**
+   * Returns the {@link #PacketHeader} detailed string representation.
+   * 
+   * @param level the required level padding
+   * @return the object's printable string representation
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {
@@ -141,5 +167,5 @@ public class PacketHeader extends AKasObject implements ISerializable
       .append(mType)
       .append(')');
     return sb.toString();
-  }
+  }  
 }

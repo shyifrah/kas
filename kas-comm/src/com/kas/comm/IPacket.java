@@ -3,27 +3,60 @@ package com.kas.comm;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.ISerializable;
 
-public interface IPacket extends ISerializable
+/**
+ * A packet is a datagram sent over the network
+ * 
+ * @author Pippo
+ */
+public interface IPacket extends ISerializable,IObject
 {
-  /***************************************************************************************************************
+  /**
+   * Serialize a packet to the specified output stream
    * 
+   * @param ostream {@link ObjectOutputStream} to which the object will be serialized
+   * 
+   * @throws IOException if an I/O error occurs
    */
   public abstract void serialize(ObjectOutputStream ostream) throws IOException;
   
-  /***************************************************************************************************************
-   * Get the {@code Packet}'s class ID.
+  /**
+   * Get the {@code IPacket}'s class ID.
    * This value determines how the packet should be deserialized.
    * 
    * @return the {@code Packet}'s class ID
    */
   public abstract int getPacketClassId();
   
-  /***************************************************************************************************************
-   * Create a {@code PacketHeader} for the specified {@code IPacket}
+  /**
+   * Create a {@link PacketHeader header} for the specified {@link IPacket}
    * 
-   * @return the {@code PacketHeader} describing the current IPacket
+   * @return the {@link PacketHeader header} describing the current {@link IPacket}
    */
   public abstract PacketHeader createHeader();
+  
+  /**
+   * Returns the {@link #IPacket} simple class name enclosed with chevrons.
+   * 
+   * @return class name enclosed with chevrons.
+   */
+  public abstract String name();
+  
+  /**
+   * Returns a replica of this {@link #IPacket}.
+   * 
+   * @return a replica of this {@link #IPacket}
+   */
+  public abstract IPacket replicate();
+  
+  /**
+   * Returns the {@link #IPacket} string representation.
+   * 
+   * @param level the required level padding
+   * 
+   * @return the object's printable string representation
+   */
+  public abstract String toPrintableString(int level);
 }
