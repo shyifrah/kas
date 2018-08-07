@@ -193,6 +193,10 @@ public class KasQueue extends AKasObject
    */
   public KasQueue replicate()
   {
+    KasQueue q = new KasQueue(mName);
+    for (int i = 0; i < KasMessage.cMaximumPriority; ++i)
+      q.mQueueArray[i] = mQueueArray[i].replicate();
+    
     return new KasQueue(mName);
   }
   
@@ -214,7 +218,7 @@ public class KasQueue extends AKasObject
       .append(pad).append("  Queues=(\n");
     
     for (int i = 0; i < mQueueArray.length; ++i)
-      sb.append(pad).append("    P").append(String.format("%d", i)).append("={size=[").append(mQueueArray[i].size()).append("]}\n");
+      sb.append(pad).append("    P").append(String.format("%02d=(", i)).append(mQueueArray[i].toPrintableString(0)).append(")\n");
     
     sb.append(pad).append("  )\n")
       .append(pad).append(")");
