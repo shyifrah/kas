@@ -147,10 +147,11 @@ public class RunTimeUtils
   static private String initProductHomeDir()
   {
     String path = getProperty(cProductHomeDirProperty, ".");
-    
-    // last resort - assuming current directory
     File currdir = new File(path);
-    path = currdir.getAbsolutePath();
+    if ((currdir.exists()) && (currdir.isDirectory()) && (currdir.canRead()))
+    {
+      path = currdir.getAbsolutePath();
+    }
     return path;
   }
   

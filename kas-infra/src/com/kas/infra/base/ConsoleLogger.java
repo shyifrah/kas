@@ -1,6 +1,5 @@
-package com.kas.infra.test;
+package com.kas.infra.base;
 
-import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.logging.IBaseLogger;
 
@@ -9,7 +8,7 @@ import com.kas.infra.logging.IBaseLogger;
  * 
  * @author Pippo
  */
-class ConsoleLogger implements IBaseLogger
+public class ConsoleLogger implements IBaseLogger
 {
   /**
    * Name of the logger
