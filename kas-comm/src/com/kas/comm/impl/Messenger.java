@@ -224,11 +224,11 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /**
-   * Returns a replica of this {@link #Messenger}.<br>
+   * Get a replica of this {@link Messenger}.<br>
    * <br>
    * Note that the socket in the replica object is the same one as in use by this {@link Messenger}
    * 
-   * @return a replica of this {@link #Messenger} or {@code null} if an exception was thrown
+   * @return a replica of this {@link Messenger} or {@code null} if an exception was thrown
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
@@ -246,7 +246,7 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /**
-   * Returns the {@link #Messenger} detailed string representation.
+   * Returns the {@link Messenger} detailed string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

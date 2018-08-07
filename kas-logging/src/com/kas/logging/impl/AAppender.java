@@ -2,7 +2,6 @@ package com.kas.logging.impl;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.IObject;
 import com.kas.infra.base.ThrowableFormatter;
 import com.kas.infra.logging.ELogLevel;
 
@@ -11,7 +10,7 @@ import com.kas.infra.logging.ELogLevel;
  * 
  * @author Pippo
  */
-public abstract class AAppender extends AKasObject implements IAppender
+public abstract class AAppender extends AKasObject implements IAppender, IInitializable
 {
   static protected final String cAppenderMessageFormat = "%s %d:%d %-5s [%s] %s%n";
   
@@ -23,7 +22,7 @@ public abstract class AAppender extends AKasObject implements IAppender
    * @param message The message text to write
    * @param ex A {@link Throwable} object to write to the logger
    * 
-   * @see IAppender#write(String, ELogLevel, String, Throwable)
+   * @see com.kas.logging.impl.IAppender#write(String, ELogLevel, String, Throwable)
    */
   public synchronized void write(String logger, ELogLevel messageLevel, String message, Throwable ex)
   {
@@ -44,7 +43,7 @@ public abstract class AAppender extends AKasObject implements IAppender
    * 
    * @return {@code true} if appender was successfully initialized, {@code false} otherwise
    * 
-   * @see IInitializable#init()
+   * @see com.kas.infra.base.IInitializable#init()
    */
   public abstract boolean init();
   
@@ -53,7 +52,7 @@ public abstract class AAppender extends AKasObject implements IAppender
    * 
    * @return {@code true} if appender was successfully terminated, {@code false} otherwise
    * 
-   * @see IInitializable#term();
+   * @see com.kas.infra.base.IInitializable#term();
    */
   public abstract boolean term();
   
@@ -67,19 +66,21 @@ public abstract class AAppender extends AKasObject implements IAppender
   protected abstract void write(String logger, ELogLevel level, String message);
   
   /**
-   * Returns a replica of this {@link #AAppender}.
+   * Returns a replica of this {@link AAppender}.
    * 
-   * @return a replica of this {@link #AAppender}
+   * @return a replica of this {@link AAppender}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public abstract AAppender replicate();
   
   /**
-   * Returns the {@link #AAppender} string representation.
+   * Returns the {@link AAppender} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
    * 
-   * @see IObject#toPrintableString(int)
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public abstract String toPrintableString(int level);
 }

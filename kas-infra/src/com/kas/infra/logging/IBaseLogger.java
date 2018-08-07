@@ -143,25 +143,28 @@ public interface IBaseLogger extends IObject
   public abstract void fatal(String message, Throwable e);
   
   /**
-   * Returns the {@link #IBaseLogger} simple class name enclosed with chevrons.
+   * Returns the {@link IBaseLogger} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    */
   public abstract String name();
   
   /**
-   * Returns a replica of this {@link #IBaseLogger}.
+   * Returns a replica of this {@link IBaseLogger}.
    * 
-   * @return a replica of this {@link #IBaseLogger}
+   * @return a replica of this {@link IBaseLogger}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
-  public abstract IObject replicate();
+  public abstract IBaseLogger replicate();
   
   /**
-   * Returns the {@link #IBaseLogger} string representation.
+   * Returns the {@link IBaseLogger} string representation.
    * 
    * @param level the required level padding
-   * 
    * @return the object's printable string representation
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public abstract String toPrintableString(int level);
 }

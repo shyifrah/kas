@@ -149,11 +149,11 @@ public class MethodExec extends AKasObject implements Runnable
   }
   
   /**
-   * Returns a replica of this {@link #MethodExec}.<br>
+   * Returns a replica of this {@link MethodExec}.<br>
    * <br>
    * Note that the new {@link MethodExec} holds <b>the same</b> {@code Method}, object instance and arguments.
    * 
-   * @return a replica of this {@link #ProductVersion}
+   * @return a replica of this {@link ProductVersion}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

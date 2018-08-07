@@ -248,19 +248,7 @@ class ConsoleLogger implements IBaseLogger
   }
 
   /**
-   * Returns a replica of this {@link #ConsoleLogger}.
-   * 
-   * @return a replica of this {@link #ConsoleLogger}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ConsoleLogger replicate()
-  {
-    return new ConsoleLogger(mLoggerName);
-  }
-  
-  /**
-   * Returns the {@link #ConsoleLogger} simple class name enclosed with chevrons.
+   * Returns the {@link ConsoleLogger} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -269,6 +257,18 @@ class ConsoleLogger implements IBaseLogger
   public String name()
   {
     return this.getClass().getSimpleName();
+  }
+  
+  /**
+   * Returns a replica of this {@link ConsoleLogger}.
+   * 
+   * @return a replica of this {@link ConsoleLogger}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public ConsoleLogger replicate()
+  {
+    return new ConsoleLogger(mLoggerName);
   }
   
   /**

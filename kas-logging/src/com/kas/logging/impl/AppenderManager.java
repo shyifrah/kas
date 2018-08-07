@@ -3,7 +3,6 @@ package com.kas.logging.impl;
 import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
 /**
@@ -143,7 +142,7 @@ public class AppenderManager extends AKasObject
    * @param level the required level padding
    * @return the object's printable string representation
    * 
-   * @see IObject#toPrintableString(int)
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {

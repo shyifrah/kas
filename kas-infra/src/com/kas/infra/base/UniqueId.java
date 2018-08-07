@@ -153,9 +153,9 @@ public class UniqueId extends AKasObject implements Serializable
   }
   
   /**
-   * Returns a replica of this {@link #UniqueId}.
+   * Returns a replica of this {@link UniqueId}.
    * 
-   * @return a replica of this {@link #UniqueId}
+   * @return a replica of this {@link UniqueId}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

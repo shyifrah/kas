@@ -109,9 +109,9 @@ public class Statistics extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link #Statistics}.
+   * Returns a replica of this {@link Statistics}.
    * 
-   * @return a replica of this {@link #Statistics}
+   * @return a replica of this {@link Statistics}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

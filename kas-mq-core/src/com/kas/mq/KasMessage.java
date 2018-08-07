@@ -17,7 +17,7 @@ public class KasMessage extends AKasObject
   /**
    * The message priority
    */
-  private int      mPriority;
+  private int mPriority;
   
   /**
    * The message unique identifier
@@ -65,6 +65,20 @@ public class KasMessage extends AKasObject
   public UniqueId getMessageId()
   {
     return mMessageId;
+  }
+  
+  /**
+   * Returns a replica of this {@link KasMessage}.<br>
+   * <br>
+   * The replica will have a different {@link UniqueId}.
+   * 
+   * @return a replica of this {@link KasMessage}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public KasMessage replicate()
+  {
+    return new KasMessage(mPriority);
   }
   
   /**

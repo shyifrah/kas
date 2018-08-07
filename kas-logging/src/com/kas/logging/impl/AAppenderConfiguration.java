@@ -2,7 +2,6 @@ package com.kas.logging.impl;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IObject;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.logging.ELogLevel;
@@ -94,6 +93,8 @@ public abstract class AAppenderConfiguration extends AKasObject implements IList
    * Returns a replica of this {@link AAppenderConfiguration}.
    * 
    * @return a replica of this {@link AAppenderConfiguration}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public abstract AAppenderConfiguration replicate();
   
@@ -103,7 +104,7 @@ public abstract class AAppenderConfiguration extends AKasObject implements IList
    * @param level the required level padding
    * @return the object's printable string representation
    * 
-   * @see IObject#toPrintableString(int)
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public abstract String toPrintableString(int level);
 }

@@ -38,25 +38,28 @@ public interface IPacket extends ISerializable,IObject
   public abstract PacketHeader createHeader();
   
   /**
-   * Returns the {@link #IPacket} simple class name enclosed with chevrons.
+   * Returns the {@link IPacket} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    */
   public abstract String name();
   
   /**
-   * Returns a replica of this {@link #IPacket}.
+   * Returns a replica of this {@link IPacket}.
    * 
-   * @return a replica of this {@link #IPacket}
+   * @return a replica of this {@link IPacket}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public abstract IPacket replicate();
   
   /**
-   * Returns the {@link #IPacket} string representation.
+   * Returns the {@link IPacket} string representation.
    * 
    * @param level the required level padding
-   * 
    * @return the object's printable string representation
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public abstract String toPrintableString(int level);
 }

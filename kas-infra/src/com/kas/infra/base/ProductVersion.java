@@ -171,9 +171,9 @@ public class ProductVersion extends AKasObject implements Serializable
   }
   
   /**
-   * Returns a replica of this {@link #ProductVersion}.
+   * Returns a replica of this {@link ProductVersion}.
    * 
-   * @return a replica of this {@link #ProductVersion}
+   * @return a replica of this {@link ProductVersion}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

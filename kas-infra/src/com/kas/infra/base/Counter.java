@@ -107,9 +107,9 @@ public class Counter extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link #Counter}.
+   * Returns a replica of this {@link Counter}.
    * 
-   * @return a replica of this {@link #Counter}
+   * @return a replica of this {@link Counter}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

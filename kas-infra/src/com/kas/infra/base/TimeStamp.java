@@ -180,9 +180,9 @@ public class TimeStamp extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link #TimeStamp}.
+   * Returns a replica of this {@link TimeStamp}.
    * 
-   * @return a replica of this {@link #TimeStamp}
+   * @return a replica of this {@link TimeStamp}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

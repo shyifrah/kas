@@ -712,9 +712,9 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   }
   
   /**
-   * Returns a replica of this {@link #Properties}.
+   * Returns a replica of this {@link Properties}.
    * 
-   * @return a replica of this {@link #Properties}
+   * @return a replica of this {@link Properties}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

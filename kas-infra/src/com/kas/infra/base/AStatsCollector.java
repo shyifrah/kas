@@ -30,9 +30,9 @@ public abstract class AStatsCollector extends AKasObject
   public abstract void printStats();
   
   /**
-   * Returns a replica of this {@link #AStatsCollector}.
+   * Returns a replica of this {@link AStatsCollector}.
    * 
-   * @return a replica of this {@link #AStatsCollector}
+   * @return a replica of this {@link AStatsCollector}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

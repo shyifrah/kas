@@ -23,7 +23,7 @@ public interface IInitializable extends IObject
   public abstract boolean term();
   
   /**
-   * Returns the {@link #IInitializable} simple class name enclosed with chevrons.
+   * Returns the {@link IInitializable} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -32,16 +32,16 @@ public interface IInitializable extends IObject
   public abstract String name();
   
   /**
-   * Returns a replica of this {@link #IInitializable}.
+   * Returns a replica of this {@link IInitializable}.
    * 
-   * @return a replica of this {@link #IInitializable}
+   * @return a replica of this {@link IInitializable}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public abstract IObject replicate();
+  public abstract IInitializable replicate();
   
   /**
-   * Returns the {@link #IInitializable} string representation.
+   * Returns the {@link IInitializable} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

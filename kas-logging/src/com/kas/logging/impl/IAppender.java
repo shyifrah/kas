@@ -1,7 +1,6 @@
 package com.kas.logging.impl;
 
 import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.IObject;
 import com.kas.infra.logging.ELogLevel;
 
 /**
@@ -37,26 +36,30 @@ public interface IAppender extends IInitializable
   public abstract boolean term();
   
   /**
-   * Returns the {@link #IAppender} simple class name enclosed with chevrons.
+   * Returns the {@link IAppender} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
+   * 
+   * @see com.kas.infra.base.IObject#name()
    */
   public abstract String name();
   
   /**
-   * Returns a replica of this {@link #IAppender}.
+   * Returns a replica of this {@link IAppender}.
    * 
-   * @return a replica of this {@link #IAppender}
+   * @return a replica of this {@link IAppender}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public abstract IAppender replicate();
   
   /**
-   * Returns the {@link #IAppender} string representation.
+   * Returns the {@link IAppender} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
    * 
-   * @see IObject#toPrintableString(int)
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public abstract String toPrintableString(int level);
 }

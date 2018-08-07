@@ -4,8 +4,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.IObject;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.FileUtils;
@@ -71,7 +69,7 @@ public class FileAppender extends AAppender
    * @param fac The {@link FileAppenderConfiguration}
    * @return {@code true} always.
    * 
-   * @see IInitializable#init()
+   * @see com.kas.infra.base.IInitializable#init()
    */
   public synchronized boolean init()
   {
@@ -96,7 +94,7 @@ public class FileAppender extends AAppender
    * 
    * @return {@code true} always.
    * 
-   * @see IInitializable#term()
+   * @see com.kas.infra.base.IInitializable#term()
    */
   public synchronized boolean term()
   {
@@ -207,7 +205,7 @@ public class FileAppender extends AAppender
    * 
    * @return {@code true} if the {@link BufferedWriter#flush()} was called, {@code false} otherwise
    * 
-   * @see FileAppenderConfiguration#getFlushRate()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getFlushRate()
    */
   private boolean flush()
   {
@@ -233,9 +231,9 @@ public class FileAppender extends AAppender
    * 
    * @throws IOException if an I/O error occurs
    * 
-   * @see FileAppenderConfiguration#getArchiveTestSizeRate()
-   * @see FileAppenderConfiguration#getArchiveMaxGenerations()
-   * @see FileAppenderConfiguration#getArchiveMaxFileSizeMb()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveTestSizeRate()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxGenerations()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
    */
   private void archive() throws IOException
   {
@@ -305,9 +303,11 @@ public class FileAppender extends AAppender
   }
   
   /**
-   * Returns a replica of this {@link #FileAppender}.
+   * Returns a replica of this {@link FileAppender}.
    * 
-   * @return a replica of this {@link #FileAppender}
+   * @return a replica of this {@link FileAppender}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public FileAppender replicate()
   {
@@ -320,7 +320,7 @@ public class FileAppender extends AAppender
    * @param level the required level padding
    * @return the object's printable string representation
    * 
-   * @see IObject#toPrintableString(int)
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {

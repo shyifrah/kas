@@ -34,7 +34,7 @@ public abstract class AKasObject implements IObject
   }
   
   /**
-   * Returns the {@link #IObject} simple class name enclosed with chevrons.
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -50,7 +50,7 @@ public abstract class AKasObject implements IObject
   }
   
   /**
-   * Returns the {@link #IObject} string representation with 0-padding level
+   * Returns the {@link IObject} string representation with 0-padding level
    * 
    * @return the string representation with 0-padding level
    * 
@@ -62,16 +62,16 @@ public abstract class AKasObject implements IObject
   }
   
   /**
-   * Returns a replica of this {@link #IObject}.
+   * Returns a replica of this {@link IObject}.
    * 
-   * @return a replica of this {@link #IObject}
+   * @return a replica of this {@link IObject}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public abstract IObject replicate();
+  public abstract AKasObject replicate();
   
   /**
-   * Returns the {@link #IObject} string representation.
+   * Returns the {@link IObject} string representation.
    * 
    * @param level the required level padding
    * @return the string representation with the specified level of padding

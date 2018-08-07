@@ -32,18 +32,21 @@ public interface IRegistrar extends IObject
   public abstract String name();
   
   /**
-   * Returns a replica of this {@link #IRegistrar}.
+   * Returns a replica of this {@link IRegistrar}.
    * 
-   * @return a replica of this {@link #IRegistrar}
+   * @return a replica of this {@link IRegistrar}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
-  public abstract IObject replicate();
+  public abstract IRegistrar replicate();
   
   /**
-   * Returns the {@link #IRegistrar} string representation.
+   * Returns the {@link IRegistrar} string representation.
    * 
    * @param level the required level padding
-   * 
    * @return the object's printable string representation
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public abstract String toPrintableString(int level);
 }

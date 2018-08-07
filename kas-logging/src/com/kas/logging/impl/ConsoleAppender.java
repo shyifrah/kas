@@ -1,8 +1,6 @@
 package com.kas.logging.impl;
 
 import java.io.PrintStream;
-import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.IObject;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.RunTimeUtils;
@@ -44,7 +42,7 @@ public class ConsoleAppender extends AAppender
    * 
    * @return always {@code true}
    * 
-   * @see IInitializable#init()
+   * @see com.kas.infra.base.IInitializable#init()
    */
   public boolean init()
   {
@@ -59,7 +57,7 @@ public class ConsoleAppender extends AAppender
    * 
    * @return always {@code true}
    * 
-   * @see IInitializable#term()
+   * @see com.kas.infra.base.IInitializable#term()
    */
   public boolean term()
   {
@@ -96,7 +94,7 @@ public class ConsoleAppender extends AAppender
    * 
    * @return a replica of this {@link ConsoleAppender}
    * 
-   * @see IObject#replicate()
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public ConsoleAppender replicate()
   {
@@ -109,7 +107,7 @@ public class ConsoleAppender extends AAppender
    * @param level the required level padding
    * @return the object's printable string representation
    * 
-   * @see IObject#toPrintableString(int)
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {

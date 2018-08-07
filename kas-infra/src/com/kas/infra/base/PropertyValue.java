@@ -102,9 +102,9 @@ class PropertyValue extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link #PropertyValue}.
+   * Returns a replica of this {@link PropertyValue}.
    * 
-   * @return a replica of this {@link #PropertyValue}
+   * @return a replica of this {@link PropertyValue}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */

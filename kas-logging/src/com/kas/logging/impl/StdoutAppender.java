@@ -1,7 +1,5 @@
 package com.kas.logging.impl;
 
-import com.kas.infra.base.IObject;
-
 /**
  * STDOUT appender
  * 
@@ -24,7 +22,7 @@ public class StdoutAppender extends ConsoleAppender
    * 
    * @return a replica of this {@link StdoutAppender}
    * 
-   * @see IObject#replicate()
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public StdoutAppender replicate()
   {

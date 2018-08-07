@@ -6,25 +6,30 @@ import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IRegistrar;
 
+/**
+ * The logging configuration
+ * 
+ * @author Pippo
+ */
 public class LoggingConfiguration extends AConfiguration implements IRegistrar
 {
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
-  public static final String cLoggingConfigPrefix = "kas.logging.";
+  static public final String  cLoggingConfigPrefix = "kas.logging.";
+  static public final boolean cDefaultEnabled = true;
   
-  public static final boolean cDefaultEnabled = true;
-  
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * An indicator whether logging is enabled or disabled
+   */
   private boolean mEnabled = cDefaultEnabled;
   
+  /**
+   * A set of weak-references to all appenders' configuration objects.<br>
+   * When configuration changes, all appender's configurations are refreshed
+   */
   private HashSet<WeakRef<IListener>> mAppenderConfigsSet = new HashSet<WeakRef<IListener>>();
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Refresh configuration
+   */
   public void refresh()
   {
     mEnabled = mMainConfig.getBoolProperty ( cLoggingConfigPrefix + "enabled" , mEnabled);
@@ -43,9 +48,12 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get appender's name by requestor class name
+   * 
+   * @param requestorClassName The name of the class that created the logger
+   * @return the name of the appenders associated with this class/package, or {@code null} if none could be found
+   */
   public String getAppenderName(String requestorClassName)
   {
     String loggerName = requestorClassName;
@@ -77,17 +85,23 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
     return appenderName;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Get logging configuration status
+   * 
+   * @return {@code true} if logging is enabled, {@code false} otherwise
+   */
   public boolean isEnabled()
   {
     return mEnabled;
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Register a {@link AAppenderConfiguration} object as a configuration listener
+   * 
+   * @param listener The {@link AAppenderConfiguration} listening for configuration changes
+   * 
+   * @see com.kas.infra.config.IRegistrar#register(IListener)
+   */
   public synchronized void register(IListener listener)
   {
     WeakRef<IListener> appenderConfigRef = new WeakRef<IListener>(listener);
@@ -95,9 +109,13 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
     listener.refresh();
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Unregister a {@link AAppenderConfiguration} object as a configuration listener
+   * 
+   * @param listener The {@link AAppenderConfiguration} listening for configuration changes
+   * 
+   * @see com.kas.infra.config.IRegistrar#unregister(IListener)
+   */
   public synchronized void unregister(IListener listener)
   {
     for (WeakRef<IListener> ref : mAppenderConfigsSet)
@@ -110,9 +128,27 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
     }
   }
   
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
+  /**
+   * Returns a replica of this {@link LoggingConfiguration}.
+   * 
+   * @return a replica of this {@link LoggingConfiguration}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public LoggingConfiguration replicate()
+  {
+    return new LoggingConfiguration();
+  }
+  
+  /**
+   * Returns the {@link LoggingConfiguration} string representation.
+   * 
+   * @param level the required level padding
+   * 
+   * @return the object's printable string representation
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     String pad = pad(level);
