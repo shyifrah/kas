@@ -27,7 +27,7 @@ public class WeakRef<T>
   /**
    * Return the object's string representation
    * 
-   * @return {@code "null"} if the referent is {@code null} or the object's {@code toString()} value
+   * @return {@code "null"} if the referent is {@code null} or the object's {@link #toString()} value
    */
   public String toString()
   {

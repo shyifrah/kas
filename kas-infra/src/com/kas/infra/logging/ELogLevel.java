@@ -53,9 +53,9 @@ public enum ELogLevel implements IObject
   /**
    * Is one log level greater or equal to an other
    * 
-   * @param other A second {@code ELogLevel} to compare
+   * @param other A second {@link ELogLevel} to compare
    * 
-   * @return {@code true} if this {@code ELogLevel} is greater or equal to {@code other}
+   * @return {@code true} if this {@link ELogLevel} is greater or equal to {@code other}
    */
   public boolean isGreaterOrEqual(ELogLevel other)
   {
@@ -91,7 +91,7 @@ public enum ELogLevel implements IObject
   }
 
   /**
-   * Get the enum detailed string representation. For {@code ELogLevel} this is the same as calling
+   * Get the enum detailed string representation. For {@link ELogLevel} this is the same as calling
    * {@link #toString()} method.
    * 
    * @param level The string padding level

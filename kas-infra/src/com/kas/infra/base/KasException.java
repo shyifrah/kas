@@ -11,7 +11,7 @@ public class KasException extends Exception
   static private final String cDefaultMessage = "KAS Exception";
 
   /**
-   * Construct a default {@code KasException} object.
+   * Construct a default {@link KasException} object.
    */
   public KasException()
   {
@@ -19,7 +19,7 @@ public class KasException extends Exception
   }
   
   /**
-   * Construct a {@code KasException} object.
+   * Construct a {@link KasException} object.
    * 
    * @param message the exception message
    */
@@ -29,7 +29,7 @@ public class KasException extends Exception
   }
   
   /**
-   * Construct a {@code KasQException} object with the associated cause
+   * Construct a {@link KasQException} object with the associated cause
    * 
    * @param cause the causer exception
    */
@@ -39,7 +39,7 @@ public class KasException extends Exception
   }
   
   /**
-   * Construct a {@code KasException} object with the associated message and cause
+   * Construct a {@link KasException} object with the associated message and cause
    * 
    * @param message the exception message
    * @param cause the causer exception

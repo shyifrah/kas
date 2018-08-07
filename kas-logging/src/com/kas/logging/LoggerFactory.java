@@ -14,7 +14,7 @@ public class LoggerFactory
   /**
    * Get a logger based on the the requesting class
    * 
-   * @param requestorClass {@code Class} of the requestor
+   * @param requestorClass {@link Class} of the requestor
    * @return returned logger object
    */
   static public ILogger getLogger(Class<?> requestorClass)
@@ -26,7 +26,7 @@ public class LoggerFactory
   /**
    * Get STDOUT logger
    * 
-   * @param requestorClass {@code Class} of the requestor
+   * @param requestorClass {@link Class} of the requestor
    * @return returned logger object
    */
   static public ILogger getStdout(Class<?> requestorClass)
@@ -38,7 +38,7 @@ public class LoggerFactory
   /**
    * Get STDERR logger
    * 
-   * @param requestorClass {@code Class} of the requestor
+   * @param requestorClass {@link Class} of the requestor
    * @return returned logger object
    */
   static public ILogger getStderr(Class<?> requestorClass)

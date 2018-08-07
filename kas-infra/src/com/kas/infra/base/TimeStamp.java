@@ -159,7 +159,7 @@ public class TimeStamp extends AKasObject
   /**
    * Return the difference, in milliseconds, between this TimeStamp object and other one
    * 
-   * @param other A second timestamp represented by {@code TimeStamp}
+   * @param other A second timestamp represented by {@link TimeStamp}
    * @return The difference, expressed in milliseconds
    */
   public long diff(TimeStamp other)

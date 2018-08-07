@@ -53,7 +53,7 @@ public class StringUtils
    * Return the printable String value for a Map object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
-   * @param map The {@code Map}
+   * @param map The {@link Map}
    * @param level Padding level
    * @return the object's printable string representation 
    */
@@ -82,7 +82,7 @@ public class StringUtils
    * Return the printable String value for a Collection object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int)} method as part of it.
    * 
-   * @param collection The {@code Collection}
+   * @param collection The {@link Collection}
    * @param level Padding level
    * @return the object's printable string representation 
    */

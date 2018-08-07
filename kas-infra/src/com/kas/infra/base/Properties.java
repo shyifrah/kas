@@ -123,7 +123,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, or property does not designate a valid {@code int} value, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Integer} value
+   * @return the {@link Integer} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -186,7 +186,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code String} value or the {@code Object}'s {@link java.lang.Object#toString()} value 
+   * @return the {@link String} value or the {@link Object}'s {@link java.lang.Object#toString()} value 
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -248,7 +248,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, or property does not designate a valid {@code long} value, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Long} value
+   * @return the {@link Long} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -311,7 +311,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, or property does not designate a valid {@code byte} value, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Byte} value
+   * @return the {@link Byte} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -374,7 +374,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, or property does not designate a valid {@code double} value, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Double} value
+   * @return the {@link Double} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -437,7 +437,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, or property does not designate a valid {@code float} value, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Float} value
+   * @return the {@link Float} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -500,7 +500,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Object} value
+   * @return the {@link Object} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */
@@ -548,7 +548,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * If the property does not exist, or property does not designate a valid {@code short} value, an exception is thrown.
    * 
    * @param key The name of the property
-   * @return the {@code Short} value
+   * @return the {@link Short} value
    * 
    * @throws {@link KasException} if property is not found or some other error occurred
    */

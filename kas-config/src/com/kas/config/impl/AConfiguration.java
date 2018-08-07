@@ -17,7 +17,7 @@ public abstract class AConfiguration extends AKasObject implements IListener
   protected MainConfiguration mMainConfig = null;
   
   /**
-   * A boolean stating if this {@code AConfiguration} object was initialized or not
+   * A boolean stating if this {@link AConfiguration} object was initialized or not
    */
   private boolean mInitialized = false;
   

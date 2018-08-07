@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class Statistics extends AKasObject
 {
   /**
-   * A map of name to {@code Counter}.
+   * A map of name to {@link Counter}.
    */
   private Map<String, Counter> mCounters = new ConcurrentSkipListMap<String, Counter>();
   
@@ -38,7 +38,7 @@ public class Statistics extends AKasObject
    * @param name The name of the counter
    * @return the value of the counter associated with the name.
    * 
-   * @throws RuntimeException in case {@code name} is not associated with any {@code Counter} in the map.
+   * @throws RuntimeException in case {@code name} is not associated with any {@link Counter} in the map.
    */
   public int getValue(String name)
   {
@@ -50,12 +50,12 @@ public class Statistics extends AKasObject
   }
   
   /**
-   * Add a set of counters hold by a {@code Statistics} object to this object.<br>
+   * Add a set of counters hold by a {@link Statistics} object to this object.<br>
    * <br>
    * If a counter with a specified name already exists in this object's map, their values are summed.
-   * Otherwise, the counter is simply added to this {@code Statistics} object.
+   * Otherwise, the counter is simply added to this {@link Statistics} object.
    * 
-   * @param stats A {@code Statistics} object that contains zero or more counters
+   * @param stats A {@link Statistics} object that contains zero or more counters
    */
   public void put(Statistics other)
   {
@@ -123,7 +123,7 @@ public class Statistics extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation. For {@code Statistics}, this method returns the same 
+   * Get the object's detailed string representation. For {@link Statistics}, this method returns the same 
    * result as {@link #toString()}.
    * 
    * @param level The string padding level

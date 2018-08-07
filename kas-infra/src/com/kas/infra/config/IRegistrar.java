@@ -3,8 +3,8 @@ package com.kas.infra.config;
 import com.kas.infra.base.IObject;
 
 /**
- * A {@code IRegistrar} is an object to which other objects, objects that implements the {@link IListener} interface,
- * are registered and unregistered from in order to be notified about events happening in the {@code IRegistrar}.
+ * A {@link IRegistrar} is an object to which other objects, objects that implements the {@link IListener} interface,
+ * are registered and unregistered from in order to be notified about events happening in the {@link IRegistrar}.
  * 
  * @author Pippo
  */

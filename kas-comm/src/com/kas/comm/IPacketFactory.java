@@ -11,9 +11,9 @@ import java.io.ObjectInputStream;
 public interface IPacketFactory
 {
   /**
-   * Constructs a {@code IPacket} object from {@code ObjectInputStream}.<br>
+   * Constructs a {@link IPacket} object from {@link ObjectInputStream}.<br>
    * <br>
-   * Each serialized {@code IPacket} is prefixed with a {@link PacketHeader}, so we read it first and
+   * Each serialized {@link IPacket} is prefixed with a {@link PacketHeader}, so we read it first and
    * according to the class ID, call the appropriate constructor.
    * 
    * @param istream the {@link ObjectInputStream} from which the packet will be deserialized

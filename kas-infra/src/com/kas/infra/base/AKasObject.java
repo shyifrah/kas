@@ -5,7 +5,7 @@ import com.kas.infra.utils.StringUtils;
 /**
  * A KAS managed object.<br>
  * <br>
- * This class implements some of the methods that described in {@code IObject} 
+ * This class implements some of the methods that described in {@link IObject} 
  * 
  * @author Pippo
  * 

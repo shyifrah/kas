@@ -183,7 +183,7 @@ public class ProductVersion extends AKasObject implements Serializable
   }
   
   /**
-   * Get the object's detailed string representation. For {@code ProductVersion}, this method returns the same 
+   * Get the object's detailed string representation. For {@link ProductVersion}, this method returns the same 
    * result as {@link #toString()}.
    * 
    * @param level The string padding level

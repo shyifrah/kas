@@ -10,7 +10,7 @@ import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * An {@code ObjectTest} is a collection of tests that are executed against a specified object.<br>
+ * An {@link ObjectTest} is a collection of tests that are executed against a specified object.<br>
  * Tests are scheduled for execution via the {@link #add(String, Object, Object...)} method, and are executed via the {@link #run()} method.
  */
 public class ObjectTest extends AStatsCollector
@@ -54,10 +54,10 @@ public class ObjectTest extends AStatsCollector
   private Map<MethodExec, Object> mMethodTests = new ConcurrentHashMap<MethodExec, Object>();
   
   /**
-   * Construct a {@code TestSet} object.<br>
+   * Construct a {@link TestSet} ObjectTest.<br>
    * <br>
-   * @param logger The {@code IBaseLogger} object to which messages are sent
-   * @param object The {@code Object} against which tests will be executed
+   * @param logger The {@link IBaseLogger} object to which messages are sent
+   * @param object The {@link Object} against which tests will be executed
    */
   public ObjectTest(Object object)
   {

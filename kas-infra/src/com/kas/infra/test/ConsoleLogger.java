@@ -134,7 +134,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a DIAG message and append the {@code Throwable} object with the specified log level
+   * Write a DIAG message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write
@@ -148,7 +148,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a DEBUG message and append the {@code Throwable} object with the specified log level
+   * Write a DEBUG message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write
@@ -162,7 +162,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a TRACE message and append the {@code Throwable} object with the specified log level
+   * Write a TRACE message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write
@@ -176,7 +176,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a INFO message and append the {@code Throwable} object with the specified log level
+   * Write a INFO message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write
@@ -190,7 +190,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a WARN message and append the {@code Throwable} object with the specified log level
+   * Write a WARN message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write
@@ -204,7 +204,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a ERROR message and append the {@code Throwable} object with the specified log level
+   * Write a ERROR message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write
@@ -218,7 +218,7 @@ class ConsoleLogger implements IBaseLogger
   }
   
   /**
-   * Write a FATAL message and append the {@code Throwable} object with the specified log level
+   * Write a FATAL message and append the {@link Throwable} object with the specified log level
    * 
    * @param message The message to write
    * @param e The throwable object to write

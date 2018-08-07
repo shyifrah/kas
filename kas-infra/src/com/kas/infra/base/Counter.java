@@ -28,7 +28,7 @@ public class Counter extends AKasObject
   private int    mValue;
   
   /**
-   * Construct a {@code Counter} object with the specified name with an initial value of 0.
+   * Construct a {@link Counter} object with the specified name with an initial value of 0.
    * 
    * @param name The name associated with this counter
    */
@@ -38,7 +38,7 @@ public class Counter extends AKasObject
   }
   
   /**
-   * Construct a {@code Counter} object with the specified name and initial value
+   * Construct a {@link Counter} object with the specified name and initial value
    * 
    * @param name The name associated with this counter
    * @param value The initial value assigned to this counter
@@ -119,7 +119,7 @@ public class Counter extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation. For {@code Counter}, this method returns the same 
+   * Get the object's detailed string representation. For {@link Counter}, this method returns the same 
    * result as {@link #toString()}.
    * 
    * @param level The string padding level

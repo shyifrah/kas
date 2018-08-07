@@ -23,10 +23,10 @@ public interface IPacket extends ISerializable,IObject
   public abstract void serialize(ObjectOutputStream ostream) throws IOException;
   
   /**
-   * Get the {@code IPacket}'s class ID.
+   * Get the {@link IPacket}'s class ID.
    * This value determines how the packet should be deserialized.
    * 
-   * @return the {@code Packet}'s class ID
+   * @return the {@link IPacket}'s class ID
    */
   public abstract int getPacketClassId();
   

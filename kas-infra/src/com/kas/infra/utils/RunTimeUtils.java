@@ -24,7 +24,7 @@ public class RunTimeUtils
   
   /**
    * Get the current host name
-   * We first try and obtain the host name by means of {@code InetAddress.getLocalHost()}. If that doesn't work
+   * We first try and obtain the host name by means of {@link InetAddress#getLocalHost()}. If that doesn't work
    * we execute the {@code hostname} system command and read its output. 
    * 
    * @return the host name

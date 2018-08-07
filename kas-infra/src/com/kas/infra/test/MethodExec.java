@@ -38,9 +38,9 @@ public class MethodExec extends AKasObject implements Runnable
   private Exception mException = null;
   
   /**
-   * Create a {@code MethodRun} object.<br>
+   * Create a {@link MethodRun} object.<br>
    * <br>
-   * The run consisting of a {@link java.lang.reflect.Method} object, the {@code object} on which it is invoked, and a list
+   * The run consisting of a {@link java.lang.reflect.Method} object, the {@link Object} on which it is invoked, and a list
    * of arguments to pass the method.
    * 
    * @param method A method object to invoke
@@ -57,7 +57,7 @@ public class MethodExec extends AKasObject implements Runnable
   /**
    * Run the method.<br>
    * <br>
-   * First we make sure the method is accessible (because it is possible that the {@code MethodRun} object was created
+   * First we make sure the method is accessible (because it is possible that the {@link MethodRun} object was created
    * for a private method. Then we invoke the method via reflection mechanism. Finally, we save the result and the
    * exception, if one was thrown, that the invocation generated.
    */
@@ -151,7 +151,7 @@ public class MethodExec extends AKasObject implements Runnable
   /**
    * Returns a replica of this {@link MethodExec}.<br>
    * <br>
-   * Note that the new {@link MethodExec} holds <b>the same</b> {@code Method}, object instance and arguments.
+   * Note that the new {@link MethodExec} holds <b>the same</b> {@link Method}, object instance and arguments.
    * 
    * @return a replica of this {@link ProductVersion}
    * 
@@ -163,7 +163,7 @@ public class MethodExec extends AKasObject implements Runnable
   }
   
   /**
-   * Get the object's detailed string representation. For {@code MethodRun}, this method returns the same 
+   * Get the object's detailed string representation. For {@link MethodRun}, this method returns the same 
    * result as {@link #toString()}.
    * 
    * @param level The string padding level

@@ -2,7 +2,7 @@ package com.kas.infra.base;
 
 /**
  * A Stats-Collector class is one that has a {@link Statistics} member that is used to collect
- * statistics on system operation. In addition, the {@code AStatsCollector} class need to implement
+ * statistics on system operation. In addition, the {@link AStatsCollector} class need to implement
  * the {@link #printStats()} method which prints the contents of the collected statistics.
  * 
  * @author Pippo

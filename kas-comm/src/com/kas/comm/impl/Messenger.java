@@ -50,9 +50,9 @@ public class Messenger extends AKasObject implements IMessenger
   protected int      mPort;
   
   /**
-   * Constructs a {@code Messenger} object using the specified socket, host and port.
+   * Constructs a {@link Messenger} object using the specified socket, host and port.
    * 
-   * @param socket The socket that will serve this {@code Messenger}
+   * @param socket The socket that will serve this {@link Messenger}
    * @param host The remote host
    * @param port Remote host listening port
    * @param factory The packet factory used to deserialize packets
