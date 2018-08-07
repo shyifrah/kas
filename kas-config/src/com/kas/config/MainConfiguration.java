@@ -336,7 +336,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     
     sb.append(name()).append("(\n")
       .append(pad).append("  Initialized=").append(mInitialized).append("\n")

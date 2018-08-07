@@ -112,7 +112,7 @@ final public class ConfigTask extends AKasObject implements IRunnable
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  MonitoredFiles=(\n")
       .append(StringUtils.asPrintableString(mMonitoredFilesMap, level+2)).append("\n")

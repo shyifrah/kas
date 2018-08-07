@@ -152,7 +152,7 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     
     sb.append(name()).append("(\n")
       .append(pad).append("  Enabled=").append(mEnabled).append("\n")

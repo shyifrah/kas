@@ -77,7 +77,7 @@ class PropertyValue extends AKasObject
     String var = rawValue.substring(startIdx+2, endIdx);
     String val = RunTimeUtils.getProperty(var);
     
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(rawValue.substring(0, startIdx));
     sb.append(val);
     sb.append(rawValue.substring(endIdx+1));
@@ -126,7 +126,7 @@ class PropertyValue extends AKasObject
    */
   public String toPrintableString(int level)
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     
     // [Raw=(...)] = [Actual=(..)]
     sb.append(name()).append("(")

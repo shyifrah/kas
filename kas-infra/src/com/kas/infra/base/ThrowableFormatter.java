@@ -32,7 +32,7 @@ public class ThrowableFormatter
   //------------------------------------------------------------------------------------------------------------------
   private void format()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     format(sb, mThrowable);
     mFormattedString = sb.toString();
   }
@@ -40,7 +40,7 @@ public class ThrowableFormatter
   //------------------------------------------------------------------------------------------------------------------
   //
   //------------------------------------------------------------------------------------------------------------------
-  private void format(StringBuffer buffer, Throwable e)
+  private void format(StringBuilder buffer, Throwable e)
   {
     if (e == null) return;
     

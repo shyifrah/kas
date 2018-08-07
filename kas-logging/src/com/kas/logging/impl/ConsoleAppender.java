@@ -112,7 +112,7 @@ public class ConsoleAppender extends AAppender
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     
     sb.append(name()).append("(\n")
       .append(pad).append("  Config=").append(mConfig.toPrintableString(level+1)).append("\n")

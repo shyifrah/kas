@@ -31,8 +31,7 @@ public class KasQueue extends AKasObject
   /**
    * The file backing up this {@link KasQueue} object.
    */
-  protected transient File    mBackupFile = null;
-  protected transient String  mBackupFileName = null;
+  protected transient File mBackupFile = null;
   
   /**
    * Constructing a {@link KasQueue} object with the specified name.
@@ -64,16 +63,21 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Gets a message with a specific priority from this {@link KasQueue} object
+   * Get a message with max priority from this {@link KasQueue} object
    * 
-   * @param priority The priority of the message to be retrieved. Default value is 0.
-   * @return the returned message or {@code null} if there is no message with the specified priority.
+   * @return the returned message or {@code null} if there is no message
    */
   public KasMessage get()
   {
-    return get(KasMessage.cMinimumPriority);
+    return get(KasMessage.cMaximumPriority);
   }
   
+  /**
+   * Get a message with a specific priority from this {@link KasQueue} object
+   * 
+   * @param priority The priority of the message to be retrieved
+   * @return the returned message or {@code null} if there is no message
+   */
   public KasMessage get(int priority)
   {
     if ((priority < KasMessage.cMinimumPriority) || (priority > KasMessage.cMaximumPriority))
@@ -83,16 +87,21 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Gets a message with a specific priority from this {@link KasQueue} object, and wait indefinitely if one is not available.
+   * Get a message with max priority from this {@link KasQueue} object, and wait indefinitely if one is not available.
    * 
-   * @param priority The priority of the message to be retrieved. Default value is 0
    * @return the returned message
    */
   public KasMessage getAndWait()
   {
-    return getAndWait(KasMessage.cMinimumPriority);
+    return getAndWait(KasMessage.cMaximumPriority);
   }
   
+  /**
+   * Get a message with a specific priority from this {@link KasQueue} object, and wait indefinitely if one is not available.
+   * 
+   * @param priority The priority of the message to be retrieved 
+   * @return the returned message
+   */
   public KasMessage getAndWait(int priority)
   {
     if ((priority < KasMessage.cMinimumPriority) || (priority > KasMessage.cMaximumPriority))
@@ -108,15 +117,13 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Gets a message with a specific priority from this {@link KasQueue} object. If a message is not available immediately
+   * Get a message with max priority from this {@link KasQueue} object. If a message is not available immediately
    * wait for {@code timeout} milliseconds at most.<br>
    * <br>
-   * Because this operation is done in a manner of polling, the thread is delayed for {@code interval} milliseconds after each
+   * Because this operation is done in a manner of polling, the thread is delayed for {@code 1000} milliseconds after each
    * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
    * exceeded the timeout value or a message was retrieved.
    * 
-   * @param priority The priority of the message to be retrieved. Default value is 0
-   * @param interval The number of milliseconds to delay between each polling operation. Default value is 1 second
    * @param timeout The number of milliseconds to wait until the get operation is aborted.
    * @return the returned message or {@code null} if timeout occurred. 
    */
@@ -125,11 +132,36 @@ public class KasQueue extends AKasObject
     return getAndWaitWithTimeout(KasMessage.cMinimumPriority, timeout, 1000L);
   }
   
+  /**
+   * Get a message with a specific priority from this {@link KasQueue} object. If a message is not available immediately
+   * wait for {@code timeout} milliseconds at most.<br>
+   * <br>
+   * Because this operation is done in a manner of polling, the thread is delayed for {@code 1000} milliseconds after each
+   * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
+   * exceeded the timeout value or a message was retrieved.
+   * 
+   * @param priority The priority of the message to be retrieved
+   * @param timeout The number of milliseconds to wait until the get operation is aborted.
+   * @return the returned message or {@code null} if timeout occurred. 
+   */
   public KasMessage getAndWaitWithTimeout(int priority, long timeout)
   {
     return getAndWaitWithTimeout(priority, timeout, 1000L);
   }
   
+  /**
+   * Get a message with a specific priority from this {@link KasQueue} object. If a message is not available immediately
+   * wait for {@code timeout} milliseconds at most.<br>
+   * <br>
+   * Because this operation is done in a manner of polling, the thread is delayed for {@code interval} milliseconds after each
+   * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
+   * exceeded the timeout value or a message was retrieved.
+   * 
+   * @param priority The priority of the message to be retrieved
+   * @param timeout The number of milliseconds to wait until the get operation is aborted
+   * @param interval The number of milliseconds to delay between each polling operation
+   * @return the returned message or {@code null} if timeout occurred. 
+   */
   public KasMessage getAndWaitWithTimeout(int priority, long timeout, long interval)
   {
     if ((priority < KasMessage.cMinimumPriority) || (priority > KasMessage.cMaximumPriority))
@@ -151,6 +183,20 @@ public class KasQueue extends AKasObject
   }
   
   /**
+   * Returns a replica of this {@link KasQueue}.<br>
+   * <br>
+   * The replica will have a different {@link UniqueId}.
+   * 
+   * @return a replica of this {@link KasQueue}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public KasQueue replicate()
+  {
+    return new KasQueue(mName);
+  }
+  
+  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -161,7 +207,7 @@ public class KasQueue extends AKasObject
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append("  UniqueId=").append(mQueueId.toString()).append("\n")

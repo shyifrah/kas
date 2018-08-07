@@ -29,7 +29,7 @@ public abstract class AAppender extends AKasObject implements IAppender, IInitia
     String msgText = message;
     if (ex != null)
     {
-      StringBuffer sb = new StringBuffer().append(message);
+      StringBuilder sb = new StringBuilder().append(message);
       ThrowableFormatter formatter = new ThrowableFormatter(ex);
       sb.append(formatter.toString());
       msgText = sb.toString();

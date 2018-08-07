@@ -250,7 +250,7 @@ public class Logger extends AKasObject implements ILogger
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")

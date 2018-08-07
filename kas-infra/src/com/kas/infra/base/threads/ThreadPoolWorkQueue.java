@@ -84,7 +84,7 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
    */
   public String name()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<")
       .append(this.getClass().getSimpleName())
       .append(">");
@@ -102,7 +102,7 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
   public String toPrintableString(int level)
   {
     String pad = StringUtils.getPadding(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  MaxSize=").append(mMaxSize).append("\n")
       .append(pad).append("  ActualSize=").append(size()).append("\n")

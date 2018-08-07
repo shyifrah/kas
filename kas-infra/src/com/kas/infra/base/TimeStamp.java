@@ -202,7 +202,7 @@ public class TimeStamp extends AKasObject
    */
   public String toPrintableString(int level)
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name())
       .append('(')
       .append(toRawString())

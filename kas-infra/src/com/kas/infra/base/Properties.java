@@ -704,7 +704,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    */
   public String name()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<")
       .append(this.getClass().getSimpleName())
       .append(">");
@@ -735,7 +735,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   public String toPrintableString(int level)
   {
     String pad = StringUtils.getPadding(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     
     sb.append(name()).append("(\n")
       .append(StringUtils.asPrintableString(this, level + 1)).append("\n")

@@ -164,7 +164,7 @@ public class PacketHeader extends AKasObject implements ISerializable
    */
   public String toPrintableString(int level)
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name())
       .append('(')
       .append(mClassId)

@@ -213,7 +213,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public String toString()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name())
       .append("(Address=[")
       .append(mHost)
@@ -256,7 +256,7 @@ public class Messenger extends AKasObject implements IMessenger
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Host=").append(mHost).append("\n")
       .append(pad).append("  Port=").append(mPort).append("\n")

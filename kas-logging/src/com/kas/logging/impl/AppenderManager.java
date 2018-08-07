@@ -147,7 +147,7 @@ public class AppenderManager extends AKasObject
   public String toPrintableString(int level)
   {
     String pad = pad(level);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Appenders=(\n")
       .append(StringUtils.asPrintableString(mAppenders, level + 2)).append("\n")

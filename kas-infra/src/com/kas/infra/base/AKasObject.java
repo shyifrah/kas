@@ -42,7 +42,7 @@ public abstract class AKasObject implements IObject
    */
   public String name()
   {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<")
       .append(this.getClass().getSimpleName())
       .append(">");

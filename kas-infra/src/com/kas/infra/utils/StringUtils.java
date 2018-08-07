@@ -115,7 +115,7 @@ public class StringUtils
    */
   static public String getPadding(int level)
   {
-    StringBuffer sb = new StringBuffer("");
+    StringBuilder sb = new StringBuilder("");
     for (int i = 0; i < level; ++i)
       sb.append("  ");
     
