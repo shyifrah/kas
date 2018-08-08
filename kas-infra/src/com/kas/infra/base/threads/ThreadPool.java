@@ -5,6 +5,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import com.kas.infra.base.IRunnable;
 
 /**
  * A ThreadPool is an object starting and stopping threads according to the work load on the system.
@@ -26,17 +27,17 @@ public class ThreadPool
   }
   
   /**
-   * Schedule a {@link Callable} object for repeated execution
+   * Schedule a {@link IRunnable} object for repeated execution
    * 
-   * @param command A {@link Callable} object to execute
-   * @param initDelay The number of time-units to delay the {@link Callable} execution
-   * @param period The number of time-units to delay the {@link Callable} subsequent executions
+   * @param command A {@link IRunnable} object to execute
+   * @param initDelay The number of time-units to delay the {@link IRunnable} execution
+   * @param period The number of time-units to delay the {@link IRunnable} subsequent executions
    * @param unit A {@link TimeUnit} value which represents the time unit for {@code initDelay} and {@code period}
    * @return a {@link ScheduledFuture} referencing to the task's return value
    * 
    * @see java.util.concurrent.ScheduledThreadPoolExecutor#schedule(Callable, long, TimeUnit)
    */
-  static public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit)
+  static public ScheduledFuture<?> scheduleAtFixedRate(IRunnable command, long initialDelay, long period, TimeUnit unit)
   {
     return sSchedExecutor.scheduleAtFixedRate(command, initialDelay, period, unit);
   }

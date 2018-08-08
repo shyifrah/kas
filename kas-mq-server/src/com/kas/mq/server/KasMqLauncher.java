@@ -66,6 +66,32 @@ public class KasMqLauncher
     sLogger.info("KAS/MQ home directory was set: " + kasHome);
     
     TimeStamp end = new TimeStamp();
+    long diff = end.diff(start);
+    long millis = diff % 1000;
+    diff = diff / 1000;
+    long seconds = diff % 60;
+    diff = diff / 60;
+    long minutes = diff % 60;
+    diff = diff / 60;
+    long hours = diff; 
+    
     sLogger.info("KAS/MQ launcher ended at " + end.toString());
+    sLogger.info("Total startup time took " + 
+        (hours > 0 ? hours + " hours, " : "") + 
+        (minutes > 0 ? minutes + " minutes, " : "") +
+        String.format("%d.%03d seconds", seconds, millis));
+    
+    KasMqServer server = new KasMqServer(kasHome);
+    
+    boolean init = server.init();
+    if (!init)
+    {
+      sLogger.error("KAS/MQ server failed initialization. See previous error messages. Terminating...");
+      System.exit(2);
+    }
+    
+    server.run();
+    server.term();
+    sLogger.info("KAS/MQ terminated");
   }
 }

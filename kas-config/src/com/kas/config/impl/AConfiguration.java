@@ -24,9 +24,13 @@ public abstract class AConfiguration extends AKasObject implements IListener
   /**
    * Initialize the configuration object
    */
-  public void init()
+  public synchronized void init()
   {
     mMainConfig = MainConfiguration.getInstance();
+    if (!mMainConfig.isInitialized())
+    {
+      mMainConfig.init();
+    }
     mMainConfig.register(this);
     refresh();
     

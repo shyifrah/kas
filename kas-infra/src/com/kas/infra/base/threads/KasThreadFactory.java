@@ -1,7 +1,6 @@
 package com.kas.infra.base.threads;
 
 import java.util.concurrent.ThreadFactory;
-import com.kas.infra.base.IRunnable;
 
 /**
  * A general-purpose thread factory
@@ -19,7 +18,7 @@ public class KasThreadFactory implements ThreadFactory
    * 
    * @return a newly created thread with the specified name 
    */
-  public static Thread createThread(IRunnable cmd, String name)
+  public static Thread createThread(Runnable cmd, String name)
   {
     return new KasRunnableThread(name, cmd);
   }
@@ -64,16 +63,12 @@ public class KasThreadFactory implements ThreadFactory
    */
   public Thread newThread(Runnable cmd)
   {
-    if (!(cmd instanceof IRunnable))
-      throw new IllegalArgumentException("Cannot create a new thread. Command object not a IRunnable");
-    
-    IRunnable iCmd = (IRunnable)cmd;
     String tn;
     synchronized(mLock)
     {
       ++mSequence;
       tn = mPrefix + '-' + mSequence;
     }
-    return KasThreadFactory.createThread(iCmd, tn);
+    return KasThreadFactory.createThread(cmd, tn);
   }
 }
