@@ -12,7 +12,7 @@ import com.kas.infra.logging.ELogLevel;
  */
 public abstract class AAppender extends AKasObject implements IAppender, IInitializable
 {
-  static protected final String cAppenderMessageFormat = "%s %d:%d %-5s [%s] %s%n";
+  static protected final String cAppenderMessageFormat = "%s %d:%d %-5s (%s) %s%n";
   
   /**
    * Write a message

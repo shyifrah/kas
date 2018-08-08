@@ -107,14 +107,14 @@ public class RunTimeUtils
   }
   
   /**
-   * Get the value of the property from System properties.
-   * If a value was found, return it, otherwise, replace the period (".") chars  with underscores ("_") and
-   * try obtain the value of an environment variable with the new name.
-   * If no value was obtained, the {@code defaultValue} is returned
+   * Get the value of the property from System properties.<br>
+   * <br>
+   * If a value was found, return it, otherwise, replace the period (".") chars with underscores ("_") and
+   * try obtain the value of an environment variable with the new name. If no value was obtained, the 
+   * {@code defaultValue} is returned
    * 
-   * @param variable the system property name
-   * @param defaultValue the default value to be returned if no value was obtained
-   * 
+   * @param variable The system property name
+   * @param defaultValue The default value to be returned if no value was obtained
    * @return the value of the {@code variable} property or {@code defaultValue}
    */
   static public String getProperty(String variable, String defaultValue)
@@ -135,6 +135,38 @@ public class RunTimeUtils
     }
     
     return defaultValue;
+  }
+  
+  /**
+   * Set the value {@code value} of the property named {@code variable} to System properties.<br>
+   * <br>
+   * If a variable with the name {@code variable} already exists, then the value of {@code force} determines
+   * how to process the request. If it's {@code true}, the new value will override the old one. If it's
+   * {@code false}, the old value will be retained.
+   * 
+   * @param variable The system property name
+   * @param value The value to assign to the property
+   * @param force Indicator whether to override old value or retain it
+   * @return the value of the system property {@code variable}
+   */
+  static public String setProperty(String variable, String value, boolean force)
+  {
+    // try obtaining it from system variable ("-D")
+    String result = System.getProperty(variable);
+    if ((result == null) || (result.trim().length() == 0))
+    {
+      String envvar = variable.replace('.', '_');
+      result = System.getenv(envvar);
+    }
+    
+    // property doesn't exist
+    if ((result == null) || (result.trim().length() == 0) || (force))
+    {
+      result = System.setProperty(variable, value);
+      if (result == null) result = value;
+    }
+    
+    return result;
   }
   
   /**

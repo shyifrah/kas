@@ -18,7 +18,7 @@ import com.kas.infra.utils.RunTimeUtils;
  */
 public class KasMqLauncher
 {
-  static private IBaseLogger sLogger = new ConsoleLogger(KasMqLauncher.class.getSimpleName());
+  static private IBaseLogger sLogger = new ConsoleLogger(KasMqLauncher.class.getName());
   
   static public void main(String [] args)
   {
@@ -63,7 +63,9 @@ public class KasMqLauncher
     {
       kasHome = RunTimeUtils.getProductHomeDir();
     }
-    sLogger.info("KAS/MQ home directory was set: " + kasHome);
+    RunTimeUtils.setProperty(RunTimeUtils.cProductHomeDirProperty, kasHome, true);
+    sLogger.info("KAS/MQ launcher set system property '" + RunTimeUtils.cProductHomeDirProperty + "' to '" + kasHome + "'");
+    
     
     TimeStamp end = new TimeStamp();
     long diff = end.diff(start);
@@ -74,15 +76,14 @@ public class KasMqLauncher
     long minutes = diff % 60;
     diff = diff / 60;
     long hours = diff; 
-    
     sLogger.info("KAS/MQ launcher ended at " + end.toString());
     sLogger.info("Total startup time took " + 
         (hours > 0 ? hours + " hours, " : "") + 
         (minutes > 0 ? minutes + " minutes, " : "") +
         String.format("%d.%03d seconds", seconds, millis));
     
-    KasMqServer server = new KasMqServer(kasHome);
     
+    KasMqServer server = new KasMqServer();
     boolean init = server.init();
     if (!init)
     {
