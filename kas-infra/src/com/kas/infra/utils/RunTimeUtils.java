@@ -14,7 +14,7 @@ import java.net.InetAddress;
  */
 public class RunTimeUtils
 {
-  static private final String cProductHomeDirProperty = "kas.home";
+  static public  final String cProductHomeDirProperty = "kas.home";
   static private final String cUserNameProperty       = "user.name";
   
   /**
