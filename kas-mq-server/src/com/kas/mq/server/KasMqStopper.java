@@ -16,8 +16,6 @@ import com.kas.logging.LoggerFactory;
  */
 public class KasMqStopper extends AKasThread
 {
-  static private final String cThreadName = "KasMqTerminator";
-  
   /**
    * Logger
    */
@@ -35,7 +33,7 @@ public class KasMqStopper extends AKasThread
    */
   public KasMqStopper(IStoppable server)
   {
-    super(cThreadName);
+    super(KasMqStopper.class.getSimpleName());
     mLogger = LoggerFactory.getLogger(this.getClass());
     mServer = server;
   }

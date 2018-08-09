@@ -7,6 +7,7 @@ import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IRunnable;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -79,7 +80,8 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
   {
     mLogger.info("KAS/MQ server termination in progress");
     
-    Runtime.getRuntime().removeShutdownHook(mShutdownHook);
+    if (!(Thread.currentThread().getName().equals(KasMqStopper.class.getSimpleName())))
+      Runtime.getRuntime().removeShutdownHook(mShutdownHook);
     
     mConfig.term();
     
@@ -92,9 +94,15 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
    */
   public void run()
   {
-    while (!isStopping())
+    boolean shouldStop = isStopping();
+    while (!shouldStop)
     {
       // ... do what you need to do - for example, accept() new client sockets...
+      RunTimeUtils.sleepForSeconds(5);
+      
+      // re-check if needs to shutdown
+      shouldStop = isStopping();
+      mLogger.debug("Checking if KAS/MQ server needs to shutdown... " + (shouldStop ? "yep. Terminating main loop..." : "nope..."));
     }
   }
   

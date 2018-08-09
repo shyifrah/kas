@@ -1,28 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-q-server" default="Main" basedir=".">
+<project name="kas-mq-server" default="Main" basedir=".">
   
-  <property name="src"     location="src"/>
-  <property name="res"     location="res"/>
-  <property name="bin"     location="bin"/>
-  <property name="lib"     location="lib"/>
-  <property name="conf"    location="conf"/>
-  <property name="logs"    location="logs"/>
-  <property name="repo"    location="repo"/>
+  <property name="src"  location="src"/>
+  <property name="res"  location="res"/>
+  <property name="bin"  location="bin"/>
+  <property name="lib"  location="lib"/>
+  <property name="conf" location="conf"/>
+  <property name="logs" location="logs"/>
+  <property name="repo" location="repo"/>
 
-  <property name="infra"      location="../kas-infra"/>
-  <property name="config"     location="../kas-config"/>
-  <property name="logging"    location="../kas-logging"/>
-  <property name="containers" location="../kas-containers"/>
-  <property name="comm"       location="../kas-comm"/>
-  <property name="q-core"     location="../kas-q-core"/>
+  <property name="infra"   location="../kas-infra"/>
+  <property name="config"  location="../kas-config"/>
+  <property name="logging" location="../kas-logging"/>
+  <!-- <property name="comm"       location="../kas-comm"/> -->
+  <!-- <property name="q-core"     location="../kas-q-core"/> -->
 	
-  <property name="infra.jar"      location="../kas-infra/lib/kas-infra.jar"/>
-  <property name="config.jar"     location="../kas-config/lib/kas-config.jar"/>
-  <property name="logging.jar"    location="../kas-logging/lib/kas-logging.jar"/>
-  <property name="containers.jar" location="../kas-containers/lib/kas-containers.jar"/>
-  <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/>
-  <property name="q-core.jar"     location="../kas-q-core/lib/kas-q-core.jar"/>
-  <property name="jms.jar"        location="../kas-q-core/thirdparty/javax.jms-2.0.jar"/>
+  <property name="infra.jar"   location="../kas-infra/lib/kas-infra.jar"/>
+  <property name="config.jar"  location="../kas-config/lib/kas-config.jar"/>
+  <property name="logging.jar" location="../kas-logging/lib/kas-logging.jar"/>
+  <!-- <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/> -->
+  <!-- <property name="q-core.jar"     location="../kas-q-core/lib/kas-q-core.jar"/> -->
 	
   <!-- debugging information -->
   <property name="debug"      value="true" />
@@ -31,7 +28,7 @@
   <!-- versioning -->
   <property name="build.major" value="1"/>
   <property name="build.minor" value="0"/>
-  <property name="build.mod"   value="4"/>
+  <property name="build.mod"   value="5"/>
 
   <!-- targets -->
   <target name="Main" depends="CopyRes" description="main target (default)">
@@ -53,21 +50,18 @@
     <mkdir dir="${repo}"/>
     <buildnumber file="${res}/buildnumber.txt"/>
     <subant target="Main">
-      <fileset dir="${infra}"      includes="build.xml"/>
-      <fileset dir="${config}"     includes="build.xml"/>
-      <fileset dir="${logging}"    includes="build.xml"/>
-      <fileset dir="${containers}" includes="build.xml"/>
-      <fileset dir="${comm}"       includes="build.xml"/>
-      <fileset dir="${q-core}"     includes="build.xml"/>
+      <fileset dir="${infra}"   includes="build.xml"/>
+      <fileset dir="${config}"  includes="build.xml"/>
+      <fileset dir="${logging}" includes="build.xml"/>
+      <!-- <fileset dir="${comm}"    includes="build.xml"/> -->
+      <!-- <fileset dir="${q-core}"     includes="build.xml"/> -->
     </subant>
     <copy todir="${lib}" overwrite="true" >
       <fileset file="${infra.jar}"/>
       <fileset file="${config.jar}"/>
       <fileset file="${logging.jar}"/>
-      <fileset file="${containers.jar}"/>
-      <fileset file="${comm.jar}" />
-      <fileset file="${q-core.jar}"/>
-      <fileset file="${jms.jar}"/>
+      <!-- <fileset file="${comm.jar}" /> -->
+      <!-- <fileset file="${q-core.jar}"/> -->
     </copy>
   </target>
   
@@ -78,10 +72,8 @@
         <pathelement location="${infra.jar}" />
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
-        <pathelement location="${containers.jar}" />
-        <pathelement location="${comm.jar}" />
-        <pathelement location="${q-core.jar}" />
-      	<pathelement location="${jms.jar}" />
+        <!-- <pathelement location="${comm.jar}" /> -->
+        <!-- <pathelement location="${q-core.jar}" /> -->
       </classpath>
     </javac>
   </target>
@@ -89,7 +81,7 @@
   <target name="Jar" depends="Compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar"
        basedir="${bin}"
-       includes="com/kas/q/server/**/*.class"
+       includes="com/kas/mq/server/**/*.class"
        excludes="**/Test*.class">
       <manifest>
         <attribute name="Kas-Version" value="${build.major}-${build.minor}-${build.mod}-${build.number}"/>
