@@ -38,6 +38,15 @@ public abstract class AConfiguration extends AKasObject implements IListener
   }
   
   /**
+   * Terminate the configuration object
+   */
+  public synchronized void term()
+  {
+    mMainConfig.unregister(this);
+    mInitialized = false;
+  }
+  
+  /**
    * Returns the configuration object's state.
    * 
    * @return true if the configuration object was initialized

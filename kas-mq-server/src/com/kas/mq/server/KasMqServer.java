@@ -1,16 +1,20 @@
 package com.kas.mq.server;
 
-import com.kas.config.MainConfiguration;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketTimeoutException;
 import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IRunnable;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.server.internal.ClientController;
+import com.kas.mq.server.internal.MqConfiguration;
 
 /**
  * MQ server.<br>
@@ -25,9 +29,9 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqServer.class.getName());
   
   /**
-   * The main configuration object
+   * The Mq configuration object
    */
-  private MainConfiguration mConfig = null;
+  private MqConfiguration mConfig = null;
   
   /**
    * Logger
@@ -38,6 +42,16 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
    * Shutdown hook
    */
   private KasMqStopper mShutdownHook = null;
+  
+  /**
+   * Server socket
+   */
+  private ServerSocket mListenSocket = null;
+  
+  /**
+   * Client controller
+   */
+  private ClientController mController = null;
   
   /**
    * Initializing the KAS/MQ server.<br>
@@ -51,17 +65,31 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
    */
   public boolean init()
   {
-    mConfig = MainConfiguration.getInstance();
-    boolean init = mConfig.init();
-    if (!init)
+    mConfig = new MqConfiguration();
+    mConfig.init();
+    if (!mConfig.isInitialized())
       return false;
     
     mLogger = LoggerFactory.getLogger(this.getClass());
+    sStartupLogger.info("KAS/MQ logging services are now active, switching to log file...");
     
     mShutdownHook = new KasMqStopper(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
-    sStartupLogger.info("KAS/MQ server initialization complete. Logger is active");
+    mController = new ClientController();
+    
+    try
+    {
+      mListenSocket = new ServerSocket(mConfig.getPort());
+      mListenSocket.setSoTimeout(5000);
+    }
+    catch (IOException e)
+    {
+      mLogger.error("An error occured while trying to bind server socket with port: " + mConfig.getPort());
+      mLogger.fatal("Exception caught: ", e);
+      term();
+    }
+    
     mLogger.info("KAS/MQ server initialization complete. Logger is active");
     return true;
   }
@@ -80,25 +108,60 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
   {
     mLogger.info("KAS/MQ server termination in progress");
     
-    if (!(Thread.currentThread().getName().equals(KasMqStopper.class.getSimpleName())))
-      Runtime.getRuntime().removeShutdownHook(mShutdownHook);
+    if (mShutdownHook != null)
+    {
+      mLogger.info("Shutdown hook is registered, will try to remove it...");
+      if (Thread.currentThread().getName().equals(KasMqStopper.class.getSimpleName()))
+      {
+        mLogger.warn("Cannot remove Shutdown hook as termination process is executed under it...");
+      }
+      else
+      {
+        Runtime.getRuntime().removeShutdownHook(mShutdownHook);
+        mLogger.info("Shutdown hook was successfully removed");
+      }
+    }
     
-    mConfig.term();
+    mLogger.info("Terminating configuration object and switching back to Console loggging...");
+    if (mConfig.isInitialized())
+      mConfig.term();
     
     ThreadPool.shutdownNow();
     return true;
   }
   
   /**
-   * Run KAS/MQ server
+   * Run KAS/MQ server.<br>
+   * <br>
+   * The main logic is quite simple: keep accepting new client connections as long as the main thread
+   * was not signaled to shutdown. 
    */
   public void run()
   {
+    int errors = 0;
     boolean shouldStop = isStopping();
     while (!shouldStop)
     {
-      // ... do what you need to do - for example, accept() new client sockets...
-      RunTimeUtils.sleepForSeconds(5);
+      try
+      {
+        Socket socket = mListenSocket.accept();
+        mController.newClient(socket);
+      }
+      catch (SocketTimeoutException e)
+      {
+        mLogger.debug("Accept() timed out, no new connections...");
+      }
+      catch (IOException e)
+      {
+        mLogger.warn("An error occurred while trying to accept new client connection");
+        ++errors;
+        if (errors >= mConfig.getMaxErrors())
+        {
+          mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getMaxErrors());
+          mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
+          stop();
+        }
+      }
       
       // re-check if needs to shutdown
       shouldStop = isStopping();

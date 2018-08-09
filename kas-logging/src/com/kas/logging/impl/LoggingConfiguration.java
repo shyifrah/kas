@@ -137,7 +137,11 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
    */
   public LoggingConfiguration replicate()
   {
-    return new LoggingConfiguration();
+    LoggingConfiguration config = new LoggingConfiguration();
+    config.mEnabled = mEnabled;
+    config.mMainConfig = mMainConfig;
+    config.mAppenderConfigsSet = mAppenderConfigsSet;
+    return config;
   }
   
   /**
