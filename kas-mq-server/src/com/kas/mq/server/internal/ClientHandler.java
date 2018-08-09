@@ -1,10 +1,15 @@
 package com.kas.mq.server.internal;
 
+import java.io.IOException;
 import java.net.Socket;
 import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.UniqueId;
-import com.kas.infra.utils.RunTimeUtils;
 
+/**
+ * A {@link ClientHandler} is the object that handles the traffic in and from a remote client.
+ * 
+ * @author Pippo
+ */
 public class ClientHandler extends AStoppable implements Runnable
 {
   /**
@@ -18,15 +23,24 @@ public class ClientHandler extends AStoppable implements Runnable
   private Socket mSocket;
   
   /**
+   * The client controller
+   */
+  private IController mController;
+  
+  /**
    * Construct a {@link ClientHandler} to handle all incoming and outgoing traffic of the client.<br>
    * <br>
    * Client's transmits messages and received by this handler over the specified {@code socket}.
    *  
    * @param socket The client's socket
+   * 
+   * @throws IOException if {@link Socket#setSoTimeout()} throws
    */
-  ClientHandler(Socket socket)
+  ClientHandler(Socket socket, IController controller) throws IOException
   {
     mSocket = socket;
+    mController = controller;
+    mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
     mClientId = UniqueId.generate();
   }
   
@@ -35,7 +49,19 @@ public class ClientHandler extends AStoppable implements Runnable
     boolean shouldStop = isStopping();
     while (!shouldStop)
     {
-      RunTimeUtils.sleepForSeconds(5);
+//      try
+//      {
+//        // do socket read call
+//        // process the message
+//      }
+//      catch (SocketTimeoutException e)
+//      {
+//        // just notify on timeout and re-iterate
+//      }
+//      catch (IOException e)
+//      {
+//        
+//      }
       
       // re-check if needs to shutdown
       shouldStop = isStopping();
@@ -52,13 +78,47 @@ public class ClientHandler extends AStoppable implements Runnable
     return mClientId;
   }
   
-  public AStoppable replicate()
+  /**
+   * Returns a replica of this {@link ClientHandler}.<br>
+   * <br>
+   * The replica will have an empty map of handlers.
+   * 
+   * @return a replica of this {@link ClientHandler}
+   * 
+   * @throws RuntimeException if {@link ClientHandler#ClientHandler(Socket, IController)} throws an exception.
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public ClientHandler replicate()
   {
-    return null;
+    ClientHandler handler = null;
+    try
+    {
+      handler = new ClientHandler(mSocket, mController);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException("Failed to construct ClientHandler", e);
+    }
+    return handler;
   }
 
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
-    return null;
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  Client Id=").append(mClientId.toString()).append("\n")
+      .append(pad).append("  Socket=").append(mSocket.toString()).append("\n")
+      .append(pad).append(")");
+    return sb.toString();
   }
 }

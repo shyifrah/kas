@@ -27,20 +27,6 @@ public class KasRunnableThread extends Thread implements IObject
   }
   
   /**
-   * Returns a replica of this {@link #KasRunnableThread}.<br>
-   * <br>
-   * Note that the replica will hold the same {@link Runnable} object.
-   * 
-   * @return a replica of this {@link #KasRunnableThread}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public KasRunnableThread replicate()
-  {
-    return new KasRunnableThread(getName(), mCommand);
-  }
-  
-  /**
    * Returns the {@link #KasRunnableThread} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
@@ -54,6 +40,20 @@ public class KasRunnableThread extends Thread implements IObject
       .append(this.getClass().getSimpleName())
       .append(">");
     return sb.toString();
+  }
+  
+  /**
+   * Returns a replica of this {@link #KasRunnableThread}.<br>
+   * <br>
+   * Note that the replica will hold the same {@link Runnable} object.
+   * 
+   * @return a replica of this {@link #KasRunnableThread}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public KasRunnableThread replicate()
+  {
+    return new KasRunnableThread(getName(), mCommand);
   }
   
   /**

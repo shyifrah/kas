@@ -11,12 +11,13 @@ public class MqConfiguration extends AConfiguration
 {
   static private final String  cMqConfigPrefix  = "kas.mq.";
   
-  static public final boolean cDefaultEnabled        = true;
-  static public final int     cDefaultPort           = 14560;
-  static public final String  cDefaultManagerName    = "qmgr";
-  static public final String  cDefaultDeadQueueName  = "local.dead";
-  static public final String  cDefaultAdminQueueName = "local.admin";
-  static public final int     cDefaultMaxErrors      = 10;
+  static public final boolean cDefaultEnabled           = true;
+  static public final int     cDefaultPort              = 14560;
+  static public final String  cDefaultManagerName       = "qmgr";
+  static public final String  cDefaultDeadQueueName     = "local.dead";
+  static public final String  cDefaultAdminQueueName    = "local.admin";
+  static public final int     cDefaultConnMaxErrors     = 10;
+  static public final int     cDefaultConnSocketTimeout = 5000;
   
   
   /**
@@ -47,7 +48,12 @@ public class MqConfiguration extends AConfiguration
   /**
    * The maximum number of errors the KAS/MQ server will tolerate before shutting down
    */
-  private int mMaxErrors = cDefaultMaxErrors; 
+  private int mConnMaxErrors = cDefaultConnMaxErrors; 
+  
+  /**
+   * The timeout, in milliseconds, before socket operations like {@link java.net.ServerSocket#accept() accept()} call will timeout
+   */
+  private int mConnSocketTimeout = cDefaultConnSocketTimeout; 
   
   /**
    * Refresh configuration - reload values of all properties
@@ -59,7 +65,8 @@ public class MqConfiguration extends AConfiguration
     mManagerName        = mMainConfig.getStringProperty  ( cMqConfigPrefix + "managerName"        , mManagerName       );
     mDeadQueueName      = mMainConfig.getStringProperty  ( cMqConfigPrefix + "deadqName"          , mDeadQueueName     );
     mAdminQueueName     = mMainConfig.getStringProperty  ( cMqConfigPrefix + "adminqName"         , mAdminQueueName    );
-    mMaxErrors          = mMainConfig.getIntProperty     ( cMqConfigPrefix + "maxTolerableErrors" , mMaxErrors         );
+    mConnMaxErrors      = mMainConfig.getIntProperty     ( cMqConfigPrefix + "conn.maxErrors"     , mConnMaxErrors     );
+    mConnSocketTimeout  = mMainConfig.getIntProperty     ( cMqConfigPrefix + "conn.socketTimeout" , mConnSocketTimeout );
   }
   
   /**
@@ -113,13 +120,23 @@ public class MqConfiguration extends AConfiguration
   }
   
   /**
-   * Gets the maximum number of tolerable errors
+   * Gets the maximum number of connection errors
    * 
-   * @return the maximum number of tolerable errors
+   * @return the maximum number of connection errors
    */
-  public int getMaxErrors()
+  public int getConnMaxErrors()
   {
-    return mMaxErrors;
+    return mConnMaxErrors;
+  }
+  
+  /**
+   * Gets the socket timeout
+   * 
+   * @return the socket timeout
+   */
+  public int getConnSocketTimeout()
+  {
+    return mConnSocketTimeout;
   }
   
   /**
@@ -132,13 +149,14 @@ public class MqConfiguration extends AConfiguration
   public MqConfiguration replicate()
   {
     MqConfiguration config = new MqConfiguration();
-    config.mMainConfig      = mMainConfig;
-    config.mEnabled         = mEnabled;
-    config.mPort            = mPort;
-    config.mManagerName     = mManagerName;
-    config.mDeadQueueName   = mDeadQueueName;
-    config.mAdminQueueName  = mAdminQueueName;
-    config.mMaxErrors       = mMaxErrors;
+    config.mMainConfig        = mMainConfig;
+    config.mEnabled           = mEnabled;
+    config.mPort              = mPort;
+    config.mManagerName       = mManagerName;
+    config.mDeadQueueName     = mDeadQueueName;
+    config.mAdminQueueName    = mAdminQueueName;
+    config.mConnMaxErrors     = mConnMaxErrors;
+    config.mConnSocketTimeout = mConnSocketTimeout;
     return config;
   }
   
@@ -160,7 +178,10 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  DeadQueueName=").append(mDeadQueueName).append("\n")
       .append(pad).append("  AdminQueueName=").append(mAdminQueueName).append("\n")
-      .append(pad).append("  MaxErrors=").append(mMaxErrors).append("\n")
+      .append(pad).append("  Connection Settings=(\n")
+      .append(pad).append("    MaxErrors=").append(mConnMaxErrors).append("\n")
+      .append(pad).append("    Timeout=").append(mConnSocketTimeout).append("\n")
+      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

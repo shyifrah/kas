@@ -76,12 +76,12 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
     mShutdownHook = new KasMqStopper(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
-    mController = new ClientController();
+    mController = new ClientController(mConfig);
     
     try
     {
       mListenSocket = new ServerSocket(mConfig.getPort());
-      mListenSocket.setSoTimeout(5000);
+      mListenSocket.setSoTimeout(mConfig.getConnSocketTimeout());
     }
     catch (IOException e)
     {
@@ -155,9 +155,9 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
       {
         mLogger.warn("An error occurred while trying to accept new client connection");
         ++errors;
-        if (errors >= mConfig.getMaxErrors())
+        if (errors >= mConfig.getConnMaxErrors())
         {
-          mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getMaxErrors());
+          mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
           mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
           stop();
         }

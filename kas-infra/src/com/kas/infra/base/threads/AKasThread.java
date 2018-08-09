@@ -30,15 +30,6 @@ public abstract class AKasThread extends Thread implements IObject
   }
   
   /**
-   * Returns a replica of this {@link #AKasThread}.
-   * 
-   * @return a replica of this {@link #AKasThread}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract AKasThread replicate();
-  
-  /**
    * Returns the {@link #KasThread} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
@@ -53,6 +44,15 @@ public abstract class AKasThread extends Thread implements IObject
       .append(">");
     return sb.toString();
   }
+  
+  /**
+   * Returns a replica of this {@link #AKasThread}.
+   * 
+   * @return a replica of this {@link #AKasThread}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
+   */
+  public abstract AKasThread replicate();
   
   /**
    * Get the thread's detailed string representation.

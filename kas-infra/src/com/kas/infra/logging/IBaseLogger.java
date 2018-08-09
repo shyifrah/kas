@@ -146,6 +146,8 @@ public interface IBaseLogger extends IObject
    * Returns the {@link IBaseLogger} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
+   * 
+   * @see com.kas.infra.base.IObject#name()
    */
   public abstract String name();
   

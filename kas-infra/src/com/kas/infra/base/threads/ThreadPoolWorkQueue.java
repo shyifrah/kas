@@ -56,6 +56,22 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
   }
   
   /**
+   * Returns the {@link #KasRunnableThread} simple class name enclosed with chevrons.
+   * 
+   * @return class name enclosed with chevrons.
+   * 
+   * @see com.kas.infra.base.IObject#name()
+   */
+  public String name()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<")
+      .append(this.getClass().getSimpleName())
+      .append(">");
+    return sb.toString();
+  }
+
+  /**
    * Returns a replica of this {@link #ThreadPoolWorkQueue}.<br>
    * <br>
    * Note that the elements in the replica are the same actual {@code Runnable} objects that exist
@@ -75,22 +91,6 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
     return wq;
   }
   
-  /**
-   * Returns the {@link #KasRunnableThread} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public String name()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
-  }
-
   /**
    * Get the work queue's detailed string representation.
    * 

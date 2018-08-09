@@ -28,6 +28,8 @@ public interface IRegistrar extends IObject
    * Returns the {@link #IRegistrar} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
+   * 
+   * @see com.kas.infra.base.IObject#name()
    */
   public abstract String name();
   
