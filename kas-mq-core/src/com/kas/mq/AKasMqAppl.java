@@ -9,9 +9,14 @@ import com.kas.infra.logging.IBaseLogger;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
-public class KasMqAppl extends AStoppable implements IInitializable, IRunnable
+/**
+ * A KAS/MQ application
+ * 
+ * @author Pippo
+ */
+public abstract class AKasMqAppl extends AStoppable implements IInitializable, IRunnable
 {
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAppl.class.getName());
+  static IBaseLogger sStartupLogger = new ConsoleLogger(AKasMqAppl.class.getName());
   
   /**
    * Logger
@@ -89,29 +94,22 @@ public class KasMqAppl extends AStoppable implements IInitializable, IRunnable
   }
   
   /**
-   * Running the application.<br>
-   * <br>
-   * This method is a stub. The extenders of this class should implement it
-   * 
-   * @throws RuntimeException if this method is invoked. It should not be!
+   * Running the application.
    */
-  public void run()
-  {
-    throw new RuntimeException("Cannot find public void run() method in class " + this.getClass().getName());
-  }
+  public abstract void run();
 
   /**
-   * Returns a replica of this {@link KasMqAppl}.
+   * Returns a replica of this {@link AKasMqAppl}.
    * 
-   * @return a replica of this {@link KasMqAppl}
+   * @return a replica of this {@link AKasMqAppl}
    * 
-   * @throws RuntimeException Always. Cannot replicate KasMqAppl
+   * @throws RuntimeException always. Cannot replicate class
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public KasMqAppl replicate()
+  public AKasMqAppl replicate()
   {
-    throw new RuntimeException("Cannot replicate KasMqAppl object");
+    throw new RuntimeException("Cannot replicate objects of type AKasMqAppl");
   }
 
   /**
@@ -120,12 +118,7 @@ public class KasMqAppl extends AStoppable implements IInitializable, IRunnable
    * @param level The string padding level
    * @return the string representation with the specified level of padding
    * 
-   * @throws RuntimeException Always. Cannot get detailed string representation of KasMqAppl
-   * 
    * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
-  public String toPrintableString(int level)
-  {
-    throw new RuntimeException("Cannot get detailed string representation of KasMqAppl object");
-  }
+  public abstract String toPrintableString(int level);
 }

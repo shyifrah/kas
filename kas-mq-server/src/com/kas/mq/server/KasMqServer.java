@@ -8,7 +8,7 @@ import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.KasMqAppl;
+import com.kas.mq.AKasMqAppl;
 import com.kas.mq.server.internal.ClientController;
 
 /**
@@ -19,7 +19,7 @@ import com.kas.mq.server.internal.ClientController;
  * 
  * @author Pippo
  */
-public class KasMqServer extends KasMqAppl 
+public class KasMqServer extends AKasMqAppl 
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqServer.class.getName());
   

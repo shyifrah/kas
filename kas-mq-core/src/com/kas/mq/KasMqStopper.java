@@ -6,7 +6,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
 /**
- * The {@link KasMqStopper} is a thread that kicks in the minute a shutdown signal is sent to the server.<br>
+ * The {@link KasMqStopper} is a thread that kicks in the minute a shutdown signal is sent to the application.<br>
  * 
  * This is actually a shutdown hook that is registered via a call to {@link Runtime#addShutdownHook(Thread)}.
  * 
@@ -22,34 +22,34 @@ public class KasMqStopper extends AKasThread
   private ILogger mLogger;
   
   /**
-   * The MQ server that should be stopped
+   * The MQ application that should be stopped
    */
-  private IStoppable mServer;
+  private IStoppable mApplication;
   
   /**
-   * Construct KasMqTerminator
+   * Construct KasMqStopper
    * 
-   * @param server The owner MQ server
+   * @param appl The MQ application
    */
-  public KasMqStopper(IStoppable server)
+  public KasMqStopper(IStoppable appl)
   {
     super(KasMqStopper.class.getSimpleName());
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mServer = server;
+    mApplication = appl;
   }
   
   /**
    * Running the shutdown hook.<br>
    * <br>
-   * The procedure is actually quite simple - invoking the server's {@link KasMqServer#stop() stop()} method.
+   * The procedure is actually quite simple - invoking the application's {@link AKasMqAppl#stop() stop()} method.
    * 
-   * @see com.kas.mq.server.KasMqServer#stop()
+   * @see com.kas.mq.server.AKasMqAppl#stop()
    * @see com.kas.infra.base.IStoppable#stop()
    */
   public void run()
   {
-    mLogger.warn("Shutdown hook was called. Signaling KAS/MQ server to shutdown...");
-    mServer.stop();
+    mLogger.warn("Shutdown hook was called. Signaling KAS/MQ application to shutdown...");
+    mApplication.stop();
   }
   
   /**
@@ -61,7 +61,7 @@ public class KasMqStopper extends AKasThread
    */
   public KasMqStopper replicate()
   {
-    return new KasMqStopper(mServer);
+    return new KasMqStopper(mApplication);
   }
 
   /**

@@ -169,13 +169,13 @@ public class KasMqLauncher
     {
       Class<?> cls = Class.forName(className);
       Object instance = cls.newInstance();
-      if (!(instance instanceof KasMqAppl))
+      if (!(instance instanceof AKasMqAppl))
       {
-        sLogger.error("KAS/MQ application not an instance of basic application class: " + KasMqAppl.class.getName());
+        sLogger.error("KAS/MQ application not an instance of basic application class: " + AKasMqAppl.class.getName());
       }
       else
       {
-        KasMqAppl app = (KasMqAppl)instance;
+        AKasMqAppl app = (AKasMqAppl)instance;
         boolean init = app.init();
         if (!init)
         {
