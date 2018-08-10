@@ -40,7 +40,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * The configuration directory
    */
-  private String mConfigDir = RunTimeUtils.getProductHomeDir() + File.separatorChar + "conf";
+  private String mConfigDir = null;
   
   /**
    * A collection of {@link IListener} objects that are listening for configuration changes
@@ -105,6 +105,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   {
     if (!mInitialized)
     {
+      mConfigDir = RunTimeUtils.getProductHomeDir() + File.separatorChar + "conf";
       boolean loaded = load();
       if (!loaded)
       {

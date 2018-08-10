@@ -20,7 +20,7 @@ public class RunTimeUtils
   /**
    * The product home directory
    */
-  static private String sProductHomeDir = initProductHomeDir();
+  static private String sProductHomeDir = null;
   
   /**
    * Get the current host name
@@ -194,6 +194,10 @@ public class RunTimeUtils
    */
   static public String getProductHomeDir()
   {
+    if (sProductHomeDir == null)
+    {
+      sProductHomeDir = initProductHomeDir();
+    }
     return sProductHomeDir;
   }
   

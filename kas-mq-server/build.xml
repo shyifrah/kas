@@ -13,13 +13,13 @@
   <property name="config"  location="../kas-config"/>
   <property name="logging" location="../kas-logging"/>
   <!-- <property name="comm"       location="../kas-comm"/> -->
-  <!-- <property name="q-core"     location="../kas-q-core"/> -->
+  <property name="mq-core" location="../kas-mq-core"/>
 	
   <property name="infra.jar"   location="../kas-infra/lib/kas-infra.jar"/>
   <property name="config.jar"  location="../kas-config/lib/kas-config.jar"/>
   <property name="logging.jar" location="../kas-logging/lib/kas-logging.jar"/>
   <!-- <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/> -->
-  <!-- <property name="q-core.jar"     location="../kas-q-core/lib/kas-q-core.jar"/> -->
+  <property name="mq-core.jar" location="../kas-mq-core/lib/kas-mq-core.jar"/>
 	
   <!-- debugging information -->
   <property name="debug"      value="true" />
@@ -54,14 +54,14 @@
       <fileset dir="${config}"  includes="build.xml"/>
       <fileset dir="${logging}" includes="build.xml"/>
       <!-- <fileset dir="${comm}"    includes="build.xml"/> -->
-      <!-- <fileset dir="${q-core}"     includes="build.xml"/> -->
+      <fileset dir="${mq-core}"     includes="build.xml"/>
     </subant>
     <copy todir="${lib}" overwrite="true" >
       <fileset file="${infra.jar}"/>
       <fileset file="${config.jar}"/>
       <fileset file="${logging.jar}"/>
       <!-- <fileset file="${comm.jar}" /> -->
-      <!-- <fileset file="${q-core.jar}"/> -->
+      <fileset file="${mq-core.jar}"/>
     </copy>
   </target>
   
@@ -73,7 +73,7 @@
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
         <!-- <pathelement location="${comm.jar}" /> -->
-        <!-- <pathelement location="${q-core.jar}" /> -->
+        <pathelement location="${mq-core.jar}" />
       </classpath>
     </javac>
   </target>

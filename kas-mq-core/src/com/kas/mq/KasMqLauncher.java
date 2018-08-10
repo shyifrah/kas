@@ -20,7 +20,7 @@ import com.kas.infra.utils.RunTimeUtils;
 public class KasMqLauncher
 {
   static private final String cKasHomeSystemProperty = RunTimeUtils.cProductHomeDirProperty;
-  static private final String cAppTypeSystemProperty = "app.type";
+  static private final String cAppTypeSystemProperty = "kas.appl";
   
   static private IBaseLogger sLogger = new ConsoleLogger(KasMqLauncher.class.getName());
   
@@ -106,7 +106,7 @@ public class KasMqLauncher
   /**
    * Get the application class name
    * 
-   * @param appType the value of the "app.type" argument passed to {@link #main(String[]) main} function
+   * @param appType the value of the "kas.appl" argument passed to {@link #main(String[]) main} function
    * @return the name of the class to be loaded and executed
    */
   static private String getApplicationClass(String appType)

@@ -10,8 +10,7 @@
   <property name="infra.jar"      location="../kas-infra/lib/kas-infra.jar"/>
   <property name="config.jar"     location="../kas-config/lib/kas-config.jar"/>
   <property name="logging.jar"    location="../kas-logging/lib/kas-logging.jar"/>
-  <property name="containers.jar" location="../kas-containers/lib/kas-containers.jar"/>
-  <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/>
+  <!-- <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/> -->
 	
   <!-- debugging information -->
   <property name="debug"      value="true" />
@@ -40,8 +39,7 @@
         <pathelement location="${infra.jar}" />
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
-        <pathelement location="${containers.jar}" />
-        <pathelement location="${comm.jar}" />
+        <!-- <pathelement location="${comm.jar}" /> -->
       </classpath>
     </javac>
   </target>
