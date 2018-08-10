@@ -1,4 +1,4 @@
-package com.kas.mq.server.internal;
+package com.kas.mq;
 
 import com.kas.config.impl.AConfiguration;
 

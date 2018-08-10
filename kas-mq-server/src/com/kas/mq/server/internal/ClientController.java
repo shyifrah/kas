@@ -10,6 +10,7 @@ import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.MqConfiguration;
 
 /**
  * A {@link ClientController} is the object that supervises and manage all {@link ClientHandler}.

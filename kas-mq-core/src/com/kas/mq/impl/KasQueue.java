@@ -1,4 +1,4 @@
-package com.kas.mq;
+package com.kas.mq.impl;
 
 import java.io.File;
 import com.kas.infra.base.AKasObject;

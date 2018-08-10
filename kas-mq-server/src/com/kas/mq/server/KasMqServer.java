@@ -6,15 +6,10 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
-import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.IRunnable;
-import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
+import com.kas.mq.KasMqAppl;
 import com.kas.mq.server.internal.ClientController;
-import com.kas.mq.server.internal.MqConfiguration;
 
 /**
  * MQ server.<br>
@@ -24,24 +19,9 @@ import com.kas.mq.server.internal.MqConfiguration;
  * 
  * @author Pippo
  */
-public class KasMqServer extends AStoppable implements IInitializable, IRunnable
+public class KasMqServer extends KasMqAppl 
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqServer.class.getName());
-  
-  /**
-   * The Mq configuration object
-   */
-  private MqConfiguration mConfig = null;
-  
-  /**
-   * Logger
-   */
-  private ILogger mLogger = null;
-  
-  /**
-   * Shutdown hook
-   */
-  private KasMqStopper mShutdownHook = null;
   
   /**
    * Server socket
@@ -57,77 +37,61 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
    * Initializing the KAS/MQ server.<br>
    * <br>
    * Initialization consisting of:
-   * - configuration
-   * - logger
-   * - registering a shutdown hook
+   * - super class initialization
+   * - creating client controller
+   * - creating the server's listener socket
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean init()
   {
-    mConfig = new MqConfiguration();
-    mConfig.init();
-    if (!mConfig.isInitialized())
-      return false;
-    
-    mLogger = LoggerFactory.getLogger(this.getClass());
-    sStartupLogger.info("KAS/MQ logging services are now active, switching to log file...");
-    
-    mShutdownHook = new KasMqStopper(this);
-    Runtime.getRuntime().addShutdownHook(mShutdownHook);
-    
-    mController = new ClientController(mConfig);
-    
-    try
+    boolean init = super.init();
+    if (init)
     {
-      mListenSocket = new ServerSocket(mConfig.getPort());
-      mListenSocket.setSoTimeout(mConfig.getConnSocketTimeout());
-    }
-    catch (IOException e)
-    {
-      mLogger.error("An error occured while trying to bind server socket with port: " + mConfig.getPort());
-      mLogger.fatal("Exception caught: ", e);
-      term();
+      mController = new ClientController(mConfig);
+      
+      try
+      {
+        mListenSocket = new ServerSocket(mConfig.getPort());
+        mListenSocket.setSoTimeout(mConfig.getConnSocketTimeout());
+      }
+      catch (IOException e)
+      {
+        init = false;
+        mLogger.error("An error occured while trying to bind server socket with port: " + mConfig.getPort());
+        mLogger.fatal("Exception caught: ", e);
+        super.term();
+      }
     }
     
-    mLogger.info("KAS/MQ server initialization complete. Logger is active");
-    return true;
+    return init;
   }
   
   /**
    * Terminating the KAS/MQ server.<br>
    * <br>
    * Termination consisting of:
-   * - remove the shutdown hook
-   * - configuration
-   * - thread pool shutdown
+   * - closing server's listener socket
+   * - super class termination
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise 
+   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean term()
   {
     mLogger.info("KAS/MQ server termination in progress");
-    
-    if (mShutdownHook != null)
+    boolean term = true;
+    try
     {
-      mLogger.info("Shutdown hook is registered, will try to remove it...");
-      if (Thread.currentThread().getName().equals(KasMqStopper.class.getSimpleName()))
-      {
-        mLogger.warn("Cannot remove Shutdown hook as termination process is executed under it...");
-      }
-      else
-      {
-        Runtime.getRuntime().removeShutdownHook(mShutdownHook);
-        mLogger.info("Shutdown hook was successfully removed");
-      }
+      mListenSocket.close();
+    }
+    catch (IOException e)
+    {
+      mLogger.warn("An error occured while trying to close server socket", e);
     }
     
-    mLogger.info("Terminating configuration object and switching back to Console loggging...");
-    if (mConfig.isInitialized())
-      mConfig.term();
+    term = super.term();
     
-    ThreadPool.shutdownNow();
-    return true;
+    return term;
   }
   
   /**
@@ -169,20 +133,6 @@ public class KasMqServer extends AStoppable implements IInitializable, IRunnable
     }
   }
   
-  /**
-   * Returns a replica of this {@link KasMqServer}.
-   * 
-   * @return a replica of this {@link KasMqServer}
-   * 
-   * @throws RuntimeException Always. Cannot replicate KasMqServer
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public KasMqServer replicate()
-  {
-    throw new RuntimeException("Cannot replicate KasMqServer object as it is internal system object");
-  }
-
   /**
    * Get the object's detailed string representation
    * 

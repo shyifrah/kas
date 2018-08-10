@@ -1,4 +1,4 @@
-package com.kas.mq.server;
+package com.kas.mq;
 
 import com.kas.infra.base.IStoppable;
 import com.kas.infra.base.threads.AKasThread;
