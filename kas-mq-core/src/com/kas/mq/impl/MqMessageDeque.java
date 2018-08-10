@@ -5,14 +5,16 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * {@link KasMessageDeque} is the actual container for {@link KasMessage}
+ * {@link MqMessageDeque} is the actual container for {@link MqMessage}
+ * 
+ * @author Pippo
  */
-public class KasMessageDeque extends LinkedBlockingDeque<KasMessage> implements IObject
+public class MqMessageDeque extends LinkedBlockingDeque<MqMessage> implements IObject
 {
   private static final long serialVersionUID = 1L;
   
   /**
-   * Returns the {@link KasMessageDeque} simple class name enclosed with chevrons.
+   * Returns the {@link MqMessageDeque} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -28,18 +30,18 @@ public class KasMessageDeque extends LinkedBlockingDeque<KasMessage> implements 
   }
   
   /**
-   * Returns a replica of this {@link KasMessageDeque}.<br>
+   * Returns a replica of this {@link MqMessageDeque}.<br>
    * <br>
-   * All messages in this {@link KasMessageDeque} are replicated as well and put in the replica.
+   * All messages in this {@link MqMessageDeque} are replicated as well and put in the replica.
    * 
-   * @return a replica of this {@link KasMessageDeque}
+   * @return a replica of this {@link MqMessageDeque}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public KasMessageDeque replicate()
+  public MqMessageDeque replicate()
   {
-    KasMessageDeque md = new KasMessageDeque();
-    for (KasMessage msg : this)
+    MqMessageDeque md = new MqMessageDeque();
+    for (MqMessage msg : this)
     {
       md.offer(msg.replicate());
     }
@@ -47,7 +49,7 @@ public class KasMessageDeque extends LinkedBlockingDeque<KasMessage> implements 
   }
   
   /**
-   * Returns the {@link KasMessageDeque} string representation.
+   * Returns the {@link MqMessageDeque} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

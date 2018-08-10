@@ -1,9 +1,14 @@
 package com.kas.mq.client;
 
 import com.kas.infra.base.IObject;
-import com.kas.mq.impl.KasMessage;
+import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.KasQueue;
 
+/**
+ * This is the interface all KAS/MQ clients should implement. 
+ * 
+ * @author Pippo
+ */
 public interface IClient extends IObject
 {
   /**
@@ -32,39 +37,39 @@ public interface IClient extends IObject
   public abstract void disconnect();
   
   /**
-   * Create a {@link KasMessage} object.
+   * Create a {@link MqMessage} object.
    * 
-   * @return the {@link KasMessage} object.
+   * @return the {@link MqMessage} object.
    */
-  public abstract KasMessage createMessage();
+  public abstract MqMessage createMessage();
   
   /**
    * Get a message from the opened queue.
    * 
-   * @return the {@link KasMessage} object or {@code null} if a message is unavailable
+   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract KasMessage get();
+  public abstract MqMessage get();
   
   /**
    * Get a message from the opened queue and wait indefinitely if one is unavailable.
    * 
-   * @return the {@link KasMessage} object
+   * @return the {@link MqMessage} object
    */
-  public abstract KasMessage getAndWait();
+  public abstract MqMessage getAndWait();
   
   /**
    * Get a message from the opened queue and wait for {@code timeout} milliseconds if one is unavailable.
    * 
-   * @return the {@link KasMessage} object or {@code null} if a message is unavailable
+   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract KasMessage getAndWaitWithTimeout(long timeout);
+  public abstract MqMessage getAndWaitWithTimeout(long timeout);
   
   /**
-   * Put a {@link KasMessage} into the opened queue.
+   * Put a {@link MqMessage} into the opened queue.
    * 
-   * @param the {@link KasMessage} to put into the opened queue
+   * @param the {@link MqMessage} to put into the opened queue
    */
-  public abstract void put(KasMessage message);
+  public abstract void put(MqMessage message);
   
   /**
    * Returns the {@link IObject} simple class name enclosed with chevrons.

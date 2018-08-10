@@ -7,6 +7,8 @@ import com.kas.infra.utils.RunTimeUtils;
 
 /**
  * A {@link KasQueue} object is the simplest destination that is managed by the KAS/MQ system.
+ * 
+ * @author Pippo
  */
 public class KasQueue extends AKasObject
 {
@@ -21,12 +23,12 @@ public class KasQueue extends AKasObject
   private UniqueId mQueueId;
   
   /**
-   * The actual message container. An array of {@link KasMessageDeque} objects, one for each priority.<br>
+   * The actual message container. An array of {@link MqMessageDeque} objects, one for each priority.<br>
    * <br>
    * When a message with priority of 0 is received by this {@link KasQueue} object, it is stored in the 
-   * {@link KasMessageDeque} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
+   * {@link MqMessageDeque} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
-  protected transient KasMessageDeque [] mQueueArray;
+  protected transient MqMessageDeque [] mQueueArray;
   
   /**
    * The file backing up this {@link KasQueue} object.
@@ -42,9 +44,9 @@ public class KasQueue extends AKasObject
   {
     mName       = name;
     mQueueId    = UniqueId.generate();
-    mQueueArray = new KasMessageDeque[ KasMessage.cMaximumPriority + 1 ];
-    for (int i = 0; i <= KasMessage.cMaximumPriority; ++i)
-      mQueueArray[i] = new KasMessageDeque();
+    mQueueArray = new MqMessageDeque[ MqMessage.cMaximumPriority + 1 ];
+    for (int i = 0; i <= MqMessage.cMaximumPriority; ++i)
+      mQueueArray[i] = new MqMessageDeque();
   }
   
   /**
@@ -53,7 +55,7 @@ public class KasQueue extends AKasObject
    * @param message The message that should be stored at this {@link KasQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean put(KasMessage message)
+  public boolean put(MqMessage message)
   {
     if (message == null)
       return false;
@@ -67,9 +69,9 @@ public class KasQueue extends AKasObject
    * 
    * @return the returned message or {@code null} if there is no message
    */
-  public KasMessage get()
+  public MqMessage get()
   {
-    return get(KasMessage.cMaximumPriority);
+    return get(MqMessage.cMaximumPriority);
   }
   
   /**
@@ -78,9 +80,9 @@ public class KasQueue extends AKasObject
    * @param priority The priority of the message to be retrieved
    * @return the returned message or {@code null} if there is no message
    */
-  public KasMessage get(int priority)
+  public MqMessage get(int priority)
   {
-    if ((priority < KasMessage.cMinimumPriority) || (priority > KasMessage.cMaximumPriority))
+    if ((priority < MqMessage.cMinimumPriority) || (priority > MqMessage.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
     
     return mQueueArray[priority].poll();
@@ -91,9 +93,9 @@ public class KasQueue extends AKasObject
    * 
    * @return the returned message
    */
-  public KasMessage getAndWait()
+  public MqMessage getAndWait()
   {
-    return getAndWait(KasMessage.cMaximumPriority);
+    return getAndWait(MqMessage.cMaximumPriority);
   }
   
   /**
@@ -102,12 +104,12 @@ public class KasQueue extends AKasObject
    * @param priority The priority of the message to be retrieved 
    * @return the returned message
    */
-  public KasMessage getAndWait(int priority)
+  public MqMessage getAndWait(int priority)
   {
-    if ((priority < KasMessage.cMinimumPriority) || (priority > KasMessage.cMaximumPriority))
+    if ((priority < MqMessage.cMinimumPriority) || (priority > MqMessage.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
     
-    KasMessage result = null;
+    MqMessage result = null;
     try
     {
       result = mQueueArray[priority].take();
@@ -127,9 +129,9 @@ public class KasQueue extends AKasObject
    * @param timeout The number of milliseconds to wait until the get operation is aborted.
    * @return the returned message or {@code null} if timeout occurred. 
    */
-  public KasMessage getAndWaitWithTimeout(long timeout)
+  public MqMessage getAndWaitWithTimeout(long timeout)
   {
-    return getAndWaitWithTimeout(KasMessage.cMinimumPriority, timeout, 1000L);
+    return getAndWaitWithTimeout(MqMessage.cMinimumPriority, timeout, 1000L);
   }
   
   /**
@@ -144,7 +146,7 @@ public class KasQueue extends AKasObject
    * @param timeout The number of milliseconds to wait until the get operation is aborted.
    * @return the returned message or {@code null} if timeout occurred. 
    */
-  public KasMessage getAndWaitWithTimeout(int priority, long timeout)
+  public MqMessage getAndWaitWithTimeout(int priority, long timeout)
   {
     return getAndWaitWithTimeout(priority, timeout, 1000L);
   }
@@ -162,15 +164,15 @@ public class KasQueue extends AKasObject
    * @param interval The number of milliseconds to delay between each polling operation
    * @return the returned message or {@code null} if timeout occurred. 
    */
-  public KasMessage getAndWaitWithTimeout(int priority, long timeout, long interval)
+  public MqMessage getAndWaitWithTimeout(int priority, long timeout, long interval)
   {
-    if ((priority < KasMessage.cMinimumPriority) || (priority > KasMessage.cMaximumPriority))
+    if ((priority < MqMessage.cMinimumPriority) || (priority > MqMessage.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
     
     if (timeout <= 0)
       return null;
     
-    KasMessage result = get(priority);
+    MqMessage result = get(priority);
     long millisPassed = 0;
     while ((result == null) && (millisPassed < timeout))
     {
@@ -194,7 +196,7 @@ public class KasQueue extends AKasObject
   public KasQueue replicate()
   {
     KasQueue q = new KasQueue(mName);
-    for (int i = 0; i < KasMessage.cMaximumPriority; ++i)
+    for (int i = 0; i < MqMessage.cMaximumPriority; ++i)
       q.mQueueArray[i] = mQueueArray[i].replicate();
     
     return new KasQueue(mName);

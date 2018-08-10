@@ -8,8 +8,10 @@ import com.kas.infra.base.UniqueId;
  * <br>
  * Each message has an unique ID - that differentiates it from other messages in this KAS/MQ system, a payload,
  * and a few other characteristics such as priority that determines the behavior of KAS/MQ system when processing the message.
+ * 
+ * @author Pippo
  */
-public class KasMessage extends AKasObject
+public class MqMessage extends AKasObject
 {
   public static final int cMinimumPriority = 0;
   public static final int cMaximumPriority = 9;
@@ -27,7 +29,7 @@ public class KasMessage extends AKasObject
   /**
    * Construct a default message object
    */
-  public KasMessage()
+  public MqMessage()
   {
     this(cMinimumPriority);
   }
@@ -38,7 +40,7 @@ public class KasMessage extends AKasObject
    * @param priority The message priority
    * @throws IllegalArgumentException If the message priority is larger than 9 or lower than 0 
    */
-  public KasMessage(int priority)
+  public MqMessage(int priority)
   {
     if ((priority < cMinimumPriority) || (priority > cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
@@ -68,17 +70,17 @@ public class KasMessage extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link KasMessage}.<br>
+   * Returns a replica of this {@link MqMessage}.<br>
    * <br>
    * The replica will have a different {@link UniqueId}.
    * 
-   * @return a replica of this {@link KasMessage}
+   * @return a replica of this {@link MqMessage}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public KasMessage replicate()
+  public MqMessage replicate()
   {
-    return new KasMessage(mPriority);
+    return new MqMessage(mPriority);
   }
   
   /**
