@@ -128,6 +128,12 @@ public class KasMqLauncher
       RunTimeUtils.setProperty(cAppTypeSystemProperty, "server", true);
       sLogger.info("KAS/MQ launcher set system property '" + cAppTypeSystemProperty + "' to 'server'");
     }
+    else if ("admin".equalsIgnoreCase(appType))
+    {
+      className = "com.kas.mq.app.KasMqAdmin";
+      RunTimeUtils.setProperty(cAppTypeSystemProperty, "admin", true);
+      sLogger.info("KAS/MQ launcher set system property '" + cAppTypeSystemProperty + "' to 'admin'");
+    }
     else
     {
       sLogger.fatal("Invalid application type. '" + cAppTypeSystemProperty + "' should be set to either 'client' or 'server'");

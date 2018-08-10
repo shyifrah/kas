@@ -4,6 +4,7 @@ import java.io.File;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.mq.typedef.MessageDeque;
 
 /**
  * A {@link KasQueue} object is the simplest destination that is managed by the KAS/MQ system.
@@ -23,12 +24,12 @@ public class KasQueue extends AKasObject
   private UniqueId mQueueId;
   
   /**
-   * The actual message container. An array of {@link MqMessageDeque} objects, one for each priority.<br>
+   * The actual message container. An array of {@link MessageDeque} objects, one for each priority.<br>
    * <br>
    * When a message with priority of 0 is received by this {@link KasQueue} object, it is stored in the 
-   * {@link MqMessageDeque} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
+   * {@link MessageDeque} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
-  protected transient MqMessageDeque [] mQueueArray;
+  protected transient MessageDeque [] mQueueArray;
   
   /**
    * The file backing up this {@link KasQueue} object.
@@ -44,9 +45,9 @@ public class KasQueue extends AKasObject
   {
     mName       = name;
     mQueueId    = UniqueId.generate();
-    mQueueArray = new MqMessageDeque[ MqMessage.cMaximumPriority + 1 ];
+    mQueueArray = new MessageDeque[ MqMessage.cMaximumPriority + 1 ];
     for (int i = 0; i <= MqMessage.cMaximumPriority; ++i)
-      mQueueArray[i] = new MqMessageDeque();
+      mQueueArray[i] = new MessageDeque();
   }
   
   /**

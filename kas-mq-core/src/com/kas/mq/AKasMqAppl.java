@@ -109,7 +109,7 @@ public abstract class AKasMqAppl extends AStoppable implements IInitializable, I
    */
   public AKasMqAppl replicate()
   {
-    throw new RuntimeException("Cannot replicate objects of type AKasMqAppl");
+    throw new RuntimeException("Cannot replicate objects of type " + this.getClass().getSimpleName());
   }
 
   /**

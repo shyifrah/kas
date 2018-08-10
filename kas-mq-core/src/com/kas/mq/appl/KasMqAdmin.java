@@ -1,4 +1,4 @@
-package com.kas.mq.app;
+package com.kas.mq.appl;
 
 import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
@@ -31,7 +31,7 @@ public class KasMqAdmin extends AKasMqAppl
     boolean init = super.init();
     if (init)
     {
-      // ============>>>>  actual client initialization goes here  <<<<==============
+      // ============>>>>  actual admin CLI initialization goes here  <<<<==============
     }
     
     mLogger.info("KAS/MQ admin CLI initialization was " + (init ? "" : "not ") + "successfull");
@@ -51,7 +51,7 @@ public class KasMqAdmin extends AKasMqAppl
     mLogger.info("KAS/MQ admin CLI termination in progress");
     boolean term = true;
     
-    // ============>>>>  actual client termination goes here  <<<<==============
+    // ============>>>>  actual admin CLI termination goes here  <<<<==============
     
     term = super.term();
     return term;
@@ -65,7 +65,8 @@ public class KasMqAdmin extends AKasMqAppl
    */
   public void run()
   {
-    // ============>>>>  actual client running goes here  <<<<==============
+    // ============>>>>  actual admin CLI running goes here  <<<<==============
+    
   }
   
   /**

@@ -1,20 +1,15 @@
-package com.kas.mq.impl;
+package com.kas.mq.typedef;
 
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.ArrayDeque;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
-/**
- * {@link MqMessageDeque} is the actual container for {@link MqMessage}
- * 
- * @author Pippo
- */
-public class MqMessageDeque extends LinkedBlockingDeque<MqMessage> implements IObject
+public class TokenQueue extends ArrayDeque<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
   
   /**
-   * Returns the {@link MqMessageDeque} simple class name enclosed with chevrons.
+   * Returns the {@link TokenQueue} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -30,26 +25,24 @@ public class MqMessageDeque extends LinkedBlockingDeque<MqMessage> implements IO
   }
   
   /**
-   * Returns a replica of this {@link MqMessageDeque}.<br>
-   * <br>
-   * All messages in this {@link MqMessageDeque} are replicated as well and put in the replica.
+   * Returns a replica of this {@link TokenQueue}.
    * 
-   * @return a replica of this {@link MqMessageDeque}
+   * @return a replica of this {@link TokenQueue}
    * 
    * @see com.kas.infra.base.IObject#replicate()
    */
-  public MqMessageDeque replicate()
+  public TokenQueue replicate()
   {
-    MqMessageDeque md = new MqMessageDeque();
-    for (MqMessage msg : this)
+    TokenQueue q = new TokenQueue();
+    for (String token : this)
     {
-      md.offer(msg.replicate());
+      q.offer(token);
     }
-    return md;
+    return q;
   }
   
   /**
-   * Returns the {@link MqMessageDeque} string representation.
+   * Returns the {@link MessageDeque} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
