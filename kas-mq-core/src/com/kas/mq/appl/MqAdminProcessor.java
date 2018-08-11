@@ -5,6 +5,7 @@ import com.kas.infra.base.AKasObject;
 import com.kas.mq.appl.cli.CliCommandFactory;
 import com.kas.mq.appl.cli.ICliCommand;
 import com.kas.mq.client.IClient;
+import com.kas.mq.client.MqClientImpl;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.typedef.TokenDeque;
@@ -16,6 +17,8 @@ import com.kas.mq.typedef.TokenDeque;
  */
 public class MqAdminProcessor extends AKasObject implements IClient
 {
+  private IClient mClientImpl = new MqClientImpl(); 
+  
   /**
    * Running the processor.<br>
    * <br>
@@ -68,9 +71,14 @@ public class MqAdminProcessor extends AKasObject implements IClient
       return false;
     }
     
+    String verb = cmdWords.peek();
     ICliCommand command = CliCommandFactory.newCommand(cmdWords, this);
     if (command == null)
+    {
+      writeln("Unknown command verb: \"" + verb + "\". Type HELP to see available commands");
+      writeln(" ");
       return false;
+    }
     
     return command.run();
   }
@@ -95,43 +103,52 @@ public class MqAdminProcessor extends AKasObject implements IClient
   
   public void connect(String host, int port)
   {
-  }
-
-  public MqQueue open(String queue)
-  {
-    return null;
-  }
-
-  public void close()
-  {
+    mClientImpl.connect(host, port);
   }
 
   public void disconnect()
   {
+    mClientImpl.disconnect();
+  }
+
+  public boolean isConnected()
+  {
+    return mClientImpl.isConnected();
+  }
+  
+  public MqQueue open(String queue)
+  {
+    return mClientImpl.open(queue);
+  }
+
+  public void close()
+  {
+    mClientImpl.close();
   }
 
   public MqMessage createMessage()
   {
-    return null;
+    return mClientImpl.createMessage();
   }
 
   public MqMessage get()
   {
-    return null;
+    return mClientImpl.get();
   }
 
   public MqMessage getAndWait()
   {
-    return null;
+    return mClientImpl.getAndWait();
   }
 
   public MqMessage getAndWaitWithTimeout(long timeout)
   {
-    return null;
+    return mClientImpl.getAndWaitWithTimeout(timeout);
   }
 
   public void put(MqMessage message)
-  { 
+  {
+    mClientImpl.put(message);
   }
   
   /**

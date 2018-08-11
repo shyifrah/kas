@@ -27,9 +27,15 @@ public class ExitCommand extends ACliCommand
    */
   public void help()
   {
+    if (mCommandArgs.size() > 0)
+    {
+      writeln("Execssive command arguments are ignored for HELP EXIT");
+      writeln(" ");
+    }
+    
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Display help information regarding the KAS/MQ Admin Command Line Interface.");
+    writeln("     Terminate KAS/MQ Admin Command Line Interface.");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
@@ -60,7 +66,7 @@ public class ExitCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Excessive argument specified: " + mCommandArgs.poll());
+      writeln("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP EXIT to see available command options");
       writeln(" ");
       return false;
     }

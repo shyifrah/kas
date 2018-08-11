@@ -39,10 +39,9 @@ public class ConnectCommand extends ACliCommand
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Connect to the specified host or IP address on the specified port number, or 14560 if no port is specified");
-    writeln("     When invoked with an argument, the argument is first checked to be a valid command verb");
-    writeln("     and if it is, a more detailed screen will be presented, detailing the usage of the specific");
-    writeln("     command.");
+    writeln("     Connect to the specified host or IP address on the specified port number, or 14560 if no port is specified.");
+    writeln("     The host or the IP address are NOT checked for a valid format. However, the command processor does verify");
+    writeln("     that the port number has a valid numeric value.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
@@ -82,8 +81,30 @@ public class ConnectCommand extends ACliCommand
     if (sport == null)
       sport = "14560";
     
-    int port = Integer.valueOf(sport);
+    int port = -1;
+    try
+    {
+      port = Integer.valueOf(sport);
+    }
+    catch (NumberFormatException e) {}
+    if (port == -1)
+    {
+      writeln("Connect failed. Invalid port number \"" + sport + "\"");
+      writeln(" ");
+      return false;
+    }
+    
     mClient.connect(host, port);
+    if (mClient.isConnected())
+    {
+      writeln("Successfully connected to host at " + host + ':' + port);
+      writeln(" ");
+    }
+    else
+    {
+      writeln("Failed to connect to " + host + ':' + port + ". See log file for further information");
+      writeln(" ");
+    }
     
     return false;
   }

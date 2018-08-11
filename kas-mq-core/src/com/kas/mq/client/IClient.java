@@ -19,6 +19,18 @@ public interface IClient extends IObject
   public abstract void connect(String host, int port);
   
   /**
+   * Disconnect from the queue manager.
+   */
+  public abstract void disconnect();
+  
+  /**
+   * Get the connection status
+   * 
+   * @return {@code true} if the client is connected to a remote host, {@code false} otherwise
+   */
+  public abstract boolean isConnected();
+  
+  /**
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
@@ -30,11 +42,6 @@ public interface IClient extends IObject
    * Close the specified queue.
    */
   public abstract void close();
-  
-  /**
-   * Disconnect from the queue manager.
-   */
-  public abstract void disconnect();
   
   /**
    * Create a {@link MqMessage} object.

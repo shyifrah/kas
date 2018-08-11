@@ -27,6 +27,12 @@ public class HelpCommand extends ACliCommand
    */
   public void help()
   {
+    if (mCommandArgs.size() > 0)
+    {
+      writeln("Execssive command arguments are ignored for HELP HELP");
+      writeln(" ");
+    }
+    
     writeln("Purpose: ");
     writeln(" ");
     writeln("     Display help information regarding the KAS/MQ Admin Command Line Interface.");
@@ -94,10 +100,10 @@ public class HelpCommand extends ACliCommand
       ICliCommand command = CliCommandFactory.newCommand(mCommandArgs, mClient);
       if (command == null)
       {
-        writeln("Help requested for unknown command verb: \"" + verb + "\"");
+        writeln("Help requested for unknown command verb: \"" + verb + "\". Type HELP to see available commands");
         writeln(" ");
       }
-      else
+      else 
       {
         command.help();
       }
