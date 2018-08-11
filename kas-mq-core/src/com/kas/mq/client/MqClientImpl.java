@@ -30,10 +30,11 @@ public class MqClientImpl extends AKasObject implements IClient
       try
       {
         mSocket = new Socket(host, port);
+        mLogger.info("Connection established with host at [" + host + ':' + port + "]");
       }
       catch (IOException e)
       {       
-        mLogger.error("Exception occurred while trying to connect to [" + host + ':' + port + "]", e);
+        mLogger.error("Exception occurred while trying to connect to [" + host + ':' + port + "]. Exception: ", e);
       }
     }
   }
