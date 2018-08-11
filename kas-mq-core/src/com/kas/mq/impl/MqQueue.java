@@ -7,11 +7,11 @@ import com.kas.infra.utils.RunTimeUtils;
 import com.kas.mq.typedef.MessageDeque;
 
 /**
- * A {@link KasQueue} object is the simplest destination that is managed by the KAS/MQ system.
+ * A {@link MqQueue} object is the simplest destination that is managed by the KAS/MQ system.
  * 
  * @author Pippo
  */
-public class KasQueue extends AKasObject
+public class MqQueue extends AKasObject
 {
   /**
    * Name of this message queue
@@ -26,22 +26,22 @@ public class KasQueue extends AKasObject
   /**
    * The actual message container. An array of {@link MessageDeque} objects, one for each priority.<br>
    * <br>
-   * When a message with priority of 0 is received by this {@link KasQueue} object, it is stored in the 
+   * When a message with priority of 0 is received by this {@link MqQueue} object, it is stored in the 
    * {@link MessageDeque} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
   protected transient MessageDeque [] mQueueArray;
   
   /**
-   * The file backing up this {@link KasQueue} object.
+   * The file backing up this {@link MqQueue} object.
    */
   protected transient File mBackupFile = null;
   
   /**
-   * Constructing a {@link KasQueue} object with the specified name.
+   * Constructing a {@link MqQueue} object with the specified name.
    * 
-   * @param name The name of this {@link KasQueue} object.
+   * @param name The name of this {@link MqQueue} object.
    */
-  public KasQueue(String name)
+  public MqQueue(String name)
   {
     mName       = name;
     mQueueId    = UniqueId.generate();
@@ -51,9 +51,9 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Put a message into this {@link KasQueue} object.
+   * Put a message into this {@link MqQueue} object.
    * 
-   * @param message The message that should be stored at this {@link KasQueue} object.
+   * @param message The message that should be stored at this {@link MqQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
   public boolean put(MqMessage message)
@@ -66,7 +66,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with max priority from this {@link KasQueue} object
+   * Get a message with max priority from this {@link MqQueue} object
    * 
    * @return the returned message or {@code null} if there is no message
    */
@@ -76,7 +76,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with a specific priority from this {@link KasQueue} object
+   * Get a message with a specific priority from this {@link MqQueue} object
    * 
    * @param priority The priority of the message to be retrieved
    * @return the returned message or {@code null} if there is no message
@@ -90,7 +90,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with max priority from this {@link KasQueue} object, and wait indefinitely if one is not available.
+   * Get a message with max priority from this {@link MqQueue} object, and wait indefinitely if one is not available.
    * 
    * @return the returned message
    */
@@ -100,7 +100,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with a specific priority from this {@link KasQueue} object, and wait indefinitely if one is not available.
+   * Get a message with a specific priority from this {@link MqQueue} object, and wait indefinitely if one is not available.
    * 
    * @param priority The priority of the message to be retrieved 
    * @return the returned message
@@ -120,7 +120,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with max priority from this {@link KasQueue} object. If a message is not available immediately
+   * Get a message with max priority from this {@link MqQueue} object. If a message is not available immediately
    * wait for {@code timeout} milliseconds at most.<br>
    * <br>
    * Because this operation is done in a manner of polling, the thread is delayed for {@code 1000} milliseconds after each
@@ -136,7 +136,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with a specific priority from this {@link KasQueue} object. If a message is not available immediately
+   * Get a message with a specific priority from this {@link MqQueue} object. If a message is not available immediately
    * wait for {@code timeout} milliseconds at most.<br>
    * <br>
    * Because this operation is done in a manner of polling, the thread is delayed for {@code 1000} milliseconds after each
@@ -153,7 +153,7 @@ public class KasQueue extends AKasObject
   }
   
   /**
-   * Get a message with a specific priority from this {@link KasQueue} object. If a message is not available immediately
+   * Get a message with a specific priority from this {@link MqQueue} object. If a message is not available immediately
    * wait for {@code timeout} milliseconds at most.<br>
    * <br>
    * Because this operation is done in a manner of polling, the thread is delayed for {@code interval} milliseconds after each
@@ -183,24 +183,6 @@ public class KasQueue extends AKasObject
     }
     
     return result;
-  }
-  
-  /**
-   * Returns a replica of this {@link KasQueue}.<br>
-   * <br>
-   * The replica will have a different {@link UniqueId}.
-   * 
-   * @return a replica of this {@link KasQueue}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public KasQueue replicate()
-  {
-    KasQueue q = new KasQueue(mName);
-    for (int i = 0; i < MqMessage.cMaximumPriority; ++i)
-      q.mQueueArray[i] = mQueueArray[i].replicate();
-    
-    return new KasQueue(mName);
   }
   
   /**

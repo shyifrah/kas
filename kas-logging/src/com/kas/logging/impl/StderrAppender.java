@@ -16,16 +16,4 @@ public class StderrAppender extends ConsoleAppender
   {
     super(cac, System.err);
   }
-  
-  /**
-   * Returns a replica of this {@link StderrAppender}.
-   * 
-   * @return a replica of this {@link StderrAppender}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public StderrAppender replicate()
-  {
-    return new StderrAppender(mConfig);
-  }
 }

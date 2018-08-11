@@ -70,20 +70,6 @@ public class MqMessage extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link MqMessage}.<br>
-   * <br>
-   * The replica will have a different {@link UniqueId}.
-   * 
-   * @return a replica of this {@link MqMessage}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public MqMessage replicate()
-  {
-    return new MqMessage(mPriority);
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

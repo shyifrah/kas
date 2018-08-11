@@ -52,32 +52,4 @@ public interface IConfiguration extends IObject
    * @return the property's value
    */
   public abstract boolean getBoolProperty(String key, boolean defaultValue);
-  
-  /**
-   * Returns the {@link IConfiguration} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IConfiguration}.
-   * 
-   * @return a replica of this {@link IConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IConfiguration replicate();
-  
-  /**
-   * Returns the {@link IConfiguration} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

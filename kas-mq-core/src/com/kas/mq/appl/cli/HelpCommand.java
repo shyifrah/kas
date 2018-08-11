@@ -1,6 +1,7 @@
 package com.kas.mq.appl.cli;
 
-import com.kas.mq.typedef.TokenQueue;
+import com.kas.mq.client.IClient;
+import com.kas.mq.typedef.TokenDeque;
 
 /**
  * A HELP command
@@ -16,9 +17,9 @@ public class HelpCommand extends ACliCommand
    * 
    * @param args The command arguments specified when command was entered
    */
-  protected HelpCommand(TokenQueue args)
+  protected HelpCommand(TokenDeque args, IClient client)
   {
-    mCommandArgs = args;
+    super(args, client);
   }
 
   /**
@@ -90,10 +91,11 @@ public class HelpCommand extends ACliCommand
     else
     {
       String verb = mCommandArgs.peek();
-      ICliCommand command = CliCommandFactory.newCommand(mCommandArgs);
+      ICliCommand command = CliCommandFactory.newCommand(mCommandArgs, mClient);
       if (command == null)
       {
         writeln("Help requested for unknown command verb: \"" + verb + "\"");
+        writeln(" ");
       }
       else
       {
@@ -102,17 +104,5 @@ public class HelpCommand extends ACliCommand
     }
     
     return false;
-  }
-  
-  /**
-   * Returns a replica of this {@link HelpCommand}.
-   * 
-   * @return a replica of this {@link HelpCommand}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public HelpCommand replicate()
-  {
-    return new HelpCommand(mCommandArgs);
   }
 }

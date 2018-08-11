@@ -102,21 +102,6 @@ class PropertyValue extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link PropertyValue}.
-   * 
-   * @return a replica of this {@link PropertyValue}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public PropertyValue replicate()
-  {
-    PropertyValue pv = new PropertyValue(mRawValue);
-    pv.mResolved = mResolved;
-    pv.mActualValue = mActualValue;
-    return pv;
-  }
-  
-  /**
    * Get the object's detailed string representation.
    * 
    * @param level The string padding level
@@ -126,14 +111,11 @@ class PropertyValue extends AKasObject
    */
   public String toPrintableString(int level)
   {
-    StringBuilder sb = new StringBuilder();
-    
-    // [Raw=(...)] = [Actual=(..)]
+    StringBuilder sb = new StringBuilder(); // [Raw=(...)] = [Actual=(..)]
     sb.append(name()).append("(")
       .append("[Raw=(").append(mRawValue).append(")]")
       .append(" = [Actual=(").append(getActual()).append(")]")
       .append(")");
-    
     return sb.toString();
   }
 }

@@ -51,18 +51,6 @@ public class KasMqStopper extends AKasThread
     mLogger.warn("Shutdown hook was called. Signaling KAS/MQ application to shutdown...");
     mApplication.stop();
   }
-  
-  /**
-   * Returns a replica of this {@link KasMqStopper}.
-   * 
-   * @return a replica of this {@link KasMqStopper}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public KasMqStopper replicate()
-  {
-    return new KasMqStopper(mApplication);
-  }
 
   /**
    * Get the object's detailed string representation

@@ -1,7 +1,5 @@
 package com.kas.infra.base;
 
-import com.kas.infra.utils.StringUtils;
-
 /**
  * A KAS managed stoppable object.<br>
  * <br>
@@ -11,7 +9,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @see com.kas.infra.base.IStoppable
  */
-public abstract class AStoppable implements IStoppable
+public abstract class AStoppable extends AKasObject implements IStoppable
 {
   /**
    * The indicator whether the object should be stopped
@@ -44,26 +42,6 @@ public abstract class AStoppable implements IStoppable
   }
   
   /**
-   * Override Object's toString() method with the {@link #name()} method.
-   * 
-   * @return Object's string representation.
-   */
-  public String toString()
-  {
-    return name();
-  }
-  
-  /**
-   * Generate a padding for members layout to be used by {@link #toPrintableString(int)}.
-   * 
-   * @return padding string
-   */
-  protected String pad(int level)
-  {
-    return StringUtils.getPadding(level);
-  }
-  
-  /**
    * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
@@ -78,27 +56,6 @@ public abstract class AStoppable implements IStoppable
       .append(">");
     return sb.toString();
   }
-  
-  /**
-   * Returns the {@link IObject} string representation with 0-padding level
-   * 
-   * @return the string representation with 0-padding level
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public String toPrintableString()
-  {
-    return toPrintableString(0);
-  }
-  
-  /**
-   * Returns a replica of this {@link IObject}.
-   * 
-   * @return a replica of this {@link IObject}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract AStoppable replicate();
   
   /**
    * Returns the {@link IObject} string representation.

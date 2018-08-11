@@ -2,7 +2,7 @@ package com.kas.mq.client;
 
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqMessage;
-import com.kas.mq.impl.KasQueue;
+import com.kas.mq.impl.MqQueue;
 
 /**
  * This is the interface all KAS/MQ clients should implement. 
@@ -16,15 +16,15 @@ public interface IClient extends IObject
    * 
    * @param destination A IP address or host name.
    */
-  public abstract void connect(String destination);
+  public abstract void connect(String host, int port);
   
   /**
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
-   * @return the {@link KasQueue} object if queue was opened, {@code null} otherwise
+   * @return the {@link MqQueue} object if queue was opened, {@code null} otherwise
    */
-  public abstract KasQueue open(String queue);
+  public abstract MqQueue open(String queue);
   
   /**
    * Close the specified queue.
@@ -70,32 +70,4 @@ public interface IClient extends IObject
    * @param the {@link MqMessage} to put into the opened queue
    */
   public abstract void put(MqMessage message);
-  
-  /**
-   * Returns the {@link IObject} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IObject}.
-   * 
-   * @return a replica of this {@link IObject}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IObject replicate();
-  
-  /**
-   * Returns the {@link IObject} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

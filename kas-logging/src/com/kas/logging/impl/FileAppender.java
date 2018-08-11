@@ -303,18 +303,6 @@ public class FileAppender extends AAppender
   }
   
   /**
-   * Returns a replica of this {@link FileAppender}.
-   * 
-   * @return a replica of this {@link FileAppender}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public FileAppender replicate()
-  {
-    return new FileAppender(mConfig);
-  }
-  
-  /**
    * Returns the {@link FileAppender} string representation.
    * 
    * @param level the required level padding

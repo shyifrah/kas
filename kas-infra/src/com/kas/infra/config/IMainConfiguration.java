@@ -35,30 +35,4 @@ public interface IMainConfiguration extends IConfiguration, IInitializable
    * @return the fully-pathed configuration directory
    */
   public abstract String getConfigDir();
-  
-  /**
-   * Returns the {@link IMainConfiguration} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IMainConfiguration}.
-   * 
-   * @return a replica of this {@link IMainConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IMainConfiguration replicate();
-  
-  /**
-   * Returns the {@link IMainConfiguration} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

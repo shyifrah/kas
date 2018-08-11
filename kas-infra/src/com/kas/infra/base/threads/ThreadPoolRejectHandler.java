@@ -19,18 +19,6 @@ public class ThreadPoolRejectHandler extends AKasObject implements RejectedExecu
   }
   
   /**
-   * Returns a replica of this {@link #ThreadPoolRejectHandler}.
-   * 
-   * @return a replica of this {@link #ThreadPoolRejectHandler}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ThreadPoolRejectHandler replicate()
-  {
-    return new ThreadPoolRejectHandler();
-  }
-
-  /**
    * Get the object's detailed string representation. For {@code ThreadPoolRejectHandler}, this method returns the same 
    * result as {@link #name()}.
    * 

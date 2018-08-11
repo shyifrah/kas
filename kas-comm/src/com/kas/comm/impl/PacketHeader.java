@@ -143,18 +143,6 @@ public class PacketHeader extends AKasObject implements ISerializable
   }
   
   /**
-   * Returns a replica of this {@link PacketHeader}.
-   * 
-   * @return a replica of this {@link PacketHeader}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public PacketHeader replicate()
-  {
-    return new PacketHeader(mClassId, mType);
-  }
-  
-  /**
    * Returns the {@link PacketHeader} detailed string representation.
    * 
    * @param level the required level padding

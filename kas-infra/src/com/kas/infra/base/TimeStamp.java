@@ -180,18 +180,6 @@ public class TimeStamp extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link TimeStamp}.
-   * 
-   * @return a replica of this {@link TimeStamp}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public TimeStamp replicate()
-  {
-    return new TimeStamp(mTimeInMilliSeconds);
-  }
-  
-  /**
    * Get the object's detailed string representation.
    * 
    * @param level The string padding level

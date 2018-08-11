@@ -34,32 +34,4 @@ public interface IAppender extends IInitializable
    * @return {@code true} if object was terminated successfully, {@code false} otherwise
    */
   public abstract boolean term();
-  
-  /**
-   * Returns the {@link IAppender} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IAppender}.
-   * 
-   * @return a replica of this {@link IAppender}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IAppender replicate();
-  
-  /**
-   * Returns the {@link IAppender} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

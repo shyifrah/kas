@@ -201,18 +201,6 @@ public class ObjectTest extends AStatsCollector
     mLogger.trace(StringUtils.trunc(cMethodTestFailed   , 45, '.') + ": " + mStats.getValue(cMethodTestFailed));
     mLogger.trace(StringUtils.trunc(cMethodTestSucceeded, 45, '.') + ": " + mStats.getValue(cMethodTestSucceeded));
   }
-  
-  /**
-   * Returns a replica of this {@link ObjectTest}.
-   * 
-   * @return a replica of this {@link ObjectTest}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ObjectTest replicate()
-  {
-    return new ObjectTest(mTestedObject);
-  }
 
   /**
    * Get the object's detailed string representation

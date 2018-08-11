@@ -97,28 +97,4 @@ public abstract class AKasMqAppl extends AStoppable implements IInitializable, I
    * Running the application.
    */
   public abstract void run();
-
-  /**
-   * Returns a replica of this {@link AKasMqAppl}.
-   * 
-   * @return a replica of this {@link AKasMqAppl}
-   * 
-   * @throws RuntimeException always. Cannot replicate class
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public AKasMqAppl replicate()
-  {
-    throw new RuntimeException("Cannot replicate objects of type " + this.getClass().getSimpleName());
-  }
-
-  /**
-   * Get the object's detailed string representation
-   * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

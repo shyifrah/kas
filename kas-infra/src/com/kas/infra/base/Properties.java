@@ -8,11 +8,14 @@ import com.kas.infra.config.IConfiguration;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
+/**
+ * KAS {@link Properties} class has the ability to load from a file and interpret
+ * an "include" statement
+ * 
+ * @author Pippo
+ */
 public class Properties extends ConcurrentHashMap<Object, Object> implements IConfiguration
 {
-  //------------------------------------------------------------------------------------------------------------------
-  //
-  //------------------------------------------------------------------------------------------------------------------
   static public  final String cIncludeKey      = "kas.include";
   static private final long   serialVersionUID = 1L;
   
@@ -712,18 +715,6 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   }
   
   /**
-   * Returns a replica of this {@link Properties}.
-   * 
-   * @return a replica of this {@link Properties}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public Properties replicate()
-  {
-    return new Properties(this);
-  }
-  
-  /**
    * Get the object's detailed string representation.
    * 
    * @param level The string padding level
@@ -736,11 +727,9 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   {
     String pad = StringUtils.getPadding(level);
     StringBuilder sb = new StringBuilder();
-    
     sb.append(name()).append("(\n")
       .append(StringUtils.asPrintableString(this, level + 1)).append("\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

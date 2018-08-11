@@ -78,32 +78,4 @@ public interface IMessenger extends IObject
    * This is achieved by simply closing the socket's input stream.
    */
   public abstract void shutdownInput();
-  
-  /**
-   * Returns the {@link IMessenger} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IMessenger}.
-   * 
-   * @return a replica of this {@link IMessenger}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IMessenger replicate();
-  
-  /**
-   * Returns the {@link IMessenger} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

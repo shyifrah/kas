@@ -18,6 +18,45 @@ public class UniqueId extends AKasObject implements Serializable
   static public  final String   cNullUniqueIdAsString = cNullUniqueId.toString();
   
   /**
+   * Generate a random {@link UniqueId}
+   * 
+   * @return the generated {@link UniqueId}
+   */
+  static public UniqueId generate()
+  {
+    return new UniqueId();
+  }
+  
+  /**
+   * Create a {@link UniqueId} from a byte array
+   * 
+   * @param array The UUID represented as array of bytes
+   * @return the generated {@link UniqueId}
+   */
+  static public UniqueId fromByteArray(byte [] array)
+  {
+    ByteBuffer bb = ByteBuffer.wrap(array);
+    long high = bb.getLong();
+    long low  = bb.getLong();
+    UUID uuid = new UUID(high, low);
+    return new UniqueId(uuid);
+  }
+  
+  /**
+   * Create a {@link UniqueId} from a string
+   * 
+   * @param str The UUID as a string
+   * @return the generated {@link UniqueId}
+   * 
+   * @see java.util.UUID#fromString(String)
+   */
+  static public UniqueId fromString(String str)
+  {
+    UUID uuid = UUID.fromString(str);
+    return new UniqueId(uuid);
+  }
+
+  /**
    * The {@link UUID}
    */
   private UUID mUuid;
@@ -102,45 +141,6 @@ public class UniqueId extends AKasObject implements Serializable
   }
   
   /**
-   * Generate a random {@link UniqueId}
-   * 
-   * @return the generated {@link UniqueId}
-   */
-  static public UniqueId generate()
-  {
-    return new UniqueId();
-  }
-  
-  /**
-   * Create a {@link UniqueId} from a byte array
-   * 
-   * @param array The UUID represented as array of bytes
-   * @return the generated {@link UniqueId}
-   */
-  static public UniqueId fromByteArray(byte [] array)
-  {
-    ByteBuffer bb = ByteBuffer.wrap(array);
-    long high = bb.getLong();
-    long low  = bb.getLong();
-    UUID uuid = new UUID(high, low);
-    return new UniqueId(uuid);
-  }
-  
-  /**
-   * Create a {@link UniqueId} from a string
-   * 
-   * @param str The UUID as a string
-   * @return the generated {@link UniqueId}
-   * 
-   * @see java.util.UUID#fromString(String)
-   */
-  static public UniqueId fromString(String str)
-  {
-    UUID uuid = UUID.fromString(str);
-    return new UniqueId(uuid);
-  }
-
-  /**
    * Return the UUID as a string
    * 
    * @return the UUID string
@@ -150,18 +150,6 @@ public class UniqueId extends AKasObject implements Serializable
   public String toString()
   {
     return mUuid.toString();
-  }
-  
-  /**
-   * Returns a replica of this {@link UniqueId}.
-   * 
-   * @return a replica of this {@link UniqueId}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public UniqueId replicate()
-  {
-    return new UniqueId(this);
   }
   
   /**

@@ -123,20 +123,6 @@ public class AppenderManager extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link AppenderManager}.
-   * 
-   * @return a replica of this {@link AppenderManager}
-   * 
-   * @throws RuntimeException Always. Cannot replicate single objects.
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public AppenderManager replicate()
-  {
-    throw new RuntimeException("Cannot replicate AppenderManager object as it is a singleton");
-  }
-  
-  /**
    * Returns the {@link AppenderManager} string representation.
    * 
    * @param level the required level padding

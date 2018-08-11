@@ -22,32 +22,4 @@ public interface IStoppable extends IObject
    * @return {@code true} if object is stopping, {@code false} otherwise.
    */
   public abstract boolean isStopping();
-  
-  /**
-   * Returns the {@link IStoppable} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IStoppable}.
-   * 
-   * @return a replica of this {@link IStoppable}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IStoppable replicate();
-  
-  /**
-   * Returns the {@link IStoppable} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

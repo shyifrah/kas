@@ -9,7 +9,7 @@ import com.kas.infra.utils.RunTimeUtils;
  * 
  * @author Pippo
  */
-public class ConsoleLogger implements IBaseLogger
+public class ConsoleLogger extends AKasObject implements IBaseLogger
 {
   /**
    * Name of the logger
@@ -251,30 +251,6 @@ public class ConsoleLogger implements IBaseLogger
       .append("LoggerName=").append(mLoggerName)
       .append(")");
     return sb.toString();
-  }
-
-  /**
-   * Returns the {@link ConsoleLogger} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public String name()
-  {
-    return this.getClass().getSimpleName();
-  }
-  
-  /**
-   * Returns a replica of this {@link ConsoleLogger}.
-   * 
-   * @return a replica of this {@link ConsoleLogger}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ConsoleLogger replicate()
-  {
-    return new ConsoleLogger(mLoggerName);
   }
   
   /**

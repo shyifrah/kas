@@ -140,27 +140,6 @@ public class MqConfiguration extends AConfiguration
   }
   
   /**
-   * Returns a replica of this {@link MqConfiguration}.
-   * 
-   * @return a replica of this {@link MqConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public MqConfiguration replicate()
-  {
-    MqConfiguration config = new MqConfiguration();
-    config.mMainConfig        = mMainConfig;
-    config.mEnabled           = mEnabled;
-    config.mPort              = mPort;
-    config.mManagerName       = mManagerName;
-    config.mDeadQueueName     = mDeadQueueName;
-    config.mAdminQueueName    = mAdminQueueName;
-    config.mConnMaxErrors     = mConnMaxErrors;
-    config.mConnSocketTimeout = mConnSocketTimeout;
-    return config;
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

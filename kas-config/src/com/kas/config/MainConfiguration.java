@@ -313,20 +313,6 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   }
   
   /**
-   * Returns a replica of this {@link MainConfiguration}.
-   * 
-   * @return a replica of this {@link MainConfiguration}
-   * 
-   * @throws RuntimeException Always. Cannot replicate single objects.
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public MainConfiguration replicate()
-  {
-    throw new RuntimeException("Cannot replicate MainConfiguration object as it is a singleton");
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

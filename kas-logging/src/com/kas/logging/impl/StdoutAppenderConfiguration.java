@@ -19,6 +19,8 @@ public class StdoutAppenderConfiguration extends ConsoleAppenderConfiguration
    * Returns a replica of this {@link StdoutAppenderConfiguration}.
    * 
    * @return a replica of this {@link StdoutAppenderConfiguration}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public StdoutAppenderConfiguration replicate()
   {

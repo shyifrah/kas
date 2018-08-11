@@ -19,6 +19,8 @@ public class StderrAppenderConfiguration extends ConsoleAppenderConfiguration
    * Returns a replica of this {@link StderrAppenderConfiguration}.
    * 
    * @return a replica of this {@link StderrAppenderConfiguration}
+   * 
+   * @see com.kas.infra.base.IObject#replicate()
    */
   public StderrAppenderConfiguration replicate()
   {

@@ -1,6 +1,7 @@
 package com.kas.mq.appl.cli;
 
-import com.kas.mq.typedef.TokenQueue;
+import com.kas.mq.client.IClient;
+import com.kas.mq.typedef.TokenDeque;
 
 /**
  * An EXIT command
@@ -16,9 +17,9 @@ public class ExitCommand extends ACliCommand
    * 
    * @param args The command arguments specified when command was entered
    */
-  protected ExitCommand(TokenQueue args)
+  protected ExitCommand(TokenDeque args, IClient client)
   {
-    mCommandArgs = args;
+    super(args, client);
   }
 
   /**
@@ -64,17 +65,5 @@ public class ExitCommand extends ACliCommand
       return false;
     }
     return true;
-  }
-  
-  /**
-   * Returns a replica of this {@link ExitCommand}.
-   * 
-   * @return a replica of this {@link ExitCommand}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ExitCommand replicate()
-  {
-    return new ExitCommand(mCommandArgs);
   }
 }

@@ -75,20 +75,6 @@ public class ClientController extends AKasObject implements IController
   {
     return mConfig;
   }
-  
-  /**
-   * Returns a replica of this {@link ClientController}.<br>
-   * <br>
-   * The replica will have an empty map of handlers.
-   * 
-   * @return a replica of this {@link ClientController}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ClientController replicate()
-  {
-    return new ClientController(mConfig);
-  }
 
   /**
    * Get the object's detailed string representation

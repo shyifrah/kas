@@ -77,31 +77,6 @@ public class ClientHandler extends AStoppable implements Runnable
   {
     return mClientId;
   }
-  
-  /**
-   * Returns a replica of this {@link ClientHandler}.<br>
-   * <br>
-   * The replica will have an empty map of handlers.
-   * 
-   * @return a replica of this {@link ClientHandler}
-   * 
-   * @throws RuntimeException if {@link ClientHandler#ClientHandler(Socket, IController)} throws an exception.
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ClientHandler replicate()
-  {
-    ClientHandler handler = null;
-    try
-    {
-      handler = new ClientHandler(mSocket, mController);
-    }
-    catch (IOException e)
-    {
-      throw new RuntimeException("Failed to construct ClientHandler", e);
-    }
-    return handler;
-  }
 
   /**
    * Get the object's detailed string representation

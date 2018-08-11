@@ -43,20 +43,6 @@ public class KasRunnableThread extends Thread implements IObject
   }
   
   /**
-   * Returns a replica of this {@link #KasRunnableThread}.<br>
-   * <br>
-   * Note that the replica will hold the same {@link Runnable} object.
-   * 
-   * @return a replica of this {@link #KasRunnableThread}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public KasRunnableThread replicate()
-  {
-    return new KasRunnableThread(getName(), mCommand);
-  }
-  
-  /**
    * Get the thread's detailed string representation.
    * 
    * @param level The string padding level

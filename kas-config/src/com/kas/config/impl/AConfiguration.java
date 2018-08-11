@@ -64,15 +64,6 @@ public abstract class AConfiguration extends AKasObject implements IListener
   public abstract void refresh();
   
   /**
-   * Returns a replica of this {@link AConfiguration}.
-   * 
-   * @return a replica of this {@link AConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract AConfiguration replicate();
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

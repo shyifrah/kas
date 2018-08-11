@@ -23,32 +23,4 @@ public interface IRegistrar extends IObject
    * @param listener the listener to unregister with the registrar
    */
   public abstract void unregister(IListener listener);
-  
-  /**
-   * Returns the {@link #IRegistrar} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IRegistrar}.
-   * 
-   * @return a replica of this {@link IRegistrar}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IRegistrar replicate();
-  
-  /**
-   * Returns the {@link IRegistrar} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

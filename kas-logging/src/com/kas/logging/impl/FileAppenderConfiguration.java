@@ -131,16 +131,6 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   {
     return mFileNamePattern;
   }
-
-  /**
-   * Returns a replica of this {@link FileAppenderConfiguration}.
-   * 
-   * @return a replica of this {@link FileAppenderConfiguration}
-   */
-  public FileAppenderConfiguration replicate()
-  {
-    return new FileAppenderConfiguration(mLoggingConfig);
-  }
   
   /**
    * Returns the {@link FileAppenderConfiguration} string representation.

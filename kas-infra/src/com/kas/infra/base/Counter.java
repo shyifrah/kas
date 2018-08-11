@@ -107,18 +107,6 @@ public class Counter extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link Counter}.
-   * 
-   * @return a replica of this {@link Counter}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public Counter replicate()
-  {
-    return new Counter(mName, mValue);
-  }
-  
-  /**
    * Get the object's detailed string representation. For {@link Counter}, this method returns the same 
    * result as {@link #toString()}.
    * 

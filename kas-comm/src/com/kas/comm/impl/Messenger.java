@@ -224,28 +224,6 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /**
-   * Get a replica of this {@link Messenger}.<br>
-   * <br>
-   * Note that the socket in the replica object is the same one as in use by this {@link Messenger}
-   * 
-   * @return a replica of this {@link Messenger} or {@code null} if an exception was thrown
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public Messenger replicate()
-  {
-    Messenger messenger = null;
-  
-    try
-    {
-      messenger = new Messenger(mSocket, mHost, mPort, mPacketFactory);
-    }
-    catch (IOException e) {}
-    
-    return messenger;
-  }
-  
-  /**
    * Returns the {@link Messenger} detailed string representation.
    * 
    * @param level the required level padding

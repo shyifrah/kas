@@ -90,15 +90,6 @@ public abstract class AAppenderConfiguration extends AKasObject implements IList
   }
   
   /**
-   * Returns a replica of this {@link AAppenderConfiguration}.
-   * 
-   * @return a replica of this {@link AAppenderConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract AAppenderConfiguration replicate();
-  
-  /**
    * Returns the {@link AAppenderConfiguration} string representation.
    * 
    * @param level the required level padding

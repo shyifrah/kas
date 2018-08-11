@@ -169,19 +169,7 @@ public class ProductVersion extends AKasObject implements Serializable
   {
     return String.format("%d-%d-%d-%d", mMajorVersion, mMinorVersion, mModification, mBuildNumber);
   }
-  
-  /**
-   * Returns a replica of this {@link ProductVersion}.
-   * 
-   * @return a replica of this {@link ProductVersion}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ProductVersion replicate()
-  {
-    return new ProductVersion(mMajorVersion, mMinorVersion, mModification, mBuildNumber);
-  }
-  
+
   /**
    * Get the object's detailed string representation. For {@link ProductVersion}, this method returns the same 
    * result as {@link #toString()}.

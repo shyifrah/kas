@@ -31,25 +31,6 @@ public class MessageDeque extends LinkedBlockingDeque<MqMessage> implements IObj
   }
   
   /**
-   * Returns a replica of this {@link MessageDeque}.<br>
-   * <br>
-   * All messages in this {@link MessageDeque} are replicated as well and put in the replica.
-   * 
-   * @return a replica of this {@link MessageDeque}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public MessageDeque replicate()
-  {
-    MessageDeque md = new MessageDeque();
-    for (MqMessage msg : this)
-    {
-      md.offer(msg.replicate());
-    }
-    return md;
-  }
-  
-  /**
    * Returns the {@link MessageDeque} string representation.
    * 
    * @param level the required level padding

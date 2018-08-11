@@ -27,16 +27,6 @@ public class ConsoleAppenderConfiguration extends AAppenderConfiguration
   {
     super.refresh();
   }
-
-  /**
-   * Returns a replica of this {@link ConsoleAppenderConfiguration}.
-   * 
-   * @return a replica of this {@link ConsoleAppenderConfiguration}
-   */
-  public ConsoleAppenderConfiguration replicate()
-  {
-    return new ConsoleAppenderConfiguration(mName, mLoggingConfig);
-  }
   
   /**
    * Returns the {@link ConsoleAppenderConfiguration} string representation.

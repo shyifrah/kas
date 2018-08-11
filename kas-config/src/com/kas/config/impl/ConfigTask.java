@@ -90,18 +90,6 @@ final public class ConfigTask extends AKasObject implements IRunnable
   }
   
   /**
-   * Returns a replica of this {@link ConfigTask}.
-   * 
-   * @return a replica of this {@link ConfigTask}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ConfigTask replicate()
-  {
-    return new ConfigTask(mMainConfig);
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

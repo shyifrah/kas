@@ -4,14 +4,17 @@ import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
 import com.kas.mq.appl.cli.CliCommandFactory;
 import com.kas.mq.appl.cli.ICliCommand;
-import com.kas.mq.typedef.TokenQueue;
+import com.kas.mq.client.IClient;
+import com.kas.mq.impl.MqQueue;
+import com.kas.mq.impl.MqMessage;
+import com.kas.mq.typedef.TokenDeque;
 
 /**
  * MQ administration CLI processor.
  * 
  * @author Pippo
  */
-public class MqAdminProcessor extends AKasObject 
+public class MqAdminProcessor extends AKasObject implements IClient
 {
   /**
    * Running the processor.<br>
@@ -27,7 +30,7 @@ public class MqAdminProcessor extends AKasObject
     try
     {
       scanner = new Scanner(System.in);
-      TokenQueue command = read(scanner);
+      TokenDeque command = read(scanner);
       boolean stop = false;
       while (!stop)
       {
@@ -57,7 +60,7 @@ public class MqAdminProcessor extends AKasObject
    * @param cmdWords The queue containing the command tokens
    * @return {@code true} if an "exit" command was issued, {@code false} otherwise
    */
-  private boolean process(TokenQueue cmdWords)
+  private boolean process(TokenDeque cmdWords)
   {
     if (cmdWords.isEmpty() || cmdWords.peek().equals(""))
     {
@@ -65,7 +68,7 @@ public class MqAdminProcessor extends AKasObject
       return false;
     }
     
-    ICliCommand command = CliCommandFactory.newCommand(cmdWords);
+    ICliCommand command = CliCommandFactory.newCommand(cmdWords, this);
     if (command == null)
       return false;
     
@@ -79,15 +82,56 @@ public class MqAdminProcessor extends AKasObject
    * 
    * @return a queue in which each element is a token from the read line
    */
-  private TokenQueue read(Scanner scanner)
+  private TokenDeque read(Scanner scanner)
   {
     write("KAS/MQ Admin> ");
     String cmd = scanner.nextLine();
     String [] a = cmd.split(" ");
-    TokenQueue q = new TokenQueue();
+    TokenDeque q = new TokenDeque();
     for (String word : a)
-      q.offer(word);
+      q.offer(word.toUpperCase());
     return q;
+  }
+  
+  public void connect(String host, int port)
+  {
+  }
+
+  public MqQueue open(String queue)
+  {
+    return null;
+  }
+
+  public void close()
+  {
+  }
+
+  public void disconnect()
+  {
+  }
+
+  public MqMessage createMessage()
+  {
+    return null;
+  }
+
+  public MqMessage get()
+  {
+    return null;
+  }
+
+  public MqMessage getAndWait()
+  {
+    return null;
+  }
+
+  public MqMessage getAndWaitWithTimeout(long timeout)
+  {
+    return null;
+  }
+
+  public void put(MqMessage message)
+  { 
   }
   
   /**
@@ -111,20 +155,6 @@ public class MqAdminProcessor extends AKasObject
   }
   
   /**
-   * Returns a replica of this {@link MqAdminProcessor}.
-   * 
-   * @return a replica of this {@link MqAdminProcessor}
-   * 
-   * @throws RuntimeException always. Cannot replicate class
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public MqAdminProcessor replicate()
-  {
-    throw new RuntimeException("Cannot replicate objects of type " + this.getClass().getSimpleName());
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -140,5 +170,4 @@ public class MqAdminProcessor extends AKasObject
     sb.append(pad).append(")\n");
     return sb.toString();
   }
-  
 }

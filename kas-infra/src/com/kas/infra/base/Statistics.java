@@ -101,25 +101,9 @@ public class Statistics extends AKasObject
     if (mCounters.size() > 0)
     {
       for (Counter counter : mCounters.values())
-      {
         sb.append(counter.toString()).append('\n');
-      }
     }
     return sb.toString();
-  }
-  
-  /**
-   * Returns a replica of this {@link Statistics}.
-   * 
-   * @return a replica of this {@link Statistics}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public Statistics replicate()
-  {
-    Statistics stats = new Statistics();
-    stats.put(this);
-    return stats;
   }
   
   /**

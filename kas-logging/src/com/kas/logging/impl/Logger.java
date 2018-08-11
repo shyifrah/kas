@@ -17,7 +17,7 @@ public class Logger extends AKasObject implements ILogger
   /**
    * Logger name
    */
-  private String    mName;
+  private String mName;
   
   /**
    * Associated appender
@@ -223,20 +223,6 @@ public class Logger extends AKasObject implements ILogger
   public void fatal(String message, Throwable ex)
   {
     write(ELogLevel.FATAL, message, ex);
-  }
-  
-  /**
-   * Returns a replica of this {@link Logger}.<br>
-   * <br>
-   * Note that the replica's appender is actually the exact same appender that is used in the current object
-   * 
-   * @return a replica of this {@link Logger}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public Logger replicate()
-  {
-    return new Logger(mName, mAppender);
   }
   
   /**

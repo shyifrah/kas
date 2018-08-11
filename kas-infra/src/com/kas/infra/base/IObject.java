@@ -15,13 +15,6 @@ public interface IObject
   public abstract String name();
   
   /**
-   * Returns a replica of this {@link IObject}.
-   * 
-   * @return a replica of this {@link IObject}
-   */
-  public abstract IObject replicate();
-  
-  /**
    * Returns the {@link IObject} string representation.
    * 
    * @param level the required level padding

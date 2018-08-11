@@ -16,16 +16,4 @@ public class StdoutAppender extends ConsoleAppender
   {
     super(cac, System.out);
   }
-  
-  /**
-   * Returns a replica of this {@link StdoutAppender}.
-   * 
-   * @return a replica of this {@link StdoutAppender}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public StdoutAppender replicate()
-  {
-    return new StdoutAppender(mConfig);
-  }
 }

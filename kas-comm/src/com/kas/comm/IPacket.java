@@ -3,7 +3,6 @@ package com.kas.comm;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.infra.base.IObject;
 import com.kas.infra.base.ISerializable;
 
 /**
@@ -11,7 +10,7 @@ import com.kas.infra.base.ISerializable;
  * 
  * @author Pippo
  */
-public interface IPacket extends ISerializable,IObject
+public interface IPacket extends ISerializable
 {
   /**
    * Serialize a packet to the specified output stream
@@ -36,32 +35,4 @@ public interface IPacket extends ISerializable,IObject
    * @return the {@link PacketHeader header} describing the current {@link IPacket}
    */
   public abstract PacketHeader createHeader();
-  
-  /**
-   * Returns the {@link IPacket} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public abstract String name();
-  
-  /**
-   * Returns a replica of this {@link IPacket}.
-   * 
-   * @return a replica of this {@link IPacket}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract IPacket replicate();
-  
-  /**
-   * Returns the {@link IPacket} string representation.
-   * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public abstract String toPrintableString(int level);
 }

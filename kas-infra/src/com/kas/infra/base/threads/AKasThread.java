@@ -46,15 +46,6 @@ public abstract class AKasThread extends Thread implements IObject
   }
   
   /**
-   * Returns a replica of this {@link #AKasThread}.
-   * 
-   * @return a replica of this {@link #AKasThread}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public abstract AKasThread replicate();
-  
-  /**
    * Get the thread's detailed string representation.
    * 
    * @param level The string padding level

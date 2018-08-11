@@ -129,22 +129,6 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
   }
   
   /**
-   * Returns a replica of this {@link LoggingConfiguration}.
-   * 
-   * @return a replica of this {@link LoggingConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public LoggingConfiguration replicate()
-  {
-    LoggingConfiguration config = new LoggingConfiguration();
-    config.mEnabled = mEnabled;
-    config.mMainConfig = mMainConfig;
-    config.mAppenderConfigsSet = mAppenderConfigsSet;
-    return config;
-  }
-  
-  /**
    * Returns the {@link LoggingConfiguration} string representation.
    * 
    * @param level the required level padding
@@ -157,7 +141,6 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
   {
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Enabled=").append(mEnabled).append("\n")
       .append(pad).append("  AppendersConfigurations=(\n");
@@ -170,7 +153,6 @@ public class LoggingConfiguration extends AConfiguration implements IRegistrar
     
     sb.append(pad).append("  )\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

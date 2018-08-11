@@ -70,26 +70,6 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
       .append(">");
     return sb.toString();
   }
-
-  /**
-   * Returns a replica of this {@link #ThreadPoolWorkQueue}.<br>
-   * <br>
-   * Note that the elements in the replica are the same actual {@code Runnable} objects that exist
-   * in this queue.
-   * 
-   * @return a replica of this {@link #ThreadPoolWorkQueue}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ThreadPoolWorkQueue replicate()
-  {
-    ThreadPoolWorkQueue wq = new ThreadPoolWorkQueue(mMaxSize);
-    for (Runnable runnable : this)
-    {
-      wq.force(runnable);
-    }
-    return wq;
-  }
   
   /**
    * Get the work queue's detailed string representation.

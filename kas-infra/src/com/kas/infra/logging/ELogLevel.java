@@ -78,19 +78,6 @@ public enum ELogLevel implements IObject
   }
 
   /**
-   * Returns a replica of this {@link ELogLevel}.
-   * 
-   * @return a replica of this {@link ELogLevel}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ELogLevel replicate()
-  {
-    ELogLevel other = this;
-    return other;
-  }
-
-  /**
    * Get the enum detailed string representation. For {@link ELogLevel} this is the same as calling
    * {@link #toString()} method.
    * 

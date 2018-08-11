@@ -1,35 +1,39 @@
 package com.kas.mq.appl.cli;
 
-import com.kas.mq.typedef.TokenQueue;
+import com.kas.mq.client.IClient;
+import com.kas.mq.typedef.TokenDeque;
 
 /**
- * A Factory for creating {@link ICliCommand} objects based on the command verb (the first element)
- * in the {@link TokenQueue}.
+ * A Factory for creating {@link ICliCommand} objects based on the command verb (the first argument)
+ * in the {@link TokenDeque}.
  * 
  * @author Pippo
  */
 public class CliCommandFactory
 {
-  static public ICliCommand newCommand(TokenQueue cmdWords)
+  /**
+   * Factory method
+   * 
+   * @param cmdWords The command arguments
+   * @return A {@link ICliCommand} object or {@code null} if the command verb is unknown
+   */
+  static public ICliCommand newCommand(TokenDeque cmdWords, IClient client)
   {
-    String verb = cmdWords.poll().toUpperCase();
+    String verb = cmdWords.poll();
     
     // Is it a HELP command
     if (verb.equals(HelpCommand.cCommandVerb))
     {
-      return new HelpCommand(cmdWords);
+      return new HelpCommand(cmdWords, client);
     }
     
     // Is it a EXIT command
     if (verb.equals(ExitCommand.cCommandVerb))
     {
-      return new ExitCommand(cmdWords);
+      return new ExitCommand(cmdWords, client);
     }
     
     // Unknown command
-    writeln("Unknown command verb: \"" + verb.toUpperCase() + "\"");
-    writeln(" ");
-    
     return null;
     
 //    if (cVerbDefine.equalsIgnoreCase(verb))
@@ -67,15 +71,5 @@ public class CliCommandFactory
 //      writeln("Unknown command verb: [" + verb + "]");
 //      writeln(" ");
 //    }
-  }
-  
-  /**
-   * Writing a message to STDOUT. The message will be followed by a Newline character.
-   * 
-   * @param message the message to print
-   */
-  static private void writeln(String message)
-  {
-    System.out.println(message);
   }
 }

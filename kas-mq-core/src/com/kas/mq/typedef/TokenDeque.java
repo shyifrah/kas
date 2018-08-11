@@ -4,12 +4,17 @@ import java.util.ArrayDeque;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
-public class TokenQueue extends ArrayDeque<String> implements IObject
+/**
+ * A {@link TokenDeque} is a means for passing command line arguments
+ * 
+ * @author Pippo
+ */
+public class TokenDeque extends ArrayDeque<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
   
   /**
-   * Returns the {@link TokenQueue} simple class name enclosed with chevrons.
+   * Returns the {@link TokenDeque} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -22,23 +27,6 @@ public class TokenQueue extends ArrayDeque<String> implements IObject
       .append(this.getClass().getSimpleName())
       .append(">");
     return sb.toString();
-  }
-  
-  /**
-   * Returns a replica of this {@link TokenQueue}.
-   * 
-   * @return a replica of this {@link TokenQueue}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public TokenQueue replicate()
-  {
-    TokenQueue q = new TokenQueue();
-    for (String token : this)
-    {
-      q.offer(token);
-    }
-    return q;
   }
   
   /**

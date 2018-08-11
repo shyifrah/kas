@@ -90,18 +90,6 @@ public class ConsoleAppender extends AAppender
   }
   
   /**
-   * Returns a replica of this {@link ConsoleAppender}.
-   * 
-   * @return a replica of this {@link ConsoleAppender}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
-   */
-  public ConsoleAppender replicate()
-  {
-    return new ConsoleAppender(mConfig, mPrintStream);
-  }
-  
-  /**
    * Returns the {@link FileAppenderConfiguration} string representation.
    * 
    * @param level the required level padding
