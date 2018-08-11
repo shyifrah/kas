@@ -48,6 +48,7 @@ public class KasMqServer extends AKasMqAppl
     boolean init = super.init();
     if (init)
     {
+      mLogger.info("KAS/MQ base application initialized successfully");
       mController = new ClientController(mConfig);
       
       try
@@ -64,6 +65,9 @@ public class KasMqServer extends AKasMqAppl
       }
     }
     
+    String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    sStartupLogger.info(message);
+    mLogger.info(message);
     return init;
   }
   

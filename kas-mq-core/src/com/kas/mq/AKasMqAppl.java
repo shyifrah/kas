@@ -4,6 +4,7 @@ import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IRunnable;
+import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.logging.ILogger;
@@ -34,6 +35,11 @@ public abstract class AKasMqAppl extends AStoppable implements IInitializable, I
   protected MqConfiguration mConfig = null;
   
   /**
+   * The product version
+   */
+  protected ProductVersion mVersion = null;
+  
+  /**
    * Initializing the KAS/MQ server.<br>
    * <br>
    * Initialization consisting of:
@@ -46,6 +52,7 @@ public abstract class AKasMqAppl extends AStoppable implements IInitializable, I
    */
   public boolean init()
   {
+    mVersion = new ProductVersion(this.getClass());
     mConfig = new MqConfiguration();
     mConfig.init();
     if (!mConfig.isInitialized())

@@ -33,6 +33,12 @@ public class CliCommandFactory
       return new ExitCommand(cmdWords, client);
     }
     
+    // Is it a CONNECT command
+    if (verb.equals(ConnectCommand.cCommandVerb))
+    {
+      return new ConnectCommand(cmdWords, client);
+    }
+    
     // Unknown command
     return null;
     

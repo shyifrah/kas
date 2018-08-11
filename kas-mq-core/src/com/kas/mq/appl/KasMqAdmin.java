@@ -31,10 +31,12 @@ public class KasMqAdmin extends AKasMqAppl
     boolean init = super.init();
     if (init)
     {
-      // ============>>>>  actual admin CLI initialization goes here  <<<<==============
+      mLogger.info("KAS/MQ base application initialized successfully");
     }
     
-    mLogger.info("KAS/MQ admin CLI initialization was " + (init ? "" : "not ") + "successfull");
+    String message = "KAS/MQ admin CLI V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    sStartupLogger.info(message);
+    mLogger.info(message);
     return init;
   }
   

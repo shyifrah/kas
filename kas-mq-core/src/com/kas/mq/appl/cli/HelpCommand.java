@@ -39,9 +39,11 @@ public class HelpCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- HELP ---+------------+---><");
-    writeln("                   |            |");
-    writeln("                   +--- EXIT ---+");
+    writeln("     >>--- HELP ---+---------------+---><");
+    writeln("                   |               |");
+    writeln("                   +--- EXIT ------+");
+    writeln("                   |               |");
+    writeln("                   +--- CONNECT ---+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -85,13 +87,23 @@ public class HelpCommand extends ACliCommand
       writeln(" ");
       writeln("Syntax: ");
       writeln(" ");
-      writeln("     >>---+--- EXIT ---+---><");
+      writeln("     >>---+--- EXIT ------+---><");
+      writeln("          |               |");
+      writeln("          +--- CONNECT ---+");
       writeln(" ");
       writeln("Description: ");
       writeln(" ");
       writeln("     Each command has a specific purpose. For help regarding the specific command, type:");
       writeln("          KAS/MQ Admin> HELP nnnnn");
       writeln("     Where 'nnnnn' is a command verb for which you are seeking help for.");
+      writeln(" ");
+      writeln("Examples: ");
+      writeln(" ");
+      writeln("     Terminate current Admin Command Line Interface:");
+      writeln("          KAS/MQ Admin> EXIT");
+      writeln(" ");
+      writeln("     Connect to remote host on a specific port:");
+      writeln("          KAS/MQ Admin> CONNECT TLVHOSTA 12344");
       writeln(" ");
     }
     else
