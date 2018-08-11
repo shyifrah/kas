@@ -130,7 +130,7 @@ public class KasMqLauncher
     }
     else if ("admin".equalsIgnoreCase(appType))
     {
-      className = "com.kas.mq.app.KasMqAdmin";
+      className = "com.kas.mq.appl.KasMqAdmin";
       RunTimeUtils.setProperty(cAppTypeSystemProperty, "admin", true);
       sLogger.info("KAS/MQ launcher set system property '" + cAppTypeSystemProperty + "' to 'admin'");
     }

@@ -10,6 +10,11 @@ import com.kas.infra.base.IObject;
 public interface ICliCommand extends IObject
 {
   /**
+   * Display help for the specific command.
+   */
+  public abstract void help();
+  
+  /**
    * Running the command.
    * 
    * @return {@code true} if {@link MqAdminProcessor} should stop further processing following

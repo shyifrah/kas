@@ -65,8 +65,8 @@ public class KasMqAdmin extends AKasMqAppl
    */
   public void run()
   {
-    // ============>>>>  actual admin CLI running goes here  <<<<==============
-    
+    MqAdminProcessor processor = new MqAdminProcessor();
+    processor.run();
   }
   
   /**

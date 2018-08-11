@@ -1,9 +1,7 @@
 package com.kas.mq.appl;
 
-import java.util.ArrayDeque;
 import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
-import com.kas.mq.appl.cli.ACliCommand;
 import com.kas.mq.appl.cli.CliCommandFactory;
 import com.kas.mq.appl.cli.ICliCommand;
 import com.kas.mq.typedef.TokenQueue;
@@ -18,14 +16,11 @@ public class MqAdminProcessor extends AKasObject
   /**
    * Running the processor.<br>
    * <br>
-   * The main logic is quite simple - keep reading commands from STDIN until "stop" command
-   * was issued. 
-   * 
-   * @param args arguments passed to {@code main} function
+   * The main logic is quite simple - keep reading commands from STDIN until "exit" command was issued.
    */
   public void run()
   {
-    writeln("KAS/Q Admin Command Processor started");
+    writeln("KAS/MQ Admin Command Processor started");
     writeln(" ");
     
     Scanner scanner = null;
@@ -50,7 +45,7 @@ public class MqAdminProcessor extends AKasObject
     }
     
     writeln(" ");
-    writeln("KAS/Q Admin Command Processor ended");
+    writeln("KAS/MQ Admin Command Processor ended");
   }
   
   /**
@@ -64,15 +59,15 @@ public class MqAdminProcessor extends AKasObject
    */
   private boolean process(TokenQueue cmdWords)
   {
-    boolean stop = false;
     if (cmdWords.isEmpty() || cmdWords.peek().equals(""))
     {
       writeln(" ");
       return false;
     }
     
-    String verb = cmdWords.poll();
     ICliCommand command = CliCommandFactory.newCommand(cmdWords);
+    if (command == null)
+      return false;
     
     return command.run();
   }

@@ -13,7 +13,7 @@ public abstract class ACliCommand implements ICliCommand
   /**
    * The command arguments
    */
-  private TokenQueue mCommandArgs;
+  protected TokenQueue mCommandArgs;
   
   /**
    * Processing the command.

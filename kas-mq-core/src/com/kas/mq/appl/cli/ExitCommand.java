@@ -12,11 +12,6 @@ public class ExitCommand extends ACliCommand
   static public final String cCommandVerb = "EXIT";
   
   /**
-   * The command arguments
-   */
-  private TokenQueue mCommandArgs;
-  
-  /**
    * Construct an {@link ExitCommand} passing the command arguments.
    * 
    * @param args The command arguments specified when command was entered
@@ -26,6 +21,33 @@ public class ExitCommand extends ACliCommand
     mCommandArgs = args;
   }
 
+  /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    writeln("Purpose: ");
+    writeln(" ");
+    writeln("     Display help information regarding the KAS/MQ Admin Command Line Interface.");
+    writeln(" ");
+    writeln("Format: ");
+    writeln(" ");
+    writeln("     >>--- EXIT ---><");
+    writeln(" ");
+    writeln("Description: ");
+    writeln(" ");
+    writeln("     Terminate KAS/MQ Admin Command Line Interface.");
+    writeln(" ");
+    writeln("Examples:");
+    writeln(" ");
+    writeln("     Terminates the current KAS/MQ Admin session:");
+    writeln("          KAS/MQ Admin> EXIT");
+    writeln(" ");
+    writeln("     This will display an error message, as EXIT command does not expect any arguments:");
+    writeln("          KAS/MQ Admin> EXIT KUKU");
+    writeln(" ");
+  }
+  
   /**
    * A stop command will return {@code true} to order the {@link MqCommandProcessor processor} to stop further processing.<br>
    * The command does not accept any arguments, so if a user specify arguments to the STOP command, 
@@ -38,6 +60,7 @@ public class ExitCommand extends ACliCommand
     if (mCommandArgs.size() > 0)
     {
       writeln("Excessive argument specified: " + mCommandArgs.poll());
+      writeln(" ");
       return false;
     }
     return true;

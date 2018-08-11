@@ -2,6 +2,7 @@ package com.kas.infra.base;
 
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.logging.IBaseLogger;
+import com.kas.infra.utils.RunTimeUtils;
 
 /**
  * A basic logger used by the testing package.
@@ -44,7 +45,13 @@ public class ConsoleLogger implements IBaseLogger
   private void stdout(ELogLevel level, String message)
   {
     TimeStamp ts = new TimeStamp();
-    String msg = String.format("%s (%s) %-5s %s", ts.toString(), mLoggerName, level.toString(), message);
+    String msg = String.format("%s %d:%d %-5s (%s) %s", 
+      ts.toString(),
+      RunTimeUtils.getProcessId(),
+      RunTimeUtils.getThreadId(),
+      level.toString(), 
+      mLoggerName, 
+      message);
     System.out.println(msg);
   }
 
