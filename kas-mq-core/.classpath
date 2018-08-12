@@ -5,5 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-config"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kas-comm"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

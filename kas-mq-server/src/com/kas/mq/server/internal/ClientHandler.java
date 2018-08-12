@@ -2,8 +2,16 @@ package com.kas.mq.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
+import com.kas.comm.IMessenger;
+import com.kas.comm.IPacket;
+import com.kas.comm.IPacketFactory;
+import com.kas.comm.impl.MessengerFactory;
 import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.UniqueId;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.MqMessageFactory;
 
 /**
  * A {@link ClientHandler} is the object that handles the traffic in and from a remote client.
@@ -12,6 +20,8 @@ import com.kas.infra.base.UniqueId;
  */
 public class ClientHandler extends AStoppable implements Runnable
 {
+  static private final IPacketFactory sFactory = new MqMessageFactory();
+  
   /**
    * The client's unique ID
    */
@@ -28,6 +38,16 @@ public class ClientHandler extends AStoppable implements Runnable
   private IController mController;
   
   /**
+   * Messenger
+   */
+  private IMessenger mMessenger;
+  
+  /**
+   * Logger
+   */
+  private ILogger mLogger;
+  
+  /**
    * Construct a {@link ClientHandler} to handle all incoming and outgoing traffic of the client.<br>
    * <br>
    * Client's transmits messages and received by this handler over the specified {@code socket}.
@@ -40,28 +60,38 @@ public class ClientHandler extends AStoppable implements Runnable
   {
     mSocket = socket;
     mController = controller;
-    mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
+    
     mClientId = UniqueId.generate();
+    mLogger = LoggerFactory.getLogger(this.getClass());
+    
+    mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
+    mMessenger = MessengerFactory.create(mSocket, sFactory);
   }
   
+  /**
+   * Running the handler - keep reading and process packets from input stream.<br>
+   * If necessary, respond on output stream.
+   */
   public void run()
   {
     boolean shouldStop = isStopping();
+    
+    int timeout = mController.getConfig().getConnSocketTimeout();
     while (!shouldStop)
     {
-//      try
-//      {
-//        // do socket read call
-//        // process the message
-//      }
-//      catch (SocketTimeoutException e)
-//      {
-//        // just notify on timeout and re-iterate
-//      }
-//      catch (IOException e)
-//      {
-//        
-//      }
+      try
+      {
+        IPacket packet = mMessenger.receive(timeout);
+      }
+      catch (SocketTimeoutException e)
+      {
+        mLogger.debug("Socket Timeout occurred. Resume waiting for a new packet from client...");
+      }
+      catch (IOException e)
+      {
+        mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
+        mLogger.error("Connection to remote host at " + mSocket.getInetAddress().getHostName() + " was dropped");
+      }
       
       // re-check if needs to shutdown
       shouldStop = isStopping();

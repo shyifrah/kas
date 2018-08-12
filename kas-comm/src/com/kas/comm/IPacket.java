@@ -12,6 +12,8 @@ import com.kas.infra.base.ISerializable;
  */
 public interface IPacket extends ISerializable
 {
+  static final int cClassIdMqMessage = 0;
+  
   /**
    * Serialize a packet to the specified output stream
    * 
@@ -22,17 +24,11 @@ public interface IPacket extends ISerializable
   public abstract void serialize(ObjectOutputStream ostream) throws IOException;
   
   /**
-   * Get the {@link IPacket}'s class ID.
-   * This value determines how the packet should be deserialized.
+   * Create a header describing the packet
    * 
-   * @return the {@link IPacket}'s class ID
-   */
-  public abstract int getPacketClassId();
-  
-  /**
-   * Create a {@link PacketHeader header} for the specified {@link IPacket}
+   * @return the header describing the packet 
    * 
-   * @return the {@link PacketHeader header} describing the current {@link IPacket}
+   * @throws IOException if an I/O error occurs
    */
   public abstract PacketHeader createHeader();
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
+import com.kas.infra.base.KasException;
 import com.kas.infra.base.AKasObject;
 
 /**
@@ -14,7 +15,6 @@ import com.kas.infra.base.AKasObject;
 public class PacketHeader extends AKasObject implements ISerializable
 {
   static public final String cEyeCatcher = "KAS";
-  static public final int    cTypeUnknown    = -1;
   static public final int    cClassIdUnknown = 0;
   static public final int    cClassIdKasq    = 1;
   
@@ -29,31 +29,14 @@ public class PacketHeader extends AKasObject implements ISerializable
   private int mClassId;
   
   /**
-   * The packet's type
-   */
-  private int mType;
-  
-  /**
    * Construct a {@link PacketHeader}, specifying only the class ID
    *  
    * @param id The class ID of the packet
    */
-  protected PacketHeader(int id)
-  {
-    this(id, cTypeUnknown);
-  }
-  
-  /**
-   * Construct a {@link PacketHeader}
-   *  
-   * @param id The class ID of the packet
-   * @param type The packet's type. this is an integer which is managed outside of the communication layer
-   */
-  protected PacketHeader(int id, int type)
+  public PacketHeader(int id)
   {
     mEyeCatcher = cEyeCatcher;
     mClassId = id;
-    mType    = type;
   }
   
   /**
@@ -69,7 +52,6 @@ public class PacketHeader extends AKasObject implements ISerializable
     {
       mEyeCatcher = (String)istream.readObject();
       mClassId = istream.readInt();
-      mType    = istream.readInt();
     }
     catch (IOException e)
     {
@@ -94,8 +76,6 @@ public class PacketHeader extends AKasObject implements ISerializable
     ostream.reset();
     ostream.writeInt(mClassId);
     ostream.reset();
-    ostream.writeInt(mType);
-    ostream.reset();
   }
   
   /**
@@ -119,27 +99,18 @@ public class PacketHeader extends AKasObject implements ISerializable
   }
   
   /**
-   * Return the type of the appended packet.<br>
-   * <br>
-   * The type of a packet is used by various factories to determine the specific type of the packet.
-   *  
-   * @return the packet's type
-   */
-  public int getType()
-  {
-    return mType;
-  }
-  
-  /**
    * Verify this {@link PacketHeader} is a valid header.<br>
    * <br>
    * Verification is done by comparing the eye-catcher to the value "KAS"
    * 
-   * @return {@code true} if this header is valid, {@code false} otherwise
+   * @throws {@link KasException} if this header is invalid
    */
-  public boolean verify()
+  public void verify() throws KasException
   {
-    return mEyeCatcher.equals(cEyeCatcher);
+    if (!mEyeCatcher.equals(cEyeCatcher))
+    {
+      throw new KasException("Packet header failed verification");
+    }
   }
   
   /**
@@ -154,10 +125,8 @@ public class PacketHeader extends AKasObject implements ISerializable
   {
     StringBuilder sb = new StringBuilder();
     sb.append(name())
-      .append('(')
+      .append("ClassId=(")
       .append(mClassId)
-      .append(':')
-      .append(mType)
       .append(')');
     return sb.toString();
   }  

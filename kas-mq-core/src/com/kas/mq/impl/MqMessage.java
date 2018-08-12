@@ -1,5 +1,10 @@
 package com.kas.mq.impl;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import com.kas.comm.IPacket;
+import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 
@@ -11,7 +16,7 @@ import com.kas.infra.base.UniqueId;
  * 
  * @author Pippo
  */
-public class MqMessage extends AKasObject
+public class MqMessage extends AKasObject implements IPacket
 {
   public static final int cMinimumPriority = 0;
   public static final int cMaximumPriority = 9;
@@ -50,6 +55,33 @@ public class MqMessage extends AKasObject
   }
   
   /**
+   * Constructs a {@link MqMessage} object from {@link ObjectInputStream}
+   * 
+   * @param istream The {@link ObjectInputStream}
+   * 
+   * @throws IOException if I/O error occurs
+   */
+  public MqMessage(ObjectInputStream istream) throws IOException
+  {
+    try
+    {
+      mPriority = istream.readInt();
+      
+      byte [] ba = new byte [16];
+      istream.read(ba);
+      mMessageId = UniqueId.fromByteArray(ba);
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
+  }
+  
+  /**
    * Get the message priority
    * 
    * @return the message priority
@@ -67,6 +99,28 @@ public class MqMessage extends AKasObject
   public UniqueId getMessageId()
   {
     return mMessageId;
+  }
+  
+  /**
+   * Serialize the {@link MqMessage} to the specified {@link ObjectOutputStream}
+   * 
+   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
+   * 
+   * @throws IOException if an I/O error occurs
+   */
+  public void serialize(ObjectOutputStream ostream) throws IOException
+  {
+    ostream.writeInt(mPriority);
+    
+    ostream.reset();
+    byte [] ba = mMessageId.toByteArray();
+    ostream.write(ba);
+    ostream.reset();
+  }
+  
+  public PacketHeader createHeader()
+  {
+    return new PacketHeader(cClassIdMqMessage);
   }
   
   /**
