@@ -1,9 +1,9 @@
 package com.kas.mq.appl;
 
 import java.util.Scanner;
-import com.kas.infra.base.AKasObject;
 import com.kas.mq.appl.cli.CliCommandFactory;
 import com.kas.mq.appl.cli.ICliCommand;
+import com.kas.mq.client.AMqClient;
 import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
 import com.kas.mq.impl.MqQueue;
@@ -15,7 +15,7 @@ import com.kas.mq.typedef.TokenDeque;
  * 
  * @author Pippo
  */
-public class MqAdminProcessor extends AKasObject implements IClient
+public class MqAdminProcessor extends AMqClient
 {
   private IClient mClientImpl = new MqClientImpl(); 
   
@@ -104,11 +104,15 @@ public class MqAdminProcessor extends AKasObject implements IClient
   public void connect(String host, int port)
   {
     mClientImpl.connect(host, port);
+    writeln(mClientImpl.getResponse());
+    writeln(" ");
   }
 
   public void disconnect()
   {
     mClientImpl.disconnect();
+    writeln(mClientImpl.getResponse());
+    writeln(" ");
   }
 
   public boolean isConnected()
@@ -184,6 +188,7 @@ public class MqAdminProcessor extends AKasObject implements IClient
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n");
+    sb.append(pad).append("  ClientImpl=(").append(mClientImpl.toPrintableString(level+1)).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();
   }

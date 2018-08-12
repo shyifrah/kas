@@ -5,7 +5,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * A {@link TokenDeque} is a means for passing command line arguments
+ * A {@link TokenDeque} is a means for passing command line arguments after tokenizing.
  * 
  * @author Pippo
  */

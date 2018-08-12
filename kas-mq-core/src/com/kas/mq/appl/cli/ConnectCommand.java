@@ -71,8 +71,7 @@ public class ConnectCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Connect failed. Missing host name");
-      writeln(" ");
+      mClient.setResponse("Connect failed. Missing host name");
       return false;
     }
     
@@ -89,21 +88,18 @@ public class ConnectCommand extends ACliCommand
     catch (NumberFormatException e) {}
     if (port == -1)
     {
-      writeln("Connect failed. Invalid port number \"" + sport + "\"");
-      writeln(" ");
+      mClient.setResponse("Connect failed. Invalid port number \"" + sport + "\"");
       return false;
     }
     
     mClient.connect(host, port);
     if (mClient.isConnected())
     {
-      writeln("Successfully connected to host at " + host + ':' + port);
-      writeln(" ");
+      mClient.setResponse("Successfully connected to host at " + host + ':' + port);
     }
     else
     {
-      writeln("Failed to connect to " + host + ':' + port + ". See log file for further information");
-      writeln(" ");
+      mClient.setResponse("Failed to connect to " + host + ':' + port + ". See log file for further information");
     }
     
     return false;

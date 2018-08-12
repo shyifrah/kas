@@ -23,6 +23,7 @@ public class ClientController extends AKasObject implements IController
    * Logger
    */
   private ILogger mLogger;
+  private ILogger mConsole;
   
   /**
    * A map of client id to client handler
@@ -39,7 +40,8 @@ public class ClientController extends AKasObject implements IController
    */
   public ClientController(MqConfiguration config)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger  = LoggerFactory.getLogger(this.getClass());
+    mConsole = LoggerFactory.getStdout(this.getClass());
     mHandlers = new HashMap<UniqueId, ClientHandler>();
     mConfig = config;
   }
@@ -62,7 +64,9 @@ public class ClientController extends AKasObject implements IController
     UniqueId id = handler.getClientId();
     mHandlers.put(id, handler);
     
-    mLogger.trace("Client at " + socket.getRemoteSocketAddress().toString() + " (ID=" + id + ") was sent for execution");
+    String remoteAddress = socket.getRemoteSocketAddress().toString();
+    mConsole.info("New connection accepted from " + remoteAddress);
+    mLogger.trace("Client at " + remoteAddress + " (ID=" + id + ") was sent for execution");
     ThreadPool.execute(handler);
   }
   
