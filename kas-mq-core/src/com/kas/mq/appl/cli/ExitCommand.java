@@ -13,9 +13,11 @@ public class ExitCommand extends ACliCommand
   static public final String cCommandVerb = "EXIT";
   
   /**
-   * Construct an {@link ExitCommand} passing the command arguments.
+   * Construct an {@link ExitCommand} passing the command arguments and the client object
+   * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
+   * @param client The client that will perform the actual disconnection
    */
   protected ExitCommand(TokenDeque args, IClient client)
   {

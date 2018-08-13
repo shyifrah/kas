@@ -13,9 +13,11 @@ public class HelpCommand extends ACliCommand
   static public final String cCommandVerb = "HELP";
   
   /**
-   * Construct a {@link HelpCommand} passing the command arguments.
+   * Construct a {@link HelpCommand} passing the command arguments and the client object
+   * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
+   * @param client The client that will perform the actual disconnection
    */
   protected HelpCommand(TokenDeque args, IClient client)
   {

@@ -3,8 +3,6 @@ package com.kas.mq.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import com.kas.comm.IPacket;
-import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 
@@ -16,7 +14,7 @@ import com.kas.infra.base.UniqueId;
  * 
  * @author Pippo
  */
-public class MqMessage extends AKasObject implements IPacket
+public class MqMessage extends AKasObject
 {
   public static final int cMinimumPriority = 0;
   public static final int cMaximumPriority = 9;
@@ -116,11 +114,6 @@ public class MqMessage extends AKasObject implements IPacket
     byte [] ba = mMessageId.toByteArray();
     ostream.write(ba);
     ostream.reset();
-  }
-  
-  public PacketHeader createHeader()
-  {
-    return new PacketHeader(cClassIdMqMessage);
   }
   
   /**

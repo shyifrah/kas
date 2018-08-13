@@ -13,9 +13,11 @@ public class ConnectCommand extends ACliCommand
   static public final String cCommandVerb = "CONNECT";
   
   /**
-   * Construct a {@link ConnectCommand} passing the command arguments.
+   * Construct a {@link ConnectCommand} passing the command arguments and the client object
+   * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
+   * @param client The client that will perform the actual connection
    */
   protected ConnectCommand(TokenDeque args, IClient client)
   {

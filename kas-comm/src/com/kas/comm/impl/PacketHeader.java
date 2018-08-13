@@ -15,8 +15,6 @@ import com.kas.infra.base.AKasObject;
 public class PacketHeader extends AKasObject implements ISerializable
 {
   static public final String cEyeCatcher = "KAS";
-  static public final int    cClassIdUnknown = 0;
-  static public final int    cClassIdKasq    = 1;
   
   /**
    * A packet header is marked with an eye-catcher that contains the string "KAS"
@@ -109,7 +107,7 @@ public class PacketHeader extends AKasObject implements ISerializable
   {
     if (!mEyeCatcher.equals(cEyeCatcher))
     {
-      throw new KasException("Packet header failed verification");
+      throw new KasException("Packet header failed verification. EyeCatcher=[" + mEyeCatcher + "]");
     }
   }
   

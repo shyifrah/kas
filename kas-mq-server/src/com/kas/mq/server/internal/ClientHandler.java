@@ -11,7 +11,6 @@ import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.MqMessageFactory;
 
 /**
  * A {@link ClientHandler} is the object that handles the traffic in and from a remote client.
@@ -20,8 +19,6 @@ import com.kas.mq.impl.MqMessageFactory;
  */
 public class ClientHandler extends AStoppable implements Runnable
 {
-  static private final IPacketFactory sFactory = new MqMessageFactory();
-  
   /**
    * The client's unique ID
    */
@@ -65,7 +62,6 @@ public class ClientHandler extends AStoppable implements Runnable
     mLogger = LoggerFactory.getLogger(this.getClass());
     
     mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
-    mMessenger = MessengerFactory.create(mSocket, sFactory);
   }
   
   /**
