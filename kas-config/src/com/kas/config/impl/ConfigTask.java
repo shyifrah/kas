@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IRunnable;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.utils.StringUtils;
 
@@ -15,7 +14,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-final public class ConfigTask extends AKasObject implements IRunnable
+final public class ConfigTask extends AKasObject implements Runnable
 {
   /**
    * The main configuration

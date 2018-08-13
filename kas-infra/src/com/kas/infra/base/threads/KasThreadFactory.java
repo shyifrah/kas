@@ -57,8 +57,6 @@ public class KasThreadFactory implements ThreadFactory
    * @param cmd The {@link Runnable} object to be executed by the newly created {@code Thread}
    * @return a newly created {@code Thread}
    * 
-   * @throws IllegalArgumentException if {@code cmd} is not a {@link IRunnable} object.
-   * 
    * @see java.util.concurrent.ThreadFactory#newThread(Runnable)
    */
   public Thread newThread(Runnable cmd)
