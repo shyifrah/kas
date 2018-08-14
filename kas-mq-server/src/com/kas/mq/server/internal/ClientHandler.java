@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
-import com.kas.comm.IPacket;
-import com.kas.comm.IPacketFactory;
 import com.kas.comm.impl.MessengerFactory;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
@@ -55,13 +54,13 @@ public class ClientHandler extends AStoppable implements Runnable
    */
   ClientHandler(Socket socket, IController controller) throws IOException
   {
-    mSocket = socket;
     mController = controller;
+    mSocket = socket;
+    mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
+    mMessenger = MessengerFactory.create(mSocket);
     
     mClientId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
-    
-    mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
   }
   
   /**
@@ -72,22 +71,23 @@ public class ClientHandler extends AStoppable implements Runnable
   {
     boolean shouldStop = isStopping();
     
-    int timeout = mController.getConfig().getConnSocketTimeout();
     while (!shouldStop)
     {
-//      try
-//      {
-//        IPacket packet = mMessenger.receive(timeout);
-//      }
-//      catch (SocketTimeoutException e)
-//      {
-//        mLogger.debug("Socket Timeout occurred. Resume waiting for a new packet from client...");
-//      }
-//      catch (IOException e)
-//      {
-//        mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
-//        mLogger.error("Connection to remote host at " + mSocket.getInetAddress().getHostName() + " was dropped");
-//      }
+      mLogger.debug("Waiting for messages from client...");
+      try
+      {
+        mMessenger.receive(); // need to assign the return value to a IPacket object and process it
+      }
+      catch (SocketTimeoutException e)
+      {
+        mLogger.debug("Socket Timeout occurred. Resume waiting for a new packet from client...");
+      }
+      catch (IOException e)
+      {
+        mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
+        mLogger.error("Connection to remote host at " + new NetworkAddress(mSocket).toString() + " was dropped");
+        stop();
+      }
       
       // re-check if needs to shutdown
       shouldStop = isStopping();

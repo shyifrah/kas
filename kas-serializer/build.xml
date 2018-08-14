@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-comm" default="Main" basedir=".">
+<project name="kas-serializer" default="Main" basedir=".">
   
   <!-- directories -->
   <property name="src"     location="src"/>
@@ -30,9 +30,7 @@
       <exclude name="module-info.java"/>
       <classpath id="${ant.project.name}-ClassPath">
         <pathelement location="../kas-infra/lib/kas-infra.jar" />
-        <pathelement location="../kas-config/lib/kas-config.jar" />
-        <pathelement location="../kas-logging/lib/kas-logging.jar" />
-        <pathelement location="../kas-serializer/lib/kas-serializer.jar" />
+      	<pathelement location="../kas-config/lib/kas-config.jar" />
       </classpath>
     </javac>
   </target>

@@ -8,6 +8,7 @@ import com.kas.config.impl.ConfigTask;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.threads.ThreadPool;
+import com.kas.infra.config.IConfiguration;
 import com.kas.infra.config.IListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.config.IRegistrar;
@@ -267,6 +268,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * @param defaultValue The default value that will be returned if the configuration property does not exist
    * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
    * if the property does not exist.
+   * 
+   * @see com.kas.infra.config.IConfiguration#getStringProperty(String, String)
    */
   public String getStringProperty(String key, String defaultValue)
   {
@@ -280,6 +283,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * @param defaultValue The default value that will be returned if the configuration property does not exist
    * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
    * if the property does not exist.
+   * 
+   * @see com.kas.infra.config.IConfiguration#getIntProperty(String, int)
    */
   public int getIntProperty(String key, int defaultValue)
   {
@@ -293,6 +298,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * @param defaultValue The default value that will be returned if the configuration property does not exist
    * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
    * if the property does not exist.
+   * 
+   * @see com.kas.infra.config.IConfiguration#getLongProperty(String, long)
    */
   public long getLongProperty(String key, long defaultValue)
   {
@@ -306,10 +313,25 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * @param defaultValue The default value that will be returned if the configuration property does not exist
    * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
    * if the property does not exist.
+   * 
+   * @see com.kas.infra.config.IConfiguration#getBoolProperty(String, boolean)
    */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
     return mProperties.getBoolProperty(key, defaultValue);
+  }
+  
+  /**
+   * Get a subset of the {@link IConfiguration} object.
+   * 
+   * @param keyPrefix The prefix of the keys to include in the subset
+   * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
+   * 
+   * @see com.kas.infra.config.IConfiguration#getSubset(String)
+   */
+  public Properties getSubset(String keyPrefix)
+  {
+    return mProperties.getSubset(keyPrefix);
   }
   
   /**

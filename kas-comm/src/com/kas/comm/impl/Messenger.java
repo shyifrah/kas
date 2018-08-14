@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import com.kas.comm.IPacket;
-import com.kas.comm.IPacketFactory;
 import com.kas.comm.IMessenger;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.KasException;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -29,19 +29,10 @@ public class Messenger extends AKasObject implements IMessenger
   protected Socket mSocket;
   
   /**
-   * Output stream for writing objects
+   * Output and Input streams for writing and reading objects
    */
   protected ObjectOutputStream mOutputStream;
-  
-  /**
-   * Input stream for reading objects
-   */
   protected ObjectInputStream  mInputStream;
-  
-  /**
-   * Packet factory for packets creation
-   */
-  protected IPacketFactory mPacketFactory;
   
   /**
    * Host and port
@@ -59,38 +50,14 @@ public class Messenger extends AKasObject implements IMessenger
    * 
    * @throws IOException if I/O error occurs during streams creation
    */
-  Messenger(Socket socket, String host, int port, IPacketFactory factory) throws IOException
+  Messenger(Socket socket, String host, int port) throws IOException
   {
     mHost = host;
     mPort = port;
     mSocket = socket;
-    mPacketFactory = factory;
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
     mSocket.setSoTimeout(0);
-  }
-  
-  /**
-   * Messenger cleanup<br>
-   * <br>
-   * Flushing, closing streams and socket
-   * 
-   * @see com.kas.comm.IMessenger#cleanup()
-   */
-  public void cleanup()
-  {
-    sLogger.debug("Messenger::cleanup() - IN");
-    
-    try
-    {
-      mOutputStream.flush();
-      mOutputStream.close();
-      mInputStream.close();
-      mSocket.close();
-    }
-    catch (IOException e) {}
-    
-    sLogger.debug("Messenger::cleanup() - OUT");
   }
   
   /**
@@ -147,9 +114,18 @@ public class Messenger extends AKasObject implements IMessenger
   {
     sLogger.debug("Messenger::receive() - IN");
     
-    IPacket packet = null;
     mSocket.setSoTimeout(timeout);
-    packet = mPacketFactory.createFromStream(mInputStream);
+    
+    PacketHeader header = new PacketHeader(mInputStream);
+    IPacket packet = null;
+    try
+    {
+      packet = header.read(mInputStream);
+    }
+    catch (KasException e)
+    {
+      sLogger.warn("An error occurred while trying to read pack from input stream. Exception: ", e);
+    }
     
     sLogger.debug("Messenger::receive() - OUT");
     return packet;
@@ -193,18 +169,21 @@ public class Messenger extends AKasObject implements IMessenger
     return receive(timeout);
   }
   
-  /**
-   * Shutdown the Messenger's Input side.
-   * This is achieved by simply closing the socket's input stream.
-   */
-  public void shutdownInput()
-  {
-    try
-    {
-      mInputStream.close();
-    }
-    catch (Throwable e) {}
-  }
+//  /**
+//   * Shutdown the {@link Messenger}.<br>
+//   * <br>
+//   * After shutting it down, it can't be restarted.
+//   */
+//  public void shutdown()
+//  {
+//    try
+//    {
+//      mInputStream.close();
+//      mOutputStream.close();
+//      mSocket.close();
+//    }
+//    catch (Throwable e) {}
+//  }
   
   /**
    * Return the string representation of this Messenger's remote host

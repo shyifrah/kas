@@ -72,16 +72,5 @@ public class CliCommandFactory
 //        writeln("Error occurred while running QUERY command: " + e.getMessage());
 //      }
 //    }
-//    else
-//    if (cVerbHelp.equalsIgnoreCase(verb))
-//    {
-//      HelpCommand command = new HelpCommand(mConnection, cmdWords);
-//      command.run();
-//    }
-//    else
-//    {
-//      writeln("Unknown command verb: [" + verb + "]");
-//      writeln(" ");
-//    }
   }
 }

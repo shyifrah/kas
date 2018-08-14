@@ -10,12 +10,12 @@ import com.kas.infra.base.IObject;
  */
 public interface IMessenger extends IObject
 {
-  /**
-   * Perform messenger's cleanup:<br>
-   * <br>
-   * Flush streams, close streams, close the socket etc.
-   */
-  public abstract void cleanup();
+//  /**
+//   * Perform messenger's cleanup:<br>
+//   * <br>
+//   * Flush streams, close streams, close the socket etc.
+//   */
+//  public abstract void cleanup();
   
   /**
    * Sends a {@link IPacket} object.
@@ -73,9 +73,10 @@ public interface IMessenger extends IObject
    */
   public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
   
-  /**
-   * Shutdown the Messenger's Input side.
-   * This is achieved by simply closing the socket's input stream.
-   */
-  public abstract void shutdownInput();
+//  /**
+//   * Shutdown the {@link Messenger}.<br>
+//   * <br>
+//   * After shutting it down, it can't be restarted.
+//   */
+//  public abstract void shutdown();
 }

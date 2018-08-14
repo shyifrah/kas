@@ -2,9 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-config"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-serializer"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import com.kas.infra.config.IConfiguration;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
@@ -14,7 +13,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-public class Properties extends ConcurrentHashMap<Object, Object> implements IConfiguration
+public class Properties extends ConcurrentHashMap<Object, Object>
 {
   static public  final String cIncludeKey      = "kas.include";
   static private final long   serialVersionUID = 1L;
@@ -97,6 +96,8 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * @param key The name of the property
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
+   * 
+   * @see com.kas.infra.config.IConfiguration#getBoolProperty(String, boolean)
    */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
@@ -160,6 +161,8 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * @param key The name of the property
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
+   * 
+   * @see com.kas.infra.config.IConfiguration#getIntProperty(String, int)
    */
   public int getIntProperty(String key, int defaultValue)
   {
@@ -222,6 +225,8 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * @param key The name of the property
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
+   * 
+   * @see com.kas.infra.config.IConfiguration#getStringProperty(String, String)
    */
   public String getStringProperty(String key, String defaultValue)
   {
@@ -285,6 +290,8 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
    * @param key The name of the property
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
+   * 
+   * @see com.kas.infra.config.IConfiguration#getLongProperty(String, long)
    */
   public long getLongProperty(String key, long defaultValue)
   {
@@ -611,23 +618,26 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ICo
   /**
    * Return a subset of the entire {@link Properties} object.<br>
    * <br>
-   * All properties in the subset have a common prefix specified by {@code keyPrefix}.
+   * All properties in the subset have a common prefix specified by {@code keyPrefix}.<br>
+   * For a {@code null} or empty string, all contents are replicated.
    * 
    * @param keyPrefix The prefix of the keys to include in the subset
    * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
+   * 
+   * @see com.kas.infra.config.IConfiguration#getSubset(String)
    */
   public Properties getSubset(String keyPrefix)
   {
-    if (keyPrefix == null)
-      return null;
-    
     Properties subset = new Properties();
     subset.putAll(this);
-    for (Map.Entry<Object, Object> entry : super.entrySet())
+    if ((keyPrefix != null) && (keyPrefix.length() > 0))
     {
-      String key = (String)entry.getKey();
-      if (!key.startsWith(keyPrefix))
-        subset.remove(key);
+      for (Map.Entry<Object, Object> entry : entrySet())
+      {
+        String key = (String)entry.getKey();
+        if (!key.startsWith(keyPrefix))
+          subset.remove(key);
+      }
     }
     
     return subset;

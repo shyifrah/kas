@@ -1,6 +1,7 @@
 package com.kas.infra.config;
 
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.Properties;
 
 /**
  * A configuration object is one that you can query for various types of properties values
@@ -52,4 +53,12 @@ public interface IConfiguration extends IObject
    * @return the property's value
    */
   public abstract boolean getBoolProperty(String key, boolean defaultValue);
+  
+  /**
+   * Get a subset of the {@link IConfiguration} object.
+   * 
+   * @param keyPrefix The prefix of the keys to include in the subset
+   * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
+   */
+  public abstract Properties getSubset(String keyPrefix);
 }
