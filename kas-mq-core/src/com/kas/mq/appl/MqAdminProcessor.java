@@ -1,13 +1,11 @@
 package com.kas.mq.appl;
 
 import java.util.Scanner;
+import com.kas.infra.base.AKasObject;
 import com.kas.mq.appl.cli.CliCommandFactory;
 import com.kas.mq.appl.cli.ICliCommand;
-import com.kas.mq.client.AMqClient;
 import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
-import com.kas.mq.impl.MqQueue;
-import com.kas.mq.impl.MqMessage;
 import com.kas.mq.typedef.TokenDeque;
 
 /**
@@ -15,7 +13,7 @@ import com.kas.mq.typedef.TokenDeque;
  * 
  * @author Pippo
  */
-public class MqAdminProcessor extends AMqClient
+public class MqAdminProcessor extends AKasObject
 {
   private IClient mClientImpl = new MqClientImpl(); 
   
@@ -72,7 +70,7 @@ public class MqAdminProcessor extends AMqClient
     }
     
     String verb = cmdWords.peek();
-    ICliCommand command = CliCommandFactory.newCommand(cmdWords, this);
+    ICliCommand command = CliCommandFactory.newCommand(cmdWords, mClientImpl);
     if (command == null)
     {
       writeln("Unknown command verb: \"" + verb + "\". Type HELP to see available commands");
@@ -99,60 +97,6 @@ public class MqAdminProcessor extends AMqClient
     for (String word : a)
       q.offer(word.toUpperCase());
     return q;
-  }
-  
-  public void connect(String host, int port)
-  {
-    mClientImpl.connect(host, port);
-    writeln(mClientImpl.getResponse());
-    writeln(" ");
-  }
-
-  public void disconnect()
-  {
-    mClientImpl.disconnect();
-    writeln(mClientImpl.getResponse());
-    writeln(" ");
-  }
-
-  public boolean isConnected()
-  {
-    return mClientImpl.isConnected();
-  }
-  
-  public MqQueue open(String queue)
-  {
-    return mClientImpl.open(queue);
-  }
-
-  public void close()
-  {
-    mClientImpl.close();
-  }
-
-  public MqMessage createMessage()
-  {
-    return mClientImpl.createMessage();
-  }
-
-  public MqMessage get()
-  {
-    return mClientImpl.get();
-  }
-
-  public MqMessage getAndWait()
-  {
-    return mClientImpl.getAndWait();
-  }
-
-  public MqMessage getAndWaitWithTimeout(long timeout)
-  {
-    return mClientImpl.getAndWaitWithTimeout(timeout);
-  }
-
-  public void put(MqMessage message)
-  {
-    mClientImpl.put(message);
   }
   
   /**

@@ -95,15 +95,8 @@ public class ConnectCommand extends ACliCommand
     }
     
     mClient.connect(host, port);
-    if (mClient.isConnected())
-    {
-      mClient.setResponse("Successfully connected to host at " + host + ':' + port);
-    }
-    else
-    {
-      mClient.setResponse("Failed to connect to " + host + ':' + port + ". See log file for further information");
-    }
-    
+    writeln(mClient.getResponse());
+    writeln(" ");
     return false;
   }
 }

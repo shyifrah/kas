@@ -1,5 +1,6 @@
 package com.kas.mq.client;
 
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqQueue;
@@ -29,6 +30,13 @@ public interface IClient extends IObject
    * @return {@code true} if the client is connected to a remote host, {@code false} otherwise
    */
   public abstract boolean isConnected();
+  
+  /**
+   * Get the {@link NetworkAddress} for this {@link IClient} object
+   * 
+   * @return the {@link NetworkAddress} for this {@link IClient} object
+   */
+  public abstract NetworkAddress getNetworkAddress();
   
   /**
    * Open the specified queue.

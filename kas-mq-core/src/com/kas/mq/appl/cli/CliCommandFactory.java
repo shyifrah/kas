@@ -39,6 +39,12 @@ public class CliCommandFactory
       return new ConnectCommand(cmdWords, client);
     }
     
+    // Is it a DISCONNECT command
+    if (verb.equals(DisconnectCommand.cCommandVerb))
+    {
+      return new DisconnectCommand(cmdWords, client);
+    }
+    
     // Unknown command
     return null;
     

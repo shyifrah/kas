@@ -75,19 +75,19 @@ public class ClientHandler extends AStoppable implements Runnable
     int timeout = mController.getConfig().getConnSocketTimeout();
     while (!shouldStop)
     {
-      try
-      {
-        IPacket packet = mMessenger.receive(timeout);
-      }
-      catch (SocketTimeoutException e)
-      {
-        mLogger.debug("Socket Timeout occurred. Resume waiting for a new packet from client...");
-      }
-      catch (IOException e)
-      {
-        mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
-        mLogger.error("Connection to remote host at " + mSocket.getInetAddress().getHostName() + " was dropped");
-      }
+//      try
+//      {
+//        IPacket packet = mMessenger.receive(timeout);
+//      }
+//      catch (SocketTimeoutException e)
+//      {
+//        mLogger.debug("Socket Timeout occurred. Resume waiting for a new packet from client...");
+//      }
+//      catch (IOException e)
+//      {
+//        mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
+//        mLogger.error("Connection to remote host at " + mSocket.getInetAddress().getHostName() + " was dropped");
+//      }
       
       // re-check if needs to shutdown
       shouldStop = isStopping();

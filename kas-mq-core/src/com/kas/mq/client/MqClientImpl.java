@@ -2,6 +2,7 @@ package com.kas.mq.client;
 
 import java.io.IOException;
 import java.net.Socket;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.ThrowableFormatter;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -53,7 +54,7 @@ public class MqClientImpl extends AMqClient
     try
     {
       mSocket = new Socket(host, port);
-      String message = "Connection established with host at [" + host + ':' + port + "]";
+      String message = "Connection established with host at " + new NetworkAddress(mSocket).toString();
       mLogger.info(message);
       setResponse(message);
     }
@@ -81,25 +82,24 @@ public class MqClientImpl extends AMqClient
    */
   public void disconnect()
   {
-    String message;
     if (!isConnected())
     {
-      message = "Not connected";
+      setResponse("Not connected");
     }
     else
     {
+      NetworkAddress addr = getNetworkAddress();
       try
       {
         mSocket.close();
       }
       catch (IOException e)
       {
-        mLogger.warn("Exception occurred while trying to close socket [" + mSocket.toString() + "]", e);
+        mLogger.warn("Exception occurred while trying to close socket " + addr.toString(), e);
       }
       mSocket = new Socket();
-      message = "Connection with remote host terminated";
+      setResponse("Connection terminated with " + addr.toString());
     }
-    setResponse(message);
   }
 
   /**
@@ -114,6 +114,19 @@ public class MqClientImpl extends AMqClient
   public boolean isConnected()
   {
     return mSocket == null ? false : mSocket.isConnected() && !mSocket.isClosed();
+  }
+  
+  /**
+   * Get the {@link NetworkAddress} for this {@link IClient} object
+   * 
+   * @return the {@link NetworkAddress} for this {@link IClient} object. If the {@link Socket}
+   * is {@code null}, a {@code null} value is returned
+   * 
+   * @see com.kas.mq.client.IClient#getNetworkAddress()
+   */
+  public NetworkAddress getNetworkAddress()
+  {
+    return isConnected() ? new NetworkAddress(mSocket) : null;
   }
   
   /**

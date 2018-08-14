@@ -39,7 +39,7 @@ public class DisconnectCommand extends ACliCommand
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Disconnect current active connection. If a connection is not active, just ignore the command.");
+    writeln("     Disconnect current active connection. If a connection is not active, the command is simple ignored.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
@@ -49,10 +49,10 @@ public class DisconnectCommand extends ACliCommand
   }
   
   /**
-   * A connect command.<br>
+   * A disconnect command.<br>
    * <br>
-   * If a connection is not active, display a message showing no actual connection.<br>
-   * If a connection is active, close it.
+   * If a connection is active, close it.<br>
+   * If a connection is not active, inform there's no actual connection.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -64,47 +64,9 @@ public class DisconnectCommand extends ACliCommand
       return false;
     }
     
-    String response;
-    if (!mClient.isConnected())
-    {
-      mClient.setResponse("Not connected");
-    }
-    else
-    {
-      mClient.disconnect();
-      response = 
-      mClient.setResponse("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP DISCONNECT to see available command options");
-    }
-    
-    return false;
-    
-    String host = mCommandArgs.poll();
-    String sport = mCommandArgs.poll();
-    if (sport == null)
-      sport = "14560";
-    
-    int port = -1;
-    try
-    {
-      port = Integer.valueOf(sport);
-    }
-    catch (NumberFormatException e) {}
-    if (port == -1)
-    {
-      mClient.setResponse("Connect failed. Invalid port number \"" + sport + "\"");
-      return false;
-    }
-    
-    mClient.connect(host, port);
-    if (mClient.isConnected())
-    {
-      mClient.setResponse("Successfully connected to host at " + host + ':' + port);
-    }
-    else
-    {
-      mClient.setResponse("Failed to connect to " + host + ':' + port + ". See log file for further information");
-    }
-    
+    mClient.disconnect();
+    writeln(mClient.getResponse());
+    writeln(" ");
     return false;
   }
 }
