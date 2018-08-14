@@ -37,8 +37,8 @@ public class Messenger extends AKasObject implements IMessenger
   /**
    * Host and port
    */
-  protected String   mHost;
-  protected int      mPort;
+  protected String mHost;
+  protected int    mPort;
   
   /**
    * Constructs a {@link Messenger} object using the specified socket, host and port.
@@ -135,7 +135,6 @@ public class Messenger extends AKasObject implements IMessenger
    * Sends a {@link IPacket} and wait indefinitely for a reply.
    * 
    * @param request A request packet
-   * 
    * @return a response packet
    * 
    * @throws IOException if an I/O error occurs
@@ -154,7 +153,6 @@ public class Messenger extends AKasObject implements IMessenger
    * 
    * @param request A request packet
    * @param timeout Milliseconds to wait for the reply
-   * 
    * @return response packet or null if timeout expires
    * 
    * @throws IOException if an I/O error occurs
@@ -168,22 +166,6 @@ public class Messenger extends AKasObject implements IMessenger
     send(request);
     return receive(timeout);
   }
-  
-//  /**
-//   * Shutdown the {@link Messenger}.<br>
-//   * <br>
-//   * After shutting it down, it can't be restarted.
-//   */
-//  public void shutdown()
-//  {
-//    try
-//    {
-//      mInputStream.close();
-//      mOutputStream.close();
-//      mSocket.close();
-//    }
-//    catch (Throwable e) {}
-//  }
   
   /**
    * Return the string representation of this Messenger's remote host

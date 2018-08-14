@@ -3,13 +3,12 @@ package com.kas.comm.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.KasException;
-import com.kas.serializer.SerializerConfiguration;
+import com.kas.serializer.Deserializer;
 import com.kas.comm.IPacket;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 
 /**
  * A packet header is the beginning of a message transmitted, prefixing the actual packet.
@@ -99,39 +98,14 @@ public class PacketHeader extends AKasObject implements ISerializable
    */
   public IPacket read(ObjectInputStream istream) throws KasException
   {
-    if (!mVerified)
-      throw new KasException("Packet header not verified");
+    if (!mVerified) verify();
     
-    String className = SerializerConfiguration.getInstance().getClassName(mClassId);
-    Object object;
-    Class<?> cls;
-    try
-    {
-      cls = Class.forName(className);
-      Constructor<?> ctor = cls.getConstructor(ObjectInputStream.class);
-      
-      boolean accessible = ctor.isAccessible();
-      ctor.setAccessible(true);
-      object = ctor.newInstance(istream);
-      ctor.setAccessible(accessible);
-    }
-    catch (ClassNotFoundException e)
-    {
-      throw new KasException("Failed to find class " + className, e);
-    }
-    catch (NoSuchMethodException | SecurityException e)
-    {
-      throw new KasException("Failed to find or access constructor " + className + "(ObjectInputStream)", e);
-    }
-    catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-    {
-      throw new KasException("Failed to instantiate " + className, e);
-    }
+    IObject iObject = Deserializer.deserialize(mClassId, istream);
     
     IPacket iPacket = null;
     try
     {
-      iPacket = (IPacket)object;
+      iPacket = (IPacket)iObject;
     }
     catch (ClassCastException e)
     {
@@ -167,7 +141,7 @@ public class PacketHeader extends AKasObject implements ISerializable
    * Verification is done by comparing the eye-catcher to the value "KAS" and that the class ID
    * is larger than 0 (the initial value).
    * 
-   * @throws {@link KasException} if this header is invalid
+   * @throws KasException if this header is invalid
    */
   public void verify() throws KasException
   {

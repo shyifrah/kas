@@ -109,8 +109,8 @@ public class MqMessage extends AKasObject
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
     ostream.writeInt(mPriority);
-    
     ostream.reset();
+    
     byte [] ba = mMessageId.toByteArray();
     ostream.write(ba);
     ostream.reset();
