@@ -21,56 +21,27 @@ public class CliCommandFactory
   {
     String verb = cmdWords.poll();
     
-    // Is it a HELP command
-    if (verb.equals(HelpCommand.cCommandVerb))
+    if (HelpCommand.sCommandVerbs.contains(verb))
     {
       return new HelpCommand(cmdWords, client);
     }
     
-    // Is it a EXIT command
-    if (verb.equals(ExitCommand.cCommandVerb))
+    if (ExitCommand.sCommandVerbs.contains(verb))
     {
       return new ExitCommand(cmdWords, client);
     }
     
-    // Is it a CONNECT command
-    if (verb.equals(ConnectCommand.cCommandVerb))
+    if (ConnectCommand.sCommandVerbs.contains(verb))
     {
       return new ConnectCommand(cmdWords, client);
     }
     
-    // Is it a DISCONNECT command
-    if (verb.equals(DisconnectCommand.cCommandVerb))
+    if (DisconnectCommand.sCommandVerbs.contains(verb))
     {
-      return new DisconnectCommand(cmdWords, client);
+      return new ConnectCommand(cmdWords, client);
     }
     
     // Unknown command
     return null;
-    
-//    if (cVerbDefine.equalsIgnoreCase(verb))
-//    {
-//      DefineCommand command = new DefineCommand(mConnection, cmdWords);
-//      command.run();
-//    }
-//    else
-//    if (cVerbDelete.equalsIgnoreCase(verb))
-//    {
-//      DeleteCommand command = new DeleteCommand(mConnection, cmdWords);
-//      command.run();
-//    }
-//    else
-//    if (cVerbQuery.equalsIgnoreCase(verb))
-//    {
-//      try
-//      {
-//        QueryCommand command = new QueryCommand(mConnection, cmdWords);
-//        command.run();
-//      }
-//      catch (IllegalArgumentException e)
-//      {
-//        writeln("Error occurred while running QUERY command: " + e.getMessage());
-//      }
-//    }
   }
 }

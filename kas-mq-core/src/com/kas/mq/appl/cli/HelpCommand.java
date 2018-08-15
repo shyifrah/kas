@@ -1,5 +1,7 @@
 package com.kas.mq.appl.cli;
 
+import java.util.Set;
+import java.util.TreeSet;
 import com.kas.mq.client.IClient;
 import com.kas.mq.typedef.TokenDeque;
 
@@ -10,7 +12,11 @@ import com.kas.mq.typedef.TokenDeque;
  */
 public class HelpCommand extends ACliCommand
 {
-  static public final String cCommandVerb = "HELP";
+  static public final Set<String> sCommandVerbs = new TreeSet<String>();
+  static
+  {
+    sCommandVerbs.add("HELP");
+  }
   
   /**
    * Construct a {@link HelpCommand} passing the command arguments and the client object

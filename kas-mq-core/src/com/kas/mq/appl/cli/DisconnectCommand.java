@@ -1,5 +1,7 @@
 package com.kas.mq.appl.cli;
 
+import java.util.Set;
+import java.util.TreeSet;
 import com.kas.mq.client.IClient;
 import com.kas.mq.typedef.TokenDeque;
 
@@ -10,7 +12,12 @@ import com.kas.mq.typedef.TokenDeque;
  */
 public class DisconnectCommand extends ACliCommand
 {
-  static public final String cCommandVerb = "DISCONNECT";
+  static public final Set<String> sCommandVerbs = new TreeSet<String>();
+  static
+  {
+    sCommandVerbs.add("DISCONNECT");
+    sCommandVerbs.add("DISC");
+  }
   
   /**
    * Construct a {@link DisconnectCommand} passing the command arguments and the client object
@@ -35,7 +42,7 @@ public class DisconnectCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- DISCONNECT ---><");
+    writeln("     >>--- DISCONNECT|DISC ---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -70,3 +77,4 @@ public class DisconnectCommand extends ACliCommand
     return false;
   }
 }
+

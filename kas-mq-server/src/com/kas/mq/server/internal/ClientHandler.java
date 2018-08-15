@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
+import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AStoppable;
@@ -69,6 +70,8 @@ public class ClientHandler extends AStoppable implements Runnable
    */
   public void run()
   {
+    mLogger.debug("ClientHandler::run() - IN");
+    
     boolean shouldStop = isStopping();
     
     while (!shouldStop)
@@ -76,7 +79,12 @@ public class ClientHandler extends AStoppable implements Runnable
       mLogger.debug("Waiting for messages from client...");
       try
       {
-        mMessenger.receive(); // need to assign the return value to a IPacket object and process it
+        IPacket packet = mMessenger.receive();
+        if (packet != null)
+        {
+          mLogger.debug("Packet received: " + packet.toPrintableString(0));
+          process(packet);
+        }
       }
       catch (SocketTimeoutException e)
       {
@@ -92,6 +100,17 @@ public class ClientHandler extends AStoppable implements Runnable
       // re-check if needs to shutdown
       shouldStop = isStopping();
     }
+    
+    mLogger.debug("ClientHandler::run() - OUT");
+  }
+  
+  /**
+   * Process received packet
+   * 
+   * @param packet The received packet
+   */
+  private void process(IPacket packet)
+  {
   }
   
   /**

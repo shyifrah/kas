@@ -1,5 +1,7 @@
 package com.kas.mq.appl.cli;
 
+import java.util.Set;
+import java.util.TreeSet;
 import com.kas.mq.client.IClient;
 import com.kas.mq.typedef.TokenDeque;
 
@@ -10,7 +12,12 @@ import com.kas.mq.typedef.TokenDeque;
  */
 public class ConnectCommand extends ACliCommand
 {
-  static public final String cCommandVerb = "CONNECT";
+  static public final Set<String> sCommandVerbs = new TreeSet<String>();
+  static
+  {
+    sCommandVerbs.add("CONNECT");
+    sCommandVerbs.add("CONN");
+  }
   
   /**
    * Construct a {@link ConnectCommand} passing the command arguments and the client object
@@ -35,9 +42,9 @@ public class ConnectCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- CONNECT ---+--- host ---+---+------------+---><");
-    writeln("                      |            |   |            |");
-    writeln("                      +--- ip -----+   +--- port ---+");
+    writeln("     >>--- CONNECT|CONN ---+--- host ---+---+------------+---><");
+    writeln("                           |            |   |            |");
+    writeln("                           +--- ip -----+   +--- port ---+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -51,7 +58,7 @@ public class ConnectCommand extends ACliCommand
     writeln("          KAS/MQ Admin> CONNECT TLVHOSTA");
     writeln(" ");
     writeln("     Connect to host with IP address of 101.23.2.2 on default port number:");
-    writeln("          KAS/MQ Admin> CONNECT 101.23.2.2");
+    writeln("          KAS/MQ Admin> CONN 101.23.2.2");
     writeln(" ");
     writeln("     Connect to host name LONDON1 on port number 24560");
     writeln("          KAS/MQ Admin> CONNECT LONDON1 24560");
@@ -88,6 +95,7 @@ public class ConnectCommand extends ACliCommand
       port = Integer.valueOf(sport);
     }
     catch (NumberFormatException e) {}
+    
     if (port == -1)
     {
       mClient.setResponse("Connect failed. Invalid port number \"" + sport + "\"");

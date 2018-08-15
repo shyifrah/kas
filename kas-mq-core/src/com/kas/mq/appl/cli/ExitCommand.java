@@ -1,5 +1,7 @@
 package com.kas.mq.appl.cli;
 
+import java.util.Set;
+import java.util.TreeSet;
 import com.kas.mq.client.IClient;
 import com.kas.mq.typedef.TokenDeque;
 
@@ -10,7 +12,13 @@ import com.kas.mq.typedef.TokenDeque;
  */
 public class ExitCommand extends ACliCommand
 {
-  static public final String cCommandVerb = "EXIT";
+  static public final Set<String> sCommandVerbs = new TreeSet<String>();
+  static
+  {
+    sCommandVerbs.add("EXIT");
+    sCommandVerbs.add("TERM");
+    sCommandVerbs.add("QUIT");
+  }
   
   /**
    * Construct an {@link ExitCommand} passing the command arguments and the client object
@@ -41,7 +49,7 @@ public class ExitCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- EXIT ---><");
+    writeln("     >>--- EXIT|TERM|QUIT ---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
