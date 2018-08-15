@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.KasException;
 import com.kas.serializer.Deserializer;
+import com.kas.serializer.EClassId;
 import com.kas.comm.IPacket;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IObject;
@@ -27,7 +28,7 @@ public class PacketHeader extends AKasObject implements ISerializable
   /**
    * The packet's class ID
    */
-  private int mClassId;
+  private EClassId mClassId;
   
   /**
    * An indicator that shows this packet header was verified
@@ -39,7 +40,7 @@ public class PacketHeader extends AKasObject implements ISerializable
    *  
    * @param id The class ID of the packet
    */
-  public PacketHeader(int id)
+  public PacketHeader(EClassId id)
   {
     mEyeCatcher = cEyeCatcher;
     mClassId = id;
@@ -57,7 +58,8 @@ public class PacketHeader extends AKasObject implements ISerializable
     try
     {
       mEyeCatcher = (String)istream.readObject();
-      mClassId = istream.readInt();
+      int id = istream.readInt();
+      mClassId = EClassId.fromInt(id);
     }
     catch (IOException e)
     {
@@ -80,7 +82,7 @@ public class PacketHeader extends AKasObject implements ISerializable
   {
     ostream.writeObject(mEyeCatcher);
     ostream.reset();
-    ostream.writeInt(mClassId);
+    ostream.writeInt(mClassId.ordinal());
     ostream.reset();
   }
   
@@ -100,7 +102,7 @@ public class PacketHeader extends AKasObject implements ISerializable
   {
     if (!mVerified) verify();
     
-    IObject iObject = Deserializer.deserialize(mClassId, istream);
+    IObject iObject = Deserializer.deserialize(mClassId.ordinal(), istream);
     
     IPacket iPacket = null;
     try
@@ -130,7 +132,7 @@ public class PacketHeader extends AKasObject implements ISerializable
    *  
    * @return the class ID
    */
-  public int getClassId()
+  public EClassId getClassId()
   {
     return mClassId;
   }
@@ -138,8 +140,7 @@ public class PacketHeader extends AKasObject implements ISerializable
   /**
    * Verify this {@link PacketHeader} is a valid header.<br>
    * <br>
-   * Verification is done by comparing the eye-catcher to the value "KAS" and that the class ID
-   * is larger than 0 (the initial value).
+   * Verification is done by comparing the eye-catcher to the value "KAS"
    * 
    * @throws KasException if this header is invalid
    */
@@ -148,11 +149,6 @@ public class PacketHeader extends AKasObject implements ISerializable
     if (!mEyeCatcher.equals(cEyeCatcher))
     {
       throw new KasException("Packet header failed verification. EyeCatcher=[" + mEyeCatcher + "]");
-    }
-    
-    if (mClassId <= 0)
-    {
-      throw new KasException("Packet header failed verification. Invalid class ID=[" + mClassId + "]");
     }
   }
   

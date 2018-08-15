@@ -1,10 +1,19 @@
 package com.kas.mq.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import com.kas.comm.IPacket;
+import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.mq.typedef.MessageDeque;
 
 /**
@@ -12,8 +21,13 @@ import com.kas.mq.typedef.MessageDeque;
  * 
  * @author Pippo
  */
-public class MqQueue extends AKasObject implements IInitializable
+public class MqQueue extends AKasObject
 {
+  /**
+   * Logger
+   */
+  private ILogger mLogger;
+  
   /**
    * Name of this message queue
    */
@@ -44,6 +58,7 @@ public class MqQueue extends AKasObject implements IInitializable
    */
   public MqQueue(String name)
   {
+    mLogger     = LoggerFactory.getLogger(this.getClass());
     mName       = name;
     mQueueId    = UniqueId.generate();
     mQueueArray = new MessageDeque[ MqMessage.cMaximumPriority + 1 ];
@@ -85,23 +100,195 @@ public class MqQueue extends AKasObject implements IInitializable
   }
   
   /**
-   * Initialize the {@link MqQueue} object
+   * Restore the {@link MqQueue} contents from the file system
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise
+   * @return {@code true} if queue contents restored successfully, {@code false} otherwise
    */
-  public boolean init()
+  public boolean restore()
   {
-    return false;
+    mLogger.debug("MqQueue::restore() - IN");
+    boolean success = true;
+    
+    String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
+    mBackupFile = new File(fullFileName);
+    mLogger.debug("MqQueue::restore() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
+    
+    if (!mBackupFile.exists())
+    {
+      success = FileUtils.createFile(fullFileName);
+      mLogger.debug("MqQueue::restore() - Backup file doesn't exist. Creating it... " + success);
+    }
+    else if (!mBackupFile.canRead())
+    {
+      mLogger.warn("Cannot read contents of backup file " + fullFileName);
+      success = false;
+    }
+    else if (!mBackupFile.isFile())
+    {
+      mLogger.warn("Backup file " + fullFileName + " doesn't designate a regular file");
+      success = false;
+    }
+    else
+    {
+      FileInputStream fis = null;
+      ObjectInputStream istream = null;
+      try
+      {
+        boolean eof = false;
+        boolean err = false;
+        
+        fis = new FileInputStream(mBackupFile);
+        istream = new ObjectInputStream(fis);
+        
+        while ((!eof) && (!err))
+        {
+          try
+          {
+            PacketHeader header = new PacketHeader(istream);
+            IPacket packet = header.read(istream);
+            MqMessage message = (MqMessage)packet;
+            mLogger.diag("MqQueue::restore() - Header="  + header.toPrintableString());
+            mLogger.diag("MqQueue::restore() - Message=" + message.toPrintableString());
+            
+            put(message);
+          }
+          catch (IOException e)
+          {
+            eof = true;
+          }
+          catch (Throwable e)
+          {
+            mLogger.warn("Exception caught while trying to restore queue " + mName + " contents. Exception: ", e);
+            err = true;
+            success = false;
+          }
+        }
+      }
+      catch (IOException e)
+      {
+        mLogger.warn("Exception caught while trying to open queue " + mName + " backup file. Exception: ", e);
+        success = false;
+      }
+      finally
+      {
+        try
+        {
+          if (fis != null) fis.close();
+          if (istream != null) istream.close();
+        }
+        catch (Throwable e) {}
+      }
+      
+      if (success)
+      {
+        FileUtils.deleteFile(mBackupFile.getAbsolutePath());
+        mLogger.info("Queue " + mName + " contents successfully restored; Total read messages [" + size() + "]");
+      }
+    }
+    
+    mLogger.debug("MqQueue::restore() - OUT, Returns=" + Boolean.toString(success));
+    return success;
   }
 
   /**
-   * Terminate the {@link MqQueue} object
+   * Backup the {@link MqQueue} contents to file system
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise
+   * @return {@code true} if completed writing all queue contents successfully, {@code false} otherwise
    */
-  public boolean term()
+  public boolean backup()
   {
-    return false;
+    mLogger.debug("MqQueue::backup() - IN, name=[" + mName + "]");
+    boolean success = true;
+    
+    String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
+    mBackupFile = new File(fullFileName);
+    mLogger.debug("MqQueue::backup() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
+    
+    if (mBackupFile.exists())
+    {
+      success = FileUtils.deleteFile(fullFileName);
+      mLogger.debug("MqQueue::restore() - Backup file already exists. Deleting it... " + Boolean.toString(success));
+    }
+    
+    if (success && (!mBackupFile.exists()))
+    {
+      success = FileUtils.createFile(fullFileName);
+      mLogger.debug("MqQueue::restore() - Backup file doesn't exist. Creating it... " + Boolean.toString(success));
+    }
+    
+    if (success && (!mBackupFile.canWrite()))
+    {
+      mLogger.warn("Cannot write contents to backup file [" + fullFileName + "], file is not writable...");
+      success = false;
+    }
+    
+    if (success && (!mBackupFile.isFile()))
+    {
+      mLogger.warn("Backup file " + fullFileName + " doesn't designate a regular file");
+      success = false;
+    }
+
+    if (success)
+    {
+      // save all messages to file
+      int msgs = 0;
+      FileOutputStream fos = null;
+      ObjectOutputStream ostream = null;
+      
+      try
+      {
+        fos = new FileOutputStream(mBackupFile);
+        ostream = new ObjectOutputStream(fos);
+        
+        try
+        {
+          for (int i = 0; i < mQueueArray.length; ++i)
+          {
+            MessageDeque msgDeq = mQueueArray[i];
+            while (!msgDeq.isEmpty())
+            {
+              MqMessage message = msgDeq.poll();
+              
+              PacketHeader header = message.createHeader();
+              header.serialize(ostream);
+              message.serialize(ostream);
+              mLogger.diag("MqQueue::backup() - Header="  + header.toPrintableString());
+              mLogger.diag("MqQueue::backup() - Message=" + message.toPrintableString());
+              
+              ++msgs;
+            }
+          }
+        }
+        catch (Throwable e)
+        {
+          mLogger.warn("Exception caught while trying to write to queue " + mName + " backup file. Exception: ", e);
+          success = false;
+        }
+      }
+      catch (IOException e)
+      {
+        mLogger.warn("Exception caught while trying to open queue " + mName + " backup file. Exception: ", e);
+        success = false;
+      }
+      
+      // cleanup
+      try
+      {
+        ostream.flush();
+        ostream.close();
+        fos.flush();
+        fos.close();
+      }
+      catch (Throwable e) {}
+      
+      if (success)
+      {
+        mLogger.info("Total messages saved to queue " + mName + " backup file: " + msgs);
+      }
+    }
+    
+    mLogger.debug("MqQueue::backup() - OUT, Returns=" + Boolean.toString(success));
+    return success;
   }
   
   /**

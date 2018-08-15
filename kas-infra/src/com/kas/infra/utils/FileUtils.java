@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -96,5 +99,44 @@ public class FileUtils
     catch (Throwable e) {}
     
     return exists;
+  }
+  
+  /**
+   * Create a file.
+   * 
+   * @param name The fully-pathed file name
+   * @return {@code true} if file created successfully, {@code false} otherwise
+   */
+  static public boolean createFile(String name)
+  {
+    boolean success = false;
+    File file = new File(name);
+    try
+    {
+      success = file.createNewFile();
+    }
+    catch (IOException e) {}
+    return success;
+  }
+  
+  /**
+   * Delete a file.
+   * 
+   * @param name The fully-pathed file name
+   * @return {@code true} if file created successfully, {@code false} otherwise
+   */
+  static public boolean deleteFile(String name)
+  {
+    boolean success = true;
+    try
+    {
+      Path path = Paths.get(name);
+      Files.delete(path);
+    }
+    catch (IOException e)
+    {
+      success = false;
+    }
+    return success;
   }
 }

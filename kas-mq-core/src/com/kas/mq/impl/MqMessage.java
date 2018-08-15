@@ -3,8 +3,11 @@ package com.kas.mq.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import com.kas.comm.IPacket;
+import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.serializer.EClassId;
 
 /**
  * A KAS/MQ base message.<br>
@@ -14,7 +17,7 @@ import com.kas.infra.base.UniqueId;
  * 
  * @author Pippo
  */
-public class MqMessage extends AKasObject
+public class MqMessage extends AKasObject implements IPacket
 {
   public static final int cMinimumPriority = 0;
   public static final int cMaximumPriority = 9;
@@ -100,11 +103,25 @@ public class MqMessage extends AKasObject
   }
   
   /**
+   * Create the {@link MqMessage} to the specified {@link ObjectOutputStream}
+   * 
+   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
+   * 
+   * @throws IOException if an I/O error occurs
+   */
+  public PacketHeader createHeader()
+  {
+    return new PacketHeader(EClassId.cClassMqMessage);
+  }
+  
+  /**
    * Serialize the {@link MqMessage} to the specified {@link ObjectOutputStream}
    * 
    * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
    * 
    * @throws IOException if an I/O error occurs
+   * 
+   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {

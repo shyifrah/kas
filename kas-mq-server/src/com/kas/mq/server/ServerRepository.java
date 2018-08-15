@@ -12,12 +12,33 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqQueue;
 
+/**
+ * The server repository is the class that manages queues
+ * 
+ * @author Pippo
+ */
 public class ServerRepository extends AKasObject implements IInitializable
 {
+  /**
+   * Logger
+   */
   private ILogger mLogger;
+  
+  /**
+   * KAS/MQ configuration
+   */
   private MqConfiguration mConfig;
+  
+  /**
+   * A map of all defined queues
+   */
   private Map<String, MqQueue> mQueueMap;
   
+  /**
+   * Construct the server repository object.
+   * 
+   * @param config The {@link MqConfiguration}
+   */
   ServerRepository(MqConfiguration config)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
@@ -25,6 +46,12 @@ public class ServerRepository extends AKasObject implements IInitializable
     mQueueMap = new ConcurrentHashMap<String, MqQueue>();
   }
   
+  /**
+   * Create a {@link MqQueue} object with the specified {@code name}
+   * 
+   * @param name The name of the queue
+   * @return the {@link MqQueue} object created
+   */
   private MqQueue createQueue(String name)
   {
     mLogger.debug("ServerRepository::create() - IN");
@@ -37,18 +64,37 @@ public class ServerRepository extends AKasObject implements IInitializable
     return queue;
   }
   
+  /**
+   * Get or Create a {@link MqQueue} object with the specified {@code name}.<br>
+   * <br>
+   * First we try retrieveing the queue from the map. If it doesn't exist there, we create it.
+   * 
+   * @param name The name of the queue
+   * @return the {@link MqQueue} object created or retrieved
+   */
   private MqQueue getOrCreateQueue(String name)
   {
-    if (name == null)
-      return null;
+    mLogger.debug("ServerRepository::createOrCreateQueue() - IN");
+    MqQueue queue = null;
     
-    MqQueue queue = mQueueMap.get(name);
-    if (queue == null)
-      queue = createQueue(name);
+    if (name != null)
+    {
+      queue = mQueueMap.get(name);
+      if (queue == null)
+        queue = createQueue(name);
+    }
     
+    mLogger.debug("ServerRepository::createOrCreateQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
 
+  /**
+   * Initialize the server repository
+   * 
+   * @return {@code true} if initialization completed successfully, {@code false} otherwise
+   * 
+   * @see com.kas.infra.base.IInitializable#init()
+   */
   public boolean init()
   {
     mLogger.debug("ServerRepository::init() - IN");
@@ -84,7 +130,8 @@ public class ServerRepository extends AKasObject implements IInitializable
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
           mLogger.trace("ServerRepository::init() - Restoring contents of queue [" + qName + ']');
-          createQueue(qName);
+          MqQueue q = createQueue(qName);
+          q.restore();
         }
       }
       
@@ -96,6 +143,13 @@ public class ServerRepository extends AKasObject implements IInitializable
     return success;
   }
   
+  /**
+   * Terminate the server repository
+   * 
+   * @return {@code true} if termination completed successfully, {@code false} otherwise
+   * 
+   * @see com.kas.infra.base.IInitializable#term()
+   */
   public boolean term()
   {
     mLogger.debug("ServerRepository::term() - IN");
@@ -104,15 +158,29 @@ public class ServerRepository extends AKasObject implements IInitializable
     {
       String qname = queue.getName();
       mLogger.debug("ServerRepository::term() - Writing queue contents. Queue=[" + qname + "]; Messages=[" + queue.size() + "]");
-      queue.term();
+      boolean success = queue.backup();
+      mLogger.debug("ServerRepository::term() - Writing queue contents completed with success: " + success);
     }
     
     mLogger.debug("ServerRepository::term() - OUT");
     return true;
   }
 
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
-    return null;
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  Queue Map=(").append(StringUtils.asPrintableString(mQueueMap, level+2)).append(")\n");
+    sb.append(pad).append(")\n");
+    return sb.toString();
   }
 }

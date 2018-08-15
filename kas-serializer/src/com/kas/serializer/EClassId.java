@@ -21,7 +21,20 @@ public enum EClassId implements IObject
   cClassMqMessage,
  
   ;
+  
+  static final private EClassId [] cValues = EClassId.values();
  
+  /**
+   * Get the enum value by its ordinal.
+   * 
+   * @param id The ordinal of the enum
+   * @return the enum value
+   */
+  static public EClassId fromInt(int id)
+  {
+    return cValues[id];
+  }
+  
   /**
    * Get the enum detailed string representation. For {@link ELogLevel} this is the same as calling
    * {@link #toString()} method.
