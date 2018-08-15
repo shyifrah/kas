@@ -2,6 +2,7 @@ package com.kas.mq.impl;
 
 import java.io.File;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.mq.typedef.MessageDeque;
@@ -11,7 +12,7 @@ import com.kas.mq.typedef.MessageDeque;
  * 
  * @author Pippo
  */
-public class MqQueue extends AKasObject
+public class MqQueue extends AKasObject implements IInitializable
 {
   /**
    * Name of this message queue
@@ -48,6 +49,59 @@ public class MqQueue extends AKasObject
     mQueueArray = new MessageDeque[ MqMessage.cMaximumPriority + 1 ];
     for (int i = 0; i <= MqMessage.cMaximumPriority; ++i)
       mQueueArray[i] = new MessageDeque();
+  }
+  
+  /**
+   * Get queue name
+   * 
+   * @return queue name
+   */
+  public String getName()
+  {
+    return mName;
+  }
+  
+  /**
+   * Get queue ID
+   * 
+   * @return queue ID
+   */
+  public UniqueId getId()
+  {
+    return mQueueId;
+  }
+  
+  /**
+   * Get queue size
+   * 
+   * @return the number of messages in all priority queues
+   */
+  public int size()
+  {
+    int sum = 0;
+    for (int i = 0; i < mQueueArray.length; ++i)
+      sum += mQueueArray[i].size();
+    return sum;
+  }
+  
+  /**
+   * Initialize the {@link MqQueue} object
+   * 
+   * @return {@code true} if initialization completed successfully, {@code false} otherwise
+   */
+  public boolean init()
+  {
+    return false;
+  }
+
+  /**
+   * Terminate the {@link MqQueue} object
+   * 
+   * @return {@code true} if termination completed successfully, {@code false} otherwise
+   */
+  public boolean term()
+  {
+    return false;
   }
   
   /**
