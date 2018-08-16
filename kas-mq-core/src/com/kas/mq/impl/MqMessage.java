@@ -8,6 +8,7 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.mq.internal.ERequestType;
 
 /**
  * A KAS/MQ base message.<br>
@@ -31,6 +32,22 @@ public class MqMessage extends AKasObject implements IPacket
    * The message unique identifier
    */
   private UniqueId mMessageId;
+  
+  /**
+   * Request type
+   */
+  private ERequestType mRequestType = ERequestType.cUnknown;;
+  
+  /**
+   * Credentials
+   */
+  private String mUserName = null;
+  private String mPassword = null;
+  
+  /**
+   * Target queue name
+   */
+  private String mTargetQueueName;
   
   /**
    * Construct a default message object
@@ -100,6 +117,81 @@ public class MqMessage extends AKasObject implements IPacket
   public UniqueId getMessageId()
   {
     return mMessageId;
+  }
+  
+  /**
+   * Set the credentials that will be used for authenticating the origin of this message
+   * 
+   * @param username The user name. This cannot be {@code null} for administrative messages.
+   * @param password The user's password. This cannot be {@code null} for administrative messages.
+   */
+  public void setCredentials(String username, String password)
+  {
+    mUserName = username;
+    mPassword = password;
+  }
+  
+  /**
+   * Get the user's name
+   * 
+   * @return the user's name
+   */
+  public String getUserName()
+  {
+    return mUserName;
+  }
+  
+  /**
+   * Get the user's password
+   * 
+   * @return the user's password
+   */
+  public String getPassword()
+  {
+    return mPassword;
+  }
+  
+  /**
+   * Set the target of this message.
+   * 
+   * @param queueName The name of queue in which this message will be placed. This should be {@code null}
+   * for administrative messages
+   */
+  public void setTargetQueueName(String queueName)
+  {
+    mTargetQueueName = queueName;
+  }
+  
+  /**
+   * Get the target of this message.
+   * 
+   * @return the target of this message
+   */
+  public String getTargetQueueName()
+  {
+    return mTargetQueueName;
+  }
+  
+  /**
+   * Set the request type.<br>
+   * <br>
+   * Note that this property must be set for administrative messages.
+   * 
+   * @param type The {@link ERequestType} of the message
+   */
+  public void setRequestType(ERequestType type)
+  {
+    mRequestType = type;
+  }
+  
+  /**
+   * Get the administrative message's request type
+   * 
+   * @return the administrative message's request type, or {@link ERequestType.cUnknown} for non-administrative messages
+   */
+  public ERequestType getRequestType()
+  {
+    return mRequestType;
   }
   
   /**

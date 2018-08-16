@@ -14,7 +14,7 @@ import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.typedef.MessageDeque;
+import com.kas.mq.internal.MessageDeque;
 
 /**
  * A {@link MqQueue} object is the simplest destination that is managed by the KAS/MQ system.

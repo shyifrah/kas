@@ -197,8 +197,11 @@ public class KasMqServer extends AKasMqAppl
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
+      .append(pad).append("  Version=(").append(StringUtils.asPrintableString(mVersion)).append(")\n")
       .append(pad).append("  Config=(").append(StringUtils.asPrintableString(mConfig)).append(")\n")
-      .append(pad).append("  ShutdownHook=(").append(StringUtils.asPrintableString(mShutdownHook)).append(")\n");;
+      .append(pad).append("  ShutdownHook=(").append(StringUtils.asPrintableString(mShutdownHook)).append(")\n")
+      .append(pad).append("  Controller=(").append(StringUtils.asPrintableString(mController)).append(")\n")
+      .append(pad).append("  Repository=(").append(StringUtils.asPrintableString(mRepository)).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();
   }
