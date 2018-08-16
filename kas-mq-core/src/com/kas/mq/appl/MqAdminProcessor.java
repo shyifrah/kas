@@ -6,7 +6,7 @@ import com.kas.mq.appl.cli.CliCommandFactory;
 import com.kas.mq.appl.cli.ICliCommand;
 import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
-import com.kas.mq.typedef.TokenDeque;
+import com.kas.mq.internal.TokenDeque;
 
 /**
  * MQ administration CLI processor.

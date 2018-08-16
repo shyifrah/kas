@@ -3,7 +3,7 @@ package com.kas.mq.appl.cli;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.client.IClient;
-import com.kas.mq.typedef.TokenDeque;
+import com.kas.mq.internal.TokenDeque;
 
 /**
  * A basic command

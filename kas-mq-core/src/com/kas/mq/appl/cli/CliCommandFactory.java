@@ -1,7 +1,7 @@
 package com.kas.mq.appl.cli;
 
 import com.kas.mq.client.IClient;
-import com.kas.mq.typedef.TokenDeque;
+import com.kas.mq.internal.TokenDeque;
 
 /**
  * A Factory for creating {@link ICliCommand} objects based on the command verb (the first argument)

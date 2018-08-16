@@ -3,7 +3,7 @@ package com.kas.mq.appl.cli;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.mq.client.IClient;
-import com.kas.mq.typedef.TokenDeque;
+import com.kas.mq.internal.TokenDeque;
 
 /**
  * A HELP command
