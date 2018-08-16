@@ -1,4 +1,4 @@
-package com.kas.serializer;
+package com.kas.comm.serializer;
 
 import com.kas.infra.base.IObject;
 import com.kas.infra.logging.ELogLevel;

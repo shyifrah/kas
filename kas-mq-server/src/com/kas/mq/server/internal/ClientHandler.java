@@ -7,7 +7,7 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
-import com.kas.infra.base.AStoppable;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -17,7 +17,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class ClientHandler extends AStoppable implements Runnable
+public class ClientHandler extends AKasObject implements Runnable
 {
   /**
    * The client's unique ID
@@ -72,8 +72,7 @@ public class ClientHandler extends AStoppable implements Runnable
   {
     mLogger.debug("ClientHandler::run() - IN");
     
-    boolean shouldStop = isStopping();
-    
+    boolean shouldStop = false;
     while (!shouldStop)
     {
       mLogger.debug("Waiting for messages from client...");
@@ -94,11 +93,8 @@ public class ClientHandler extends AStoppable implements Runnable
       {
         mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
         mLogger.error("Connection to remote host at " + new NetworkAddress(mSocket).toString() + " was dropped");
-        stop();
+        shouldStop = true;
       }
-      
-      // re-check if needs to shutdown
-      shouldStop = isStopping();
     }
     
     mLogger.debug("ClientHandler::run() - OUT");

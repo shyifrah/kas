@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.PacketHeader;
+import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.serializer.EClassId;
 
 /**
  * A KAS/MQ base message.<br>

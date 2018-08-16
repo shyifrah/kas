@@ -281,10 +281,7 @@ public class MqQueue extends AKasObject
       }
       catch (Throwable e) {}
       
-      if (success)
-      {
-        mLogger.info("Total messages saved to queue " + mName + " backup file: " + msgs);
-      }
+      if (success) mLogger.info("Total messages saved to queue " + mName + " backup file: " + msgs);
     }
     
     mLogger.debug("MqQueue::backup() - OUT, Returns=" + Boolean.toString(success));
@@ -424,6 +421,21 @@ public class MqQueue extends AKasObject
     }
     
     return result;
+  }
+  
+  /**
+   * Get the object's string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("Name=").append(mName).append(",Id=").append(mQueueId.toString());
+    return sb.toString();
   }
   
   /**

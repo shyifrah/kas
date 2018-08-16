@@ -35,6 +35,12 @@ public class ServerRepository extends AKasObject implements IInitializable
   private Map<String, MqQueue> mQueueMap;
   
   /**
+   * Admin and Dead queue
+   */
+  private MqQueue mAdminQueue;
+  private MqQueue mDeadQueue;
+  
+  /**
    * Construct the server repository object.
    * 
    * @param config The {@link MqConfiguration}
@@ -44,6 +50,8 @@ public class ServerRepository extends AKasObject implements IInitializable
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
     mQueueMap = new ConcurrentHashMap<String, MqQueue>();
+    mAdminQueue = null;
+    mDeadQueue = null;
   }
   
   /**
@@ -54,27 +62,27 @@ public class ServerRepository extends AKasObject implements IInitializable
    */
   private MqQueue createQueue(String name)
   {
-    mLogger.debug("ServerRepository::create() - IN");
+    mLogger.debug("ServerRepository::createQueue() - IN");
     MqQueue queue = null;
     
     queue = new MqQueue(name);
     mQueueMap.put(name, queue);
     
-    mLogger.debug("ServerRepository::create() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("ServerRepository::createQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
   /**
    * Get or Create a {@link MqQueue} object with the specified {@code name}.<br>
    * <br>
-   * First we try retrieveing the queue from the map. If it doesn't exist there, we create it.
+   * First we try retrieving the queue from the map. If it doesn't exist there, we create it.
    * 
    * @param name The name of the queue
    * @return the {@link MqQueue} object created or retrieved
    */
   private MqQueue getOrCreateQueue(String name)
   {
-    mLogger.debug("ServerRepository::createOrCreateQueue() - IN");
+    mLogger.debug("ServerRepository::getOrCreateQueue() - IN");
     MqQueue queue = null;
     
     if (name != null)
@@ -84,10 +92,30 @@ public class ServerRepository extends AKasObject implements IInitializable
         queue = createQueue(name);
     }
     
-    mLogger.debug("ServerRepository::createOrCreateQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("ServerRepository::getOrCreateQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
-
+  
+  /**
+   * Get the admin queue
+   * 
+   * @return the admin queue
+   */
+  public MqQueue getAdminQueue()
+  {
+    return mAdminQueue;
+  }
+  
+  /**
+   * Get the dead queue
+   * 
+   * @return the dead queue
+   */
+  public MqQueue getDeadQueue()
+  {
+    return mDeadQueue;
+  }
+  
   /**
    * Initialize the server repository
    * 
@@ -135,8 +163,8 @@ public class ServerRepository extends AKasObject implements IInitializable
         }
       }
       
-      getOrCreateQueue(mConfig.getDeadQueueName());
-      getOrCreateQueue(mConfig.getAdminQueueName());
+      mAdminQueue = getOrCreateQueue(mConfig.getAdminQueueName());
+      mDeadQueue  = getOrCreateQueue(mConfig.getDeadQueueName());
     }
     
     mLogger.debug("ServerRepository::init() - OUT, Returns=" + success);
@@ -153,17 +181,19 @@ public class ServerRepository extends AKasObject implements IInitializable
   public boolean term()
   {
     mLogger.debug("ServerRepository::term() - IN");
+    boolean success = true;
     
     for (MqQueue queue : mQueueMap.values())
     {
       String qname = queue.getName();
       mLogger.debug("ServerRepository::term() - Writing queue contents. Queue=[" + qname + "]; Messages=[" + queue.size() + "]");
-      boolean success = queue.backup();
-      mLogger.debug("ServerRepository::term() - Writing queue contents completed with success: " + success);
+      boolean backed = queue.backup();
+      mLogger.debug("ServerRepository::term() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
+      success = success && backed;
     }
     
-    mLogger.debug("ServerRepository::term() - OUT");
-    return true;
+    mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
+    return success;
   }
 
   /**

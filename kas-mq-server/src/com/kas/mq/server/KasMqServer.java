@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
@@ -13,9 +12,6 @@ import com.kas.mq.server.internal.ClientController;
 
 /**
  * MQ server.<br>
- * <br>
- * Note that this object inheres from {@link AStoppable} and not {@link AKasObject} like other classes.
- * This is in order to allow the shutdown hook to stop the MQ server from a different thread.
  * 
  * @author Pippo
  */
@@ -29,9 +25,19 @@ public class KasMqServer extends AKasMqAppl
   private ServerSocket mListenSocket = null;
   
   /**
+   * Server repository
+   */
+  private ServerRepository mRepository = null;
+  
+  /**
    * Client controller
    */
   private ClientController mController = null;
+  
+  /**
+   * Indicator for server's termination
+   */
+  private boolean mTerminating = false;
   
   /**
    * Initializing the KAS/MQ server.<br>
@@ -40,16 +46,22 @@ public class KasMqServer extends AKasMqAppl
    * - super class initialization
    * - creating client controller
    * - creating the server's listener socket
+   * - creating the server's repository
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean init()
   {
     boolean init = super.init();
-    if (init)
+    if (!init)
+    {
+      mLogger.error("KAS/MQ base application failed to initialize");
+    }
+    else
     {
       mLogger.info("KAS/MQ base application initialized successfully");
       mController = new ClientController(mConfig);
+      mRepository = new ServerRepository(mConfig);
       
       try
       {
@@ -59,8 +71,20 @@ public class KasMqServer extends AKasMqAppl
       catch (IOException e)
       {
         init = false;
-        mLogger.error("An error occured while trying to bind server socket with port: " + mConfig.getPort());
+        mLogger.error("An error occurred while trying to bind server socket with port: " + mConfig.getPort());
         mLogger.fatal("Exception caught: ", e);
+        super.term();
+      }
+      
+      init = mRepository.init();
+      if (!init)
+      {
+        mLogger.fatal("Server repository failed initialization");
+        try
+        {
+          mListenSocket.close();
+        }
+        catch (IOException e) {}
         super.term();
       }
     }
@@ -76,24 +100,40 @@ public class KasMqServer extends AKasMqAppl
    * <br>
    * Termination consisting of:
    * - closing server's listener socket
+   * - terminate server repository
    * - super class termination
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean term()
   {
-    mLogger.info("KAS/MQ server termination in progress");
     boolean term = true;
-    try
+    if (!mTerminating)
     {
-      mListenSocket.close();
+      mTerminating = true;
+      mLogger.info("KAS/MQ server termination in progress");
+      
+      try
+      {
+        mListenSocket.close();
+      }
+      catch (IOException e)
+      {
+        mLogger.warn("An error occurred while trying to close server socket", e);
+      }
+      
+      term = mRepository.term();
+      if (!term)
+      {
+        mLogger.warn("An error occurred while shutting the server's repository");
+      }
+        
+      term = super.term();
+      if (!term)
+      {
+        mLogger.warn("An error occurred during KAS/MQ base application termination");
+      }
     }
-    catch (IOException e)
-    {
-      mLogger.warn("An error occured while trying to close server socket", e);
-    }
-    
-    term = super.term();
     
     return term;
   }
@@ -107,7 +147,7 @@ public class KasMqServer extends AKasMqAppl
   public void run()
   {
     int errors = 0;
-    boolean shouldStop = isStopping();
+    boolean shouldStop = false;
     while (!shouldStop)
     {
       try
@@ -117,23 +157,30 @@ public class KasMqServer extends AKasMqAppl
       }
       catch (SocketTimeoutException e)
       {
-        mLogger.debug("Accept() timed out, no new connections...");
+        mLogger.debug("KasMqServer::run() - Accept() timed out, no new connections...");
       }
       catch (IOException e)
       {
-        mLogger.warn("An error occurred while trying to accept new client connection");
-        ++errors;
-        if (errors >= mConfig.getConnMaxErrors())
+        if (mListenSocket.isClosed())
         {
-          mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
-          mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
-          stop();
+          shouldStop = true;
+          mLogger.debug("KasMqServer::run() - Socket was closed, Terminating KAS/MQ server...");
+        }
+        else
+        {
+          mLogger.warn("An error occurred while trying to accept new client connection");
+          ++errors;
+          if (errors >= mConfig.getConnMaxErrors())
+          {
+            mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
+            mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
+            shouldStop = true;
+          }
         }
       }
       
       // re-check if needs to shutdown
-      shouldStop = isStopping();
-      mLogger.debug("Checking if KAS/MQ server needs to shutdown... " + (shouldStop ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.debug("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (shouldStop ? "yep. Terminating main loop..." : "nope..."));
     }
   }
   

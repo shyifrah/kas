@@ -1,6 +1,6 @@
 package com.kas.mq;
 
-import com.kas.infra.base.AStoppable;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.ProductVersion;
@@ -14,7 +14,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public abstract class AKasMqAppl extends AStoppable implements IInitializable, Runnable
+public abstract class AKasMqAppl extends AKasObject implements IInitializable, Runnable
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(AKasMqAppl.class.getName());
   
@@ -82,7 +82,7 @@ public abstract class AKasMqAppl extends AStoppable implements IInitializable, R
       mLogger.info("Shutdown hook is registered, will try to remove it...");
       if (Thread.currentThread().getName().equals(KasMqStopper.class.getSimpleName()))
       {
-        mLogger.warn("Cannot remove Shutdown hook as termination process is executed under it...");
+        mLogger.info("Skipping removal of shutdown hook as termination process is executed under it...");
       }
       else
       {

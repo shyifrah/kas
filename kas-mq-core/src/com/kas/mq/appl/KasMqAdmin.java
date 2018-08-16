@@ -1,16 +1,12 @@
 package com.kas.mq.appl;
 
-import com.kas.infra.base.AStoppable;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 
 /**
- * MQ administration CLI.<br>
- * <br>
- * Note that this object inheres from {@link AStoppable} and not {@link AKasObject} like other classes.
- * This is in order to allow the shutdown hook to stop the MQ client from a different thread.
+ * MQ administration CLI.
  * 
  * @author Pippo
  */

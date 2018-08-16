@@ -1,4 +1,4 @@
-package com.kas.serializer;
+package com.kas.comm.serializer;
 
 import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;

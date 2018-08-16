@@ -5,9 +5,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.KasException;
-import com.kas.serializer.Deserializer;
-import com.kas.serializer.EClassId;
 import com.kas.comm.IPacket;
+import com.kas.comm.serializer.Deserializer;
+import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IObject;
 

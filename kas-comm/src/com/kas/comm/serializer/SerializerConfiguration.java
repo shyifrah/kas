@@ -1,4 +1,4 @@
-package com.kas.serializer;
+package com.kas.comm.serializer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -32,7 +32,6 @@
         <pathelement location="../kas-infra/lib/kas-infra.jar" />
         <pathelement location="../kas-config/lib/kas-config.jar" />
         <pathelement location="../kas-logging/lib/kas-logging.jar" />
-        <pathelement location="../kas-serializer/lib/kas-serializer.jar" />
       </classpath>
     </javac>
   </target>
