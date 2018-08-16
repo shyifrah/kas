@@ -8,6 +8,7 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ERequestType;
 
 /**
@@ -238,8 +239,12 @@ public class MqMessage extends AKasObject implements IPacket
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  MessageId=").append(mMessageId.toPrintableString()).append("\n")
+      .append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
+      .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
+      .append(pad).append("  User Name=").append(mUserName).append("\n")
+      .append(pad).append("  Password=").append(mPassword).append("\n")
+      .append(pad).append("  Target Queue=").append(mTargetQueueName).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }
