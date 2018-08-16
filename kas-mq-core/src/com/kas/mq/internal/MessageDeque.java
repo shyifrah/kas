@@ -1,4 +1,4 @@
-package com.kas.mq.typedef;
+package com.kas.mq.internal;
 
 import java.util.concurrent.LinkedBlockingDeque;
 import com.kas.infra.base.IObject;

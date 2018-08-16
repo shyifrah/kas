@@ -1,4 +1,4 @@
-package com.kas.mq.typedef;
+package com.kas.mq.internal;
 
 import java.util.ArrayDeque;
 import com.kas.infra.base.IObject;
