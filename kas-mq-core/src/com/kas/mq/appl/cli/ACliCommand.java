@@ -1,5 +1,6 @@
 package com.kas.mq.appl.cli;
 
+import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.client.IClient;
@@ -23,13 +24,19 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   protected IClient mClient;
   
   /**
+   * A scanner in order to read user's input
+   */
+  protected Scanner mScanner;
+  
+  /**
    * Construct a {@link ACliCommand} specifying the command arguments and the client
    * 
    * @param cmdWords The command arguments
    * @param client The client
    */
-  ACliCommand(TokenDeque args, IClient client)
+  ACliCommand(Scanner scanner, TokenDeque args, IClient client)
   {
+    mScanner = scanner;
     mCommandArgs = args;
     mClient = client;
   }
@@ -60,6 +67,18 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   protected void writeln(String message)
   {
     System.out.println(message);
+  }
+  
+  /**
+   * Reading a command (one line) from STDIN and return it as a queue of tokens.
+   * 
+   * @return a queue in which each element is a token from the read line
+   */
+  protected TokenDeque read(String message)
+  {
+    write(message);
+    String input = mScanner.nextLine();
+    return new TokenDeque(input);
   }
   
   /**

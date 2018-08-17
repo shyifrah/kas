@@ -13,6 +13,31 @@ public class TokenDeque extends ArrayDeque<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
   
+  private String mOriginalString;
+  
+  /**
+   * Construct a {@link TokenDeque} with the specified string {@code str}
+   * 
+   * @param str The string to tokenize
+   */
+  public TokenDeque(String str)
+  {
+    mOriginalString = str;
+    String [] a = str.split(" ");
+    for (String word : a)
+      super.offer(word.toUpperCase());
+  }
+  
+  /**
+   * Get the original string
+   * 
+   * @return the original string
+   */
+  public String getOriginalString()
+  {
+    return mOriginalString;
+  }
+  
   /**
    * Returns the {@link TokenDeque} simple class name enclosed with chevrons.
    * 

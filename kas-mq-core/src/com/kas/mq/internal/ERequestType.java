@@ -15,6 +15,11 @@ public enum ERequestType implements IObject
   cUnknown,
   
   /**
+   * Authentication
+   */
+  cAuthenticate,
+  
+  /**
    * Shutdown KAS/MQ server
    */
   cShutdown,
@@ -24,6 +29,19 @@ public enum ERequestType implements IObject
    */
   cDefineQueue,
   ;
+  
+  static final private ERequestType [] cValues = ERequestType.values();
+  
+  /**
+   * Get the enum value by its ordinal.
+   * 
+   * @param id The ordinal of the enum
+   * @return the enum value
+   */
+  static public ERequestType fromInt(int id)
+  {
+    return cValues[id];
+  }
   
   /**
    * Return a more friendly string

@@ -14,6 +14,7 @@ import com.kas.infra.utils.StringUtils;
 public class SerializerConfiguration extends AConfiguration
 {
   static private final String cSerializerConfigPrefix  = "kas.serializer.";
+  static private final String cSerializerClassConfigPrefix  = cSerializerConfigPrefix + "class.";
   
   private Map<String, Integer> mClassToIdMap = new ConcurrentHashMap<String, Integer>();
   private Map<Integer, String> mIdToClassMap = new ConcurrentHashMap<Integer, String>();
@@ -38,10 +39,10 @@ public class SerializerConfiguration extends AConfiguration
     mClassToIdMap.clear();
     mIdToClassMap.clear();
     
-    Properties props = mMainConfig.getSubset(cSerializerConfigPrefix);
+    Properties props = mMainConfig.getSubset(cSerializerClassConfigPrefix);
     for (Map.Entry<Object, Object> entry : props.entrySet())
     {
-      String className = ((String)entry.getKey()).substring(cSerializerConfigPrefix.length());
+      String className = ((String)entry.getKey()).substring(cSerializerClassConfigPrefix.length());
       String strId     = (String)entry.getValue();
       
       Integer id = -999;

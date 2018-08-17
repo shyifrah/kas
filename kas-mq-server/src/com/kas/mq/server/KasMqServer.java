@@ -157,7 +157,7 @@ public class KasMqServer extends AKasMqAppl
       }
       catch (SocketTimeoutException e)
       {
-        mLogger.debug("KasMqServer::run() - Accept() timed out, no new connections...");
+        mLogger.diag("KasMqServer::run() - Accept() timed out, no new connections...");
       }
       catch (IOException e)
       {
@@ -180,7 +180,7 @@ public class KasMqServer extends AKasMqAppl
       }
       
       // re-check if needs to shutdown
-      mLogger.debug("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (shouldStop ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (shouldStop ? "yep. Terminating main loop..." : "nope..."));
     }
   }
   

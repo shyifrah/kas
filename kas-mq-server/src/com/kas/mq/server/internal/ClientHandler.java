@@ -9,8 +9,13 @@ import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqResponseMessage;
+import com.kas.mq.internal.ERequestType;
 
 /**
  * A {@link ClientHandler} is the object that handles the traffic in and from a remote client.
@@ -75,19 +80,20 @@ public class ClientHandler extends AKasObject implements Runnable
     boolean shouldStop = false;
     while (!shouldStop)
     {
-      mLogger.debug("Waiting for messages from client...");
+      mLogger.debug("ClientHandler::run() - Waiting for messages from client...");
       try
       {
         IPacket packet = mMessenger.receive();
         if (packet != null)
         {
-          mLogger.debug("Packet received: " + packet.toPrintableString(0));
-          process(packet);
+          mLogger.debug("ClientHandler::run() - Packet received: " + packet.toPrintableString(0));
+          boolean success = process(packet);
+          shouldStop = !success;
         }
       }
       catch (SocketTimeoutException e)
       {
-        mLogger.debug("Socket Timeout occurred. Resume waiting for a new packet from client...");
+        mLogger.diag("ClientHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
       }
       catch (IOException e)
       {
@@ -104,9 +110,44 @@ public class ClientHandler extends AKasObject implements Runnable
    * Process received packet
    * 
    * @param packet The received packet
+   * @return {@code true} if {@link ClientHandler} should continue processing next packet, {@code false} otherwise
    */
-  private void process(IPacket packet)
+  private boolean process(IPacket packet)
   {
+    mLogger.debug("ClientHandler::process() - IN");
+    
+    boolean success = true;
+    MqResponseMessage response = null;
+    try
+    {
+      MqMessage message = (MqMessage)packet;
+      ERequestType requestType = message.getRequestType();
+      if (requestType == ERequestType.cAuthenticate)
+      {
+        String user = message.getUserName();
+        String pwd  = message.getPassword();
+        
+        ///================================================
+        /// TODO: verify user and password matches
+        ///================================================
+        
+        response = MqMessageFactory.createResponse(0, null);
+        mMessenger.send(response);
+      }
+    }
+    catch (ClassCastException e)
+    {
+      mLogger.error("Invalid message received from remote client. Message: " + packet);
+      success = false;
+    }
+    catch (IOException e)
+    {
+      mLogger.error("Failed to send response message to remote client. Message: " + StringUtils.asString(response));
+      success = false;
+    }
+    
+    mLogger.debug("ClientHandler::process() - OUT, Returns=" + success);
+    return success;
   }
   
   /**

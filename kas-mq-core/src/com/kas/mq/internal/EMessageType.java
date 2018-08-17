@@ -2,17 +2,27 @@ package com.kas.mq.internal;
 
 import com.kas.infra.base.IObject;
 
+/**
+ * Message type
+ * 
+ * @author Pippo
+ */
 public enum EMessageType implements IObject
 {
   /**
-   * Shutdown KAS/MQ server
+   * Base message, no body
    */
-  cTextMessage,
+  cMqMessage,
   
   /**
-   * Define a queue
+   * Text message
    */
-  cBytesMessage,
+  cMqTextMessage,
+  
+  /**
+   * Bytes message
+   */
+  cMqBytesMessage,
   ;
   
   /**

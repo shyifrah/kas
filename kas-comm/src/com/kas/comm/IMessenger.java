@@ -1,6 +1,7 @@
 package com.kas.comm;
 
 import java.io.IOException;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.IObject;
 
 /**
@@ -10,12 +11,19 @@ import com.kas.infra.base.IObject;
  */
 public interface IMessenger extends IObject
 {
-//  /**
-//   * Perform messenger's cleanup:<br>
-//   * <br>
-//   * Flush streams, close streams, close the socket etc.
-//   */
-//  public abstract void cleanup();
+  /**
+   * Get the messenger connectivity status
+   * 
+   * @return {@code true} if connected, {@code false} otherwise
+   */
+  public abstract boolean isConnected();
+  
+  /**
+   * Get the messenger remote address
+   * 
+   * @return The {@link NetworkAddress} that represents the remote host
+   */
+  public abstract NetworkAddress getAddress();
   
   /**
    * Sends a {@link IPacket} object.
@@ -73,10 +81,10 @@ public interface IMessenger extends IObject
    */
   public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
   
-//  /**
-//   * Shutdown the {@link Messenger}.<br>
-//   * <br>
-//   * After shutting it down, it can't be restarted.
-//   */
-//  public abstract void shutdown();
+  /**
+   * Perform messenger's cleanup:<br>
+   * <br>
+   * Flush streams, close streams, close the socket etc.
+   */
+  public abstract void cleanup();
 }

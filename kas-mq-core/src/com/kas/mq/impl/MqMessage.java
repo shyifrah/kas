@@ -27,49 +27,35 @@ public class MqMessage extends AKasObject implements IPacket
   /**
    * The message priority
    */
-  private int mPriority;
+  protected int mPriority;
   
   /**
    * The message unique identifier
    */
-  private UniqueId mMessageId;
+  protected UniqueId mMessageId;
   
   /**
    * Request type
    */
-  private ERequestType mRequestType = ERequestType.cUnknown;;
+  protected ERequestType mRequestType = ERequestType.cUnknown;;
   
   /**
    * Credentials
    */
-  private String mUserName = null;
-  private String mPassword = null;
+  protected String mUserName = null;
+  protected String mPassword = null;
   
   /**
    * Target queue name
    */
-  private String mTargetQueueName;
+  protected String mQueueName;
   
   /**
    * Construct a default message object
    */
-  public MqMessage()
+  MqMessage()
   {
-    this(cMinimumPriority);
-  }
-  
-  /**
-   * Construct a Message object with specified priority
-   * 
-   * @param priority The message priority
-   * @throws IllegalArgumentException If the message priority is larger than 9 or lower than 0 
-   */
-  public MqMessage(int priority)
-  {
-    if ((priority < cMinimumPriority) || (priority > cMaximumPriority))
-      throw new IllegalArgumentException("Invalid message priority: " + priority);
-    
-    mPriority  = priority;
+    mPriority  = cMinimumPriority;
     mMessageId = UniqueId.generate();
   }
   
@@ -89,6 +75,14 @@ public class MqMessage extends AKasObject implements IPacket
       byte [] ba = new byte [16];
       istream.read(ba);
       mMessageId = UniqueId.fromByteArray(ba);
+      
+      int reqType = istream.readInt();
+      mRequestType = ERequestType.fromInt(reqType);
+      
+      mUserName = (String)istream.readObject();
+      mPassword = (String)istream.readObject();
+      
+      mQueueName = (String)istream.readObject();
     }
     catch (IOException e)
     {
@@ -101,16 +95,6 @@ public class MqMessage extends AKasObject implements IPacket
   }
   
   /**
-   * Get the message priority
-   * 
-   * @return the message priority
-   */
-  public int getPriority()
-  {
-    return mPriority;
-  }
-  
-  /**
    * Get the message Id
    * 
    * @return the message id
@@ -118,6 +102,31 @@ public class MqMessage extends AKasObject implements IPacket
   public UniqueId getMessageId()
   {
     return mMessageId;
+  }
+  
+  /**
+   * Set the message priority
+   * 
+   * @param priority The message priority
+   * 
+   * @throws IllegalArgumentException if the new priority is invalid
+   */
+  public void setPriority(int priority)
+  {
+    if ((priority < cMinimumPriority) || (priority > cMaximumPriority))
+      throw new IllegalArgumentException("Invalid message priority: " + priority);
+    
+    mPriority = priority;
+  }
+  
+  /**
+   * Get the message priority
+   * 
+   * @return the message priority
+   */
+  public int getPriority()
+  {
+    return mPriority;
   }
   
   /**
@@ -158,9 +167,9 @@ public class MqMessage extends AKasObject implements IPacket
    * @param queueName The name of queue in which this message will be placed. This should be {@code null}
    * for administrative messages
    */
-  public void setTargetQueueName(String queueName)
+  public void setQueueName(String queueName)
   {
-    mTargetQueueName = queueName;
+    mQueueName = queueName;
   }
   
   /**
@@ -168,9 +177,9 @@ public class MqMessage extends AKasObject implements IPacket
    * 
    * @return the target of this message
    */
-  public String getTargetQueueName()
+  public String getQueueName()
   {
-    return mTargetQueueName;
+    return mQueueName;
   }
   
   /**
@@ -224,6 +233,17 @@ public class MqMessage extends AKasObject implements IPacket
     byte [] ba = mMessageId.toByteArray();
     ostream.write(ba);
     ostream.reset();
+    
+    ostream.writeInt(mRequestType.ordinal());
+    ostream.reset();
+    
+    ostream.writeObject(mUserName);
+    ostream.reset();
+    ostream.writeObject(mPassword);
+    ostream.reset();
+    
+    ostream.writeObject(mQueueName);
+    ostream.reset();
   }
   
   /**
@@ -244,7 +264,7 @@ public class MqMessage extends AKasObject implements IPacket
       .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
       .append(pad).append("  User Name=").append(mUserName).append("\n")
       .append(pad).append("  Password=").append(mPassword).append("\n")
-      .append(pad).append("  Target Queue=").append(mTargetQueueName).append("\n")
+      .append(pad).append("  Target Queue=").append(mQueueName).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

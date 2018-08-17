@@ -15,9 +15,12 @@ public interface IClient extends IObject
   /**
    * Connect client to the queue manager defined on {@code destination}
    * 
-   * @param destination A IP address or host name.
+   * @param host The host name or IP address
+   * @param port The port number
+   * @param user The user's name
+   * @param pwd The user's password
    */
-  public abstract void connect(String host, int port);
+  public abstract void connect(String host, int port, String user, String pwd);
   
   /**
    * Disconnect from the queue manager.

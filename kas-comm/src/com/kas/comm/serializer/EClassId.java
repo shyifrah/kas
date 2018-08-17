@@ -19,7 +19,12 @@ public enum EClassId implements IObject
   * MqMessage
   */
   cClassMqMessage,
- 
+  
+  /**
+   * MqResponseMessage
+   */
+   cClassMqResponseMessage,
+  
   ;
   
   static final private EClassId [] cValues = EClassId.values();

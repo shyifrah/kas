@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.base.threads.ThreadPool;
@@ -64,7 +65,7 @@ public class ClientController extends AKasObject implements IController
     UniqueId id = handler.getClientId();
     mHandlers.put(id, handler);
     
-    String remoteAddress = socket.getRemoteSocketAddress().toString();
+    String remoteAddress = new NetworkAddress(socket).toString();
     mConsole.info("New connection accepted from " + remoteAddress);
     mLogger.trace("Client at " + remoteAddress + " (ID=" + id + ") was sent for execution");
     ThreadPool.execute(handler);

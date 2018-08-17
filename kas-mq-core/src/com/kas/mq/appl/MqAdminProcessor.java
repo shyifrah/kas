@@ -35,7 +35,7 @@ public class MqAdminProcessor extends AKasObject
       boolean stop = false;
       while (!stop)
       {
-        stop = process(command);
+        stop = process(scanner, command);
         if (!stop)
         {
           command = read(scanner);
@@ -59,9 +59,10 @@ public class MqAdminProcessor extends AKasObject
    * should be created and then we execute it.
    * 
    * @param cmdWords The queue containing the command tokens
+   * @param scanner The scanner, in case further interaction with the user is needed
    * @return {@code true} if an "exit" command was issued, {@code false} otherwise
    */
-  private boolean process(TokenDeque cmdWords)
+  private boolean process(Scanner scanner, TokenDeque cmdWords)
   {
     if (cmdWords.isEmpty() || cmdWords.peek().equals(""))
     {
@@ -70,7 +71,7 @@ public class MqAdminProcessor extends AKasObject
     }
     
     String verb = cmdWords.peek();
-    ICliCommand command = CliCommandFactory.newCommand(cmdWords, mClientImpl);
+    ICliCommand command = CliCommandFactory.newCommand(scanner, cmdWords, mClientImpl);
     if (command == null)
     {
       writeln("Unknown command verb: \"" + verb + "\". Type HELP to see available commands");
@@ -92,11 +93,7 @@ public class MqAdminProcessor extends AKasObject
   {
     write("KAS/MQ Admin> ");
     String cmd = scanner.nextLine();
-    String [] a = cmd.split(" ");
-    TokenDeque q = new TokenDeque();
-    for (String word : a)
-      q.offer(word.toUpperCase());
-    return q;
+    return new TokenDeque(cmd);
   }
   
   /**

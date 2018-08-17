@@ -1,5 +1,6 @@
 package com.kas.mq.appl.cli;
 
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.mq.client.IClient;
@@ -23,12 +24,13 @@ public class ConnectCommand extends ACliCommand
    * Construct a {@link ConnectCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
+   * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected ConnectCommand(TokenDeque args, IClient client)
+  protected ConnectCommand(Scanner scanner, TokenDeque args, IClient client)
   {
-    super(args, client);
+    super(scanner, args, client);
   }
 
   /**
@@ -80,7 +82,8 @@ public class ConnectCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      mClient.setResponse("Connect failed. Missing host name");
+      writeln("Connect failed. Missing host name");
+      writeln(" ");
       return false;
     }
     
@@ -98,11 +101,32 @@ public class ConnectCommand extends ACliCommand
     
     if (port == -1)
     {
-      mClient.setResponse("Connect failed. Invalid port number \"" + sport + "\"");
+      writeln("Connect failed. Invalid port number \"" + sport + "\"");
+      writeln(" ");
       return false;
     }
     
-    mClient.connect(host, port);
+    TokenDeque input = read("Enter user name: ");
+    String username = input.poll();
+    String extra = input.poll();
+    if (username == null)
+    {
+      writeln("Invalid user name \"\". Cannot be empty string");
+      writeln(" ");
+      return false;
+    }
+    
+    if (extra != null)
+    {
+      writeln("Invalid user name \"" + username + ' ' + extra + "\". Cannot be empty string");
+      writeln(" ");
+      return false;
+    }
+    
+    input = read("Enter password: ");
+    String password = input.getOriginalString();
+    
+    mClient.connect(host, port, username, password);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

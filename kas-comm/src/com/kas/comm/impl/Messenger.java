@@ -43,21 +43,60 @@ public class Messenger extends AKasObject implements IMessenger
   /**
    * Constructs a {@link Messenger} object using the specified socket, host and port.
    * 
-   * @param socket The socket that will serve this {@link Messenger}
    * @param host The remote host
    * @param port Remote host listening port
-   * @param factory The packet factory used to deserialize packets
    * 
    * @throws IOException if I/O error occurs during streams creation
    */
-  Messenger(Socket socket, String host, int port) throws IOException
+  Messenger(String host, int port) throws IOException
   {
-    mHost = host;
-    mPort = port;
+    this(new Socket(host, port));
+  }
+  
+  /**
+   * Constructs a {@link Messenger} object using the specified socket, host and port.
+   * 
+   * @param socket The socket that will serve this {@link Messenger}
+   * 
+   * @throws IOException if I/O error occurs during streams creation
+   */
+  Messenger(Socket socket) throws IOException
+  {
+    if (socket == null) throw new IOException("Null socket");
+    
     mSocket = socket;
+    NetworkAddress addr = new NetworkAddress(socket);
+    mHost = addr.getHost();
+    mPort = addr.getPort();
+    
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
     mSocket.setSoTimeout(0);
+  }
+  
+  /**
+   * Get the messenger connectivity status
+   * 
+   * @return {@code true} if connected, {@code false} otherwise
+   * 
+   * @see com.kas.comm.IMessenger#isConnected()
+   * @see java.net.Socket#isConnected()
+   */
+  public boolean isConnected()
+  {
+    return mSocket.isConnected() && !mSocket.isClosed();
+  }
+  
+  /**
+   * Get the messenger remote address
+   * 
+   * @return The {@link NetworkAddress} that represents the remote host
+   * 
+   * @see com.kas.comm.IMessenger#getAddress()
+   */
+  public NetworkAddress getAddress()
+  {
+    return new NetworkAddress(mSocket);
   }
   
   /**
@@ -72,6 +111,8 @@ public class Messenger extends AKasObject implements IMessenger
   public void send(IPacket packet) throws IOException
   {
     sLogger.debug("Messenger::send() - IN");
+    
+    if (mOutputStream == null) throw new IOException("Null output stream; Messenger is probably not connected");
     
     PacketHeader header = packet.createHeader();
     header.serialize(mOutputStream);
@@ -114,12 +155,13 @@ public class Messenger extends AKasObject implements IMessenger
   {
     sLogger.debug("Messenger::receive() - IN");
     
-    mSocket.setSoTimeout(timeout);
+    if (mInputStream == null) throw new IOException("Null input stream; Messenger is probably not connected");
     
     PacketHeader header = new PacketHeader(mInputStream);
     IPacket packet = null;
     try
     {
+      mSocket.setSoTimeout(timeout);
       packet = header.read(mInputStream);
     }
     catch (KasException e)
@@ -165,6 +207,32 @@ public class Messenger extends AKasObject implements IMessenger
   {
     send(request);
     return receive(timeout);
+  }
+  
+  /**
+   * Perform messenger's cleanup:<br>
+   * <br>
+   * Flush streams, close streams, close the socket etc.
+   * 
+   * @see com.kas.comm.IMessenger#cleanup()
+   */
+  public void cleanup()
+  {
+    if (isConnected())
+    {
+      try
+      {
+        mOutputStream.flush();
+        mOutputStream.close();
+        mInputStream.close();
+        mSocket.close();
+        
+        mOutputStream = null;
+        mInputStream = null;
+        mSocket = null;
+      }
+      catch (IOException e) {}
+    }
   }
   
   /**

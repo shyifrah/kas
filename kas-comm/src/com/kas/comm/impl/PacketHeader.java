@@ -5,6 +5,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.KasException;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.comm.IPacket;
 import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
@@ -19,6 +21,8 @@ import com.kas.infra.base.IObject;
 public class PacketHeader extends AKasObject implements ISerializable
 {
   static public final String cEyeCatcher = "KAS";
+  
+  static private ILogger sLogger = LoggerFactory.getLogger(PacketHeader.class);
   
   /**
    * A packet header is marked with an eye-catcher that contains the string "KAS"
@@ -80,10 +84,14 @@ public class PacketHeader extends AKasObject implements ISerializable
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
+    sLogger.debug("PacketHeader::serialize() - IN");
+    
     ostream.writeObject(mEyeCatcher);
     ostream.reset();
     ostream.writeInt(mClassId.ordinal());
     ostream.reset();
+    
+    sLogger.debug("PacketHeader::serialize() - OUT");
   }
   
   /**
@@ -100,8 +108,11 @@ public class PacketHeader extends AKasObject implements ISerializable
    */
   public IPacket read(ObjectInputStream istream) throws KasException
   {
+    sLogger.debug("PacketHeader::read() - IN");
+    
     if (!mVerified) verify();
     
+    sLogger.diag("PacketHeader::read() - De-serializing object from input stream...");
     IObject iObject = Deserializer.deserialize(mClassId.ordinal(), istream);
     
     IPacket iPacket = null;
@@ -114,6 +125,7 @@ public class PacketHeader extends AKasObject implements ISerializable
       throw new KasException("Created object is not a valid IPacket");
     }
     
+    sLogger.debug("PacketHeader::read() - OUT");
     return iPacket;
   }
   

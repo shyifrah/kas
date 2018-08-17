@@ -2,12 +2,17 @@ package com.kas.mq.client;
 
 import java.io.IOException;
 import java.net.Socket;
+import com.kas.comm.IMessenger;
+import com.kas.comm.IPacket;
+import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.ThrowableFormatter;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqQueue;
+import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.MqMessageFactory;
 
 /**
  * A client implementation that actually carries out the requests made by the facade client.
@@ -18,9 +23,9 @@ import com.kas.mq.impl.MqMessage;
 public class MqClientImpl extends AMqClient
 {
   /**
-   * The socket used for incoming/outgoing traffic between the server and the client
+   * Messenger
    */
-  private Socket mSocket;
+  private IMessenger mMessenger;
   
   /**
    * A logger
@@ -32,20 +37,26 @@ public class MqClientImpl extends AMqClient
    */
   public MqClientImpl()
   {
-    mSocket = new Socket();
     mLogger = LoggerFactory.getLogger(this.getClass());
+    mMessenger = null;
   }
   
   /**
-   * Connecting to the KAS/MQ server.<br>
+   * Connect client to the KAS/MQ server.<br>
    * <br>
-   * If the {@link MqClientImpl} is already connected, we need to disconnect first.
+   * If the {@link MqClientImpl} is already connected, it will be disconnected first.
    * 
-   * @param host The host name or IP address of the remote host
-   * @param port The port on which the KAS/MQ server is listening for new incoming connections.
+   * @param host The host name or IP address
+   * @param port The port number
+   * @param user The user's name
+   * @param pwd The user's password
+   * 
+   * @see com.kas.mq.client.IClient#connect(String, int, String, String)
    */
-  public void connect(String host, int port)
+  public void connect(String host, int port, String user, String pwd)
   {
+    mLogger.debug("MqClientImpl::connect() - IN");
+    
     if (isConnected())
     {
       disconnect();
@@ -53,24 +64,35 @@ public class MqClientImpl extends AMqClient
     
     try
     {
-      mSocket = new Socket(host, port);
-      String message = "Connection established with host at " + new NetworkAddress(mSocket).toString();
-      mLogger.info(message);
-      setResponse(message);
+      mMessenger = MessengerFactory.create(host, port);
+      boolean authenticated = authenticate(user, pwd);
+      if (!authenticated)
+      {
+        String message = "User name \"" + user + "\" failed authentication";
+        mLogger.error(message);
+        setResponse(message);
+        mMessenger.cleanup();
+      }
+      else
+      {
+        String message = "Connection established with host at " + mMessenger.getAddress();
+        mLogger.info(message);
+        setResponse(message);
+      }
     }
     catch (IOException e)
     {
       StringBuilder sb = new StringBuilder();
       sb.append("Exception occurred while trying to connect to [")
-        .append(host)
-        .append(':')
-        .append(port)
+        .append(new NetworkAddress(host, port))
         .append("]. Exception: ")
         .append(new ThrowableFormatter(e).toString());
       String message = sb.toString();
       mLogger.error(message);
       setResponse(message);
     }
+    
+    mLogger.debug("MqClientImpl::connect() - OUT");
   }
 
   /**
@@ -82,24 +104,27 @@ public class MqClientImpl extends AMqClient
    */
   public void disconnect()
   {
+    mLogger.debug("MqClientImpl::disconnect() - IN");
+    
     if (!isConnected())
     {
-      setResponse("Not connected");
+      String message = "Not Connected";
+      mLogger.info(message);
+      setResponse(message);
     }
     else
     {
-      NetworkAddress addr = getNetworkAddress();
-      try
-      {
-        mSocket.close();
-      }
-      catch (IOException e)
-      {
-        mLogger.warn("Exception occurred while trying to close socket " + addr.toString(), e);
-      }
-      mSocket = new Socket();
-      setResponse("Connection terminated with " + addr.toString());
+      NetworkAddress addr = mMessenger.getAddress();
+      mMessenger.cleanup();
+      
+      String message = "Connection terminated with " + addr.toString();
+      setResponse(message);
+      mLogger.info(message);
+      
+      mMessenger = null;
     }
+    
+    mLogger.debug("MqClientImpl::disconnect() - OUT");
   }
 
   /**
@@ -113,7 +138,7 @@ public class MqClientImpl extends AMqClient
    */
   public boolean isConnected()
   {
-    return mSocket == null ? false : mSocket.isConnected() && !mSocket.isClosed();
+    return mMessenger == null ? false : mMessenger.isConnected();
   }
   
   /**
@@ -126,7 +151,7 @@ public class MqClientImpl extends AMqClient
    */
   public NetworkAddress getNetworkAddress()
   {
-    return isConnected() ? new NetworkAddress(mSocket) : null;
+    return mMessenger == null ? null : mMessenger.getAddress();
   }
   
   /**
@@ -163,6 +188,33 @@ public class MqClientImpl extends AMqClient
 
   public void put(MqMessage message)
   {
+  }
+  
+  private boolean authenticate(String username, String password)
+  {
+    mLogger.debug("MqClientImpl::authenticate() - IN");
+    
+    boolean success = false;
+    MqMessage request = MqMessageFactory.createAuthenticationRequest(username, password);
+    try
+    {
+      IPacket packet = mMessenger.sendAndReceive(request);
+      MqResponseMessage response = (MqResponseMessage)packet;
+      if (response.getResponseCode() == 0)
+      {
+        success = true;
+      }
+      else
+      {
+        String message = response.getResponseMessage();
+        setResponse(message);
+        mLogger.info(message);
+      }
+    }
+    catch (Throwable e) {}
+    
+    mLogger.debug("MqClientImpl::authenticate() - OUT, Returns=" + success);
+    return success;
   }
 
   public String toPrintableString(int level)
