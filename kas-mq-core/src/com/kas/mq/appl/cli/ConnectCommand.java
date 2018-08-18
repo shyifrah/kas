@@ -87,7 +87,7 @@ public class ConnectCommand extends ACliCommand
       return false;
     }
     
-    String host = mCommandArgs.poll();
+    String host = mCommandArgs.poll().toUpperCase();
     String sport = mCommandArgs.poll();
     if (sport == null)
       sport = "14560";
@@ -95,7 +95,7 @@ public class ConnectCommand extends ACliCommand
     int port = -1;
     try
     {
-      port = Integer.valueOf(sport);
+      port = Integer.valueOf(sport.toUpperCase());
     }
     catch (NumberFormatException e) {}
     

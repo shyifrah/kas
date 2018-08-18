@@ -1,6 +1,10 @@
 package com.kas.mq;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.config.impl.AConfiguration;
+import com.kas.infra.base.Properties;
+import com.kas.infra.utils.StringUtils;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -10,6 +14,7 @@ import com.kas.config.impl.AConfiguration;
 public class MqConfiguration extends AConfiguration
 {
   static private final String  cMqConfigPrefix  = "kas.mq.";
+  static private final String  cMqUserConfigPrefix  = cMqConfigPrefix + "user.";
   
   static public final boolean cDefaultEnabled           = true;
   static public final int     cDefaultPort              = 14560;
@@ -56,6 +61,11 @@ public class MqConfiguration extends AConfiguration
   private int mConnSocketTimeout = cDefaultConnSocketTimeout; 
   
   /**
+   * The timeout, in milliseconds, before socket operations like {@link java.net.ServerSocket#accept() accept()} call will timeout
+   */
+  private Map<String, String> mUserMap = new ConcurrentHashMap<String, String>(); 
+  
+  /**
    * Refresh configuration - reload values of all properties
    */
   public void refresh()
@@ -67,6 +77,16 @@ public class MqConfiguration extends AConfiguration
     mAdminQueueName     = mMainConfig.getStringProperty  ( cMqConfigPrefix + "adminqName"         , mAdminQueueName    );
     mConnMaxErrors      = mMainConfig.getIntProperty     ( cMqConfigPrefix + "conn.maxErrors"     , mConnMaxErrors     );
     mConnSocketTimeout  = mMainConfig.getIntProperty     ( cMqConfigPrefix + "conn.socketTimeout" , mConnSocketTimeout );
+    
+    mUserMap.clear();
+    
+    Properties props = mMainConfig.getSubset(cMqUserConfigPrefix);
+    for (Map.Entry<Object, Object> entry : props.entrySet())
+    {
+      String user = ((String)entry.getKey()).substring(cMqUserConfigPrefix.length());
+      String pass = (String)entry.getValue();
+      mUserMap.put(user, pass);
+    }
   }
   
   /**
@@ -140,6 +160,17 @@ public class MqConfiguration extends AConfiguration
   }
   
   /**
+   * Gets a user's password
+   * 
+   * @param user The user's name
+   * @return the user's password or {@code null} if user's name isn't defined
+   */
+  public String getUserPassword(String user)
+  {
+    return mUserMap.get(user);
+  }
+  
+  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -160,6 +191,9 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("  Connection Settings=(\n")
       .append(pad).append("    MaxErrors=").append(mConnMaxErrors).append("\n")
       .append(pad).append("    Timeout=").append(mConnSocketTimeout).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append("  Users=(\n")
+      .append(pad).append(StringUtils.asPrintableString(mUserMap, level+2))
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

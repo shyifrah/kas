@@ -20,7 +20,7 @@ public class CliCommandFactory
    */
   static public ICliCommand newCommand(Scanner scanner, TokenDeque cmdWords, IClient client)
   {
-    String verb = cmdWords.poll();
+    String verb = cmdWords.poll().toUpperCase();
     
     if (HelpCommand.sCommandVerbs.contains(verb))
     {

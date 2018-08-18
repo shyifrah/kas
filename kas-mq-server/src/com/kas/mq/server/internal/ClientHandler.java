@@ -35,14 +35,14 @@ public class ClientHandler extends AKasObject implements Runnable
   private Socket mSocket;
   
   /**
-   * The client controller
-   */
-  private IController mController;
-  
-  /**
    * Messenger
    */
   private IMessenger mMessenger;
+  
+  /**
+   * The client controller
+   */
+  private IController mController;
   
   /**
    * Logger
@@ -127,11 +127,15 @@ public class ClientHandler extends AKasObject implements Runnable
         String user = message.getUserName();
         String pwd  = message.getPassword();
         
-        ///================================================
-        /// TODO: verify user and password matches
-        ///================================================
-        
-        response = MqMessageFactory.createResponse(0, null);
+        int code = 0;
+        String resp = ""; 
+        if (!mController.isPasswordMatch(user, pwd))
+        {
+          code = 8;
+          resp = "Password does not match";
+          success = false;
+        }
+        response = MqMessageFactory.createResponse(code, resp);
         mMessenger.send(response);
       }
     }
@@ -174,7 +178,7 @@ public class ClientHandler extends AKasObject implements Runnable
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Client Id=").append(mClientId.toString()).append("\n")
-      .append(pad).append("  Socket=").append(mSocket.toString()).append("\n")
+      .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(0)).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

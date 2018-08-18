@@ -190,6 +190,14 @@ public class MqClientImpl extends AMqClient
   {
   }
   
+  /**
+   * Authenticate a user
+   * 
+   * @param username The user's name
+   * @param password The user's password
+   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration},
+   * {@code false} otherwise
+   */
   private boolean authenticate(String username, String password)
   {
     mLogger.debug("MqClientImpl::authenticate() - IN");

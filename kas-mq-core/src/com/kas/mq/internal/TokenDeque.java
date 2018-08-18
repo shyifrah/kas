@@ -25,7 +25,7 @@ public class TokenDeque extends ArrayDeque<String> implements IObject
     mOriginalString = str;
     String [] a = str.split(" ");
     for (String word : a)
-      super.offer(word.toUpperCase());
+      super.offer(word);
   }
   
   /**

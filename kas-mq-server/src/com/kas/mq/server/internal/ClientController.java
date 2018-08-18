@@ -75,10 +75,35 @@ public class ClientController extends AKasObject implements IController
    * Get the controller's MQ configuration
    * 
    * @return the controller's MQ configuration
+   * 
+   * @see com.kas.mq.server.internal.IController#getConfig()
    */
   public MqConfiguration getConfig()
   {
     return mConfig;
+  }
+  
+  /**
+   * Get indication if a user's password matches the one defined in the {@link MqConfiguration}
+   * 
+   * @param user The user's name
+   * @param pass The user's password
+   * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
+   * 
+   * @see com.kas.mq.server.internal.IController#isPasswordMatch(String, String)
+   */
+  public boolean isPasswordMatch(String user, String pass)
+  {
+    String confPass = mConfig.getUserPassword(user);
+    if (confPass == null)
+    {
+      if (user == null)
+        return true;
+      else
+        return false;
+    }
+    
+    return confPass.equals(pass);
   }
 
   /**
