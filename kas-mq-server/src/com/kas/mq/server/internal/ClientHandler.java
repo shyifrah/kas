@@ -2,6 +2,7 @@ package com.kas.mq.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
@@ -50,6 +51,11 @@ public class ClientHandler extends AKasObject implements Runnable
   private ILogger mLogger;
   
   /**
+   * Indicator whether handler is still running
+   */
+  private boolean mIsRunning = true;
+  
+  /**
    * Construct a {@link ClientHandler} to handle all incoming and outgoing traffic of the client.<br>
    * <br>
    * Client's transmits messages and received by this handler over the specified {@code socket}.
@@ -77,8 +83,7 @@ public class ClientHandler extends AKasObject implements Runnable
   {
     mLogger.debug("ClientHandler::run() - IN");
     
-    boolean shouldStop = false;
-    while (!shouldStop)
+    while (isRunning())
     {
       mLogger.debug("ClientHandler::run() - Waiting for messages from client...");
       try
@@ -88,18 +93,22 @@ public class ClientHandler extends AKasObject implements Runnable
         {
           mLogger.debug("ClientHandler::run() - Packet received: " + packet.toPrintableString(0));
           boolean success = process(packet);
-          shouldStop = !success;
+          setRunningState(success);
         }
       }
       catch (SocketTimeoutException e)
       {
         mLogger.diag("ClientHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
       }
+      catch (SocketException e)
+      {
+        mLogger.info("Connection to remote host at " + new NetworkAddress(mSocket).toString() + " was dropped");
+        stop();
+      }
       catch (IOException e)
       {
         mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
-        mLogger.error("Connection to remote host at " + new NetworkAddress(mSocket).toString() + " was dropped");
-        shouldStop = true;
+        stop();
       }
     }
     
@@ -136,6 +145,8 @@ public class ClientHandler extends AKasObject implements Runnable
           success = false;
         }
         response = MqMessageFactory.createResponse(code, resp);
+        
+        mLogger.debug("ClientHandler::process() - Responding with the message: " + response.toPrintableString());
         mMessenger.send(response);
       }
     }
@@ -162,6 +173,34 @@ public class ClientHandler extends AKasObject implements Runnable
   public UniqueId getClientId()
   {
     return mClientId;
+  }
+  
+  /**
+   * Check if the handler is still running
+   * 
+   * @return {@code true} if handler is still running, {@code false} otherwise
+   */
+  public synchronized boolean isRunning()
+  {
+    return mIsRunning;
+  }
+  
+  /**
+   * Stop the handler
+   */
+  public void stop()
+  {
+    setRunningState(false);
+  }
+
+  /**
+   * Set the handler's running state
+   * 
+   * @param isRunning A boolean indicating whether the handler should run ({@code true}) or stop ({@code false})
+   */
+  public synchronized void setRunningState(boolean isRunning)
+  {
+    mIsRunning = isRunning;
   }
 
   /**

@@ -1,47 +1,49 @@
 package com.kas.mq.server.internal;
 
+import java.util.Map;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.UniqueId;
+import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.MqMessage;
-import com.kas.mq.impl.MqQueue;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.ServerRepository;
 
 /**
- * The {@link AdminTask}, which is a {@link Runnable} object that will be scheduled for execution
+ * The {@link ServerHouseKeeper}, which is a {@link Runnable} object that will be scheduled for execution
  * at a fixed rate to perform some housekeeping tasks.
  * 
  * @author Pippo
  */
-public class AdminTask extends AKasObject implements Runnable
+public class ServerHouseKeeper extends AKasObject implements Runnable
 {
   private ILogger mLogger;
   private IController mController;
   private ServerRepository mRepository;
+  private MqConfiguration mConfig;
   
   /**
-   * Construct the {@link AdminTask}, passing it the {@link IController} and the {@link ServerRepository}
+   * Construct the {@link ServerHouseKeeper}, passing it the {@link IController} and the {@link ServerRepository}
    * 
    * @param controller The client controller object
    * @param repository The server's queue repository
    */
-  public AdminTask(IController controller, ServerRepository repository)
+  public ServerHouseKeeper(IController controller, ServerRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mController = controller;
     mRepository = repository;
+    mConfig = controller.getConfig();
   }
   
   /**
    * Running the task.<br>
    * <br>
-   * First we check the admin queue, which is a predefined queue for receiving administrative requests.
-   * If a request is found there, the task will process it and continue to the next one.
-   * If there are no administrative requests, the admin task will continue to the second part of its job.
+   * First we scan all client handlers and check if any of them have finished their executions.
+   * If a finished handler is found, remove it from the map.
    * 
-   * In the second part, the task goes over all defined queues and expires messages which their
-   * expiration date has already passed.
+   * Secondly, the admin task goes over all defined queues and expires messages which their expiration date has already passed.
    * 
    * @see java.lang.Runnable#run()
    */
@@ -49,21 +51,28 @@ public class AdminTask extends AKasObject implements Runnable
   {
     mLogger.debug("AdminTask::run() - IN");
     
-    MqQueue adminQueue = mRepository.getAdminQueue();
-    int adminRequests = adminQueue.size();
-    mLogger.trace("Total admin requests in the admin queue: " + adminRequests);
-    
-    for (int i = 0; i < adminRequests; ++i)
+    if (mConfig.isHousekeeperEnabled())
     {
-      MqMessage adm = adminQueue.get();
-      if (adm != null)
+      mLogger.debug("AdminTask::run() - Perform handlers cleanup...");
+      Map<UniqueId, ClientHandler> handlers = mController.getHandlers();
+      for (Map.Entry<UniqueId, ClientHandler> entry : handlers.entrySet())
       {
+        UniqueId uid = entry.getKey();
+        ClientHandler handler = entry.getValue();
         
+        mLogger.diag("AdminTask::run() - Checking handler ID: " + uid);
+        if (handler.isRunning())
+        {
+          mLogger.diag("AdminTask::run() - Handler is still running, skip it");
+        }
+        else
+        {
+          mLogger.debug("AdminTask::run() - Handler " + uid + " finished working. Remove from the map");
+          handlers.remove(uid);
+          ThreadPool.removeTask(handler);
+        }
       }
     }
-    
-    // go over all queues defined in the repository
-    // find expired messages and remove them
     
     mLogger.debug("AdminTask::run() - OUT");
   }

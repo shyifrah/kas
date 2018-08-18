@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeUnit;
 import com.kas.infra.base.ConsoleLogger;
+import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.server.internal.ClientController;
+import com.kas.mq.server.internal.ServerHouseKeeper;
 
 /**
  * MQ server.<br>
@@ -33,6 +36,11 @@ public class KasMqServer extends AKasMqAppl
    * Client controller
    */
   private ClientController mController = null;
+  
+  /**
+   * Housekeeper task
+   */
+  private ServerHouseKeeper mHousekeeper = null;
   
   /**
    * Indicator for server's termination
@@ -87,6 +95,9 @@ public class KasMqServer extends AKasMqAppl
         catch (IOException e) {}
         super.term();
       }
+      
+      mHousekeeper = new ServerHouseKeeper(mController, mRepository);
+      ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
     }
     
     String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");

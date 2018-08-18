@@ -15,6 +15,8 @@ public class MqConfiguration extends AConfiguration
 {
   static private final String  cMqConfigPrefix  = "kas.mq.";
   static private final String  cMqUserConfigPrefix  = cMqConfigPrefix + "user.";
+  static private final String  cMqConnConfigPrefix  = cMqConfigPrefix + "conn.";
+  static private final String  cMqHskpConfigPrefix  = cMqConfigPrefix + "hskp.";
   
   static public final boolean cDefaultEnabled           = true;
   static public final int     cDefaultPort              = 14560;
@@ -23,6 +25,8 @@ public class MqConfiguration extends AConfiguration
   static public final String  cDefaultAdminQueueName    = "local.admin";
   static public final int     cDefaultConnMaxErrors     = 10;
   static public final int     cDefaultConnSocketTimeout = 5000;
+  static public final boolean cDefaultHskpEnabled       = true;
+  static public final long    cDefaultHskpInterval      = 300000;
   
   
   /**
@@ -61,6 +65,16 @@ public class MqConfiguration extends AConfiguration
   private int mConnSocketTimeout = cDefaultConnSocketTimeout; 
   
   /**
+   * Indicator whether KAS/MQ housekeeping is enabled
+   */
+  private boolean mHskpEnabled = cDefaultHskpEnabled; 
+  
+  /**
+   * The interval, in milliseconds, between housekeeping executions
+   */
+  private long mHskpInterval = cDefaultHskpInterval; 
+  
+  /**
    * The timeout, in milliseconds, before socket operations like {@link java.net.ServerSocket#accept() accept()} call will timeout
    */
   private Map<String, String> mUserMap = new ConcurrentHashMap<String, String>(); 
@@ -70,13 +84,15 @@ public class MqConfiguration extends AConfiguration
    */
   public void refresh()
   {
-    mEnabled            = mMainConfig.getBoolProperty    ( cMqConfigPrefix + "enabled"            , mEnabled           );
-    mPort               = mMainConfig.getIntProperty     ( cMqConfigPrefix + "port"               , mPort              );
-    mManagerName        = mMainConfig.getStringProperty  ( cMqConfigPrefix + "managerName"        , mManagerName       );
-    mDeadQueueName      = mMainConfig.getStringProperty  ( cMqConfigPrefix + "deadqName"          , mDeadQueueName     );
-    mAdminQueueName     = mMainConfig.getStringProperty  ( cMqConfigPrefix + "adminqName"         , mAdminQueueName    );
-    mConnMaxErrors      = mMainConfig.getIntProperty     ( cMqConfigPrefix + "conn.maxErrors"     , mConnMaxErrors     );
-    mConnSocketTimeout  = mMainConfig.getIntProperty     ( cMqConfigPrefix + "conn.socketTimeout" , mConnSocketTimeout );
+    mEnabled            = mMainConfig.getBoolProperty    ( cMqConfigPrefix + "enabled"           , mEnabled           );
+    mPort               = mMainConfig.getIntProperty     ( cMqConfigPrefix + "port"              , mPort              );
+    mManagerName        = mMainConfig.getStringProperty  ( cMqConfigPrefix + "managerName"       , mManagerName       );
+    mDeadQueueName      = mMainConfig.getStringProperty  ( cMqConfigPrefix + "deadqName"         , mDeadQueueName     );
+    mAdminQueueName     = mMainConfig.getStringProperty  ( cMqConfigPrefix + "adminqName"        , mAdminQueueName    );
+    mConnMaxErrors      = mMainConfig.getIntProperty     ( cMqConnConfigPrefix + "maxErrors"     , mConnMaxErrors     );
+    mConnSocketTimeout  = mMainConfig.getIntProperty     ( cMqConnConfigPrefix + "socketTimeout" , mConnSocketTimeout );
+    mHskpEnabled        = mMainConfig.getBoolProperty    ( cMqHskpConfigPrefix + "enabled"       , mHskpEnabled       );
+    mHskpInterval       = mMainConfig.getLongProperty    ( cMqHskpConfigPrefix + "interval"      , mHskpInterval      );
     
     mUserMap.clear();
     
@@ -160,6 +176,26 @@ public class MqConfiguration extends AConfiguration
   }
   
   /**
+   * Get whether the KAS/MQ housekeeping is enabled or disabled
+   * 
+   * @return {@code true} if KAS/MQ housekeeping is enabled, {@code false} otherwise
+   */
+  public boolean isHousekeeperEnabled()
+  {
+    return mHskpEnabled;
+  }
+  
+  /**
+   * Get the housekeeper interval length in milliseconds
+   * 
+   * @return the housekeeper interval length in milliseconds
+   */
+  public long getHousekeeperInterval()
+  {
+    return mHskpInterval;
+  }
+  
+  /**
    * Gets a user's password
    * 
    * @param user The user's name
@@ -191,6 +227,10 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("  Connection Settings=(\n")
       .append(pad).append("    MaxErrors=").append(mConnMaxErrors).append("\n")
       .append(pad).append("    Timeout=").append(mConnSocketTimeout).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append("  Housekeeper=(\n")
+      .append(pad).append("    Enabled=").append(mHskpEnabled).append("\n")
+      .append(pad).append("    Interval=").append(mHskpInterval).append(" milliseconds\n")
       .append(pad).append("  )\n")
       .append(pad).append("  Users=(\n")
       .append(pad).append(StringUtils.asPrintableString(mUserMap, level+2))

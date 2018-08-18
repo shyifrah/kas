@@ -105,6 +105,18 @@ public class ClientController extends AKasObject implements IController
     
     return confPass.equals(pass);
   }
+  
+  /**
+   * Get handlers map
+   * 
+   * @return the handlers map
+   * 
+   * @see com.kas.mq.server.internal.IController#getHandlers()
+   */
+  public Map<UniqueId, ClientHandler> getHandlers()
+  {
+    return mHandlers;
+  }
 
   /**
    * Get the object's detailed string representation

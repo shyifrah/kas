@@ -1,6 +1,8 @@
 package com.kas.mq.server.internal;
 
+import java.util.Map;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
 
 /**
@@ -24,4 +26,11 @@ public interface IController extends IObject
    * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
    */
   public abstract boolean isPasswordMatch(String user, String pass);
+  
+  /**
+   * Get handlers map
+   * 
+   * @return the handlers map
+   */
+  public abstract Map<UniqueId, ClientHandler> getHandlers();
 }
