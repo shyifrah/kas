@@ -15,6 +15,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.internal.ERequestType;
 
@@ -49,6 +50,16 @@ public class ClientHandler extends AKasObject implements Runnable
    * Logger
    */
   private ILogger mLogger;
+  
+  /**
+   * Client credentials
+   */
+  private String mUserName;
+  
+  /**
+   * Client credentials
+   */
+  private MqQueue mOpenedQueue;
   
   /**
    * Indicator whether handler is still running
@@ -133,12 +144,12 @@ public class ClientHandler extends AKasObject implements Runnable
       ERequestType requestType = message.getRequestType();
       if (requestType == ERequestType.cAuthenticate)
       {
-        String user = message.getUserName();
+        mUserName = message.getUserName();
         String pwd  = message.getPassword();
         
         int code = 0;
         String resp = ""; 
-        if (!mController.isPasswordMatch(user, pwd))
+        if (!mController.isPasswordMatch(mUserName, pwd))
         {
           code = 8;
           resp = "Password does not match";

@@ -9,10 +9,11 @@ import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.ThrowableFormatter;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponseMessage;
+import com.kas.mq.internal.ERequestType;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqQueue;
 
 /**
  * A client implementation that actually carries out the requests made by the facade client.
@@ -31,6 +32,11 @@ public class MqClientImpl extends AMqClient
    * A logger
    */
   private ILogger mLogger;
+  
+  /**
+   * Target queue
+   */
+  private String mQueue;
   
   /**
    * Constructing the client
@@ -155,39 +161,168 @@ public class MqClientImpl extends AMqClient
   }
   
   /**
-   * Open a queue
+   * Open the specified queue.
+   * 
+   * @param queue The queue name to open.
+   * @return the {@link MqQueue} object if queue was opened, {@code null} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#open(String)
    */
-  public MqQueue open(String queue)
+  public boolean open(String queue)
   {
-    return null;
+    mLogger.debug("MqClientImpl::open() - IN");
+    
+    if (isOpen())
+    {
+      close();
+    }
+    
+    boolean success = false;
+    MqMessage request = MqMessageFactory.createOpenRequest(queue);
+    try
+    {
+      IPacket packet = mMessenger.sendAndReceive(request);
+      MqResponseMessage response = (MqResponseMessage)packet;
+      if (response.getResponseCode() == 0)
+      {
+        success = true;
+        mLogger.debug("MqClientImpl::open() - Queue " + queue + " was successfully opened");
+        mQueue = queue;
+      }
+      else
+      {
+        String message = response.getResponseMessage();
+        setResponse(message);
+        mLogger.info(message);
+      }
+    }
+    catch (Throwable e) {}
+    
+    mLogger.debug("MqClientImpl::open() - OUT, Returns=" + success);
+    return success;
   }
-
+  
+  /**
+   * Close the specified queue.
+   * 
+   * @see com.kas.mq.client.IClient#close()
+   */
   public void close()
   {
+    mLogger.debug("MqClientImpl::close() - IN");
+    
+    mQueue = null;
+    
+    mLogger.debug("MqClientImpl::close() - OUT");
   }
-
-  public MqMessage createMessage()
+  
+  /**
+   * Get the opened queue status
+   * 
+   * @return {@code true} if the client has already opened a queue, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#isOpened()
+   */
+  public boolean isOpen()
   {
-    return null;
+    return mQueue != null;
   }
-
-  public MqMessage get()
+  
+  /**
+   * Get a message from queue.
+   * 
+   * @param timeout The number of milliseconds to wait until a message available
+   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
+   */
+  public MqMessage get(int timeout)
   {
-    return null;
+    mLogger.debug("MqClientImpl::get() - IN");
+    
+    MqMessage result = null;
+    
+    if (!isOpen())
+    {
+      String response = "Cannot get a message. Need to open a queue first";
+      setResponse(response);
+      mLogger.debug(response);
+    }
+    else
+    {
+      try
+      {
+        MqMessage request = MqMessageFactory.createGetRequest(mQueue);
+        IPacket packet = mMessenger.sendAndReceive(request, timeout);
+        MqResponseMessage response = (MqResponseMessage)packet;
+        if (response.getResponseCode() == 0)
+        {
+          mLogger.debug("MqClientImpl::get() - Message received successfully. Message: " + response);
+          result = response;
+        }
+        else
+        {
+          String message = response.getResponseMessage();
+          setResponse(message);
+          mLogger.info(message);
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to get a message from queue [")
+          .append(mQueue)
+          .append("]. Exception: ")
+          .append(new ThrowableFormatter(e).toString());
+        String response = sb.toString();
+        mLogger.error(response);
+        setResponse(response);
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::get() - OUT");
+    return result;
   }
-
-  public MqMessage getAndWait()
-  {
-    return null;
-  }
-
-  public MqMessage getAndWaitWithTimeout(long timeout)
-  {
-    return null;
-  }
-
+  
+  /**
+   * Put a message into queue.<br>
+   * <br>
+   * The message is basically handled by the server side, except for the target queue name, which must be
+   * filled prior to sending it.
+   * 
+   * @param message The message to be put
+   */
   public void put(MqMessage message)
   {
+    mLogger.debug("MqClientImpl::put() - IN");
+    
+    if (!isOpen())
+    {
+      String response = "Cannot put a message. Need to open a queue first";
+      setResponse(response);
+      mLogger.debug(response);
+    }
+    else
+    {
+      message.setQueueName(mQueue);
+      message.setRequestType(ERequestType.cPut);
+      try
+      {
+        mMessenger.send(message);
+        mLogger.debug("Message with ID=(" + message.getMessageId() + ") was successfully put into queue " + mQueue);
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to put a message into queue [")
+          .append(mQueue)
+          .append("]. Exception: ")
+          .append(new ThrowableFormatter(e).toString());
+        String response = sb.toString();
+        mLogger.error(response);
+        setResponse(response);
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::put() - OUT");
   }
   
   /**
@@ -211,6 +346,7 @@ public class MqClientImpl extends AMqClient
       if (response.getResponseCode() == 0)
       {
         success = true;
+        mLogger.debug("MqClientImpl::authenticate() - client was successfully authenticated");
       }
       else
       {
@@ -219,7 +355,17 @@ public class MqClientImpl extends AMqClient
         mLogger.info(message);
       }
     }
-    catch (Throwable e) {}
+    catch (IOException e)
+    {
+      StringBuilder sb = new StringBuilder();
+      sb.append("Exception occurred during authentication of user [")
+        .append(username)
+        .append("]. Exception: ")
+        .append(new ThrowableFormatter(e).toString());
+      String response = sb.toString();
+      mLogger.error(response);
+      setResponse(response);
+    }
     
     mLogger.debug("MqClientImpl::authenticate() - OUT, Returns=" + success);
     return success;

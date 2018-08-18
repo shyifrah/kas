@@ -38,6 +38,12 @@ public class DisconnectCommand extends ACliCommand
    */
   public void help()
   {
+    if (mCommandArgs.size() > 0)
+    {
+      writeln("Execssive command arguments are ignored for HELP DISC");
+      writeln(" ");
+    }
+    
     writeln("Purpose: ");
     writeln(" ");
     writeln("     Disconnect current active connection.");
@@ -69,7 +75,7 @@ public class DisconnectCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      mClient.setResponse("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP DISCONNECT to see available command options");
+      mClient.setResponse("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP DISC to see available command options");
       return false;
     }
     

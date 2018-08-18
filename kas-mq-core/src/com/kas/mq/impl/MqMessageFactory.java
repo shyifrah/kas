@@ -12,6 +12,22 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqMessage createOpenRequest(String queue)
+  {
+    MqMessage message = new MqMessage();
+    message.setRequestType(ERequestType.cOpenQueue);
+    message.setQueueName(queue);
+    return message;
+  }
+  
+  static public MqMessage createGetRequest(String queue)
+  {
+    MqMessage message = new MqMessage();
+    message.setRequestType(ERequestType.cGet);
+    message.setQueueName(queue);
+    return message;
+  }
+  
   static public MqResponseMessage createResponse(int code, String response)
   {
     MqResponseMessage message = new MqResponseMessage();

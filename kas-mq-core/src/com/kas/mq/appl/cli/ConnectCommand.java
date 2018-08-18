@@ -38,6 +38,12 @@ public class ConnectCommand extends ACliCommand
    */
   public void help()
   {
+    if (mCommandArgs.size() > 0)
+    {
+      writeln("Execssive command arguments are ignored for HELP CONN");
+      writeln(" ");
+    }
+    
     writeln("Purpose: ");
     writeln(" ");
     writeln("     Connect to a host - IP address or host name - on a specific port.");
@@ -53,6 +59,7 @@ public class ConnectCommand extends ACliCommand
     writeln("     Connect to the specified host or IP address on the specified port number, or 14560 if no port is specified.");
     writeln("     The host or the IP address are NOT checked for a valid format. However, the command processor does verify");
     writeln("     that the port number has a valid numeric value.");
+    writeln("     Once the host and port were validated, the user will be propmpted for its user name and password.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");

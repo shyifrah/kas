@@ -3,7 +3,6 @@ package com.kas.mq.client;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqMessage;
-import com.kas.mq.impl.MqQueue;
 
 /**
  * This is the interface all KAS/MQ clients should implement. 
@@ -45,9 +44,9 @@ public interface IClient extends IObject
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
-   * @return the {@link MqQueue} object if queue was opened, {@code null} otherwise
+   * @return {@code true} if queue was opened, {@code false} otherwise
    */
-  public abstract MqQueue open(String queue);
+  public abstract boolean open(String queue);
   
   /**
    * Close the specified queue.
@@ -55,38 +54,24 @@ public interface IClient extends IObject
   public abstract void close();
   
   /**
-   * Create a {@link MqMessage} object.
+   * Get the opened queue status
    * 
-   * @return the {@link MqMessage} object.
+   * @return {@code true} if the client has already opened a queue, {@code false} otherwise
    */
-  public abstract MqMessage createMessage();
+  public abstract boolean isOpen();
   
   /**
-   * Get a message from the opened queue.
+   * Get a message from the opened queue
    * 
+   * @param timeout The number of milliseconds to wait until a message available
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract MqMessage get();
-  
-  /**
-   * Get a message from the opened queue and wait indefinitely if one is unavailable.
-   * 
-   * @return the {@link MqMessage} object
-   */
-  public abstract MqMessage getAndWait();
-  
-  /**
-   * Get a message from the opened queue and wait for {@code timeout} milliseconds if one is unavailable.
-   * 
-   * @param timeout The number of milliseconds
-   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
-   */
-  public abstract MqMessage getAndWaitWithTimeout(long timeout);
+  public abstract MqMessage get(int timeout);
   
   /**
    * Put a {@link MqMessage} into the opened queue.
    * 
-   * @param the {@link MqMessage} to put into the opened queue
+   * @param message The {@link MqMessage} to put into the opened queue
    */
   public abstract void put(MqMessage message);
   

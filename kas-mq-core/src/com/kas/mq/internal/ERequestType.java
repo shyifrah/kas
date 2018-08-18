@@ -20,14 +20,41 @@ public enum ERequestType implements IObject
   cAuthenticate,
   
   /**
-   * Shutdown KAS/MQ server
+   * Open queue
    */
-  cShutdown,
+  cOpenQueue,
+  
+  /**
+   * Close queue
+   */
+  cCloseQueue,
+  
+  /**
+   * Put message
+   */
+  cPut,
+  
+  /**
+   * Get message
+   */
+  cGet,
   
   /**
    * Define a queue
    */
   cDefineQueue,
+  
+  /**
+   * Define a queue
+   */
+  cDeleteQueue,
+  
+  /**
+   * Shutdown KAS/MQ server
+   */
+  cShutdown,
+  
+  
   ;
   
   static final private ERequestType [] cValues = ERequestType.values();
