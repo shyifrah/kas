@@ -22,7 +22,6 @@ public class MqConfiguration extends AConfiguration
   static public final int     cDefaultPort              = 14560;
   static public final String  cDefaultManagerName       = "qmgr";
   static public final String  cDefaultDeadQueueName     = "local.dead";
-  static public final String  cDefaultAdminQueueName    = "local.admin";
   static public final int     cDefaultConnMaxErrors     = 10;
   static public final int     cDefaultConnSocketTimeout = 5000;
   static public final boolean cDefaultHskpEnabled       = true;
@@ -48,11 +47,6 @@ public class MqConfiguration extends AConfiguration
    * The name of the dead queue 
    */
   private String mDeadQueueName = cDefaultDeadQueueName;
-  
-  /**
-   * The name of the administration queue
-   */
-  private String mAdminQueueName = cDefaultAdminQueueName;
   
   /**
    * The maximum number of errors the KAS/MQ server will tolerate before shutting down
@@ -88,7 +82,6 @@ public class MqConfiguration extends AConfiguration
     mPort               = mMainConfig.getIntProperty     ( cMqConfigPrefix + "port"              , mPort              );
     mManagerName        = mMainConfig.getStringProperty  ( cMqConfigPrefix + "managerName"       , mManagerName       );
     mDeadQueueName      = mMainConfig.getStringProperty  ( cMqConfigPrefix + "deadqName"         , mDeadQueueName     );
-    mAdminQueueName     = mMainConfig.getStringProperty  ( cMqConfigPrefix + "adminqName"        , mAdminQueueName    );
     mConnMaxErrors      = mMainConfig.getIntProperty     ( cMqConnConfigPrefix + "maxErrors"     , mConnMaxErrors     );
     mConnSocketTimeout  = mMainConfig.getIntProperty     ( cMqConnConfigPrefix + "socketTimeout" , mConnSocketTimeout );
     mHskpEnabled        = mMainConfig.getBoolProperty    ( cMqHskpConfigPrefix + "enabled"       , mHskpEnabled       );
@@ -143,16 +136,6 @@ public class MqConfiguration extends AConfiguration
   public String getDeadQueueName()
   {
     return mDeadQueueName;
-  }
-  
-  /**
-   * Gets the name of the administration queue
-   * 
-   * @return the name of the administration queue
-   */
-  public String getAdminQueueName()
-  {
-    return mAdminQueueName;
   }
   
   /**
@@ -223,7 +206,6 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("  Name=").append(mManagerName).append("\n")
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  DeadQueueName=").append(mDeadQueueName).append("\n")
-      .append(pad).append("  AdminQueueName=").append(mAdminQueueName).append("\n")
       .append(pad).append("  Connection Settings=(\n")
       .append(pad).append("    MaxErrors=").append(mConnMaxErrors).append("\n")
       .append(pad).append("    Timeout=").append(mConnSocketTimeout).append("\n")

@@ -35,9 +35,8 @@ public class QueueRepository extends AKasObject implements IRepository
   private Map<String, MqQueue> mQueueMap;
   
   /**
-   * Admin and Dead queue
+   * Dead queue name
    */
-  private MqQueue mAdminQueue;
   private MqQueue mDeadQueue;
   
   /**
@@ -50,7 +49,6 @@ public class QueueRepository extends AKasObject implements IRepository
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
     mQueueMap = new ConcurrentHashMap<String, MqQueue>();
-    mAdminQueue = null;
     mDeadQueue = null;
   }
   
@@ -101,7 +99,6 @@ public class QueueRepository extends AKasObject implements IRepository
         }
       }
       
-      mAdminQueue = getOrCreateQueue(mConfig.getAdminQueueName());
       mDeadQueue  = getOrCreateQueue(mConfig.getDeadQueueName());
     }
     
