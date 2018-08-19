@@ -12,7 +12,6 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.ServerRepository;
 
 /**
@@ -92,26 +91,15 @@ public class ClientController extends AKasObject implements IController
   }
   
   /**
-   * Get indication if a user's password matches the one defined in the {@link MqConfiguration}
+   * Get the server's repository
    * 
-   * @param user The user's name
-   * @param pass The user's password
-   * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
+   * @return the server's repository
    * 
-   * @see com.kas.mq.server.internal.IController#isPasswordMatch(String, String)
+   * @see com.kas.mq.server.internal.IController#getRepository()
    */
-  public boolean isPasswordMatch(String user, String pass)
+  public ServerRepository getRepository()
   {
-    String confPass = mConfig.getUserPassword(user);
-    if (confPass == null)
-    {
-      if (user == null)
-        return true;
-      else
-        return false;
-    }
-    
-    return confPass.equals(pass);
+    return mRepository;
   }
   
   /**
@@ -124,19 +112,6 @@ public class ClientController extends AKasObject implements IController
   public Map<UniqueId, ClientHandler> getHandlers()
   {
     return mHandlers;
-  }
-
-  /**
-   * Get queue by name
-   * 
-   * @param queue The queue name
-   * @return the {@link MqQueue} object associated with the specified queue name
-   * 
-   * @see com.kas.mq.server.internal.IController#getQueue(String)
-   */
-  public MqQueue getQueue(String name)
-  {
-    return mRepository.getQueue(name);
   }
 
   /**

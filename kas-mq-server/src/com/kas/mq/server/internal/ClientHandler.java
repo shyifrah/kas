@@ -7,34 +7,29 @@ import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
-import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqMessage;
-import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.internal.ERequestType;
+import com.kas.mq.server.resp.SessionResponder;
 
 /**
  * A {@link ClientHandler} is the object that handles the traffic in and from a remote client.
  * 
  * @author Pippo
  */
-public class ClientHandler extends AKasObject implements Runnable
+public class ClientHandler extends AKasObject implements Runnable, IHandler
 {
   /**
-   * The client's unique ID
+   * Logger
    */
-  private UniqueId mClientId;
-  
-  /**
-   * The client socket
-   */
-  private Socket mSocket;
+  private ILogger mLogger;
   
   /**
    * Messenger
@@ -42,24 +37,29 @@ public class ClientHandler extends AKasObject implements Runnable
   private IMessenger mMessenger;
   
   /**
+   * The client's unique ID
+   */
+  private UniqueId mClientId;
+  
+  /**
    * The client controller
    */
   private IController mController;
   
   /**
-   * Logger
+   * The session responder
    */
-  private ILogger mLogger;
+  private SessionResponder mSessionResponder;
   
   /**
-   * Client credentials
+   * Active user name
    */
-  private String mUserName;
+  private String mActiveUserName;
   
   /**
-   * Client credentials
+   * Active queue
    */
-  private MqQueue mOpenedQueue;
+  private MqQueue mActiveQueue;
   
   /**
    * Indicator whether handler is still running
@@ -78,9 +78,8 @@ public class ClientHandler extends AKasObject implements Runnable
   ClientHandler(Socket socket, IController controller) throws IOException
   {
     mController = controller;
-    mSocket = socket;
-    mSocket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
-    mMessenger = MessengerFactory.create(mSocket);
+    socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
+    mMessenger = MessengerFactory.create(socket);
     
     mClientId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
@@ -113,7 +112,7 @@ public class ClientHandler extends AKasObject implements Runnable
       }
       catch (SocketException e)
       {
-        mLogger.info("Connection to remote host at " + new NetworkAddress(mSocket).toString() + " was dropped");
+        mLogger.info("Connection to remote host at " + mMessenger.getAddress() + " was dropped");
         stop();
       }
       catch (IOException e)
@@ -136,59 +135,26 @@ public class ClientHandler extends AKasObject implements Runnable
   {
     mLogger.debug("ClientHandler::process() - IN");
     
-    boolean success = true;
+    boolean cont = true;
     MqResponseMessage response = null;
-    int respCode = 0;
-    String respMsg = "";
     try
     {
-      MqMessage message = (MqMessage)packet;
-      ERequestType requestType = message.getRequestType();
+      MqMessage request = (MqMessage)packet;
+      ERequestType requestType = request.getRequestType();
       if (requestType == ERequestType.cAuthenticate)
       {
-        String user = message.getUserName();
-        String pwd  = message.getPassword();
-        
-        if (!mController.isPasswordMatch(user, pwd))
-        {
-          respCode = 8;
-          respMsg = "Password does not match";
-          success = false;
-        }
-        else
-        {
-          mUserName = user;
-        }
+        response = mSessionResponder.authenticate(request);
+        if (response.getResponseCode() != 0)
+          cont = false;
       }
       else if (requestType == ERequestType.cOpenQueue)
       {
-        String queue = message.getQueueName();
-        MqQueue mqq = mController.getQueue(queue);
-        
-        if (mqq == null)
-        {
-          respCode = 8;
-          respMsg = "Queue does not exist";
-        }
-        else
-        {
-          mOpenedQueue = mqq;
-        }
+        response = mSessionResponder.open(request);
       }
       else if (requestType == ERequestType.cCloseQueue)
       {
-        if (mOpenedQueue == null)
-        {
-          respCode = 4;
-          respMsg = "No opened queue";
-        }
-        else
-        {
-          mOpenedQueue = null;
-        }
+        response = mSessionResponder.close(request);
       }
-      
-      response = MqMessageFactory.createResponse(respCode, respMsg);
       
       mLogger.debug("ClientHandler::process() - Responding with the message: " + response.toPrintableString());
       mMessenger.send(response);
@@ -196,16 +162,100 @@ public class ClientHandler extends AKasObject implements Runnable
     catch (ClassCastException e)
     {
       mLogger.error("Invalid message received from remote client. Message: " + packet);
-      success = false;
+      cont = false;
     }
     catch (IOException e)
     {
       mLogger.error("Failed to send response message to remote client. Message: " + StringUtils.asString(response));
-      success = false;
+      cont = false;
     }
     
-    mLogger.debug("ClientHandler::process() - OUT, Returns=" + success);
-    return success;
+    mLogger.debug("ClientHandler::process() - OUT, Returns=" + cont);
+    return cont;
+  }
+  
+  /**
+   * Get the active user name
+   * 
+   * @return the active user name
+   * 
+   * @see com.kas.mq.server.internal.IHandler#getActiveUserName()
+   */
+  public String getActiveUserName()
+  {
+    return mActiveUserName;
+  }
+  
+  /**
+   * Set the active user name
+   * 
+   * @param username The active user name
+   * 
+   * @see com.kas.mq.server.internal.IHandler#setActiveUserName(String)
+   */
+  public void setActiveUserName(String username)
+  {
+    mActiveUserName = username;
+  }
+  
+  /**
+   * Get the active queue
+   * 
+   * @return the active queue, or {@code null} if closed
+   * 
+   * @see com.kas.mq.server.internal.IHandler#getQueue()
+   */
+  public MqQueue getActiveQueue()
+  {
+    return mActiveQueue;
+  }
+  
+  /**
+   * Set the active queue
+   * 
+   * @param queue The active queue
+   * 
+   * @see com.kas.mq.server.internal.IHandler#setQueue(MqQueue)
+   */
+  public void setActiveQueue(MqQueue queue)
+  {
+    mActiveQueue = queue;
+  }
+  
+  /**
+   * Get indication if a user's password matches the one defined in the {@link MqConfiguration}
+   * 
+   * @param user The user's name
+   * @param pass The user's password
+   * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
+   * 
+   * @see com.kas.mq.server.internal.IHandler#isPasswordMatch(String, String)
+   */
+  public boolean isPasswordMatch(String user, String pass)
+  {
+    String confPass = mController.getConfig().getUserPassword(user);
+    if (confPass == null)
+    {
+      if (user == null)
+        return true;
+      else
+        return false;
+    }
+    
+    return confPass.equals(pass);
+  }
+  
+  /**
+   * Get queue by name
+   * 
+   * @param queue The queue name
+   * @return the {@link MqQueue} object associated with the specified queue name
+   * 
+   * @see com.kas.mq.server.internal.IHandler#getQueue(String)
+   */
+  public MqQueue getQueue(String name)
+  {
+    return mController.getRepository().getQueue(name);
   }
   
   /**

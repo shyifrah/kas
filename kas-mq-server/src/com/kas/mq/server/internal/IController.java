@@ -4,7 +4,7 @@ import java.util.Map;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.MqQueue;
+import com.kas.mq.server.ServerRepository;
 
 /**
  * {@link IController} is an interface that will provide functionality for {@link ClientHandler ClientHandlers}.
@@ -20,13 +20,11 @@ public interface IController extends IObject
   public abstract MqConfiguration getConfig();
   
   /**
-   * Get indication if a user's password matches the one defined in the {@link MqConfiguration}
+   * Get the server's repository
    * 
-   * @param user The user's name
-   * @param pass The user's password
-   * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
+   * @return the server's repository
    */
-  public abstract boolean isPasswordMatch(String user, String pass);
+  public abstract ServerRepository getRepository();
   
   /**
    * Get handlers map
@@ -34,12 +32,4 @@ public interface IController extends IObject
    * @return the handlers map
    */
   public abstract Map<UniqueId, ClientHandler> getHandlers();
-  
-  /**
-   * Get queue by name
-   * 
-   * @param queue The queue name
-   * @return the {@link MqQueue} object associated with the specified queue name
-   */
-  public abstract MqQueue getQueue(String name);
 }
