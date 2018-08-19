@@ -85,6 +85,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     
     mSessionId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
+    mSessionResponder = new SessionResponder(this);
   }
   
   /**

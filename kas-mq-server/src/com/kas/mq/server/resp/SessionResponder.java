@@ -25,7 +25,7 @@ public class SessionResponder extends AKasObject
    * 
    * @param handler The handler that created this object
    */
-  SessionResponder(IHandler handler)
+  public SessionResponder(IHandler handler)
   {
     mHandler = handler;
   }

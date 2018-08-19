@@ -36,6 +36,13 @@ public class MqMessageFactory
     return message;
   }
   
+  /**
+   * Create a response message
+   * 
+   * @param code The code of the response. An integer value representing how successful was the request.
+   * @param response The message sent by the server to the client which describes the response code.
+   * @return a {@link MqResponseMessage}
+   */
   static public MqResponseMessage createResponse(int code, String response)
   {
     MqResponseMessage message = new MqResponseMessage();

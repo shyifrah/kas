@@ -254,7 +254,8 @@ public class MqClientImpl extends AMqClient
         MqResponseMessage response = (MqResponseMessage)packet;
         if (response.getResponseCode() == 0)
         {
-          mLogger.debug("MqClientImpl::close() - Queue " + queue + " was successfully closed");
+          String message = "Queue " + queue + " was successfully opened";
+          mLogger.debug("MqClientImpl::close() - " + message);
           mQueue = null;
         }
         else
