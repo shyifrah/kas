@@ -1,10 +1,10 @@
-package com.kas.mq.server.internal;
+package com.kas.mq.server;
 
 import java.util.Map;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.server.ServerRepository;
+import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * {@link IController} is an interface that will provide functionality for {@link SessionHandler ClientHandlers}.
@@ -24,7 +24,7 @@ public interface IController extends IObject
    * 
    * @return the server's repository
    */
-  public abstract ServerRepository getRepository();
+  public abstract IRepository getRepository();
   
   /**
    * Get handlers map

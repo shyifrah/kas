@@ -5,7 +5,7 @@ import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponseMessage;
-import com.kas.mq.server.internal.IHandler;
+import com.kas.mq.server.IHandler;
 
 /**
  * A {@link SessionResponder session responder} object is the object that responsible for

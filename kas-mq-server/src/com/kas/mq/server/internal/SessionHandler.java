@@ -17,6 +17,8 @@ import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.internal.ERequestType;
+import com.kas.mq.server.IController;
+import com.kas.mq.server.IHandler;
 import com.kas.mq.server.resp.SessionResponder;
 
 /**
@@ -37,12 +39,12 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   private IMessenger mMessenger;
   
   /**
-   * The client's unique ID
+   * The session's unique ID
    */
-  private UniqueId mClientId;
+  private UniqueId mSessionId;
   
   /**
-   * The client controller
+   * The sessions controller
    */
   private IController mController;
   
@@ -67,7 +69,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   private boolean mIsRunning = true;
   
   /**
-   * Construct a {@link SessionHandler} to handle all incoming and outgoing traffic of the client.<br>
+   * Construct a {@link SessionHandler} to handle all incoming and outgoing traffic from a remote client.<br>
    * <br>
    * Client's transmits messages and received by this handler over the specified {@code socket}.
    *  
@@ -81,7 +83,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
     mMessenger = MessengerFactory.create(socket);
     
-    mClientId = UniqueId.generate();
+    mSessionId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
   }
   
@@ -91,24 +93,24 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    */
   public void run()
   {
-    mLogger.debug("ClientHandler::run() - IN");
+    mLogger.debug("SessionHandler::run() - IN");
     
     while (isRunning())
     {
-      mLogger.debug("ClientHandler::run() - Waiting for messages from client...");
+      mLogger.debug("SessionHandler::run() - Waiting for messages from client...");
       try
       {
         IPacket packet = mMessenger.receive();
         if (packet != null)
         {
-          mLogger.debug("ClientHandler::run() - Packet received: " + packet.toPrintableString(0));
+          mLogger.debug("SessionHandler::run() - Packet received: " + packet.toPrintableString(0));
           boolean success = process(packet);
           setRunningState(success);
         }
       }
       catch (SocketTimeoutException e)
       {
-        mLogger.diag("ClientHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
+        mLogger.diag("SessionHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
       }
       catch (SocketException e)
       {
@@ -122,7 +124,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       }
     }
     
-    mLogger.debug("ClientHandler::run() - OUT");
+    mLogger.debug("SessionHandler::run() - OUT");
   }
   
   /**
@@ -133,7 +135,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    */
   private boolean process(IPacket packet)
   {
-    mLogger.debug("ClientHandler::process() - IN");
+    mLogger.debug("SessionHandler::process() - IN");
     
     boolean cont = true;
     MqResponseMessage response = null;
@@ -156,7 +158,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
         response = mSessionResponder.close(request);
       }
       
-      mLogger.debug("ClientHandler::process() - Responding with the message: " + response.toPrintableString());
+      mLogger.debug("SessionHandler::process() - Responding with the message: " + response.toPrintableString());
       mMessenger.send(response);
     }
     catch (ClassCastException e)
@@ -170,7 +172,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       cont = false;
     }
     
-    mLogger.debug("ClientHandler::process() - OUT, Returns=" + cont);
+    mLogger.debug("SessionHandler::process() - OUT, Returns=" + cont);
     return cont;
   }
   
@@ -179,7 +181,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * 
    * @return the active user name
    * 
-   * @see com.kas.mq.server.internal.IHandler#getActiveUserName()
+   * @see com.kas.mq.server.IHandler#getActiveUserName()
    */
   public String getActiveUserName()
   {
@@ -191,7 +193,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * 
    * @param username The active user name
    * 
-   * @see com.kas.mq.server.internal.IHandler#setActiveUserName(String)
+   * @see com.kas.mq.server.IHandler#setActiveUserName(String)
    */
   public void setActiveUserName(String username)
   {
@@ -203,7 +205,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * 
    * @return the active queue, or {@code null} if closed
    * 
-   * @see com.kas.mq.server.internal.IHandler#getQueue()
+   * @see com.kas.mq.server.IHandler#getQueue()
    */
   public MqQueue getActiveQueue()
   {
@@ -215,7 +217,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * 
    * @param queue The active queue
    * 
-   * @see com.kas.mq.server.internal.IHandler#setQueue(MqQueue)
+   * @see com.kas.mq.server.IHandler#setQueue(MqQueue)
    */
   public void setActiveQueue(MqQueue queue)
   {
@@ -229,7 +231,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * @param pass The user's password
    * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
    * 
-   * @see com.kas.mq.server.internal.IHandler#isPasswordMatch(String, String)
+   * @see com.kas.mq.server.IHandler#isPasswordMatch(String, String)
    */
   public boolean isPasswordMatch(String user, String pass)
   {
@@ -251,7 +253,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * @param queue The queue name
    * @return the {@link MqQueue} object associated with the specified queue name
    * 
-   * @see com.kas.mq.server.internal.IHandler#getQueue(String)
+   * @see com.kas.mq.server.IHandler#getQueue(String)
    */
   public MqQueue getQueue(String name)
   {
@@ -259,13 +261,13 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   }
   
   /**
-   * Get the client unique ID
+   * Get the session unique ID
    * 
-   * @return the client unique ID
+   * @return the session unique ID
    */
-  public UniqueId getClientId()
+  public UniqueId getSessionId()
   {
-    return mClientId;
+    return mSessionId;
   }
   
   /**
@@ -309,7 +311,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Client Id=").append(mClientId.toString()).append("\n")
+      .append(pad).append("  Session Id=").append(mSessionId.toString()).append("\n")
       .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(0)).append("\n")
       .append(pad).append(")");
     return sb.toString();

@@ -1,8 +1,9 @@
-package com.kas.mq.server.internal;
+package com.kas.mq.server;
 
 import com.kas.infra.base.IObject;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqQueue;
+import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * The handler is responsible for updating the read/write data members of the {@link SessionHandler}

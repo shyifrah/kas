@@ -11,6 +11,7 @@ import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.server.internal.SessionController;
+import com.kas.mq.server.internal.QueueRepository;
 import com.kas.mq.server.internal.ServerHouseKeeper;
 
 /**
@@ -30,10 +31,10 @@ public class KasMqServer extends AKasMqAppl
   /**
    * Server repository
    */
-  private ServerRepository mRepository = null;
+  private IRepository mRepository = null;
   
   /**
-   * Client controller
+   * {@link Session controller}
    */
   private SessionController mController = null;
   
@@ -52,7 +53,7 @@ public class KasMqServer extends AKasMqAppl
    * <br>
    * Initialization consisting of:
    * - super class initialization
-   * - creating client controller
+   * - creating session controller
    * - creating the server's listener socket
    * - creating the server's repository
    * 
@@ -68,7 +69,7 @@ public class KasMqServer extends AKasMqAppl
     else
     {
       mLogger.info("KAS/MQ base application initialized successfully");
-      mRepository = new ServerRepository(mConfig);
+      mRepository = new QueueRepository(mConfig);
       mController = new SessionController(mConfig, mRepository);
       
       try
@@ -152,7 +153,7 @@ public class KasMqServer extends AKasMqAppl
   /**
    * Run KAS/MQ server.<br>
    * <br>
-   * The main logic is quite simple: keep accepting new client connections as long as the main thread
+   * The main logic is quite simple: keep accepting new sessions as long as the main thread
    * was not signaled to shutdown. 
    */
   public void run()

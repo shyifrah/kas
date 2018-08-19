@@ -8,7 +8,8 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.server.ServerRepository;
+import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * The {@link ServerHouseKeeper}, which is a {@link Runnable} object that will be scheduled for execution
@@ -20,7 +21,7 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
 {
   private ILogger mLogger;
   private IController mController;
-  private ServerRepository mRepository;
+  private IRepository mRepository;
   private MqConfiguration mConfig;
   
   /**
@@ -29,7 +30,7 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
    * @param controller The client controller object
    * @param repository The server's queue repository
    */
-  public ServerHouseKeeper(IController controller, ServerRepository repository)
+  public ServerHouseKeeper(IController controller, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mController = controller;
