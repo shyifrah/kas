@@ -30,6 +30,11 @@ public enum ERequestType implements IObject
   cCloseQueue,
   
   /**
+   * Show session information
+   */
+  cShowInfo,
+  
+  /**
    * Put message
    */
   cPut,

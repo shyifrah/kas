@@ -1,6 +1,5 @@
 package com.kas.mq.client;
 
-import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqMessage;
 
@@ -27,20 +26,6 @@ public interface IClient extends IObject
   public abstract void disconnect();
   
   /**
-   * Get the connection status
-   * 
-   * @return {@code true} if the client is connected to a remote host, {@code false} otherwise
-   */
-  public abstract boolean isConnected();
-  
-  /**
-   * Get the {@link NetworkAddress} for this {@link IClient} object
-   * 
-   * @return the {@link NetworkAddress} for this {@link IClient} object
-   */
-  public abstract NetworkAddress getNetworkAddress();
-  
-  /**
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
@@ -54,11 +39,9 @@ public interface IClient extends IObject
   public abstract void close();
   
   /**
-   * Get the opened queue status
-   * 
-   * @return {@code true} if the client has already opened a queue, {@code false} otherwise
+   * Show information regarding current session
    */
-  public abstract boolean isOpen();
+  public abstract void show();
   
   /**
    * Get a message from the opened queue

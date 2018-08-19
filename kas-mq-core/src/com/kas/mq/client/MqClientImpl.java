@@ -142,7 +142,7 @@ public class MqClientImpl extends AMqClient
    * 
    * @see java.net.Socket#isConnected()
    */
-  public boolean isConnected()
+  private boolean isConnected()
   {
     return mMessenger == null ? false : mMessenger.isConnected();
   }
@@ -155,7 +155,7 @@ public class MqClientImpl extends AMqClient
    * 
    * @see com.kas.mq.client.IClient#getNetworkAddress()
    */
-  public NetworkAddress getNetworkAddress()
+  private NetworkAddress getNetworkAddress()
   {
     return mMessenger == null ? null : mMessenger.getAddress();
   }
@@ -288,7 +288,7 @@ public class MqClientImpl extends AMqClient
    * 
    * @see com.kas.mq.client.IClient#isOpened()
    */
-  public boolean isOpen()
+  private boolean isOpen()
   {
     return mQueue != null;
   }
@@ -434,6 +434,43 @@ public class MqClientImpl extends AMqClient
     
     mLogger.debug("MqClientImpl::authenticate() - OUT, Returns=" + success);
     return success;
+  }
+  
+  public void show()
+  {
+    mLogger.debug("MqClientImpl::show() - IN");
+    
+    StringBuilder sb = new StringBuilder();
+    sb.append("Connected to.............: ").append(isConnected() ? getNetworkAddress() : "*N/A*");
+    
+    boolean success = false;
+    MqMessage request = MqMessageFactory.createShowInfoRequest();
+    try
+    {
+      IPacket packet = mMessenger.sendAndReceive(request);
+      MqResponseMessage response = (MqResponseMessage)packet;
+      if (response.getResponseCode() == 0)
+      {
+        /// TODO: continue here... how do we get info from the reply message?
+      }
+      else
+      {
+        String message = response.getResponseMessage();
+        setResponse(message);
+        mLogger.info(message);
+      }
+    }
+    catch (IOException e)
+    {
+      StringBuilder sbe = new StringBuilder();
+      sbe.append("Exception occurred while getting session info. Exception: ")
+        .append(new ThrowableFormatter(e).toString());
+      String resp = sbe.toString();
+      mLogger.error(resp);
+      setResponse(resp);
+    }
+    
+    mLogger.debug("MqClientImpl::show() - OUT");
   }
 
   public String toPrintableString(int level)

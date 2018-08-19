@@ -28,6 +28,13 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqMessage createShowInfoRequest()
+  {
+    MqMessage message = new MqMessage();
+    message.setRequestType(ERequestType.cShowInfo);
+    return message;
+  }
+  
   static public MqMessage createGetRequest(String queue)
   {
     MqMessage message = new MqMessage();
