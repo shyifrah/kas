@@ -117,6 +117,16 @@ public class ServerRepository extends AKasObject implements IInitializable
   }
   
   /**
+   * Get queue by name
+   * 
+   * @return the queue
+   */
+  public MqQueue getQueue(String name)
+  {
+    return mQueueMap.get(name);
+  }
+  
+  /**
    * Initialize the server repository
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise

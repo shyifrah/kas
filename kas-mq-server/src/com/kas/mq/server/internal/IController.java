@@ -4,6 +4,7 @@ import java.util.Map;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.MqQueue;
 
 /**
  * {@link IController} is an interface that will provide functionality for {@link ClientHandler ClientHandlers}.
@@ -33,4 +34,12 @@ public interface IController extends IObject
    * @return the handlers map
    */
   public abstract Map<UniqueId, ClientHandler> getHandlers();
+  
+  /**
+   * Get queue by name
+   * 
+   * @param queue The queue name
+   * @return the {@link MqQueue} object associated with the specified queue name
+   */
+  public abstract MqQueue getQueue(String name);
 }

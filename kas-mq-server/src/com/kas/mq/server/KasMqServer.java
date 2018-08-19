@@ -68,8 +68,8 @@ public class KasMqServer extends AKasMqAppl
     else
     {
       mLogger.info("KAS/MQ base application initialized successfully");
-      mController = new ClientController(mConfig);
       mRepository = new ServerRepository(mConfig);
+      mController = new ClientController(mConfig, mRepository);
       
       try
       {

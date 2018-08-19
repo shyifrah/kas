@@ -58,6 +58,10 @@ public class HelpCommand extends ACliCommand
     writeln("                   +--- DISCONNECT|DISC ---+");
     writeln("                   |                       |");
     writeln("                   +--- SHOW --------------+");
+    writeln("                   |                       |");
+    writeln("                   +--- OPEN --------------+");
+    writeln("                   |                       |");
+    writeln("                   +--- CLOSE -------------+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -108,6 +112,10 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- DISCONNECT|DISC ---+");
       writeln("          |                       |");
       writeln("          +--- SHOW --------------+");
+      writeln("          |                       |");
+      writeln("          +--- OPEN --------------+");
+      writeln("          |                       |");
+      writeln("          +--- CLOSE -------------+");
       writeln(" ");
       writeln("Description: ");
       writeln(" ");

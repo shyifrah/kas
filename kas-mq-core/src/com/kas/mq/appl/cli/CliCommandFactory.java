@@ -42,6 +42,16 @@ public class CliCommandFactory
       return new DisconnectCommand(scanner, cmdWords, client);
     }
     
+    if (OpenCommand.sCommandVerbs.contains(verb))
+    {
+      return new OpenCommand(scanner, cmdWords, client);
+    }
+    
+    if (CloseCommand.sCommandVerbs.contains(verb))
+    {
+      return new CloseCommand(scanner, cmdWords, client);
+    }
+    
     // Unknown command
     return null;
   }

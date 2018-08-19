@@ -12,6 +12,8 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.MqQueue;
+import com.kas.mq.server.ServerRepository;
 
 /**
  * A {@link ClientController} is the object that supervises and manage all {@link ClientHandler}.
@@ -37,14 +39,20 @@ public class ClientController extends AKasObject implements IController
   private MqConfiguration mConfig;
   
   /**
+   * KAS/MQ configuration
+   */
+  private ServerRepository mRepository;
+  
+  /**
    * Constructs a ClientController which is basically the object that supervises active clients
    */
-  public ClientController(MqConfiguration config)
+  public ClientController(MqConfiguration config, ServerRepository repository)
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getStdout(this.getClass());
     mHandlers = new HashMap<UniqueId, ClientHandler>();
     mConfig = config;
+    mRepository = repository;
   }
   
   /**
@@ -116,6 +124,19 @@ public class ClientController extends AKasObject implements IController
   public Map<UniqueId, ClientHandler> getHandlers()
   {
     return mHandlers;
+  }
+
+  /**
+   * Get queue by name
+   * 
+   * @param queue The queue name
+   * @return the {@link MqQueue} object associated with the specified queue name
+   * 
+   * @see com.kas.mq.server.internal.IController#getQueue(String)
+   */
+  public MqQueue getQueue(String name)
+  {
+    return mRepository.getQueue(name);
   }
 
   /**

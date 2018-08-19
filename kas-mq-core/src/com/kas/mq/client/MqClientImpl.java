@@ -172,46 +172,108 @@ public class MqClientImpl extends AMqClient
   {
     mLogger.debug("MqClientImpl::open() - IN");
     
-    if (isOpen())
-    {
-      close();
-    }
-    
     boolean success = false;
-    MqMessage request = MqMessageFactory.createOpenRequest(queue);
-    try
+    if (!isConnected())
     {
-      IPacket packet = mMessenger.sendAndReceive(request);
-      MqResponseMessage response = (MqResponseMessage)packet;
-      if (response.getResponseCode() == 0)
+      String message = "Not connected to host";
+      mLogger.error(message);
+      setResponse(message);
+    }
+    else
+    {
+      if (isOpen())
       {
-        success = true;
-        mLogger.debug("MqClientImpl::open() - Queue " + queue + " was successfully opened");
-        mQueue = queue;
+        close();
       }
-      else
+      
+      MqMessage request = MqMessageFactory.createOpenRequest(queue);
+      try
       {
-        String message = response.getResponseMessage();
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponseMessage response = (MqResponseMessage)packet;
+        if (response.getResponseCode() == 0)
+        {
+          success = true;
+          mLogger.debug("MqClientImpl::open() - Queue " + queue + " was successfully opened");
+          mQueue = queue;
+        }
+        else
+        {
+          String message = response.getResponseMessage();
+          setResponse(message);
+          mLogger.info(message);
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to open queue [")
+          .append(queue)
+          .append("]. Exception: ")
+          .append(new ThrowableFormatter(e).toString());
+        String message = sb.toString();
+        mLogger.error(message);
         setResponse(message);
-        mLogger.info(message);
       }
     }
-    catch (Throwable e) {}
     
     mLogger.debug("MqClientImpl::open() - OUT, Returns=" + success);
     return success;
   }
   
   /**
-   * Close the specified queue.
+   * Close opened queue.
    * 
    * @see com.kas.mq.client.IClient#close()
    */
   public void close()
   {
     mLogger.debug("MqClientImpl::close() - IN");
+    String queue = mQueue;
     
-    mQueue = null;
+    if (!isConnected())
+    {
+      String message = "Not connected to host";
+      mLogger.debug(message);
+      setResponse(message);
+    }
+    else if (!isOpen())
+    {
+      String message = "Queue is not open";
+      mLogger.debug(message);
+      setResponse(message);
+    }
+    else
+    {
+      MqMessage request = MqMessageFactory.createCloseRequest(queue);
+      try
+      {
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponseMessage response = (MqResponseMessage)packet;
+        if (response.getResponseCode() == 0)
+        {
+          mLogger.debug("MqClientImpl::close() - Queue " + queue + " was successfully closed");
+          mQueue = null;
+        }
+        else
+        {
+          String message = response.getResponseMessage();
+          setResponse(message);
+          mLogger.info(message);
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to close queue [")
+          .append(queue)
+          .append("]. Exception: ")
+          .append(new ThrowableFormatter(e).toString());
+        String message = sb.toString();
+        mLogger.error(message);
+        setResponse(message);
+      }
+    }
     
     mLogger.debug("MqClientImpl::close() - OUT");
   }

@@ -20,6 +20,14 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqMessage createCloseRequest(String queue)
+  {
+    MqMessage message = new MqMessage();
+    message.setRequestType(ERequestType.cCloseQueue);
+    message.setQueueName(queue);
+    return message;
+  }
+  
   static public MqMessage createGetRequest(String queue)
   {
     MqMessage message = new MqMessage();

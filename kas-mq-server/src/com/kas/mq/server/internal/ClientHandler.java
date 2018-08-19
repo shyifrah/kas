@@ -138,28 +138,61 @@ public class ClientHandler extends AKasObject implements Runnable
     
     boolean success = true;
     MqResponseMessage response = null;
+    int respCode = 0;
+    String respMsg = "";
     try
     {
       MqMessage message = (MqMessage)packet;
       ERequestType requestType = message.getRequestType();
       if (requestType == ERequestType.cAuthenticate)
       {
-        mUserName = message.getUserName();
+        String user = message.getUserName();
         String pwd  = message.getPassword();
         
-        int code = 0;
-        String resp = ""; 
-        if (!mController.isPasswordMatch(mUserName, pwd))
+        if (!mController.isPasswordMatch(user, pwd))
         {
-          code = 8;
-          resp = "Password does not match";
+          respCode = 8;
+          respMsg = "Password does not match";
           success = false;
         }
-        response = MqMessageFactory.createResponse(code, resp);
-        
-        mLogger.debug("ClientHandler::process() - Responding with the message: " + response.toPrintableString());
-        mMessenger.send(response);
+        else
+        {
+          mUserName = user;
+        }
       }
+      else if (requestType == ERequestType.cOpenQueue)
+      {
+        String queue = message.getQueueName();
+        MqQueue mqq = mController.getQueue(queue);
+        
+        if (mqq == null)
+        {
+          respCode = 8;
+          respMsg = "Queue does not exist";
+          success = false;
+        }
+        else
+        {
+          mOpenedQueue = mqq;
+        }
+      }
+      else if (requestType == ERequestType.cCloseQueue)
+      {
+        if (mOpenedQueue == null)
+        {
+          respCode = 4;
+          respMsg = "No opened queue";
+        }
+        else
+        {
+          mOpenedQueue = null;
+        }
+      }
+      
+      response = MqMessageFactory.createResponse(respCode, respMsg);
+      
+      mLogger.debug("ClientHandler::process() - Responding with the message: " + response.toPrintableString());
+      mMessenger.send(response);
     }
     catch (ClassCastException e)
     {
