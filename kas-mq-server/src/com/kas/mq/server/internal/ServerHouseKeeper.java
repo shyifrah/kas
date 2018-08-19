@@ -54,11 +54,11 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
     if (mConfig.isHousekeeperEnabled())
     {
       mLogger.debug("AdminTask::run() - Perform handlers cleanup...");
-      Map<UniqueId, ClientHandler> handlers = mController.getHandlers();
-      for (Map.Entry<UniqueId, ClientHandler> entry : handlers.entrySet())
+      Map<UniqueId, SessionHandler> handlers = mController.getHandlers();
+      for (Map.Entry<UniqueId, SessionHandler> entry : handlers.entrySet())
       {
         UniqueId uid = entry.getKey();
-        ClientHandler handler = entry.getValue();
+        SessionHandler handler = entry.getValue();
         
         mLogger.diag("AdminTask::run() - Checking handler ID: " + uid);
         if (handler.isRunning())

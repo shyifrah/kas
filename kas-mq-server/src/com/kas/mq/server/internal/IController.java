@@ -7,7 +7,7 @@ import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.ServerRepository;
 
 /**
- * {@link IController} is an interface that will provide functionality for {@link ClientHandler ClientHandlers}.
+ * {@link IController} is an interface that will provide functionality for {@link SessionHandler ClientHandlers}.
  * @author Pippo
  */
 public interface IController extends IObject
@@ -31,5 +31,5 @@ public interface IController extends IObject
    * 
    * @return the handlers map
    */
-  public abstract Map<UniqueId, ClientHandler> getHandlers();
+  public abstract Map<UniqueId, SessionHandler> getHandlers();
 }

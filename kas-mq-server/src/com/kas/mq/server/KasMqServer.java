@@ -10,7 +10,7 @@ import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
-import com.kas.mq.server.internal.ClientController;
+import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.internal.ServerHouseKeeper;
 
 /**
@@ -35,7 +35,7 @@ public class KasMqServer extends AKasMqAppl
   /**
    * Client controller
    */
-  private ClientController mController = null;
+  private SessionController mController = null;
   
   /**
    * Housekeeper task
@@ -69,7 +69,7 @@ public class KasMqServer extends AKasMqAppl
     {
       mLogger.info("KAS/MQ base application initialized successfully");
       mRepository = new ServerRepository(mConfig);
-      mController = new ClientController(mConfig, mRepository);
+      mController = new SessionController(mConfig, mRepository);
       
       try
       {
@@ -164,7 +164,7 @@ public class KasMqServer extends AKasMqAppl
       try
       {
         Socket socket = mListenSocket.accept();
-        mController.newClient(socket);
+        mController.newSession(socket);
       }
       catch (SocketTimeoutException e)
       {

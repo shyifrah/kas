@@ -15,14 +15,14 @@ import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.ServerRepository;
 
 /**
- * A {@link ClientController} is the object that supervises and manage all {@link ClientHandler}.
+ * A {@link SessionController} is the object that supervises and manage all {@link SessionHandler}.
  * 
  * @author Pippo
  */
-public class ClientController extends AKasObject implements IController
+public class SessionController extends AKasObject implements IController
 {
   /**
-   * Logger
+   * Loggers
    */
   private ILogger mLogger;
   private ILogger mConsole;
@@ -30,7 +30,7 @@ public class ClientController extends AKasObject implements IController
   /**
    * A map of client id to client handler
    */
-  private Map<UniqueId, ClientHandler> mHandlers;
+  private Map<UniqueId, SessionHandler> mHandlers;
   
   /**
    * KAS/MQ configuration
@@ -45,11 +45,11 @@ public class ClientController extends AKasObject implements IController
   /**
    * Constructs a ClientController which is basically the object that supervises active clients
    */
-  public ClientController(MqConfiguration config, ServerRepository repository)
+  public SessionController(MqConfiguration config, ServerRepository repository)
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getStdout(this.getClass());
-    mHandlers = new HashMap<UniqueId, ClientHandler>();
+    mHandlers = new HashMap<UniqueId, SessionHandler>();
     mConfig = config;
     mRepository = repository;
   }
@@ -57,18 +57,18 @@ public class ClientController extends AKasObject implements IController
   /**
    * Create a new client handler.<br>
    * <br>
-   * This method actually creates a new {@link ClientHandler} object that will handle incoming traffic
+   * This method actually creates a new {@link SessionHandler} object that will handle incoming traffic
    * from the {@code socket} and responds, if needed, over it.<br> 
-   * Once created, the {@link ClientHandler} is then sent for execution on a different thread.
+   * Once created, the {@link SessionHandler} is then sent for execution on a different thread.
    * 
    * @param socket the client socket
-   * @throws IOException if creation of new {@link ClientHandler} throws
+   * @throws IOException if creation of new {@link SessionHandler} throws
    */
-  public void newClient(Socket socket) throws IOException
+  public void newSession(Socket socket) throws IOException
   {
     mLogger.trace("About to spawn a new ClientHandler for socket: " + socket.getRemoteSocketAddress().toString());
     
-    ClientHandler handler = new ClientHandler(socket, this);
+    SessionHandler handler = new SessionHandler(socket, this);
     UniqueId id = handler.getClientId();
     mHandlers.put(id, handler);
     
@@ -109,7 +109,7 @@ public class ClientController extends AKasObject implements IController
    * 
    * @see com.kas.mq.server.internal.IController#getHandlers()
    */
-  public Map<UniqueId, ClientHandler> getHandlers()
+  public Map<UniqueId, SessionHandler> getHandlers()
   {
     return mHandlers;
   }

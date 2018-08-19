@@ -20,11 +20,11 @@ import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.resp.SessionResponder;
 
 /**
- * A {@link ClientHandler} is the object that handles the traffic in and from a remote client.
+ * A {@link SessionHandler} is the object that handles the traffic in and from a remote client.
  * 
  * @author Pippo
  */
-public class ClientHandler extends AKasObject implements Runnable, IHandler
+public class SessionHandler extends AKasObject implements Runnable, IHandler
 {
   /**
    * Logger
@@ -67,7 +67,7 @@ public class ClientHandler extends AKasObject implements Runnable, IHandler
   private boolean mIsRunning = true;
   
   /**
-   * Construct a {@link ClientHandler} to handle all incoming and outgoing traffic of the client.<br>
+   * Construct a {@link SessionHandler} to handle all incoming and outgoing traffic of the client.<br>
    * <br>
    * Client's transmits messages and received by this handler over the specified {@code socket}.
    *  
@@ -75,7 +75,7 @@ public class ClientHandler extends AKasObject implements Runnable, IHandler
    * 
    * @throws IOException if {@link Socket#setSoTimeout()} throws
    */
-  ClientHandler(Socket socket, IController controller) throws IOException
+  SessionHandler(Socket socket, IController controller) throws IOException
   {
     mController = controller;
     socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
@@ -129,7 +129,7 @@ public class ClientHandler extends AKasObject implements Runnable, IHandler
    * Process received packet
    * 
    * @param packet The received packet
-   * @return {@code true} if {@link ClientHandler} should continue processing next packet, {@code false} otherwise
+   * @return {@code true} if {@link SessionHandler} should continue processing next packet, {@code false} otherwise
    */
   private boolean process(IPacket packet)
   {
