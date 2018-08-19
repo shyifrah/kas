@@ -169,7 +169,6 @@ public class ClientHandler extends AKasObject implements Runnable
         {
           respCode = 8;
           respMsg = "Queue does not exist";
-          success = false;
         }
         else
         {

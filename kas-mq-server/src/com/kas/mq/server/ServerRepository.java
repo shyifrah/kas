@@ -65,6 +65,7 @@ public class ServerRepository extends AKasObject implements IInitializable
     mLogger.debug("ServerRepository::createQueue() - IN");
     MqQueue queue = null;
     
+    name = name.toUpperCase();
     queue = new MqQueue(name);
     mQueueMap.put(name, queue);
     
@@ -87,6 +88,7 @@ public class ServerRepository extends AKasObject implements IInitializable
     
     if (name != null)
     {
+      name = name.toUpperCase();
       queue = mQueueMap.get(name);
       if (queue == null)
         queue = createQueue(name);

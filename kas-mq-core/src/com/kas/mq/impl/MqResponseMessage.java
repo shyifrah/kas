@@ -145,7 +145,7 @@ public class MqResponseMessage extends MqMessage
       .append(pad).append("  User Name=").append(mUserName).append("\n")
       .append(pad).append("  Password=").append(mPassword).append("\n")
       .append(pad).append("  Target Queue=").append(mQueueName).append("\n")
-      .append(pad).append("  Response(=\n")
+      .append(pad).append("  Response=(\n")
       .append(pad).append("    Code=").append(mResponseCode).append("\n")
       .append(pad).append("    Message=").append(mResponseMessage).append("\n")
       .append(pad).append("  )\n")

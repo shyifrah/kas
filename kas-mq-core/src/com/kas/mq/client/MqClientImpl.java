@@ -194,7 +194,9 @@ public class MqClientImpl extends AMqClient
         if (response.getResponseCode() == 0)
         {
           success = true;
-          mLogger.debug("MqClientImpl::open() - Queue " + queue + " was successfully opened");
+          String message = "Queue " + queue + " was successfully opened";
+          mLogger.debug("MqClientImpl::open() - " + message);
+          setResponse(message);
           mQueue = queue;
         }
         else

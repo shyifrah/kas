@@ -40,7 +40,7 @@ public class MqMessageFactory
   {
     MqResponseMessage message = new MqResponseMessage();
     message.setResponse(code, response);
-    message.setRequestType(ERequestType.cAuthenticate);
+    message.setRequestType(ERequestType.cUnknown);
     return message;
   }
 }
