@@ -7,6 +7,7 @@ import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
@@ -86,6 +87,9 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     mSessionId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
     mSessionResponder = new SessionResponder(this);
+    
+    mActiveUserName = null;
+    mActiveQueue = null;
   }
   
   /**
@@ -144,6 +148,8 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     {
       MqMessage request = (MqMessage)packet;
       ERequestType requestType = request.getRequestType();
+      mLogger.debug("SessionHandler::process() - Received request of type: " + requestType.toPrintableString(0));
+      
       if (requestType == ERequestType.cAuthenticate)
       {
         response = mSessionResponder.authenticate(request);
@@ -157,6 +163,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       else if (requestType == ERequestType.cCloseQueue)
       {
         response = mSessionResponder.close(request);
+      }
+      else if (requestType == ERequestType.cShowInfo)
+      {
+        response = mSessionResponder.show(request);
       }
       
       mLogger.debug("SessionHandler::process() - Responding with the message: " + response.toPrintableString());
@@ -259,6 +269,18 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   public MqQueue getQueue(String name)
   {
     return mController.getRepository().getQueue(name);
+  }
+  
+  /**
+   * Get network address
+   * 
+   * @return the {@link IMessenger}'s {@link NetworkAddress} object
+   * 
+   * @see com.kas.mq.server.IHandler#getNetworkAddress()
+   */
+  public NetworkAddress getNetworkAddress()
+  {
+    return mMessenger.getAddress();
   }
   
   /**

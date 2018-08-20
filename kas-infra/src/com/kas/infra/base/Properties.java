@@ -79,7 +79,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * 
    * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
    */
-  public void serialize(ObjectOutputStream ostream) throws IOException
+  public synchronized void serialize(ObjectOutputStream ostream) throws IOException
   {
     ostream.writeInt(size());
     ostream.reset();

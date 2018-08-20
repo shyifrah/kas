@@ -44,7 +44,7 @@ public interface IClient extends IObject
   public abstract void show();
   
   /**
-   * Get a message from the opened queue
+   * Get a {@link MqMessage message} from the opened queue
    * 
    * @param timeout The number of milliseconds to wait until a message available
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable

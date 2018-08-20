@@ -4,7 +4,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.mq.client.IClient;
-import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.internal.TokenDeque;
 
 /**
@@ -75,7 +74,8 @@ public class ShowCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      mClient.setResponse("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP SHOW to see available command options");
+      writeln("Show failed. Excessive token \"" + mCommandArgs.peek().toUpperCase() + "\"");
+      writeln(" ");
       return false;
     }
     

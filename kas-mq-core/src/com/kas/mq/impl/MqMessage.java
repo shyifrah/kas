@@ -400,6 +400,7 @@ public class MqMessage extends AKasObject implements IPacket
       .append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
+      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

@@ -78,7 +78,8 @@ public class ExitCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      mClient.setResponse("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP EXIT to see available command options");
+      writeln("Exit failed. Excessive token \"" + mCommandArgs.peek().toUpperCase() + "\"");
+      writeln(" ");
       return false;
     }
     return true;

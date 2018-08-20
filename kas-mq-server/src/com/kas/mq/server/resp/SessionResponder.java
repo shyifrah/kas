@@ -106,6 +106,26 @@ public class SessionResponder extends AKasObject
   }
   
   /**
+   * Process show info request
+   * 
+   * @param request The request message
+   * @return The {@link MqResponseMessage} object
+   */
+  public MqResponseMessage show(MqMessage request)
+  {
+    Response response = new Response();
+    
+    MqResponseMessage responseMessage = generateResponse(response);
+    
+    responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
+    responseMessage.setStringProperty(IMqConstants.cKasPropertyUserName, mHandler.getActiveUserName());
+    responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue().getName());
+    responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
+    
+    return responseMessage;
+  }
+  
+  /**
    * Generate a {@link MqResponseMessage} based on a {@link Response} object
    * 
    * @param resp The {@link Response} object

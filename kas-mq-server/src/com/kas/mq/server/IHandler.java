@@ -1,6 +1,8 @@
 package com.kas.mq.server;
 
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.internal.SessionHandler;
@@ -12,6 +14,13 @@ import com.kas.mq.server.internal.SessionHandler;
  */
 public interface IHandler extends IObject
 {
+  /**
+   * Get the session ID
+   * 
+   * @return the session ID
+   */
+  public abstract UniqueId getSessionId();
+  
   /**
    * Get the active user name
    * 
@@ -56,4 +65,11 @@ public interface IHandler extends IObject
    * @return the {@link MqQueue} object associated with the specified queue name
    */
   public abstract MqQueue getQueue(String name);
+  
+  /**
+   * Get network address
+   * 
+   * @return the {@link IMessenger}'s {@link NetworkAddress} object
+   */
+  public abstract NetworkAddress getNetworkAddress();
 }

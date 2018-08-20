@@ -10,6 +10,7 @@ import com.kas.infra.base.ThrowableFormatter;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqResponseMessage;
+import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
@@ -185,10 +186,12 @@ public class MqClientImpl extends AMqClient
       }
       
       MqMessage request = MqMessageFactory.createOpenRequest(queue);
+      mLogger.debug("MqClientImpl::open() - sending open request: " + request.toPrintableString());
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
         MqResponseMessage response = (MqResponseMessage)packet;
+        mLogger.debug("MqClientImpl::open() - received response: " + response.toPrintableString());
         if (response.getResponseCode() == 0)
         {
           success = true;
@@ -246,10 +249,12 @@ public class MqClientImpl extends AMqClient
     else
     {
       MqMessage request = MqMessageFactory.createCloseRequest(queue);
+      mLogger.debug("MqClientImpl::close() - sending close request: " + request.toPrintableString());
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
         MqResponseMessage response = (MqResponseMessage)packet;
+        mLogger.debug("MqClientImpl::close() - received response: " + response.toPrintableString());
         if (response.getResponseCode() == 0)
         {
           String message = "Queue " + queue + " was successfully opened";
@@ -402,10 +407,12 @@ public class MqClientImpl extends AMqClient
     
     boolean success = false;
     MqMessage request = MqMessageFactory.createAuthenticationRequest(username, password);
+    mLogger.debug("MqClientImpl::authenticate() - sending authentication request: " + request.toPrintableString());
     try
     {
       IPacket packet = mMessenger.sendAndReceive(request);
       MqResponseMessage response = (MqResponseMessage)packet;
+      mLogger.debug("MqClientImpl::authenticate() - received response: " + response.toPrintableString());
       if (response.getResponseCode() == 0)
       {
         success = true;
@@ -434,22 +441,33 @@ public class MqClientImpl extends AMqClient
     return success;
   }
   
+  /**
+   * Show session information
+   */
   public void show()
   {
     mLogger.debug("MqClientImpl::show() - IN");
     
-    StringBuilder sb = new StringBuilder();
-    sb.append("Connected to.............: ").append(isConnected() ? getNetworkAddress() : "*N/A*");
+    StringBuilder sb = new StringBuilder('\n');
     
-    boolean success = false;
     MqMessage request = MqMessageFactory.createShowInfoRequest();
+    mLogger.debug("MqClientImpl::show() - sending show-info request: " + request.toPrintableString());
     try
     {
       IPacket packet = mMessenger.sendAndReceive(request);
       MqResponseMessage response = (MqResponseMessage)packet;
+      mLogger.debug("MqClientImpl::show() - received response: " + response.toPrintableString());
       if (response.getResponseCode() == 0)
       {
-        /// TODO: continue here... how do we get info from the reply message?
+        NetworkAddress addr = getNetworkAddress();
+        sb.append("Session ID.................: ").append(response.getStringProperty(IMqConstants.cKasPropertySessionId, "*N/A*")).append('\n');
+        sb.append("    KAS/MQ server.......:    ").append(addr == null ? "*N/A*" : addr.toString()).append('\n');
+        sb.append("    Client..............:    ").append(response.getStringProperty(IMqConstants.cKasPropertyNetworkAddress, "*N/A*")).append('\n');
+        sb.append("    Connected as........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyUserName, "*N/A*")).append('\n');
+        sb.append("    Opened queue........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyQueueName, "*N/A*"));
+        String message = sb.toString();
+        setResponse(message);
+        mLogger.info(message);
       }
       else
       {
@@ -471,8 +489,16 @@ public class MqClientImpl extends AMqClient
     mLogger.debug("MqClientImpl::show() - OUT");
   }
 
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
-    return null;
+    return name();
   }
 }
