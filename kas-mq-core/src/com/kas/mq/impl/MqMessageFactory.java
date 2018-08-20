@@ -7,7 +7,8 @@ public class MqMessageFactory
   static public MqMessage createAuthenticationRequest(String user, String pass)
   {
     MqMessage message = new MqMessage();
-    message.setCredentials(user, pass);
+    message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
+    message.setStringProperty(IMqConstants.cKasPropertyPassword, pass);
     message.setRequestType(ERequestType.cAuthenticate);
     return message;
   }
@@ -16,7 +17,7 @@ public class MqMessageFactory
   {
     MqMessage message = new MqMessage();
     message.setRequestType(ERequestType.cOpenQueue);
-    message.setQueueName(queue);
+    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
     return message;
   }
   
@@ -24,7 +25,6 @@ public class MqMessageFactory
   {
     MqMessage message = new MqMessage();
     message.setRequestType(ERequestType.cCloseQueue);
-    message.setQueueName(queue);
     return message;
   }
   
@@ -39,7 +39,7 @@ public class MqMessageFactory
   {
     MqMessage message = new MqMessage();
     message.setRequestType(ERequestType.cGet);
-    message.setQueueName(queue);
+    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
     return message;
   }
   

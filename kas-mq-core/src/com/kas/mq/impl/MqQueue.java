@@ -61,8 +61,8 @@ public class MqQueue extends AKasObject
     mLogger     = LoggerFactory.getLogger(this.getClass());
     mName       = name;
     mQueueId    = UniqueId.generate();
-    mQueueArray = new MessageDeque[ MqMessage.cMaximumPriority + 1 ];
-    for (int i = 0; i <= MqMessage.cMaximumPriority; ++i)
+    mQueueArray = new MessageDeque[ IMqConstants.cMaximumPriority + 1 ];
+    for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
       mQueueArray[i] = new MessageDeque();
   }
   
@@ -310,7 +310,7 @@ public class MqQueue extends AKasObject
    */
   public MqMessage get()
   {
-    return get(MqMessage.cMaximumPriority);
+    return get(IMqConstants.cMaximumPriority);
   }
   
   /**
@@ -321,7 +321,7 @@ public class MqQueue extends AKasObject
    */
   public MqMessage get(int priority)
   {
-    if ((priority < MqMessage.cMinimumPriority) || (priority > MqMessage.cMaximumPriority))
+    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
     
     return mQueueArray[priority].poll();
@@ -334,7 +334,7 @@ public class MqQueue extends AKasObject
    */
   public MqMessage getAndWait()
   {
-    return getAndWait(MqMessage.cMaximumPriority);
+    return getAndWait(IMqConstants.cMaximumPriority);
   }
   
   /**
@@ -345,7 +345,7 @@ public class MqQueue extends AKasObject
    */
   public MqMessage getAndWait(int priority)
   {
-    if ((priority < MqMessage.cMinimumPriority) || (priority > MqMessage.cMaximumPriority))
+    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
     
     MqMessage result = null;
@@ -370,7 +370,7 @@ public class MqQueue extends AKasObject
    */
   public MqMessage getAndWaitWithTimeout(long timeout)
   {
-    return getAndWaitWithTimeout(MqMessage.cMinimumPriority, timeout, 1000L);
+    return getAndWaitWithTimeout(IMqConstants.cMinimumPriority, timeout, 1000L);
   }
   
   /**
@@ -405,7 +405,7 @@ public class MqQueue extends AKasObject
    */
   public MqMessage getAndWaitWithTimeout(int priority, long timeout, long interval)
   {
-    if ((priority < MqMessage.cMinimumPriority) || (priority > MqMessage.cMaximumPriority))
+    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
     
     if (timeout <= 0)

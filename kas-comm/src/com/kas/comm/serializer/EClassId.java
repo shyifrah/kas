@@ -11,19 +11,35 @@ import com.kas.infra.logging.ELogLevel;
 public enum EClassId implements IObject
 {
   /**
-  * Unknown classes
-  */
-  cClassUnknown,
- 
- /**
-  * MqMessage
-  */
+   * Basic data types
+   */
+  cClassObject,     // 0
+  cClassBoolean,    // 1
+  cClassString,     // 2
+  cClassByte,       // 3
+  cClassShort,      // 4
+  cClassInteger,    // 5
+  cClassLong,       // 6
+  cClassFloat,      // 7
+  cClassDouble,     // 8
+  
+  cPlaceHolder1,    // 9
+  cPlaceHolder2,    // 10
+  
+  /**
+   * MqMessage
+   */
   cClassMqMessage,
   
   /**
    * MqResponseMessage
    */
-   cClassMqResponseMessage,
+  cClassMqResponseMessage,
+  
+  /**
+   * Propeties
+   */
+  cClassProperties,
   
   ;
   

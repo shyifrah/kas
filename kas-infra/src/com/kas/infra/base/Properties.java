@@ -1,6 +1,9 @@
 package com.kas.infra.base;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,13 +16,13 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-public class Properties extends ConcurrentHashMap<Object, Object>
+public class Properties extends ConcurrentHashMap<Object, Object> implements ISerializable
 {
   static public  final String cIncludeKey      = "kas.include";
   static private final long   serialVersionUID = 1L;
   
   /**
-   * Construct an empty set of properties
+   * Construct an empty set of {@link Properties}
    */
   public Properties()
   {
@@ -27,7 +30,7 @@ public class Properties extends ConcurrentHashMap<Object, Object>
   }
   
   /**
-   * Construct a set of properties from a different set.<br>
+   * Construct a set of {@link Properties} from a different set.<br>
    * <br>
    * After construction, this {@link Properties} object will have the same contents as {@code other}.
    * 
@@ -36,6 +39,61 @@ public class Properties extends ConcurrentHashMap<Object, Object>
   public Properties(Properties other)
   {
     super(other);
+  }
+  
+  /**
+   * Constructs a set of {@link Properties} object from {@link ObjectInputStream}
+   * 
+   * @param istream The {@link ObjectInputStream}
+   * 
+   * @throws IOException if I/O error occurs
+   */
+  public Properties(ObjectInputStream istream) throws IOException
+  {
+    try
+    {
+      int totalEntries = istream.readInt();
+      for (int i = 0; i < totalEntries; ++i)
+      {
+        String name = (String)istream.readObject();
+        Object value = istream.readObject();
+        put(name, value);
+      }
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
+  }
+  
+  /**
+   * Serialize the {@link Properties} to the specified {@link ObjectOutputStream}
+   * 
+   * @param ostream The {@link ObjectOutputStream} to which the properties will be serialized
+   * 
+   * @throws IOException if an I/O error occurs
+   * 
+   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   */
+  public void serialize(ObjectOutputStream ostream) throws IOException
+  {
+    ostream.writeInt(size());
+    ostream.reset();
+    
+    for (Map.Entry<Object, Object> entry : entrySet())
+    {
+      String name = (String)entry.getKey();
+      Object value = entry.getValue();
+      
+      ostream.writeObject(name);
+      ostream.reset();
+      ostream.writeObject(value);
+      ostream.reset();
+    }
   }
   
   /**
@@ -682,7 +740,7 @@ public class Properties extends ConcurrentHashMap<Object, Object>
         {
           String key = parsedLine[0].trim();
           String val = parsedLine[1].trim();
-          String actualVal = new PropertyValue(val).getActual();
+          String actualVal = new PropertyResolver(val).getActual();
           
           // if we encounter an "include" statement - load the new file
           if (key.equalsIgnoreCase(cIncludeKey))

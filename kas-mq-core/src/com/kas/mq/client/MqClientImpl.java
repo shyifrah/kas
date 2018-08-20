@@ -10,7 +10,6 @@ import com.kas.infra.base.ThrowableFormatter;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqResponseMessage;
-import com.kas.mq.internal.ERequestType;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
@@ -19,7 +18,6 @@ import com.kas.mq.impl.MqQueue;
  * A client implementation that actually carries out the requests made by the facade client.
  * 
  * @author Pippo
- *
  */
 public class MqClientImpl extends AMqClient
 {
@@ -367,8 +365,8 @@ public class MqClientImpl extends AMqClient
     }
     else
     {
-      message.setQueueName(mQueue);
-      message.setRequestType(ERequestType.cPut);
+      //message.setQueueName(mQueue);              ---+
+      //message.setRequestType(ERequestType.cPut); ---+--> these two lines should probably be done prior to this point, by the caller
       try
       {
         mMessenger.send(message);

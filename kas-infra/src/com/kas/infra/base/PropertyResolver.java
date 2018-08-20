@@ -3,7 +3,7 @@ package com.kas.infra.base;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
- * A PropertyValue is an object that holds a string value, but if this string has the following format
+ * A {@link PropertyResolver} is an object that holds a string value, but if this string has the following format
  * "...${....}...", then the value between the opening "${" and closing "}" can actually represent a variable -
  * a system property. In that case, the value of this system property will take place in the value
  * of the PropertyValue.<br>
@@ -14,29 +14,29 @@ import com.kas.infra.utils.RunTimeUtils;
  * 
  * @author Pippo
  */
-class PropertyValue extends AKasObject
+class PropertyResolver extends AKasObject
 {
   /**
-   * The raw value of this {@link PropertyValue}
+   * The raw value of this {@link PropertyResolver}
    */
   private String  mRawValue;
   
   /**
-   * The actual value of this {@link PropertyValue}
+   * The actual value of this {@link PropertyResolver}
    */
   private String  mActualValue = null;
   
   /**
-   * An indicator whether this {@link PropertyValue} has already been resolved
+   * An indicator whether this {@link PropertyResolver} has already been resolved
    */
   private boolean mResolved = false;
   
   /**
-   * Construct a {@link PropertyValue} object with the specified raw value.
+   * Construct a {@link PropertyResolver} object with the specified raw value.
    * 
-   * @param rawValue The raw value of this {@link PropertyValue}.
+   * @param rawValue The raw value of this {@link PropertyResolver}.
    */
-  public PropertyValue(String rawValue)
+  public PropertyResolver(String rawValue)
   {
     mRawValue = rawValue;
   }

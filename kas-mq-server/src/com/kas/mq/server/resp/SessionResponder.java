@@ -1,6 +1,7 @@
 package com.kas.mq.server.resp;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
@@ -40,10 +41,14 @@ public class SessionResponder extends AKasObject
   {
     Response response = new Response();
     
-    String user = request.getUserName();
-    String pwd  = request.getPassword();
+    String user = request.getStringProperty(IMqConstants.cKasPropertyUserName, null);
+    String pwd  = request.getStringProperty(IMqConstants.cKasPropertyPassword, null);
     
-    if (!mHandler.isPasswordMatch(user, pwd))
+    if ((user == null) || (user.length() == 0))
+    {
+      response = new Response("Invalid user name", 12, false);
+    }
+    else if (!mHandler.isPasswordMatch(user, pwd))
     {
       response = new Response("Password does not match", 8, false);
     }
@@ -51,6 +56,7 @@ public class SessionResponder extends AKasObject
     {
       mHandler.setActiveUserName(user);
     }
+    
     return generateResponse(response);
   }
   
@@ -64,12 +70,12 @@ public class SessionResponder extends AKasObject
   {
     Response response = new Response();
     
-    String queue = request.getQueueName();
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
     MqQueue mqq = mHandler.getQueue(queue);
     
     if (mqq == null)
     {
-      response = new Response("Queue does not exist", 8, true);
+      response = new Response("Queue name is null, an empty string or does not exist", 8, true);
     }
     else
     {
