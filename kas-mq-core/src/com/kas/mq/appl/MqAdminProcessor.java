@@ -42,6 +42,12 @@ public class MqAdminProcessor extends AKasObject
         }
       }
     }
+    catch (Throwable e)
+    {
+      writeln(" ");
+      writeln("Exception caught: ");
+      e.printStackTrace();
+    }
     finally
     {
       if (scanner != null)
