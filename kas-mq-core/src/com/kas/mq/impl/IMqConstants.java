@@ -13,6 +13,8 @@ public interface IMqConstants
    */
   static public final String cKasPropertyPrefix = "kas.";
   
+  static public final String cKasPropertyResponseCode   = cKasPropertyPrefix + "response.code";
+  static public final String cKasPropertyResponseDesc   = cKasPropertyPrefix + "response.desc";
   static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
   static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
   static public final String cKasPropertyQueueName      = cKasPropertyPrefix + "target.queue";

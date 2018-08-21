@@ -14,9 +14,9 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqQueue;
-import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IHandler;
@@ -144,7 +144,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     mLogger.debug("SessionHandler::process() - IN");
     
     boolean cont = true;
-    MqResponseMessage response = null;
+    MqMessage response = null;
     try
     {
       MqMessage request = (MqMessage)packet;
@@ -154,7 +154,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       if (requestType == ERequestType.cAuthenticate)
       {
         response = mSessionResponder.authenticate(request);
-        if (response.getResponseCode() != 0)
+        if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
           cont = false;
       }
       else if (requestType == ERequestType.cOpenQueue)

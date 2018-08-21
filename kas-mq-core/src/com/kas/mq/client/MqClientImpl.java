@@ -9,7 +9,7 @@ import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.MqResponseMessage;
+import com.kas.mq.impl.MqResponse;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
@@ -171,9 +171,9 @@ public class MqClientImpl extends AMqClient
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponseMessage response = (MqResponseMessage)packet;
+        MqResponse response = new MqResponse((MqMessage)packet);
         mLogger.debug("MqClientImpl::open() - received response: " + response.toPrintableString());
-        if (response.getResponseCode() == 0)
+        if (response.getCode() == 0)
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully opened");
@@ -181,7 +181,7 @@ public class MqClientImpl extends AMqClient
         }
         else
         {
-          logInfoAndSetResponse(response.getResponseMessage());
+          logInfoAndSetResponse(response.getDesc());
         }
       }
       catch (IOException e)
@@ -222,16 +222,16 @@ public class MqClientImpl extends AMqClient
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponseMessage response = (MqResponseMessage)packet;
+        MqResponse response = new MqResponse((MqMessage)packet);
         mLogger.debug("MqClientImpl::close() - received response: " + response.toPrintableString());
-        if (response.getResponseCode() == 0)
+        if (response.getCode() == 0)
         {
           logInfoAndSetResponse("Queue " + queue + " was successfully closed");
           mQueue = null;
         }
         else
         {
-          logInfoAndSetResponse(response.getResponseMessage());
+          logInfoAndSetResponse(response.getDesc());
         }
       }
       catch (IOException e)
@@ -282,9 +282,9 @@ public class MqClientImpl extends AMqClient
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponseMessage response = (MqResponseMessage)packet;
+        MqResponse response = new MqResponse((MqMessage)packet);
         mLogger.debug("MqClientImpl::define() - received response: " + response.toPrintableString());
-        if (response.getResponseCode() == 0)
+        if (response.getCode() == 0)
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully defined");
@@ -292,7 +292,7 @@ public class MqClientImpl extends AMqClient
         }
         else
         {
-          logInfoAndSetResponse(response.getResponseMessage());
+          logInfoAndSetResponse(response.getDesc());
         }
       }
       catch (IOException e)
@@ -332,9 +332,9 @@ public class MqClientImpl extends AMqClient
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponseMessage response = (MqResponseMessage)packet;
+        MqResponse response = new MqResponse((MqMessage)packet);
         mLogger.debug("MqClientImpl::delete() - received response: " + response.toPrintableString());
-        if (response.getResponseCode() == 0)
+        if (response.getCode() == 0)
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully deleted");
@@ -343,7 +343,7 @@ public class MqClientImpl extends AMqClient
         }
         else
         {
-          logInfoAndSetResponse(response.getResponseMessage());
+          logInfoAndSetResponse(response.getDesc());
         }
       }
       catch (IOException e)
@@ -381,15 +381,16 @@ public class MqClientImpl extends AMqClient
       {
         MqMessage request = MqMessageFactory.createGetRequest(mQueue);
         IPacket packet = mMessenger.sendAndReceive(request, timeout);
-        MqResponseMessage response = (MqResponseMessage)packet;
-        if (response.getResponseCode() == 0)
+        MqMessage responseMessage = (MqMessage)packet;
+        MqResponse response = new MqResponse(responseMessage);
+        if (response.getCode() == 0)
         {
           mLogger.debug("MqClientImpl::get() - Message received successfully. Message: " + response);
-          result = response;
+          result = responseMessage;
         }
         else
         {
-          logInfoAndSetResponse(response.getResponseMessage());
+          logInfoAndSetResponse(response.getDesc());
         }
       }
       catch (IOException e)
@@ -460,16 +461,16 @@ public class MqClientImpl extends AMqClient
     try
     {
       IPacket packet = mMessenger.sendAndReceive(request);
-      MqResponseMessage response = (MqResponseMessage)packet;
+      MqResponse response = new MqResponse((MqMessage)packet);
       mLogger.debug("MqClientImpl::authenticate() - received response: " + response.toPrintableString());
-      if (response.getResponseCode() == 0)
+      if (response.getCode() == 0)
       {
         success = true;
         mLogger.debug("MqClientImpl::authenticate() - client was successfully authenticated");
       }
       else
       {
-        logInfoAndSetResponse(response.getResponseMessage());
+        logInfoAndSetResponse(response.getDesc());
       }
     }
     catch (IOException e)
@@ -504,21 +505,22 @@ public class MqClientImpl extends AMqClient
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponseMessage response = (MqResponseMessage)packet;
+        MqMessage responseMessage = (MqMessage)packet;
+        MqResponse response = new MqResponse(responseMessage);
         mLogger.debug("MqClientImpl::show() - received response: " + response.toPrintableString());
-        if (response.getResponseCode() == 0)
+        if (response.getCode() == 0)
         {
           NetworkAddress addr = getNetworkAddress();
-          sb.append("Session ID.................: ").append(response.getStringProperty(IMqConstants.cKasPropertySessionId, "*N/A*")).append('\n');
+          sb.append("Session ID.................: ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertySessionId, "*N/A*")).append('\n');
           sb.append("    KAS/MQ server.......:    ").append(addr == null ? "*N/A*" : addr.toString()).append('\n');
-          sb.append("    Client..............:    ").append(response.getStringProperty(IMqConstants.cKasPropertyNetworkAddress, "*N/A*")).append('\n');
-          sb.append("    Connected as........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyUserName, "*N/A*")).append('\n');
-          sb.append("    Opened queue........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyQueueName, "*N/A*"));
+          sb.append("    Client..............:    ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertyNetworkAddress, "*N/A*")).append('\n');
+          sb.append("    Connected as........:    ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertyUserName, "*N/A*")).append('\n');
+          sb.append("    Opened queue........:    ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertyQueueName, "*N/A*"));
           logInfoAndSetResponse(sb.toString());
         }
         else
         {
-          logInfoAndSetResponse(response.getResponseMessage());
+          logInfoAndSetResponse(response.getDesc());
         }
       }
       catch (IOException e)

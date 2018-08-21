@@ -5,7 +5,6 @@ import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
-import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.server.IHandler;
 import com.kas.mq.server.IRepository;
 
@@ -42,9 +41,9 @@ public class SessionResponder extends AKasObject
    * Process authenticate request
    * 
    * @param request The request message
-   * @return The {@link MqResponseMessage} object
+   * @return The {@link MqMessage} response object
    */
-  public MqResponseMessage authenticate(MqMessage request)
+  public MqMessage authenticate(MqMessage request)
   {
     Response response = new Response();
     
@@ -79,9 +78,9 @@ public class SessionResponder extends AKasObject
    * Process open queue request
    * 
    * @param request The request message
-   * @return The {@link MqResponseMessage} object
+   * @return The {@link MqMessage} response object
    */
-  public MqResponseMessage open(MqMessage request)
+  public MqMessage open(MqMessage request)
   {
     Response response = new Response();
     
@@ -103,9 +102,9 @@ public class SessionResponder extends AKasObject
    * Process close queue request
    * 
    * @param request The request message
-   * @return The {@link MqResponseMessage} object
+   * @return The {@link MqMessage} response object
    */
-  public MqResponseMessage close(MqMessage request)
+  public MqMessage close(MqMessage request)
   {
     Response response = new Response();
     
@@ -124,9 +123,9 @@ public class SessionResponder extends AKasObject
    * Process define queue request
    * 
    * @param request The request message
-   * @return The {@link MqResponseMessage} object
+   * @return The {@link MqMessage} response object
    */
-  public MqResponseMessage define(MqMessage request)
+  public MqMessage define(MqMessage request)
   {
     Response response = new Response();
     
@@ -154,9 +153,9 @@ public class SessionResponder extends AKasObject
    * Process delete queue request
    * 
    * @param request The request message
-   * @return The {@link MqResponseMessage} object
+   * @return The {@link MqMessage} response object
    */
-  public MqResponseMessage delete(MqMessage request)
+  public MqMessage delete(MqMessage request)
   {
     Response response = new Response();
     
@@ -187,13 +186,11 @@ public class SessionResponder extends AKasObject
    * Process show info request
    * 
    * @param request The request message
-   * @return The {@link MqResponseMessage} object
+   * @return The {@link MqMessage} response object
    */
-  public MqResponseMessage show(MqMessage request)
+  public MqMessage show(MqMessage request)
   {
-    Response response = new Response();
-    
-    MqResponseMessage responseMessage = generateResponse(response);
+    MqMessage responseMessage = generateResponse(new Response());
     
     responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
     responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
@@ -205,12 +202,12 @@ public class SessionResponder extends AKasObject
   }
   
   /**
-   * Generate a {@link MqResponseMessage} based on a {@link Response} object
+   * Generate a {@link MqMessage} based on a {@link Response} object
    * 
    * @param resp The {@link Response} object
-   * @return the {@link MqResponseMessage}
+   * @return the {@link MqMessage} response object
    */
-  private MqResponseMessage generateResponse(Response resp)
+  private MqMessage generateResponse(Response resp)
   {
     return MqMessageFactory.createResponse(resp.getCode(), resp.getMessage());
   }

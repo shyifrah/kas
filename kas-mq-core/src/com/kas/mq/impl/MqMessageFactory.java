@@ -64,13 +64,14 @@ public class MqMessageFactory
    * 
    * @param code The code of the response. An integer value representing how successful was the request.
    * @param response The message sent by the server to the client which describes the response code.
-   * @return a {@link MqResponseMessage}
+   * @return a {@link MqResponse}
    */
-  static public MqResponseMessage createResponse(int code, String response)
+  static public MqMessage createResponse(int code, String response)
   {
-    MqResponseMessage message = new MqResponseMessage();
-    message.setResponse(code, response);
+    MqMessage message = new MqMessage();
     message.setRequestType(ERequestType.cUnknown);
+    message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code);
+    message.setStringProperty(IMqConstants.cKasPropertyResponseDesc, response);
     return message;
   }
 }
