@@ -309,6 +309,57 @@ public class MqClientImpl extends AMqClient
   }
   
   /**
+   * Delete an existing queue.
+   * 
+   * @param queue The queue name to delete.
+   * @return the {@code true} if queue was deleted, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#delete(String)
+   */
+  public boolean delete(String queue)
+  {
+    mLogger.debug("MqClientImpl::delete() - IN");
+    
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      MqMessage request = MqMessageFactory.createDeleteRequest(queue);
+      mLogger.debug("MqClientImpl::delete() - sending delete request: " + request.toPrintableString());
+      try
+      {
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponseMessage response = (MqResponseMessage)packet;
+        mLogger.debug("MqClientImpl::delete() - received response: " + response.toPrintableString());
+        if (response.getResponseCode() == 0)
+        {
+          success = true;
+          logInfoAndSetResponse("Queue " + queue + " was successfully deleted");
+          if ((mQueue != null) && (mQueue.equals(queue)))
+            mQueue = queue;
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getResponseMessage());
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to delete queue [").append(queue)
+          .append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::delete() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
    * Get a message from queue.
    * 
    * @param timeout The number of milliseconds to wait until a message available

@@ -151,6 +151,39 @@ public class SessionResponder extends AKasObject
   }
   
   /**
+   * Process delete queue request
+   * 
+   * @param request The request message
+   * @return The {@link MqResponseMessage} object
+   */
+  public MqResponseMessage delete(MqMessage request)
+  {
+    Response response = new Response();
+    
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
+    if ((queue == null) || (queue.length() == 0))
+    {
+      response = new Response("Queue name is null or an empty string", 8, true);
+    }
+    else
+    {
+      MqQueue mqq = mRepository.getQueue(queue);
+      if (mqq == null)
+      {
+        response = new Response("Queue with name \"" + queue + "\" does not exist", 8, true);
+      }
+      else
+      {
+        mqq = mRepository.removeQueue(queue);
+        MqQueue activeq = mHandler.getActiveQueue();
+        if ((activeq != null) && (activeq.getName().equals(queue)))
+          mHandler.setActiveQueue(null);
+      }
+    }
+    return generateResponse(response);
+  }
+  
+  /**
    * Process show info request
    * 
    * @param request The request message

@@ -169,6 +169,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         response = mSessionResponder.define(request);
       }
+      else if (requestType == ERequestType.cDeleteQueue)
+      {
+        response = mSessionResponder.delete(request);
+      }
       else if (requestType == ERequestType.cShowInfo)
       {
         response = mSessionResponder.show(request);

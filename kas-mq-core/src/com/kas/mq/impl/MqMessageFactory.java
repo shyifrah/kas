@@ -36,6 +36,14 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqMessage createDeleteRequest(String queue)
+  {
+    MqMessage message = new MqMessage();
+    message.setRequestType(ERequestType.cDeleteQueue);
+    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
+    return message;
+  }
+  
   static public MqMessage createShowInfoRequest()
   {
     MqMessage message = new MqMessage();

@@ -34,6 +34,11 @@ public interface IClient extends IObject
   public abstract boolean open(String queue);
   
   /**
+   * Close the specified queue.
+   */
+  public abstract void close();
+  
+  /**
    * Define the specified queue.
    * 
    * @param queue The queue name to define.
@@ -42,9 +47,12 @@ public interface IClient extends IObject
   public abstract boolean define(String queue);
   
   /**
-   * Close the specified queue.
+   * Delete the specified queue.
+   * 
+   * @param queue The queue name to delete.
+   * @return {@code true} if queue was deleted, {@code false} otherwise
    */
-  public abstract void close();
+  public abstract boolean delete(String queue);
   
   /**
    * Show information regarding current session
