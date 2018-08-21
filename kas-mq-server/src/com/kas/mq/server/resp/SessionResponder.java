@@ -162,10 +162,11 @@ public class SessionResponder extends AKasObject
     
     MqResponseMessage responseMessage = generateResponse(response);
     
+    responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
     responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
     responseMessage.setStringProperty(IMqConstants.cKasPropertyUserName, mHandler.getActiveUserName());
-    responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue() == null ? null : mHandler.getActiveQueue().getName());
-    responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
+    if (mHandler.getActiveQueue() != null)
+      responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue().getName());
     
     return responseMessage;
   }

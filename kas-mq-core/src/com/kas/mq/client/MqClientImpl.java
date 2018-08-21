@@ -322,7 +322,7 @@ public class MqClientImpl extends AMqClient
     
     if (!isOpen())
     {
-      logInfoAndSetResponse("Cannot get a message. Need to open a queue first");
+      logDebugAndSetResponse("MqClientImpl::get()", "Cannot get a message. Need to open a queue first");
     }
     else
     {
@@ -368,9 +368,7 @@ public class MqClientImpl extends AMqClient
     
     if (!isOpen())
     {
-      String response = "Cannot put a message. Need to open a queue first";
-      setResponse(response);
-      mLogger.debug(response);
+      logDebugAndSetResponse("MqClientImpl::put()", "Cannot put a message. Need to open a queue first");
     }
     else
     {
@@ -442,40 +440,56 @@ public class MqClientImpl extends AMqClient
   {
     mLogger.debug("MqClientImpl::show() - IN");
     
-    StringBuilder sb = new StringBuilder('\n');
-    
-    MqMessage request = MqMessageFactory.createShowInfoRequest();
-    mLogger.debug("MqClientImpl::show() - sending show-info request: " + request.toPrintableString());
-    try
+    if (!isConnected())
     {
-      IPacket packet = mMessenger.sendAndReceive(request);
-      MqResponseMessage response = (MqResponseMessage)packet;
-      mLogger.debug("MqClientImpl::show() - received response: " + response.toPrintableString());
-      if (response.getResponseCode() == 0)
-      {
-        NetworkAddress addr = getNetworkAddress();
-        sb.append("Session ID.................: ").append(response.getStringProperty(IMqConstants.cKasPropertySessionId, "*N/A*")).append('\n');
-        sb.append("    KAS/MQ server.......:    ").append(addr == null ? "*N/A*" : addr.toString()).append('\n');
-        sb.append("    Client..............:    ").append(response.getStringProperty(IMqConstants.cKasPropertyNetworkAddress, "*N/A*")).append('\n');
-        sb.append("    Connected as........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyUserName, "*N/A*")).append('\n');
-        sb.append("    Opened queue........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyQueueName, "*N/A*"));
-        String message = sb.toString();
-        setResponse(message);
-        mLogger.info(message);
-      }
-      else
-      {
-        logInfoAndSetResponse(response.getResponseMessage());
-      }
+      logInfoAndSetResponse("Not connected");
     }
-    catch (IOException e)
+    else
     {
-      StringBuilder sbe = new StringBuilder();
-      sbe.append("Exception occurred while getting session info. Exception: ").append(StringUtils.format(e));
-      logErrorAndSetResponse(sbe.toString());
+      StringBuilder sb = new StringBuilder('\n');
+      
+      MqMessage request = MqMessageFactory.createShowInfoRequest();
+      mLogger.debug("MqClientImpl::show() - sending show-info request: " + request.toPrintableString());
+      try
+      {
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponseMessage response = (MqResponseMessage)packet;
+        mLogger.debug("MqClientImpl::show() - received response: " + response.toPrintableString());
+        if (response.getResponseCode() == 0)
+        {
+          NetworkAddress addr = getNetworkAddress();
+          sb.append("Session ID.................: ").append(response.getStringProperty(IMqConstants.cKasPropertySessionId, "*N/A*")).append('\n');
+          sb.append("    KAS/MQ server.......:    ").append(addr == null ? "*N/A*" : addr.toString()).append('\n');
+          sb.append("    Client..............:    ").append(response.getStringProperty(IMqConstants.cKasPropertyNetworkAddress, "*N/A*")).append('\n');
+          sb.append("    Connected as........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyUserName, "*N/A*")).append('\n');
+          sb.append("    Opened queue........:    ").append(response.getStringProperty(IMqConstants.cKasPropertyQueueName, "*N/A*"));
+          logInfoAndSetResponse(sb.toString());
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getResponseMessage());
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sbe = new StringBuilder();
+        sbe.append("Exception occurred while getting session info. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sbe.toString());
+      }
     }
     
     mLogger.debug("MqClientImpl::show() - OUT");
+  }
+  
+  /**
+   * Log INFO a message
+   * 
+   * @param message The message to log and set as the client's response
+   */
+  private void logDebugAndSetResponse(String where, String message)
+  {
+    mLogger.debug(where + " - " + message);
+    setResponse(message);
   }
   
   /**
