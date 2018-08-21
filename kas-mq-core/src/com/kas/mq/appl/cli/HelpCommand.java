@@ -62,6 +62,8 @@ public class HelpCommand extends ACliCommand
     writeln("                   +--- OPEN --------------+");
     writeln("                   |                       |");
     writeln("                   +--- CLOSE -------------+");
+    writeln("                   |                       |");
+    writeln("                   +--- DEFINE ------------+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -116,6 +118,8 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- OPEN --------------+");
       writeln("          |                       |");
       writeln("          +--- CLOSE -------------+");
+      writeln("          |                       |");
+      writeln("          +--- DEFINE ------------+");
       writeln(" ");
       writeln("Description: ");
       writeln(" ");

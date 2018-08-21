@@ -52,6 +52,11 @@ public class CliCommandFactory
       return new CloseCommand(scanner, cmdWords, client);
     }
     
+    if (DefineCommand.sCommandVerbs.contains(verb))
+    {
+      return new DefineCommand(scanner, cmdWords, client);
+    }
+    
     if (ShowCommand.sCommandVerbs.contains(verb))
     {
       return new ShowCommand(scanner, cmdWords, client);

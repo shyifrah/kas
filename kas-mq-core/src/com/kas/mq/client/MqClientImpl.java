@@ -6,7 +6,7 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
-import com.kas.infra.base.ThrowableFormatter;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqResponseMessage;
@@ -62,10 +62,7 @@ public class MqClientImpl extends AMqClient
   {
     mLogger.debug("MqClientImpl::connect() - IN");
     
-    if (isConnected())
-    {
-      disconnect();
-    }
+    if (isConnected()) disconnect();
     
     try
     {
@@ -73,28 +70,20 @@ public class MqClientImpl extends AMqClient
       boolean authenticated = authenticate(user, pwd);
       if (!authenticated)
       {
-        String message = "User name \"" + user + "\" failed authentication";
-        mLogger.error(message);
-        setResponse(message);
+        logErrorAndSetResponse("User name \"" + user + "\" failed authentication");
         mMessenger.cleanup();
       }
       else
       {
-        String message = "Connection established with host at " + mMessenger.getAddress();
-        mLogger.info(message);
-        setResponse(message);
+        logInfoAndSetResponse("Connection established with host at " + mMessenger.getAddress());
       }
     }
     catch (IOException e)
     {
       StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred while trying to connect to [")
-        .append(new NetworkAddress(host, port))
-        .append("]. Exception: ")
-        .append(new ThrowableFormatter(e).toString());
-      String message = sb.toString();
-      mLogger.error(message);
-      setResponse(message);
+      sb.append("Exception occurred while trying to connect to [").append(new NetworkAddress(host, port))
+        .append("]. Exception: ").append(StringUtils.format(e));
+      logErrorAndSetResponse(sb.toString());
     }
     
     mLogger.debug("MqClientImpl::connect() - OUT");
@@ -113,18 +102,14 @@ public class MqClientImpl extends AMqClient
     
     if (!isConnected())
     {
-      String message = "Not Connected";
-      mLogger.info(message);
-      setResponse(message);
+      logInfoAndSetResponse("Not connected");
     }
     else
     {
       NetworkAddress addr = mMessenger.getAddress();
       mMessenger.cleanup();
       
-      String message = "Connection terminated with " + addr.toString();
-      setResponse(message);
-      mLogger.info(message);
+      logInfoAndSetResponse("Connection terminated with " + addr.toString());
       
       mMessenger = null;
     }
@@ -174,16 +159,11 @@ public class MqClientImpl extends AMqClient
     boolean success = false;
     if (!isConnected())
     {
-      String message = "Not connected to host";
-      mLogger.error(message);
-      setResponse(message);
+      logErrorAndSetResponse("Not connected to host");
     }
     else
     {
-      if (isOpen())
-      {
-        close();
-      }
+      if (isOpen()) close();
       
       MqMessage request = MqMessageFactory.createOpenRequest(queue);
       mLogger.debug("MqClientImpl::open() - sending open request: " + request.toPrintableString());
@@ -195,28 +175,20 @@ public class MqClientImpl extends AMqClient
         if (response.getResponseCode() == 0)
         {
           success = true;
-          String message = "Queue " + queue + " was successfully opened";
-          mLogger.debug("MqClientImpl::open() - " + message);
-          setResponse(message);
+          logInfoAndSetResponse("Queue " + queue + " was successfully opened");
           mQueue = queue;
         }
         else
         {
-          String message = response.getResponseMessage();
-          setResponse(message);
-          mLogger.info(message);
+          logInfoAndSetResponse(response.getResponseMessage());
         }
       }
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to open queue [")
-          .append(queue)
-          .append("]. Exception: ")
-          .append(new ThrowableFormatter(e).toString());
-        String message = sb.toString();
-        mLogger.error(message);
-        setResponse(message);
+        sb.append("Exception occurred while trying to open queue [").append(queue)
+          .append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
       }
     }
     
@@ -236,15 +208,11 @@ public class MqClientImpl extends AMqClient
     
     if (!isConnected())
     {
-      String message = "Not connected to host";
-      mLogger.debug(message);
-      setResponse(message);
+      logInfoAndSetResponse("Not connected to host");
     }
     else if (!isOpen())
     {
-      String message = "Queue is not open";
-      mLogger.debug(message);
-      setResponse(message);
+      logInfoAndSetResponse("Queue is not open");
     }
     else
     {
@@ -257,27 +225,20 @@ public class MqClientImpl extends AMqClient
         mLogger.debug("MqClientImpl::close() - received response: " + response.toPrintableString());
         if (response.getResponseCode() == 0)
         {
-          String message = "Queue " + queue + " was successfully opened";
-          mLogger.debug("MqClientImpl::close() - " + message);
+          logInfoAndSetResponse("Queue " + queue + " was successfully closed");
           mQueue = null;
         }
         else
         {
-          String message = response.getResponseMessage();
-          setResponse(message);
-          mLogger.info(message);
+          logInfoAndSetResponse(response.getResponseMessage());
         }
       }
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to close queue [")
-          .append(queue)
-          .append("]. Exception: ")
-          .append(new ThrowableFormatter(e).toString());
-        String message = sb.toString();
-        mLogger.error(message);
-        setResponse(message);
+        sb.append("Exception occurred while trying to close queue [").append(queue)
+          .append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
       }
     }
     
@@ -297,6 +258,56 @@ public class MqClientImpl extends AMqClient
   }
   
   /**
+   * Define a new queue.
+   * 
+   * @param queue The queue name to define.
+   * @return the {@code true} if queue was defined, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#define(String)
+   */
+  public boolean define(String queue)
+  {
+    mLogger.debug("MqClientImpl::define() - IN");
+    
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      MqMessage request = MqMessageFactory.createDefineRequest(queue);
+      mLogger.debug("MqClientImpl::define() - sending define request: " + request.toPrintableString());
+      try
+      {
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponseMessage response = (MqResponseMessage)packet;
+        mLogger.debug("MqClientImpl::define() - received response: " + response.toPrintableString());
+        if (response.getResponseCode() == 0)
+        {
+          success = true;
+          logInfoAndSetResponse("Queue " + queue + " was successfully defined");
+          mQueue = queue;
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getResponseMessage());
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to define queue [").append(queue)
+          .append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::define() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
    * Get a message from queue.
    * 
    * @param timeout The number of milliseconds to wait until a message available
@@ -310,9 +321,7 @@ public class MqClientImpl extends AMqClient
     
     if (!isOpen())
     {
-      String response = "Cannot get a message. Need to open a queue first";
-      setResponse(response);
-      mLogger.debug(response);
+      logInfoAndSetResponse("Cannot get a message. Need to open a queue first");
     }
     else
     {
@@ -328,21 +337,15 @@ public class MqClientImpl extends AMqClient
         }
         else
         {
-          String message = response.getResponseMessage();
-          setResponse(message);
-          mLogger.info(message);
+          logInfoAndSetResponse(response.getResponseMessage());
         }
       }
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to get a message from queue [")
-          .append(mQueue)
-          .append("]. Exception: ")
-          .append(new ThrowableFormatter(e).toString());
-        String response = sb.toString();
-        mLogger.error(response);
-        setResponse(response);
+        sb.append("Exception occurred while trying to get a message from queue [").append(mQueue)
+          .append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
       }
     }
     
@@ -380,13 +383,9 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to put a message into queue [")
-          .append(mQueue)
-          .append("]. Exception: ")
-          .append(new ThrowableFormatter(e).toString());
-        String response = sb.toString();
-        mLogger.error(response);
-        setResponse(response);
+        sb.append("Exception occurred while trying to put a message into queue [").append(mQueue)
+          .append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
       }
     }
     
@@ -420,21 +419,15 @@ public class MqClientImpl extends AMqClient
       }
       else
       {
-        String message = response.getResponseMessage();
-        setResponse(message);
-        mLogger.info(message);
+        logInfoAndSetResponse(response.getResponseMessage());
       }
     }
     catch (IOException e)
     {
       StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred during authentication of user [")
-        .append(username)
-        .append("]. Exception: ")
-        .append(new ThrowableFormatter(e).toString());
-      String response = sb.toString();
-      mLogger.error(response);
-      setResponse(response);
+      sb.append("Exception occurred during authentication of user [").append(username)
+        .append("]. Exception: ").append(StringUtils.format(e));
+      logErrorAndSetResponse(sb.toString());
     }
     
     mLogger.debug("MqClientImpl::authenticate() - OUT, Returns=" + success);
@@ -471,22 +464,39 @@ public class MqClientImpl extends AMqClient
       }
       else
       {
-        String message = response.getResponseMessage();
-        setResponse(message);
-        mLogger.info(message);
+        logInfoAndSetResponse(response.getResponseMessage());
       }
     }
     catch (IOException e)
     {
       StringBuilder sbe = new StringBuilder();
-      sbe.append("Exception occurred while getting session info. Exception: ")
-        .append(new ThrowableFormatter(e).toString());
-      String resp = sbe.toString();
-      mLogger.error(resp);
-      setResponse(resp);
+      sbe.append("Exception occurred while getting session info. Exception: ").append(StringUtils.format(e));
+      logErrorAndSetResponse(sbe.toString());
     }
     
     mLogger.debug("MqClientImpl::show() - OUT");
+  }
+  
+  /**
+   * Log INFO a message
+   * 
+   * @param message The message to log and set as the client's response
+   */
+  private void logInfoAndSetResponse(String message)
+  {
+    mLogger.info(message);
+    setResponse(message);
+  }
+  
+  /**
+   * Log ERROR a message
+   * 
+   * @param message The message to log and set as the client's response
+   */
+  private void logErrorAndSetResponse(String message)
+  {
+    mLogger.error(message);
+    setResponse(message);
   }
 
   /**

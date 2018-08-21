@@ -1,8 +1,8 @@
 package com.kas.logging.impl;
 
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.ThrowableFormatter;
 import com.kas.infra.logging.ELogLevel;
+import com.kas.infra.utils.StringUtils;
 
 /**
  * A general purpose {@link AAppender}
@@ -28,9 +28,9 @@ public abstract class AAppender extends AKasObject implements IAppender
     String msgText = message;
     if (ex != null)
     {
-      StringBuilder sb = new StringBuilder().append(message);
-      ThrowableFormatter formatter = new ThrowableFormatter(ex);
-      sb.append(formatter.toString());
+      StringBuilder sb = new StringBuilder()
+          .append(message)
+          .append(StringUtils.format(ex));
       msgText = sb.toString();
     }
     

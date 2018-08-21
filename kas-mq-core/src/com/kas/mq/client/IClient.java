@@ -34,6 +34,14 @@ public interface IClient extends IObject
   public abstract boolean open(String queue);
   
   /**
+   * Define the specified queue.
+   * 
+   * @param queue The queue name to define.
+   * @return {@code true} if queue was defined, {@code false} otherwise
+   */
+  public abstract boolean define(String queue);
+  
+  /**
    * Close the specified queue.
    */
   public abstract void close();

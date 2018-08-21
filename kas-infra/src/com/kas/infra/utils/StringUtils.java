@@ -108,6 +108,16 @@ public class StringUtils
   }
   
   /**
+   * Format a throwable object and print it
+   * 
+   * @param e The throwable object
+   */
+  static public String format(Throwable e)
+  {
+    return new ThrowableFormatter(e).toString();
+  }
+  
+  /**
    * Calculate the padding String base on the specified level
    * 
    * @param level padding level

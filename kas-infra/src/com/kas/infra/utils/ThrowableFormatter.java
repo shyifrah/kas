@@ -1,11 +1,11 @@
-package com.kas.infra.base;
+package com.kas.infra.utils;
 
 /**
  * A utility class for formatting exceptions
  * 
  * @author Pippo
  */
-public class ThrowableFormatter
+public final class ThrowableFormatter
 {
   /**
    * The exception to be formatted
