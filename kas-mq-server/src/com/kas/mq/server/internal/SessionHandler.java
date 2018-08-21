@@ -20,6 +20,7 @@ import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IHandler;
+import com.kas.mq.server.IRepository;
 import com.kas.mq.server.resp.SessionResponder;
 
 /**
@@ -164,6 +165,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         response = mSessionResponder.close(request);
       }
+      else if (requestType == ERequestType.cDefineQueue)
+      {
+        response = mSessionResponder.define(request);
+      }
       else if (requestType == ERequestType.cShowInfo)
       {
         response = mSessionResponder.show(request);
@@ -259,16 +264,15 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   }
   
   /**
-   * Get queue by name
+   * Get repository
    * 
-   * @param queue The queue name
-   * @return the {@link MqQueue} object associated with the specified queue name
+   * @return the {@link QueueRepository} object
    * 
-   * @see com.kas.mq.server.IHandler#getQueue(String)
+   * @see com.kas.mq.server.IHandler#getRepository()
    */
-  public MqQueue getQueue(String name)
+  public IRepository getRepository()
   {
-    return mController.getRepository().getQueue(name);
+    return mController.getRepository();
   }
   
   /**

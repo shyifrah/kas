@@ -5,6 +5,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqQueue;
+import com.kas.mq.server.internal.QueueRepository;
 import com.kas.mq.server.internal.SessionHandler;
 
 /**
@@ -59,12 +60,11 @@ public interface IHandler extends IObject
   public abstract boolean isPasswordMatch(String user, String pass);
   
   /**
-   * Get queue by name
+   * Get repository
    * 
-   * @param queue The queue name
-   * @return the {@link MqQueue} object associated with the specified queue name
+   * @return the {@link QueueRepository} object
    */
-  public abstract MqQueue getQueue(String name);
+  public abstract IRepository getRepository();
   
   /**
    * Get network address

@@ -7,6 +7,7 @@ import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponseMessage;
 import com.kas.mq.server.IHandler;
+import com.kas.mq.server.IRepository;
 
 /**
  * A {@link SessionResponder session responder} object is the object that responsible for
@@ -22,6 +23,11 @@ public class SessionResponder extends AKasObject
   private IHandler mHandler;
   
   /**
+   * Server's queue repository
+   */
+  private IRepository mRepository;
+  
+  /**
    * Construct a {@link SessionResponder}, specifying the handler
    * 
    * @param handler The handler that created this object
@@ -29,6 +35,7 @@ public class SessionResponder extends AKasObject
   public SessionResponder(IHandler handler)
   {
     mHandler = handler;
+    mRepository = handler.getRepository();
   }
   
   /**
@@ -71,7 +78,7 @@ public class SessionResponder extends AKasObject
     Response response = new Response();
     
     String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
-    MqQueue mqq = mHandler.getQueue(queue);
+    MqQueue mqq = mRepository.getQueue(queue);
     
     if (mqq == null)
     {
@@ -106,6 +113,36 @@ public class SessionResponder extends AKasObject
   }
   
   /**
+   * Process define queue request
+   * 
+   * @param request The request message
+   * @return The {@link MqResponseMessage} object
+   */
+  public MqResponseMessage define(MqMessage request)
+  {
+    Response response = new Response();
+    
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
+    if ((queue == null) || (queue.length() == 0))
+    {
+      response = new Response("Queue name is null or an empty string", 8, true);
+    }
+    else
+    {
+      MqQueue mqq = mRepository.getQueue(queue);
+      if (mqq != null)
+      {
+        response = new Response("Queue with name \"" + queue + "\" already exists", 8, true);
+      }
+      else
+      {
+        mqq = mRepository.createQueue(queue);
+      }
+    }
+    return generateResponse(response);
+  }
+  
+  /**
    * Process show info request
    * 
    * @param request The request message
@@ -119,7 +156,7 @@ public class SessionResponder extends AKasObject
     
     responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
     responseMessage.setStringProperty(IMqConstants.cKasPropertyUserName, mHandler.getActiveUserName());
-    responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue().getName());
+    responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue() == null ? null : mHandler.getActiveQueue().getName());
     responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
     
     return responseMessage;
