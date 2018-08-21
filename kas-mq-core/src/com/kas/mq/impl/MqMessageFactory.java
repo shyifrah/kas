@@ -66,11 +66,11 @@ public class MqMessageFactory
    * @param response The message sent by the server to the client which describes the response code.
    * @return a {@link MqResponse}
    */
-  static public MqMessage createResponse(int code, String response)
+  static public MqMessage createResponse(EMqResponseCode code, String response)
   {
     MqMessage message = new MqMessage();
     message.setRequestType(ERequestType.cUnknown);
-    message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code);
+    message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code.ordinal());
     message.setStringProperty(IMqConstants.cKasPropertyResponseDesc, response);
     return message;
   }

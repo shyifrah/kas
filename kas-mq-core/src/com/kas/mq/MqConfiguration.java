@@ -186,6 +186,9 @@ public class MqConfiguration extends AConfiguration
    */
   public String getUserPassword(String user)
   {
+    if (user == null)
+      return null;
+    
     return mUserMap.get(user);
   }
   

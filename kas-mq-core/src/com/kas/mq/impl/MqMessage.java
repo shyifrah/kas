@@ -158,7 +158,7 @@ public class MqMessage extends AKasObject implements IPacket
   /**
    * Get the administrative message's request type
    * 
-   * @return the administrative message's request type, or {@link ERequestType.cUnknown} for non-administrative messages
+   * @return the administrative message's request type, or {@link EMqResponseCode.cUnknown} for non-administrative messages
    */
   public ERequestType getRequestType()
   {

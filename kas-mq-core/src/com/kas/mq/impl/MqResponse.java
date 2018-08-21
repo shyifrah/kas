@@ -15,7 +15,7 @@ public class MqResponse extends AKasObject
   /**
    * The response code
    */
-  private int mResponseCode;
+  private EMqResponseCode mResponseCode;
   
   /**
    * The response description
@@ -23,13 +23,26 @@ public class MqResponse extends AKasObject
   private String mResponseDesc;
   
   /**
-   * Construct a default response object using properties contained in {@link MqMessage} properties
+   * Construct a response object using the specified {@link EMqResponseCode} and description
+   * 
+   * @param code The {@link EMqResponseCode response code}
+   * @param desc The description of the response code
+   */
+  public MqResponse(EMqResponseCode code, String desc)
+  {
+    mResponseCode = code;
+    mResponseDesc = desc;
+  }
+  
+  /**
+   * Construct a response object using properties contained in {@link MqMessage} properties
    * 
    * @param message The {@link MqMessage} containing the response code and description
    */
   public MqResponse(MqMessage message)
   {
-    mResponseCode = message.getIntProperty(IMqConstants.cKasPropertyResponseCode, 8);
+    int code = message.getIntProperty(IMqConstants.cKasPropertyResponseCode, EMqResponseCode.cError.ordinal());
+    mResponseCode = EMqResponseCode.fromInt(code);
     mResponseDesc = message.getStringProperty(IMqConstants.cKasPropertyResponseDesc, null);
   }
   
@@ -38,7 +51,7 @@ public class MqResponse extends AKasObject
    * 
    * @return the response code
    */
-  public int getCode()
+  public EMqResponseCode getCode()
   {
     return mResponseCode;
   }

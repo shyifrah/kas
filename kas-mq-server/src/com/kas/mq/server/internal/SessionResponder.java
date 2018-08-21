@@ -1,10 +1,12 @@
-package com.kas.mq.server.resp;
+package com.kas.mq.server.internal;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
+import com.kas.mq.impl.MqResponse;
 import com.kas.mq.server.IHandler;
 import com.kas.mq.server.IRepository;
 
@@ -45,30 +47,28 @@ public class SessionResponder extends AKasObject
    */
   public MqMessage authenticate(MqMessage request)
   {
-    Response response = new Response();
+    MqResponse response = null;
     
     String user = request.getStringProperty(IMqConstants.cKasPropertyUserName, null);
     String pwd  = request.getStringProperty(IMqConstants.cKasPropertyPassword, null);
+    String confPwd = mHandler.getConfig().getUserPassword(user);
     
     if ((user == null) || (user.length() == 0))
     {
-      response = new Response("Invalid user name", 12, false);
+      response = new MqResponse(EMqResponseCode.cError, "Invalid user name");
+    }
+    else if (confPwd == null)
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "User " + user + " is not defined");
+    }
+    else if (!confPwd.equals(pwd))
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "Password does not match");
     }
     else
     {
-      String confPwd = mHandler.getConfig().getUserPassword(user);
-      if (confPwd == null)
-      {
-        response = new Response("User " + user + " is not defined", 12, false);
-      }
-      else if (!confPwd.equals(pwd))
-      {
-        response = new Response("Password does not match", 8, false);
-      }
-      else
-      {
-        mHandler.setActiveUserName(user);
-      }
+      mHandler.setActiveUserName(user);
+      response = new MqResponse(EMqResponseCode.cOkay, "");
     }
     
     return generateResponse(response);
@@ -82,19 +82,25 @@ public class SessionResponder extends AKasObject
    */
   public MqMessage open(MqMessage request)
   {
-    Response response = new Response();
+    MqResponse response = null;
     
     String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
     MqQueue mqq = mRepository.getQueue(queue);
     
-    if (mqq == null)
+    if ((queue == null) || (queue.length() == 0))
     {
-      response = new Response("Queue name is null, an empty string or does not exist", 8, true);
+      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
+    }
+    else if (mqq == null)
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "Queue does not exist");
     }
     else
     {
       mHandler.setActiveQueue(mqq);
+      response = new MqResponse(EMqResponseCode.cOkay, "");
     }
+    
     return generateResponse(response);
   }
   
@@ -106,16 +112,18 @@ public class SessionResponder extends AKasObject
    */
   public MqMessage close(MqMessage request)
   {
-    Response response = new Response();
+    MqResponse response = null;
     
     if (mHandler.getActiveQueue() == null)
     {
-      response = new Response("No opened queue", 4, true);
+      response = new MqResponse(EMqResponseCode.cWarn, "No open queue");
     }
     else
     {
       mHandler.setActiveQueue(null);
+      response = new MqResponse(EMqResponseCode.cOkay, "");
     }
+    
     return generateResponse(response);
   }
   
@@ -127,25 +135,25 @@ public class SessionResponder extends AKasObject
    */
   public MqMessage define(MqMessage request)
   {
-    Response response = new Response();
+    MqResponse response = null;
     
     String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
+    MqQueue mqq = mRepository.getQueue(queue);
+    
     if ((queue == null) || (queue.length() == 0))
     {
-      response = new Response("Queue name is null or an empty string", 8, true);
+      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
+    }
+    else if (mqq != null)
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "Queue with name \"" + queue + "\" already exists");
     }
     else
     {
-      MqQueue mqq = mRepository.getQueue(queue);
-      if (mqq != null)
-      {
-        response = new Response("Queue with name \"" + queue + "\" already exists", 8, true);
-      }
-      else
-      {
-        mqq = mRepository.createQueue(queue);
-      }
+      mqq = mRepository.createQueue(queue);
+      response = new MqResponse(EMqResponseCode.cOkay, "");
     }
+    
     return generateResponse(response);
   }
   
@@ -157,28 +165,30 @@ public class SessionResponder extends AKasObject
    */
   public MqMessage delete(MqMessage request)
   {
-    Response response = new Response();
+    MqResponse response = null;
     
     String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
+    MqQueue mqq = mRepository.getQueue(queue);
+    
     if ((queue == null) || (queue.length() == 0))
     {
-      response = new Response("Queue name is null or an empty string", 8, true);
+      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
+    }
+    else if (mqq == null)
+    {
+      response = new MqResponse(EMqResponseCode.cWarn, "Queue with name \"" + queue + "\" does not exist");
     }
     else
     {
-      MqQueue mqq = mRepository.getQueue(queue);
-      if (mqq == null)
-      {
-        response = new Response("Queue with name \"" + queue + "\" does not exist", 8, true);
-      }
-      else
-      {
-        mqq = mRepository.removeQueue(queue);
-        MqQueue activeq = mHandler.getActiveQueue();
-        if ((activeq != null) && (activeq.getName().equals(queue)))
-          mHandler.setActiveQueue(null);
-      }
+      mqq = mRepository.removeQueue(queue);
+      
+      MqQueue activeq = mHandler.getActiveQueue();
+      if ((activeq != null) && (activeq.getName().equals(queue)))
+        mHandler.setActiveQueue(null);
+      
+      response = new MqResponse(EMqResponseCode.cOkay, "");
     }
+    
     return generateResponse(response);
   }
   
@@ -190,7 +200,7 @@ public class SessionResponder extends AKasObject
    */
   public MqMessage show(MqMessage request)
   {
-    MqMessage responseMessage = generateResponse(new Response());
+    MqMessage responseMessage = generateResponse(new MqResponse(EMqResponseCode.cOkay, ""));
     
     responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
     responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
@@ -202,14 +212,14 @@ public class SessionResponder extends AKasObject
   }
   
   /**
-   * Generate a {@link MqMessage} based on a {@link Response} object
+   * Generate a {@link MqMessage} based on a {@link MqResponse} object
    * 
-   * @param resp The {@link Response} object
+   * @param resp The {@link MqResponse} object
    * @return the {@link MqMessage} response object
    */
-  private MqMessage generateResponse(Response resp)
+  private MqMessage generateResponse(MqResponse resp)
   {
-    return MqMessageFactory.createResponse(resp.getCode(), resp.getMessage());
+    return MqMessageFactory.createResponse(resp.getCode(), resp.getDesc());
   }
   
   /**
