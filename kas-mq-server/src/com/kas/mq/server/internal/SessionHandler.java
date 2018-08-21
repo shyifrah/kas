@@ -241,29 +241,6 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   }
   
   /**
-   * Get indication if a user's password matches the one defined in the {@link MqConfiguration}
-   * 
-   * @param user The user's name
-   * @param pass The user's password
-   * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
-   * 
-   * @see com.kas.mq.server.IHandler#isPasswordMatch(String, String)
-   */
-  public boolean isPasswordMatch(String user, String pass)
-  {
-    String confPass = mController.getConfig().getUserPassword(user);
-    if (confPass == null)
-    {
-      if (user == null)
-        return true;
-      else
-        return false;
-    }
-    
-    return confPass.equals(pass);
-  }
-  
-  /**
    * Get repository
    * 
    * @return the {@link QueueRepository} object
@@ -273,6 +250,18 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   public IRepository getRepository()
   {
     return mController.getRepository();
+  }
+  
+  /**
+   * Get configuration
+   * 
+   * @return the {@link MqConfiguration} object
+   * 
+   * @see com.kas.mq.server.IHandler#getConfig()
+   */
+  public MqConfiguration getConfig()
+  {
+    return mController.getConfig();
   }
   
   /**

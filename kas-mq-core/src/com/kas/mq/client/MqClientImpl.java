@@ -70,8 +70,9 @@ public class MqClientImpl extends AMqClient
       boolean authenticated = authenticate(user, pwd);
       if (!authenticated)
       {
-        logErrorAndSetResponse("User name \"" + user + "\" failed authentication");
+        logErrorAndSetResponse(getResponse());
         mMessenger.cleanup();
+        mMessenger = null;
       }
       else
       {

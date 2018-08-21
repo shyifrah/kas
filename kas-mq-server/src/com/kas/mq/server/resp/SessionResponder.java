@@ -55,13 +55,21 @@ public class SessionResponder extends AKasObject
     {
       response = new Response("Invalid user name", 12, false);
     }
-    else if (!mHandler.isPasswordMatch(user, pwd))
-    {
-      response = new Response("Password does not match", 8, false);
-    }
     else
     {
-      mHandler.setActiveUserName(user);
+      String confPwd = mHandler.getConfig().getUserPassword(user);
+      if (confPwd == null)
+      {
+        response = new Response("User " + user + " is not defined", 12, false);
+      }
+      else if (!confPwd.equals(pwd))
+      {
+        response = new Response("Password does not match", 8, false);
+      }
+      else
+      {
+        mHandler.setActiveUserName(user);
+      }
     }
     
     return generateResponse(response);

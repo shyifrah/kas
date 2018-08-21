@@ -51,20 +51,18 @@ public interface IHandler extends IObject
   public abstract void setActiveQueue(MqQueue queue);
   
   /**
-   * Get indication if a user's password matches the one defined in the {@link MqConfiguration}
-   * 
-   * @param user The user's name
-   * @param pass The user's password
-   * @return {@code true} if the user's password matches the one defined in the {@link MqConfiguration}, {@code false} otherwise
-   */
-  public abstract boolean isPasswordMatch(String user, String pass);
-  
-  /**
    * Get repository
    * 
    * @return the {@link QueueRepository} object
    */
   public abstract IRepository getRepository();
+  
+  /**
+   * Get configuration
+   * 
+   * @return the {@link MqConfiguration} object
+   */
+  public abstract MqConfiguration getConfig();
   
   /**
    * Get network address
