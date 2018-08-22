@@ -3,10 +3,21 @@ package com.kas.mq.impl;
 public interface IMqConstants
 {
   /**
-   * Minimum and maximum priorities
+   * Message priorities
    */
   static public final int cMinimumPriority = 0;
   static public final int cMaximumPriority = 9;
+  static public final int cDefaultPriority = 5;
+  
+  /**
+   * Get polling interval length
+   */
+  static public final long cDefaultPollingInterval = 1000L;
+  
+  /**
+   * Get timeout
+   */
+  static public final long cDefaultTimeout = 0L;
   
   /**
    * Property names
@@ -21,4 +32,7 @@ public interface IMqConstants
   static public final String cKasPropertyQueueName      = cKasPropertyPrefix + "target.queue";
   static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
   static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
+  
+  static public final String cKasPropertyGetPriority    = cKasPropertyPrefix + "get.priority";
+  static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
 }

@@ -83,8 +83,8 @@ public class MqClientImpl extends AMqClient
     catch (IOException e)
     {
       StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred while trying to connect to [").append(new NetworkAddress(host, port))
-        .append("]. Exception: ").append(StringUtils.format(e));
+      sb.append("Exception occurred while trying to connect to [")
+        .append(new NetworkAddress(host, port)).append("]. Exception: ").append(StringUtils.format(e));
       logErrorAndSetResponse(sb.toString());
     }
     
@@ -188,8 +188,8 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to open queue [").append(queue)
-          .append("]. Exception: ").append(StringUtils.format(e));
+        sb.append("Exception occurred while trying to open queue [")
+          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }
@@ -238,8 +238,8 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to close queue [").append(queue)
-          .append("]. Exception: ").append(StringUtils.format(e));
+        sb.append("Exception occurred while trying to close queue [")
+          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }
@@ -299,8 +299,8 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to define queue [").append(queue)
-          .append("]. Exception: ").append(StringUtils.format(e));
+        sb.append("Exception occurred while trying to define queue [")
+          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }
@@ -350,8 +350,8 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to delete queue [").append(queue)
-          .append("]. Exception: ").append(StringUtils.format(e));
+        sb.append("Exception occurred while trying to delete queue [")
+          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }
@@ -364,9 +364,10 @@ public class MqClientImpl extends AMqClient
    * Get a message from queue.
    * 
    * @param timeout The number of milliseconds to wait until a message available
+   * @param priority The priority of the message to retrieve
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public MqMessage get(int timeout)
+  public MqMessage get(long timeout, int priority)
   {
     mLogger.debug("MqClientImpl::get() - IN");
     
@@ -380,8 +381,8 @@ public class MqClientImpl extends AMqClient
     {
       try
       {
-        MqMessage request = MqMessageFactory.createGetRequest(mQueue);
-        IPacket packet = mMessenger.sendAndReceive(request, timeout);
+        MqMessage request = MqMessageFactory.createGetRequest(timeout, priority);
+        IPacket packet = mMessenger.sendAndReceive(request);
         MqMessage responseMessage = (MqMessage)packet;
         MqResponse response = new MqResponse(responseMessage);
         if (response.getCode() == EMqResponseCode.cOkay)
@@ -397,8 +398,8 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to get a message from queue [").append(mQueue)
-          .append("]. Exception: ").append(StringUtils.format(e));
+        sb.append("Exception occurred while trying to get a message from queue [")
+          .append(mQueue).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }
@@ -435,8 +436,8 @@ public class MqClientImpl extends AMqClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to put a message into queue [").append(mQueue)
-          .append("]. Exception: ").append(StringUtils.format(e));
+        sb.append("Exception occurred while trying to put a message into queue [")
+          .append(mQueue).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }
@@ -477,8 +478,8 @@ public class MqClientImpl extends AMqClient
     catch (IOException e)
     {
       StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred during authentication of user [").append(username)
-        .append("]. Exception: ").append(StringUtils.format(e));
+      sb.append("Exception occurred during authentication of user [")
+        .append(username).append("]. Exception: ").append(StringUtils.format(e));
       logErrorAndSetResponse(sb.toString());
     }
     

@@ -193,6 +193,45 @@ public class SessionResponder extends AKasObject
   }
   
   /**
+   * Process get message from opened queue request
+   * 
+   * @param request The request message
+   * @return The {@link MqMessage} response object
+   */
+  public MqMessage get(MqMessage request)
+  {
+    MqResponse response = null;
+    MqMessage  result = null;
+    
+    int priority  = request.getIntProperty(IMqConstants.cKasPropertyGetPriority, IMqConstants.cDefaultPriority);
+    long timeout  = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
+    long interval = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultPollingInterval);
+    
+    MqQueue activeq = mHandler.getActiveQueue();
+    if (activeq == null)
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "No open queue");
+      result = generateResponse(response);
+    }
+    else
+    {
+      result = activeq.get(priority, timeout, interval);
+      if (result == null)
+      {
+        response = new MqResponse(EMqResponseCode.cWarn, "No message was found");
+        result = generateResponse(response);
+      }
+      else
+      {
+        response = new MqResponse(EMqResponseCode.cOkay, "");
+        result = mergeResponse(response, result);
+      }
+    }
+    
+    return result;
+  }
+  
+  /**
    * Process show info request
    * 
    * @param request The request message
@@ -209,6 +248,20 @@ public class SessionResponder extends AKasObject
       responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue().getName());
     
     return responseMessage;
+  }
+  
+  /**
+   * Merge {@code resp} into {@code msg}
+   * 
+   * @param resp The {@link MqResponse} object
+   * @param msg The {@link MqMessage} object
+   * @return the {@link MqMessage} with the response code and description from the {@link MqResponse} object
+   */
+  private MqMessage mergeResponse(MqResponse resp, MqMessage msg)
+  {
+    msg.setIntProperty(IMqConstants.cKasPropertyResponseCode, resp.getCode().ordinal());
+    msg.setStringProperty(IMqConstants.cKasPropertyResponseDesc, resp.getDesc());
+    return msg;
   }
   
   /**

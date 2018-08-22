@@ -63,9 +63,10 @@ public interface IClient extends IObject
    * Get a {@link MqMessage message} from the opened queue
    * 
    * @param timeout The number of milliseconds to wait until a message available
+   * @param priority The priority of the message to retrieve
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract MqMessage get(int timeout);
+  public abstract MqMessage get(long timeout, int priority);
   
   /**
    * Put a {@link MqMessage} into the opened queue.

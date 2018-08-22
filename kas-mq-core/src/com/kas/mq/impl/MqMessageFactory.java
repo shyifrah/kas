@@ -51,11 +51,12 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqMessage createGetRequest(String queue)
+  static public MqMessage createGetRequest(long timeout, int priority)
   {
     MqMessage message = new MqMessage();
     message.setRequestType(ERequestType.cGet);
-    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
+    message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
+    message.setIntProperty(IMqConstants.cKasPropertyGetPriority, priority);
     return message;
   }
   

@@ -47,7 +47,7 @@ public class MqMessage extends AKasObject implements IPacket
    */
   MqMessage()
   {
-    mPriority  = IMqConstants.cMinimumPriority;
+    mPriority  = IMqConstants.cDefaultPriority;
     mMessageId = UniqueId.generate();
     mProperties = new Properties();
   }
