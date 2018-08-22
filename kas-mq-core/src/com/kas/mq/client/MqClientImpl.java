@@ -363,11 +363,12 @@ public class MqClientImpl extends AMqClient
   /**
    * Get a message from queue.
    * 
-   * @param timeout The number of milliseconds to wait until a message available
    * @param priority The priority of the message to retrieve
+   * @param timeout The number of milliseconds to wait until a message available
+   * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public MqMessage get(long timeout, int priority)
+  public MqMessage get(int priority, long timeout, long interval)
   {
     mLogger.debug("MqClientImpl::get() - IN");
     
@@ -381,14 +382,15 @@ public class MqClientImpl extends AMqClient
     {
       try
       {
-        MqMessage request = MqMessageFactory.createGetRequest(timeout, priority);
+        MqMessage request = MqMessageFactory.createGetRequest(priority, timeout, interval);
+        mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString());
         IPacket packet = mMessenger.sendAndReceive(request);
         MqMessage responseMessage = (MqMessage)packet;
         MqResponse response = new MqResponse(responseMessage);
         mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
-          mLogger.debug("MqClientImpl::get() - Message received successfully. Message: " + response);
+          logInfoAndSetResponse("Successfully got a message from queue " + mQueue + ", Message: " + responseMessage.toPrintableString());
           result = responseMessage;
         }
         else

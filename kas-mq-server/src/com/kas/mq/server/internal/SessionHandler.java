@@ -176,10 +176,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         response = mSessionResponder.put(request);
       }
-//      else if (requestType == ERequestType.cGet)
-//      {
-//        response = mSessionResponder.get(request);
-//      }
+      else if (requestType == ERequestType.cGet)
+      {
+        response = mSessionResponder.get(request);
+      }
       else if (requestType == ERequestType.cShowInfo)
       {
         response = mSessionResponder.show(request);

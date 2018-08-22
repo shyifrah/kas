@@ -236,7 +236,7 @@ public class SessionResponder extends AKasObject
     
     int priority  = request.getIntProperty(IMqConstants.cKasPropertyGetPriority, IMqConstants.cDefaultPriority);
     long timeout  = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
-    long interval = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultPollingInterval);
+    long interval = request.getLongProperty(IMqConstants.cKasPropertyGetInterval, IMqConstants.cDefaultPollingInterval);
     
     MqQueue activeq = mHandler.getActiveQueue();
     if (activeq == null)

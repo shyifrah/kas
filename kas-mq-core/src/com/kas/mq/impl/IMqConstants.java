@@ -35,4 +35,5 @@ public interface IMqConstants
   
   static public final String cKasPropertyGetPriority    = cKasPropertyPrefix + "get.priority";
   static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
+  static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";
 }
