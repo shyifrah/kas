@@ -1,6 +1,5 @@
 package com.kas.infra.config;
 
-import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 
 /**
@@ -8,7 +7,7 @@ import com.kas.infra.base.Properties;
  * 
  * @author Pippo
  */
-public interface IConfiguration extends IObject
+public interface IConfiguration
 {
   /**
    * Get the value of a property named {@code key} which its value should be of type {@link String}.<br>

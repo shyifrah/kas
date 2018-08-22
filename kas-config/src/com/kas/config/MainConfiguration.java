@@ -8,10 +8,10 @@ import com.kas.config.impl.ConfigTask;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.threads.ThreadPool;
+import com.kas.infra.config.IBaseListener;
+import com.kas.infra.config.IBaseRegistrar;
 import com.kas.infra.config.IConfiguration;
-import com.kas.infra.config.IListener;
 import com.kas.infra.config.IMainConfiguration;
-import com.kas.infra.config.IRegistrar;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
@@ -21,7 +21,7 @@ import com.kas.infra.utils.RunTimeUtils;
  * 
  * @author Pippo
  */
-final public class MainConfiguration extends AKasObject implements IMainConfiguration, IRegistrar 
+final public class MainConfiguration extends AKasObject implements IMainConfiguration, IBaseRegistrar 
 {
   static private final long cDefaultMonitoringDelay    = 10000L;
   static private final long cDefaultMonitoringInterval = 10000L;
@@ -44,9 +44,9 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   private String mConfigDir = null;
   
   /**
-   * A collection of {@link IListener} objects that are listening for configuration changes
+   * A collection of {@link IBaseListener} objects that are listening for configuration changes
    */
-  private Set<IListener> mListeners   = new HashSet<IListener>();
+  private Set<IBaseListener> mListeners   = new HashSet<IBaseListener>();
   
   /**
    * A collection of configuration files
@@ -195,7 +195,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     {
       synchronized (mListeners)
       {
-        for (IListener listener : mListeners)
+        for (IBaseListener listener : mListeners)
         {
           listener.refresh();
         }
@@ -206,11 +206,11 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Register a configuration listener
    * 
-   * @param listener A configuration listener to register in this {@link IRegistrar} object.
+   * @param listener A configuration listener to register in this {@link IBaseRegistrar} object.
    * 
-   * @see com.kas.infra.config.IRegistrar#register(IListener)
+   * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
    */
-  public synchronized void register(IListener listener)
+  public synchronized void register(IBaseListener listener)
   {
     mListeners.add(listener);
     listener.refresh();
@@ -219,15 +219,15 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Unregister a configuration listener
    * 
-   * @param listener A configuration listener to unregister from this {@link IRegistrar} object.
+   * @param listener A configuration listener to unregister from this {@link IBaseRegistrar} object.
    * 
-   * @see com.kas.infra.config.IRegistrar#unregister(IListener)
+   * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
    */
-  public synchronized void unregister(IListener listener)
+  public synchronized void unregister(IBaseListener listener)
   {
     synchronized (mListeners)
     {
-      for (IListener regListener : mListeners)
+      for (IBaseListener regListener : mListeners)
       {
         if (regListener.equals(listener))
         {
@@ -359,10 +359,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
         .append(pad).append("  ConfigTask=(").append(mConfigTask.toPrintableString(level + 1)).append(")\n")
         .append(pad).append("  Listeners=(\n");
       
-      for (IListener listener : mListeners)
-      {
-        sb.append(pad).append("    ").append(listener.name()).append("\n");
-      }
+      for (IBaseListener listener : mListeners)
+        sb.append(pad).append("    ").append(listener.toString()).append("\n");
       
       sb.append(pad).append("  )\n");
     }

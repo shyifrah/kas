@@ -2,6 +2,7 @@ package com.kas.comm;
 
 import java.io.IOException;
 import com.kas.comm.impl.PacketHeader;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.ISerializable;
 
 /**
@@ -9,7 +10,7 @@ import com.kas.infra.base.ISerializable;
  * 
  * @author Pippo
  */
-public interface IPacket extends ISerializable
+public interface IPacket extends ISerializable, IObject
 {
   /**
    * Create a header describing the packet

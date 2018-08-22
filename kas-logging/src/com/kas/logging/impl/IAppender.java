@@ -1,6 +1,7 @@
 package com.kas.logging.impl;
 
 import com.kas.infra.base.IInitializable;
+import com.kas.infra.base.IObject;
 import com.kas.infra.logging.ELogLevel;
 
 /**
@@ -9,7 +10,7 @@ import com.kas.infra.logging.ELogLevel;
  * 
  * @author Pippo
  */
-public interface IAppender extends IInitializable
+public interface IAppender extends IInitializable, IObject
 {
   /**
    * Write a message

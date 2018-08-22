@@ -6,7 +6,7 @@ package com.kas.infra.base;
  * 
  * @author Pippo
  */
-public interface IInitializable extends IObject
+public interface IInitializable
 {
   /**
    * Initialize the object

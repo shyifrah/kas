@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
  * 
  * @author Pippo
  */
-public interface ISerializable extends IObject
+public interface ISerializable
 {
   /**
    * Serialize an object to the specified output stream

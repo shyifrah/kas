@@ -2,6 +2,7 @@ package com.kas.infra.config;
 
 import java.util.Set;
 import com.kas.infra.base.IInitializable;
+import com.kas.infra.base.IObject;
 
 /**
  * Main configuration object.<br>
@@ -12,7 +13,7 @@ import com.kas.infra.base.IInitializable;
  * 
  * @author Pippo
  */
-public interface IMainConfiguration extends IConfiguration, IInitializable
+public interface IMainConfiguration extends IConfiguration, IInitializable, IObject
 {
   /**
    * This method is invoked by a side-thread which is responsible to monitor the configuration files.<br>

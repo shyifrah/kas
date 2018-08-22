@@ -1,13 +1,12 @@
 package com.kas.infra.logging;
 
-import com.kas.infra.base.IObject;
 
 /**
  * Base logger interface. All loggers should adhere to this interface.
  * 
  * @author Pippo
  */
-public interface IBaseLogger extends IObject
+public interface IBaseLogger
 {
   /**
    * Write a DIAG message with the specified log level
@@ -16,7 +15,7 @@ public interface IBaseLogger extends IObject
    * 
    * @see com.kas.infra.logging.ELogLevel#DIAG
    */
-  public abstract void diag (String message);
+  public abstract void diag(String message);
   
   /**
    * Write a DEBUG message with the specified log level

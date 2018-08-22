@@ -1,6 +1,7 @@
 package com.kas.mq.server;
 
 import com.kas.infra.base.IInitializable;
+import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqQueue;
 
 /**
@@ -8,7 +9,7 @@ import com.kas.mq.impl.MqQueue;
  * 
  * @author Pippo
  */
-public interface IRepository extends IInitializable
+public interface IRepository extends IInitializable, IObject
 {
   /**
    * Create a {@link MqQueue} object with the specified {@code name}

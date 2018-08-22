@@ -2,14 +2,14 @@ package com.kas.config.impl;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.config.IListener;
+import com.kas.infra.config.IBaseListener;
 
 /**
  * An abstract configuration object.
  * 
  * @author Pippo
  */
-public abstract class AConfiguration extends AKasObject implements IListener
+public abstract class AConfiguration extends AKasObject implements IBaseListener
 {
   /**
    * The {@link MainConfiguration} object
@@ -59,7 +59,7 @@ public abstract class AConfiguration extends AKasObject implements IListener
   /**
    * Refreshes the configuration object
    * 
-   * @see com.kas.infra.config.IListener#refresh()
+   * @see com.kas.infra.config.IBaseListener#refresh()
    */
   public abstract void refresh();
   

@@ -2,7 +2,7 @@ package com.kas.logging.impl;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.config.IListener;
+import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.logging.ELogLevel;
 
@@ -11,7 +11,7 @@ import com.kas.infra.logging.ELogLevel;
  * 
  * @author Pippo
  */
-public abstract class AAppenderConfiguration extends AKasObject implements IListener
+public abstract class AAppenderConfiguration extends AKasObject implements IBaseListener
 {
   static final String cLoggingConfigPrefix  = "kas.logging.";
   static final String cConfigAppenderPrefix = cLoggingConfigPrefix + "appender."; 
