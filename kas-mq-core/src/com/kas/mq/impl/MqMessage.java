@@ -166,11 +166,9 @@ public class MqMessage extends AKasObject implements IPacket
   }
   
   /**
-   * Create the {@link MqMessage} to the specified {@link ObjectOutputStream}
+   * Create the {@link PacketHeader} describing this {@link MqMessage}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
+   * @return the packet header
    */
   public PacketHeader createHeader()
   {

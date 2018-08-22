@@ -172,6 +172,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         response = mSessionResponder.delete(request);
       }
+      else if (requestType == ERequestType.cPut)
+      {
+        response = mSessionResponder.put(request);
+      }
 //      else if (requestType == ERequestType.cGet)
 //      {
 //        response = mSessionResponder.get(request);
@@ -181,7 +185,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
         response = mSessionResponder.show(request);
       }
       
-      mLogger.debug("SessionHandler::process() - Responding with the message: " + response.toPrintableString());
+      mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
       mMessenger.send(response);
     }
     catch (ClassCastException e)

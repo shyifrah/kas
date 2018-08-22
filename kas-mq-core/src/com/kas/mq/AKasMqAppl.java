@@ -91,7 +91,7 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
       }
     }
     
-    mLogger.info("Terminating configuration object and switching back to Console loggging...");
+    mLogger.info("Terminating configuration object and switching back to Console logging...");
     if (mConfig.isInitialized())
       mConfig.term();
     

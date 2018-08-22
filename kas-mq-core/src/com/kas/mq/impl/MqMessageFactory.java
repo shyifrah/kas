@@ -51,6 +51,14 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqMessage createTextMessage(String text)
+  {
+    MqTextMessage message = new MqTextMessage();
+    message.setBody(text);
+    message.setRequestType(ERequestType.cPut);
+    return message;
+  }
+  
   static public MqMessage createGetRequest(long timeout, int priority)
   {
     MqMessage message = new MqMessage();

@@ -27,14 +27,14 @@ public enum EClassId implements IObject
   cPlaceHolder2,    // 10
   
   /**
-   * MqMessage
+   * {@link MqMessage}
    */
   cClassMqMessage,
   
   /**
-   * MqResponseMessage
+   * {@link MqTextMessage}
    */
-  cClassMqResponseMessage,
+  cClassMqTextMessage,
   
   /**
    * Propeties

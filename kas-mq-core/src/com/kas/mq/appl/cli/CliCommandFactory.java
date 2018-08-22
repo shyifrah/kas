@@ -23,49 +23,34 @@ public class CliCommandFactory
     String verb = cmdWords.poll().toUpperCase();
     
     if (HelpCommand.sCommandVerbs.contains(verb))
-    {
       return new HelpCommand(scanner, cmdWords, client);
-    }
     
     if (ExitCommand.sCommandVerbs.contains(verb))
-    {
       return new ExitCommand(scanner, cmdWords, client);
-    }
     
     if (ConnectCommand.sCommandVerbs.contains(verb))
-    {
       return new ConnectCommand(scanner, cmdWords, client);
-    }
     
     if (DisconnectCommand.sCommandVerbs.contains(verb))
-    {
       return new DisconnectCommand(scanner, cmdWords, client);
-    }
     
     if (OpenCommand.sCommandVerbs.contains(verb))
-    {
       return new OpenCommand(scanner, cmdWords, client);
-    }
     
     if (CloseCommand.sCommandVerbs.contains(verb))
-    {
       return new CloseCommand(scanner, cmdWords, client);
-    }
     
     if (DefineCommand.sCommandVerbs.contains(verb))
-    {
       return new DefineCommand(scanner, cmdWords, client);
-    }
     
     if (DeleteCommand.sCommandVerbs.contains(verb))
-    {
       return new DeleteCommand(scanner, cmdWords, client);
-    }
+    
+    if (PutCommand.sCommandVerbs.contains(verb))
+      return new PutCommand(scanner, cmdWords, client);
     
     if (ShowCommand.sCommandVerbs.contains(verb))
-    {
       return new ShowCommand(scanner, cmdWords, client);
-    }
     
     // Unknown command
     return null;

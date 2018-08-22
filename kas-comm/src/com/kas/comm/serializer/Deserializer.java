@@ -141,8 +141,7 @@ public class Deserializer extends AKasObject implements IInitializable
    * 
    * @param id The object's class ID
    * @param istream The input stream
-   * @return the {@link IObject} that was deserialied
-   * @throws KasException if an error occurred
+   * @return the {@link IObject} that was deserialized
    */
   static public IObject deserialize(int id, ObjectInputStream istream) throws KasException
   {

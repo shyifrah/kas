@@ -193,6 +193,37 @@ public class SessionResponder extends AKasObject
   }
   
   /**
+   * Process put message to opened queue request
+   * 
+   * @param message The put request message (the actual message to put)
+   * @return The {@link MqMessage} response object
+   */
+  public MqMessage put(MqMessage request)
+  {
+    MqResponse response = null;
+    
+    MqQueue activeq = mHandler.getActiveQueue();
+    if (activeq == null)
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "No open queue");
+    }
+    else
+    {
+      boolean success = activeq.put(request);
+      if (!success)
+      {
+        response = new MqResponse(EMqResponseCode.cFail, "Failed to put message in queue");
+      }
+      else
+      {
+        response = new MqResponse(EMqResponseCode.cOkay, "");
+      }
+    }
+    
+    return generateResponse(response);
+  }
+  
+  /**
    * Process get message from opened queue request
    * 
    * @param request The request message

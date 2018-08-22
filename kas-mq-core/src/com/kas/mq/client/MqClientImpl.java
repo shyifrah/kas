@@ -385,6 +385,7 @@ public class MqClientImpl extends AMqClient
         IPacket packet = mMessenger.sendAndReceive(request);
         MqMessage responseMessage = (MqMessage)packet;
         MqResponse response = new MqResponse(responseMessage);
+        mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
           mLogger.debug("MqClientImpl::get() - Message received successfully. Message: " + response);
@@ -426,12 +427,20 @@ public class MqClientImpl extends AMqClient
     }
     else
     {
-      //message.setQueueName(mQueue);              ---+
-      //message.setRequestType(ERequestType.cPut); ---+--> these two lines should probably be done prior to this point, by the caller
       try
       {
-        mMessenger.send(message);
-        mLogger.debug("Message with ID=(" + message.getMessageId() + ") was successfully put into queue " + mQueue);
+        message.setStringProperty(IMqConstants.cKasPropertyQueueName, mQueue);
+        IPacket packet = mMessenger.sendAndReceive(message);
+        MqResponse response = new MqResponse((MqMessage)packet);
+        mLogger.debug("MqClientImpl::put() - received response: " + response.toPrintableString());
+        if (response.getCode() == EMqResponseCode.cOkay)
+        {
+          logInfoAndSetResponse("Successfully put to queue " + mQueue + " message: " + message.toPrintableString());
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getDesc());
+        }
       }
       catch (IOException e)
       {
