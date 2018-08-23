@@ -26,7 +26,7 @@ public class KasMqLauncher
   
   static public void main(String [] args)
   {
-    TimeStamp start = new TimeStamp();
+    TimeStamp start = TimeStamp.now();
     sLogger.info("KAS/MQ launcher started at " + start.toString());
     
     Map<String, String> pArgumentsMap = getAndProcessStartupArguments(args);
@@ -37,7 +37,7 @@ public class KasMqLauncher
     String appType = pArgumentsMap.get(cAppTypeSystemProperty);
     String className = getApplicationClass(appType);
     
-    TimeStamp end = new TimeStamp();
+    TimeStamp end = TimeStamp.now();
     reportLaunchTime(start, end);
     
     

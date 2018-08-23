@@ -6,6 +6,7 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
+import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -37,6 +38,11 @@ public class MqClientImpl extends AMqClient
    * Target queue
    */
   private String mQueue;
+  
+  /**
+   * Active user
+   */
+  private String mUser;
   
   /**
    * Constructing the client
@@ -78,6 +84,7 @@ public class MqClientImpl extends AMqClient
       else
       {
         logInfoAndSetResponse("Connection established with host at " + mMessenger.getAddress());
+        mUser = user;
       }
     }
     catch (IOException e)
@@ -114,6 +121,7 @@ public class MqClientImpl extends AMqClient
       logInfoAndSetResponse("Connection terminated with " + addr.toString());
       
       mMessenger = null;
+      mUser = null;
     }
     
     mLogger.debug("MqClientImpl::disconnect() - OUT");
@@ -391,6 +399,8 @@ public class MqClientImpl extends AMqClient
         mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
+          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
+          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
           logInfoAndSetResponse("Successfully got a message from queue " + mQueue + ", Message: " + responseMessage.toPrintableString());
           result = responseMessage;
         }
@@ -433,6 +443,8 @@ public class MqClientImpl extends AMqClient
       try
       {
         message.setStringProperty(IMqConstants.cKasPropertyQueueName, mQueue);
+        message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
+        message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
         IPacket packet = mMessenger.sendAndReceive(message);
         MqResponse response = new MqResponse((MqMessage)packet);
         mLogger.debug("MqClientImpl::put() - received response: " + response.toPrintableString());
@@ -481,6 +493,7 @@ public class MqClientImpl extends AMqClient
       {
         success = true;
         logInfoAndSetResponse("User " + user + " successfully authenticated");
+        mUser = user;
       }
       else
       {

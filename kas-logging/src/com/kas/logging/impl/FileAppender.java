@@ -73,7 +73,7 @@ public class FileAppender extends AAppender
    */
   public synchronized boolean init()
   {
-    TimeStamp ts = new TimeStamp();
+    TimeStamp ts = TimeStamp.now();
     
     mFileName = RunTimeUtils.getProductHomeDir() + File.separator + "logs" + File.separator + mConfig.getFileNamePattern()
       .replaceAll("%p", Integer.toString(RunTimeUtils.getProcessId()))
@@ -158,11 +158,10 @@ public class FileAppender extends AAppender
     {
       if (mConfig.getLogLevel().isGreaterOrEqual(messageLevel))
       {
-        TimeStamp ts = new TimeStamp();
         try
         {
           mBufferedWriter.write(String.format(cAppenderMessageFormat, 
-            ts.toString(),
+            TimeStamp.nowAsString(),
             RunTimeUtils.getProcessId(),
             RunTimeUtils.getThreadId(),
             messageLevel.toString(), 

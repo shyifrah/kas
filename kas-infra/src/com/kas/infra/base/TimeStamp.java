@@ -15,6 +15,26 @@ public class TimeStamp extends AKasObject
   static private Calendar sCalendar = Calendar.getInstance();
   
   /**
+   * Get current timestamp in string format
+   * 
+   * @return current timestamp in string format
+   */
+  static public String nowAsString()
+  {
+    return now().toString();
+  }
+  
+  /**
+   * Get current timestamp
+   * 
+   * @return current timestamp
+   */
+  static public TimeStamp now()
+  {
+    return new TimeStamp();
+  }
+  
+  /**
    * The timestamp represented as milliseconds since January 1st, 1970
    */
   private long mTimeInMilliSeconds;

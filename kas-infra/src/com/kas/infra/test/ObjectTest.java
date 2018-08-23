@@ -152,7 +152,7 @@ public class ObjectTest extends AStatsCollector
     String msg = StringUtils.title("Testing object of class " + mTestedObject.getClass().getName());
     mLogger.trace('\n' + msg);
     
-    mStartTimestamp = new TimeStamp();
+    mStartTimestamp = TimeStamp.now();
     
     for (Map.Entry<MethodExec, Object> entry : mMethodTests.entrySet())
     {
@@ -179,7 +179,7 @@ public class ObjectTest extends AStatsCollector
       }
     }
     
-    mEndTimestamp = new TimeStamp();
+    mEndTimestamp = TimeStamp.now();
     
     mLogger.trace("Collected statistics:");
     printStats();
