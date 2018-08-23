@@ -28,6 +28,9 @@ public class CliCommandFactory
     if (ExitCommand.sCommandVerbs.contains(verb))
       return new ExitCommand(scanner, cmdWords, client);
     
+    if (LoginCommand.sCommandVerbs.contains(verb))
+      return new LoginCommand(scanner, cmdWords, client);
+    
     if (ConnectCommand.sCommandVerbs.contains(verb))
       return new ConnectCommand(scanner, cmdWords, client);
     

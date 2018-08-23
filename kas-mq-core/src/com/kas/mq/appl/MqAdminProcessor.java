@@ -135,7 +135,7 @@ public class MqAdminProcessor extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n");
-    sb.append(pad).append("  ClientImpl=(").append(mClientImpl.toPrintableString(level+1)).append(")\n");
+    sb.append(pad).append("  ClientImpl=(").append(mClientImpl.toString()).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();
   }

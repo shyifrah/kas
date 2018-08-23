@@ -1,6 +1,5 @@
 package com.kas.mq.client;
 
-import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqMessage;
 
 /**
@@ -8,7 +7,7 @@ import com.kas.mq.impl.MqMessage;
  * 
  * @author Pippo
  */
-public interface IClient extends IObject
+public interface IClient
 {
   /**
    * Connect client to the queue manager defined on {@code destination}
@@ -24,6 +23,27 @@ public interface IClient extends IObject
    * Disconnect from the queue manager.
    */
   public abstract void disconnect();
+  
+  /**
+   * Get the connection status.<br>
+   * <br>
+   * A connected socket is one that is marked as connected AND not closed.
+   * 
+   * @return {@code true} if socket is connected and not closed, {@code false} otherwise
+   * 
+   * @see java.net.Socket#isConnected()
+   */
+  public abstract boolean isConnected();
+  
+  /**
+   * Switch login credentials
+   * 
+   * @param user The user's name
+   * @param pwd The user's password
+   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration},
+   * {@code false} otherwise
+   */
+  public abstract boolean login(String user, String pwd);
   
   /**
    * Open the specified queue.

@@ -7,28 +7,29 @@ import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A CONNECT command
+ * A LOGIN command
  * 
  * @author Pippo
  */
-public class ConnectCommand extends ACliCommand
+public class LoginCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("CONNECT");
-    sCommandVerbs.add("CONN");
+    sCommandVerbs.add("LOGIN");
+    sCommandVerbs.add("AUTHENTICATE");
+    sCommandVerbs.add("AUTH");
   }
   
   /**
-   * Construct a {@link ConnectCommand} passing the command arguments and the client object
+   * Construct a {@link LoginCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected ConnectCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected LoginCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
@@ -46,31 +47,24 @@ public class ConnectCommand extends ACliCommand
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Connect to a host - IP address or host name - on a specific port.");
+    writeln("     Logout the previously entered credentials (via CONNECT or previous LOGIN commands)");
+    writeln("     and authenticate as a new user.");        
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- CONNECT|CONN ---+--- host ---+---+------------+---><");
-    writeln("                           |            |   |            |");
-    writeln("                           +--- ip -----+   +--- port ---+");
+    writeln("     >>--- LOGIN|AUTHENTICATE|AUTH ---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Connect to the specified host or IP address on the specified port number, or 14560 if no port is specified.");
-    writeln("     The host or the IP address are NOT checked for a valid format. However, the command processor does verify");
-    writeln("     that the port number has a valid numeric value.");
-    writeln("     Once the host and port were validated, the user will be propmpted for its user name and password.");
+    writeln("     The command prompts the user for it's name and password and then authenticates it against");
+    writeln("     the connected KAS/MQ server.");
+    writeln("     If a user's session was already authenticated prior to this command (via primary authentication of"); 
+    writeln("     the CONNECT command, or a subsequent LOGIN command), it is logged off.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Connect to host name TLVHOSTA on default port number:");
-    writeln("          KAS/MQ Admin> CONNECT TLVHOSTA");
-    writeln(" ");
-    writeln("     Connect to host with IP address of 101.23.2.2 on default port number:");
-    writeln("          KAS/MQ Admin> CONN 101.23.2.2");
-    writeln(" ");
-    writeln("     Connect to host name LONDON1 on port number 24560");
-    writeln("          KAS/MQ Admin> CONNECT LONDON1 24560");
+    writeln("     Login to the KAS/MQ server:");
+    writeln("          KAS/MQ Admin> LOGIN");
     writeln(" ");
   }
   
@@ -87,28 +81,16 @@ public class ConnectCommand extends ACliCommand
    */
   public boolean run()
   {
-    if (mCommandArgs.size() == 0)
+    if (mCommandArgs.size() > 0)
     {
-      writeln("Connect failed. Missing host name");
+      writeln("Login failed. Excessive token \"" + mCommandArgs.peek().toUpperCase() + "\"");
       writeln(" ");
       return false;
     }
-    
-    String host = mCommandArgs.poll().toUpperCase();
-    String sport = mCommandArgs.poll();
-    if (sport == null)
-      sport = "14560";
-    
-    int port = -1;
-    try
+
+    if (!mClient.isConnected())
     {
-      port = Integer.valueOf(sport.toUpperCase());
-    }
-    catch (NumberFormatException e) {}
-    
-    if (port == -1)
-    {
-      writeln("Connect failed. Invalid port number \"" + sport + "\"");
+      writeln("Not connected");
       writeln(" ");
       return false;
     }
@@ -133,7 +115,7 @@ public class ConnectCommand extends ACliCommand
     input = read("Enter password: ");
     String password = input.getOriginalString();
     
-    mClient.connect(host, port, username, password);
+    mClient.login(username, password);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

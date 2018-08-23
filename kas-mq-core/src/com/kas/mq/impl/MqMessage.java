@@ -20,7 +20,7 @@ import com.kas.mq.internal.ERequestType;
  * 
  * @author Pippo
  */
-public class MqMessage extends AKasObject implements IPacket
+public class MqMessage extends AKasObject implements IPacket, IMqMessage
 {
   /**
    * The message priority

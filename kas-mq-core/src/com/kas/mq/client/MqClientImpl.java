@@ -68,7 +68,7 @@ public class MqClientImpl extends AMqClient
     try
     {
       mMessenger = MessengerFactory.create(host, port);
-      boolean authenticated = authenticate(user, pwd);
+      boolean authenticated = login(user, pwd);
       if (!authenticated)
       {
         logErrorAndSetResponse(getResponse());
@@ -127,8 +127,9 @@ public class MqClientImpl extends AMqClient
    * @return {@code true} if socket is connected and not closed, {@code false} otherwise
    * 
    * @see java.net.Socket#isConnected()
+   * @see com.kas.mq.client.IClient#isConnected()
    */
-  private boolean isConnected()
+  public boolean isConnected()
   {
     return mMessenger == null ? false : mMessenger.isConnected();
   }
@@ -457,29 +458,29 @@ public class MqClientImpl extends AMqClient
   }
   
   /**
-   * Authenticate a user
+   * Switch login credentials
    * 
-   * @param username The user's name
-   * @param password The user's password
+   * @param user The user's name
+   * @param pwd The user's password
    * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration},
    * {@code false} otherwise
    */
-  private boolean authenticate(String username, String password)
+  public boolean login(String user, String pwd)
   {
-    mLogger.debug("MqClientImpl::authenticate() - IN");
+    mLogger.debug("MqClientImpl::login() - IN");
     
     boolean success = false;
-    MqMessage request = MqMessageFactory.createAuthenticationRequest(username, password);
-    mLogger.debug("MqClientImpl::authenticate() - sending authentication request: " + request.toPrintableString());
+    MqMessage request = MqMessageFactory.createAuthenticationRequest(user, pwd);
+    mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString());
     try
     {
       IPacket packet = mMessenger.sendAndReceive(request);
       MqResponse response = new MqResponse((MqMessage)packet);
-      mLogger.debug("MqClientImpl::authenticate() - received response: " + response.toPrintableString());
+      mLogger.debug("MqClientImpl::login() - received response: " + response.toPrintableString());
       if (response.getCode() == EMqResponseCode.cOkay)
       {
         success = true;
-        mLogger.debug("MqClientImpl::authenticate() - client was successfully authenticated");
+        logInfoAndSetResponse("User " + user + " successfully authenticated");
       }
       else
       {
@@ -490,11 +491,11 @@ public class MqClientImpl extends AMqClient
     {
       StringBuilder sb = new StringBuilder();
       sb.append("Exception occurred during authentication of user [")
-        .append(username).append("]. Exception: ").append(StringUtils.format(e));
+        .append(user).append("]. Exception: ").append(StringUtils.format(e));
       logErrorAndSetResponse(sb.toString());
     }
     
-    mLogger.debug("MqClientImpl::authenticate() - OUT, Returns=" + success);
+    mLogger.debug("MqClientImpl::login() - OUT, Returns=" + success);
     return success;
   }
   
