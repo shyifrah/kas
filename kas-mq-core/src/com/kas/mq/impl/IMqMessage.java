@@ -1,9 +1,18 @@
 package com.kas.mq.impl;
 
+import com.kas.comm.IPacket;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.internal.ERequestType;
 
-public interface IMqMessage
+/**
+ * The rules all {@link MqMessage} driven classes must obey
+ * 
+ * @author Pippo
+ *
+ * @param <T>
+ */
+public interface IMqMessage<T> extends IObject, IPacket
 {
   /**
    * Get the message Id
@@ -38,11 +47,25 @@ public interface IMqMessage
   public abstract void setRequestType(ERequestType type);
   
   /**
-   * Get the administrative message's request type
+   * Get the message's request type
    * 
-   * @return the administrative message's request type, or {@link EMqResponseCode.cUnknown} for non-administrative messages
+   * @return the message's request type
    */
   public abstract ERequestType getRequestType();
+  
+  /**
+   * Get the message's body
+   * 
+   * @return the message's body
+   */
+  public abstract T getBody();
+  
+  /**
+   * Set the message's body
+   * 
+   * @param body The message's body
+   */
+  public abstract void setBody(T body);
   
   /**
    * Get a Object property with default value if one is not present

@@ -3,6 +3,7 @@ package com.kas.mq.server.internal;
 import com.kas.infra.base.AKasObject;
 import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
+import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
@@ -45,7 +46,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage authenticate(MqMessage request)
+  public IMqMessage<?> authenticate(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -54,17 +55,11 @@ public class SessionResponder extends AKasObject
     String confPwd = mHandler.getConfig().getUserPassword(user);
     
     if ((user == null) || (user.length() == 0))
-    {
       response = new MqResponse(EMqResponseCode.cError, "Invalid user name");
-    }
     else if (confPwd == null)
-    {
       response = new MqResponse(EMqResponseCode.cFail, "User " + user + " is not defined");
-    }
     else if (!confPwd.equals(pwd))
-    {
       response = new MqResponse(EMqResponseCode.cFail, "Password does not match");
-    }
     else
     {
       mHandler.setActiveUserName(user);
@@ -80,7 +75,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage open(MqMessage request)
+  public IMqMessage<?> open(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -110,7 +105,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage close(MqMessage request)
+  public IMqMessage<?> close(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -133,7 +128,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage define(MqMessage request)
+  public IMqMessage<?> define(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -163,7 +158,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage delete(MqMessage request)
+  public IMqMessage<?> delete(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -198,26 +193,20 @@ public class SessionResponder extends AKasObject
    * @param message The put request message (the actual message to put)
    * @return The {@link MqMessage} response object
    */
-  public MqMessage put(MqMessage request)
+  public IMqMessage<?> put(IMqMessage<?> request)
   {
     MqResponse response = null;
     
     MqQueue activeq = mHandler.getActiveQueue();
     if (activeq == null)
-    {
       response = new MqResponse(EMqResponseCode.cFail, "No open queue");
-    }
     else
     {
       boolean success = activeq.put(request);
       if (!success)
-      {
         response = new MqResponse(EMqResponseCode.cFail, "Failed to put message in queue");
-      }
       else
-      {
         response = new MqResponse(EMqResponseCode.cOkay, "");
-      }
     }
     
     return generateResponse(response);
@@ -229,10 +218,10 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage get(MqMessage request)
+  public IMqMessage<?> get(IMqMessage<?> request)
   {
     MqResponse response = null;
-    MqMessage  result = null;
+    IMqMessage<?>  result = null;
     
     int priority  = request.getIntProperty(IMqConstants.cKasPropertyGetPriority, IMqConstants.cDefaultPriority);
     long timeout  = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
@@ -268,9 +257,9 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link MqMessage} response object
    */
-  public MqMessage show(MqMessage request)
+  public IMqMessage<?> show(IMqMessage<?> request)
   {
-    MqMessage responseMessage = generateResponse(new MqResponse(EMqResponseCode.cOkay, ""));
+    IMqMessage<?> responseMessage = generateResponse(new MqResponse(EMqResponseCode.cOkay, ""));
     
     responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
     responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
@@ -288,7 +277,7 @@ public class SessionResponder extends AKasObject
    * @param msg The {@link MqMessage} object
    * @return the {@link MqMessage} with the response code and description from the {@link MqResponse} object
    */
-  private MqMessage mergeResponse(MqResponse resp, MqMessage msg)
+  private IMqMessage<?> mergeResponse(MqResponse resp, IMqMessage<?> msg)
   {
     msg.setIntProperty(IMqConstants.cKasPropertyResponseCode, resp.getCode().ordinal());
     msg.setStringProperty(IMqConstants.cKasPropertyResponseDesc, resp.getDesc());
@@ -301,7 +290,7 @@ public class SessionResponder extends AKasObject
    * @param resp The {@link MqResponse} object
    * @return the {@link MqMessage} response object
    */
-  private MqMessage generateResponse(MqResponse resp)
+  private IMqMessage<?> generateResponse(MqResponse resp)
   {
     return MqMessageFactory.createResponse(resp.getCode(), resp.getDesc());
   }

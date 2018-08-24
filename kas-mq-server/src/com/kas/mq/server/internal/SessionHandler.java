@@ -15,7 +15,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqConstants;
-import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IController;
@@ -143,10 +143,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     mLogger.debug("SessionHandler::process() - IN");
     
     boolean cont = true;
-    MqMessage response = null;
+    IMqMessage<?> response = null;
     try
     {
-      MqMessage request = (MqMessage)packet;
+      IMqMessage<?> request = (IMqMessage<?>)packet;
       ERequestType requestType = request.getRequestType();
       mLogger.debug("SessionHandler::process() - Received request of type: " + requestType.toPrintableString(0));
       

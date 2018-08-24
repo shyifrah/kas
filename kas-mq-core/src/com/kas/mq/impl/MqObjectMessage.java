@@ -8,41 +8,41 @@ import com.kas.comm.serializer.EClassId;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * A KAS/MQ text message.<br>
+ * A KAS/MQ object message.<br>
  * <br>
- * The message body is a single {@link String} object
+ * The message body is a single {@link Object} object
  * 
  * @author Pippo
  */
-public class MqTextMessage extends MqMessage<String>
+public class MqObjectMessage extends MqMessage<Object>
 {
   /**
    * The message body
    */
-  protected String mBody;
+  protected Object mBody;
   
   /**
    * Construct a default text message object
    */
-  MqTextMessage()
+  MqObjectMessage()
   {
     super();
     mBody = null;
   }
   
   /**
-   * Constructs a {@link MqTextMessage} object from {@link ObjectInputStream}
+   * Constructs a {@link MqObjectMessage} object from {@link ObjectInputStream}
    * 
    * @param istream The {@link ObjectInputStream}
    * 
    * @throws IOException if I/O error occurs
    */
-  public MqTextMessage(ObjectInputStream istream) throws IOException
+  public MqObjectMessage(ObjectInputStream istream) throws IOException
   {
     super(istream);
     try
     {
-      mBody = (String)istream.readObject();
+      mBody = istream.readObject();
     }
     catch (IOException e)
     {
@@ -55,7 +55,7 @@ public class MqTextMessage extends MqMessage<String>
   }
   
   /**
-   * Serialize the {@link MqTextMessage} to the specified {@link ObjectOutputStream}
+   * Serialize the {@link MqObjectMessage} to the specified {@link ObjectOutputStream}
    * 
    * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
    * 
@@ -77,7 +77,7 @@ public class MqTextMessage extends MqMessage<String>
    * 
    * @see com.kas.mq.impl.IMqMessage#setBody(Object)
    */
-  public void setBody(String body)
+  public void setBody(Object body)
   {
     mBody = body;
   }
@@ -89,13 +89,13 @@ public class MqTextMessage extends MqMessage<String>
    * 
    * @see com.kas.mq.impl.IMqMessage#getBody()
    */
-  public String getBody()
+  public Object getBody()
   {
     return mBody;
   }
   
   /**
-   * Create the {@link PacketHeader} describing this {@link MqTextMessage}
+   * Create the {@link PacketHeader} describing this {@link MqObjectMessage}
    * 
    * @return the packet header
    */

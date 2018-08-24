@@ -13,9 +13,9 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqResponse;
 import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
+import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqQueue;
 
 /**
  * A client implementation that actually carries out the requests made by the facade client.
@@ -159,15 +159,13 @@ public class MqClientImpl extends AMqClient
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
-   * @return the {@link MqQueue} object if queue was opened, {@code null} otherwise
    * 
    * @see com.kas.mq.client.IClient#open(String)
    */
-  public boolean open(String queue)
+  public void open(String queue)
   {
     mLogger.debug("MqClientImpl::open() - IN");
     
-    boolean success = false;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
@@ -176,16 +174,15 @@ public class MqClientImpl extends AMqClient
     {
       if (isOpen()) close();
       
-      MqMessage request = MqMessageFactory.createOpenRequest(queue);
-      mLogger.debug("MqClientImpl::open() - sending open request: " + request.toPrintableString());
+      IMqMessage<?> request = MqMessageFactory.createOpenRequest(queue);
+      mLogger.debug("MqClientImpl::open() - sending open request: " + request.toPrintableString(0));
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((MqMessage)packet);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::open() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
-          success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully opened");
           mQueue = queue;
         }
@@ -203,8 +200,7 @@ public class MqClientImpl extends AMqClient
       }
     }
     
-    mLogger.debug("MqClientImpl::open() - OUT, Returns=" + success);
-    return success;
+    mLogger.debug("MqClientImpl::open() - OUT");
   }
   
   /**
@@ -227,12 +223,12 @@ public class MqClientImpl extends AMqClient
     }
     else
     {
-      MqMessage request = MqMessageFactory.createCloseRequest(queue);
-      mLogger.debug("MqClientImpl::close() - sending close request: " + request.toPrintableString());
+      IMqMessage<?> request = MqMessageFactory.createCloseRequest(queue);
+      mLogger.debug("MqClientImpl::close() - sending close request: " + request.toPrintableString(0));
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((MqMessage)packet);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::close() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
@@ -263,7 +259,7 @@ public class MqClientImpl extends AMqClient
    * 
    * @see com.kas.mq.client.IClient#isOpened()
    */
-  private boolean isOpen()
+  public boolean isOpen()
   {
     return mQueue != null;
   }
@@ -287,12 +283,12 @@ public class MqClientImpl extends AMqClient
     }
     else
     {
-      MqMessage request = MqMessageFactory.createDefineRequest(queue);
-      mLogger.debug("MqClientImpl::define() - sending define request: " + request.toPrintableString());
+      IMqMessage<?> request = MqMessageFactory.createDefineRequest(queue);
+      mLogger.debug("MqClientImpl::define() - sending define request: " + request.toPrintableString(0));
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((MqMessage)packet);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::define() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
@@ -337,12 +333,12 @@ public class MqClientImpl extends AMqClient
     }
     else
     {
-      MqMessage request = MqMessageFactory.createDeleteRequest(queue);
-      mLogger.debug("MqClientImpl::delete() - sending delete request: " + request.toPrintableString());
+      IMqMessage<?> request = MqMessageFactory.createDeleteRequest(queue);
+      mLogger.debug("MqClientImpl::delete() - sending delete request: " + request.toPrintableString(0));
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((MqMessage)packet);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::delete() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
@@ -377,11 +373,11 @@ public class MqClientImpl extends AMqClient
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public MqMessage get(int priority, long timeout, long interval)
+  public IMqMessage<?> get(int priority, long timeout, long interval)
   {
     mLogger.debug("MqClientImpl::get() - IN");
     
-    MqMessage result = null;
+    IMqMessage<?> result = null;
     
     if (!isOpen())
     {
@@ -391,17 +387,17 @@ public class MqClientImpl extends AMqClient
     {
       try
       {
-        MqMessage request = MqMessageFactory.createGetRequest(priority, timeout, interval);
-        mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString());
+        IMqMessage<?> request = MqMessageFactory.createGetRequest(priority, timeout, interval);
+        mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqMessage responseMessage = (MqMessage)packet;
+        IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
         MqResponse response = new MqResponse(responseMessage);
         mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
           responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
           responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
-          logInfoAndSetResponse("Successfully got a message from queue " + mQueue + ", Message: " + responseMessage.toPrintableString());
+          logInfoAndSetResponse("Successfully got a message from queue " + mQueue + ", Message: " + responseMessage.toPrintableString(0));
           result = responseMessage;
         }
         else
@@ -430,7 +426,7 @@ public class MqClientImpl extends AMqClient
    * 
    * @param message The message to be put
    */
-  public void put(MqMessage message)
+  public void put(IMqMessage<?> message)
   {
     mLogger.debug("MqClientImpl::put() - IN");
     
@@ -446,11 +442,11 @@ public class MqClientImpl extends AMqClient
         message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
         message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
         IPacket packet = mMessenger.sendAndReceive(message);
-        MqResponse response = new MqResponse((MqMessage)packet);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::put() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)
         {
-          logInfoAndSetResponse("Successfully put to queue " + mQueue + " message: " + message.toPrintableString());
+          logInfoAndSetResponse("Successfully put to queue " + mQueue + " message: " + message.toPrintableString(0));
         }
         else
         {
@@ -482,12 +478,12 @@ public class MqClientImpl extends AMqClient
     mLogger.debug("MqClientImpl::login() - IN");
     
     boolean success = false;
-    MqMessage request = MqMessageFactory.createAuthenticationRequest(user, pwd);
-    mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString());
+    IMqMessage<?> request = MqMessageFactory.createAuthenticationRequest(user, pwd);
+    mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString(0));
     try
     {
       IPacket packet = mMessenger.sendAndReceive(request);
-      MqResponse response = new MqResponse((MqMessage)packet);
+      MqResponse response = new MqResponse((IMqMessage<?>)packet);
       mLogger.debug("MqClientImpl::login() - received response: " + response.toPrintableString());
       if (response.getCode() == EMqResponseCode.cOkay)
       {
@@ -527,12 +523,12 @@ public class MqClientImpl extends AMqClient
     {
       StringBuilder sb = new StringBuilder('\n');
       
-      MqMessage request = MqMessageFactory.createShowInfoRequest();
-      mLogger.debug("MqClientImpl::show() - sending show-info request: " + request.toPrintableString());
+      IMqMessage<?> request = MqMessageFactory.createShowInfoRequest();
+      mLogger.debug("MqClientImpl::show() - sending show-info request: " + request.toPrintableString(0));
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
-        MqMessage responseMessage = (MqMessage)packet;
+        IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
         MqResponse response = new MqResponse(responseMessage);
         mLogger.debug("MqClientImpl::show() - received response: " + response.toPrintableString());
         if (response.getCode() == EMqResponseCode.cOkay)

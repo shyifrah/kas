@@ -4,54 +4,70 @@ import com.kas.mq.internal.ERequestType;
 
 public class MqMessageFactory
 {
-  static public MqMessage createAuthenticationRequest(String user, String pass)
+  static public MqObjectMessage createAuthenticationRequest(String user, String pass)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
     message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
     message.setStringProperty(IMqConstants.cKasPropertyPassword, pass);
     message.setRequestType(ERequestType.cAuthenticate);
     return message;
   }
   
-  static public MqMessage createOpenRequest(String queue)
+  static public MqObjectMessage createOpenRequest(String queue)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cOpenQueue);
     message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
     return message;
   }
   
-  static public MqMessage createCloseRequest(String queue)
+  static public MqObjectMessage createCloseRequest(String queue)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cCloseQueue);
     return message;
   }
   
-  static public MqMessage createDefineRequest(String queue)
+  static public MqObjectMessage createDefineRequest(String queue)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDefineQueue);
     message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
     return message;
   }
   
-  static public MqMessage createDeleteRequest(String queue)
+  static public MqObjectMessage createDeleteRequest(String queue)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDeleteQueue);
     message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
     return message;
   }
   
-  static public MqMessage createShowInfoRequest()
+  static public MqObjectMessage createGetRequest(int priority, long timeout, long interval)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
+    message.setRequestType(ERequestType.cGet);
+    message.setIntProperty(IMqConstants.cKasPropertyGetPriority, priority);
+    message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
+    message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
+    return message;
+  }
+  
+  static public MqObjectMessage createShowInfoRequest()
+  {
+    MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cShowInfo);
     return message;
   }
   
-  static public MqMessage createTextMessage(String text)
+  /**
+   * Create a text message, with a body containing {@code text}
+   * 
+   * @param text The message body
+   * @return a new {@link MqTextMessage}
+   */
+  static public MqTextMessage createTextMessage(String text)
   {
     MqTextMessage message = new MqTextMessage();
     message.setBody(text);
@@ -59,13 +75,17 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqMessage createGetRequest(int priority, long timeout, long interval)
+  /**
+   * Create a text message, with a body containing {@code text}
+   * 
+   * @param text The message body
+   * @return a new {@link MqObjectMessage}
+   */
+  static public MqObjectMessage createObjectMessage(Object object)
   {
-    MqMessage message = new MqMessage();
-    message.setRequestType(ERequestType.cGet);
-    message.setIntProperty(IMqConstants.cKasPropertyGetPriority, priority);
-    message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
-    message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
+    MqObjectMessage message = new MqObjectMessage();
+    message.setBody(object);
+    message.setRequestType(ERequestType.cPut);
     return message;
   }
   
@@ -76,9 +96,9 @@ public class MqMessageFactory
    * @param response The message sent by the server to the client which describes the response code.
    * @return a {@link MqResponse}
    */
-  static public MqMessage createResponse(EMqResponseCode code, String response)
+  static public MqObjectMessage createResponse(EMqResponseCode code, String response)
   {
-    MqMessage message = new MqMessage();
+    MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cUnknown);
     message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code.ordinal());
     message.setStringProperty(IMqConstants.cKasPropertyResponseDesc, response);

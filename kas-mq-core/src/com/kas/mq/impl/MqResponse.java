@@ -39,7 +39,7 @@ public class MqResponse extends AKasObject
    * 
    * @param message The {@link MqMessage} containing the response code and description
    */
-  public MqResponse(MqMessage message)
+  public MqResponse(IMqMessage<?> message)
   {
     int code = message.getIntProperty(IMqConstants.cKasPropertyResponseCode, EMqResponseCode.cError.ordinal());
     mResponseCode = EMqResponseCode.fromInt(code);

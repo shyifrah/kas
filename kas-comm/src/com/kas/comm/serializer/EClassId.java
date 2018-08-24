@@ -24,22 +24,18 @@ public enum EClassId implements IObject
   cClassDouble,     // 8
   
   cPlaceHolder1,    // 9
-  cPlaceHolder2,    // 10
-  
-  /**
-   * {@link MqMessage}
-   */
-  cClassMqMessage,
-  
-  /**
-   * {@link MqTextMessage}
-   */
-  cClassMqTextMessage,
-  
+
   /**
    * Propeties
    */
   cClassProperties,
+  
+  
+  /**
+   * {@link MqTextMessage}, {@link MqObjectMessage}
+   */
+  cClassMqTextMessage,
+  cClassMqObjectMessage,
   
   ;
   

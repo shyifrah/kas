@@ -1,5 +1,6 @@
 package com.kas.mq.client;
 
+import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessage;
 
 /**
@@ -49,14 +50,20 @@ public interface IClient
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
-   * @return {@code true} if queue was opened, {@code false} otherwise
    */
-  public abstract boolean open(String queue);
+  public abstract void open(String queue);
   
   /**
    * Close the specified queue.
    */
   public abstract void close();
+  
+  /**
+   * Get the queue status.
+   * 
+   * @return {@code true} if queue is open, {@code false} otherwise
+   */
+  public abstract boolean isOpen();
   
   /**
    * Define the specified queue.
@@ -87,14 +94,14 @@ public interface IClient
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract MqMessage get(int priority, long timeout, long interval);
+  public abstract IMqMessage<?> get(int priority, long timeout, long interval);
   
   /**
    * Put a {@link MqMessage} into the opened queue.
    * 
    * @param message The {@link MqMessage} to put into the opened queue
    */
-  public abstract void put(MqMessage message);
+  public abstract void put(IMqMessage<?> message);
   
   /**
    * Get last response from last {@link IClient} call.

@@ -4,8 +4,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.mq.client.IClient;
-import com.kas.mq.impl.MqMessage;
 import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqTextMessage;
 import com.kas.mq.internal.TokenDeque;
 
 /**
@@ -89,7 +89,7 @@ public class PutCommand extends ACliCommand
     
     String text = sb.toString().trim();
     
-    MqMessage message = MqMessageFactory.createTextMessage(text);
+    MqTextMessage message = MqMessageFactory.createTextMessage(text);
     mClient.put(message);
     writeln(mClient.getResponse());
     writeln(" ");

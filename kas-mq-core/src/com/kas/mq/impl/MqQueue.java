@@ -146,9 +146,9 @@ public class MqQueue extends AKasObject
           {
             PacketHeader header = new PacketHeader(istream);
             IPacket packet = header.read(istream);
-            MqMessage message = (MqMessage)packet;
+            IMqMessage<?> message = (IMqMessage<?>)packet;
             mLogger.diag("MqQueue::restore() - Header="  + header.toPrintableString());
-            mLogger.diag("MqQueue::restore() - Message=" + message.toPrintableString());
+            mLogger.diag("MqQueue::restore() - Message=" + message.toPrintableString(0));
             
             put(message);
           }
@@ -247,13 +247,13 @@ public class MqQueue extends AKasObject
             MessageDeque msgDeq = mQueueArray[i];
             while (!msgDeq.isEmpty())
             {
-              MqMessage message = msgDeq.poll();
+              IMqMessage<?> message = msgDeq.poll();
               
               PacketHeader header = message.createHeader();
               header.serialize(ostream);
               message.serialize(ostream);
               mLogger.diag("MqQueue::backup() - Header="  + header.toPrintableString());
-              mLogger.diag("MqQueue::backup() - Message=" + message.toPrintableString());
+              mLogger.diag("MqQueue::backup() - Message=" + message.toPrintableString(0));
               
               ++msgs;
             }
@@ -294,7 +294,7 @@ public class MqQueue extends AKasObject
    * @param message The message that should be stored at this {@link MqQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean put(MqMessage message)
+  public boolean put(IMqMessage<?> message)
   {
     if (message == null)
       return false;
@@ -308,7 +308,7 @@ public class MqQueue extends AKasObject
    * 
    * @return The {@link MqMessage}
    */
-  public MqMessage get()
+  public IMqMessage<?> get()
   {
     return internalGet(IMqConstants.cDefaultPriority, 0, IMqConstants.cDefaultPollingInterval);
   }
@@ -320,7 +320,7 @@ public class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code priority} is out of valid range
    */
-  public MqMessage get(int priority)
+  public IMqMessage<?> get(int priority)
   {
     if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
@@ -337,7 +337,7 @@ public class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code timeout} is lower than 0
    */
-  public MqMessage get(long timeout)
+  public IMqMessage<?> get(long timeout)
   {
     if (timeout < 0)
       throw new IllegalArgumentException("Invalid timeout: " + timeout);
@@ -354,7 +354,7 @@ public class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code priority} is out of valid range or {@code timeout} is lower than 0
    */
-  public MqMessage get(int priority, long timeout)
+  public IMqMessage<?> get(int priority, long timeout)
   {
     if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
@@ -374,7 +374,7 @@ public class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code timeout} or {@code interval} are lower than 0
    */
-  public MqMessage get(long timeout, long interval)
+  public IMqMessage<?> get(long timeout, long interval)
   {
     if (timeout < 0)
       throw new IllegalArgumentException("Invalid timeout: " + timeout);
@@ -394,7 +394,7 @@ public class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code priority} is out of valid range or if {@code timeout} or {@code interval} are lower than 0
    */
-  public MqMessage get(int priority, long timeout, long interval)
+  public IMqMessage<?> get(int priority, long timeout, long interval)
   {
     if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
       throw new IllegalArgumentException("Invalid message priority: " + priority);
@@ -424,9 +424,9 @@ public class MqQueue extends AKasObject
    * @param interval The gap length between polling operations
    * @return The {@link MqMessage} or {@code null} if one is unavailable
    */
-  private MqMessage internalGet(int priority, long timeout, long interval)
+  private IMqMessage<?> internalGet(int priority, long timeout, long interval)
   {
-    MqMessage result = null;
+    IMqMessage<?> result = null;
     
     long millisPassed = 0;
     boolean timeoutExpired = false;
