@@ -82,11 +82,6 @@ public interface IClient
   public abstract boolean delete(String queue);
   
   /**
-   * Show information regarding current session
-   */
-  public abstract void show();
-  
-  /**
    * Get a {@link MqMessage message} from the opened queue
    * 
    * @param priority The priority of the message to retrieve

@@ -180,10 +180,6 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         response = mSessionResponder.get(request);
       }
-      else if (requestType == ERequestType.cShowInfo)
-      {
-        response = mSessionResponder.show(request);
-      }
       
       mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
       mMessenger.send(response);

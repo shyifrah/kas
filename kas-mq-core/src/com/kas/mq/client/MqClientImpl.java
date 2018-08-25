@@ -6,6 +6,7 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -22,7 +23,7 @@ import com.kas.mq.impl.MqMessageFactory;
  * 
  * @author Pippo
  */
-public class MqClientImpl extends AMqClient
+public class MqClientImpl extends AKasObject implements IClient
 {
   /**
    * Messenger
@@ -43,6 +44,11 @@ public class MqClientImpl extends AMqClient
    * Active user
    */
   private String mUser;
+  
+  /**
+   * The response from last call
+   */
+  private String mResponse;
   
   /**
    * Constructing the client
@@ -140,19 +146,6 @@ public class MqClientImpl extends AMqClient
   public boolean isConnected()
   {
     return mMessenger == null ? false : mMessenger.isConnected();
-  }
-  
-  /**
-   * Get the {@link NetworkAddress} for this {@link IClient} object
-   * 
-   * @return the {@link NetworkAddress} for this {@link IClient} object. If the {@link Socket}
-   * is {@code null}, a {@code null} value is returned
-   * 
-   * @see com.kas.mq.client.IClient#getNetworkAddress()
-   */
-  private NetworkAddress getNetworkAddress()
-  {
-    return mMessenger == null ? null : mMessenger.getAddress();
   }
   
   /**
@@ -509,52 +502,27 @@ public class MqClientImpl extends AMqClient
   }
   
   /**
-   * Show session information
+   * Get last response from last {@link IClient} call.
+   * 
+   * @return the last message the {@link IClient} issued for a call.
+   * 
+   * @see com.kas.mq.client.IClient#getResponse()
    */
-  public void show()
+  public String getResponse()
   {
-    mLogger.debug("MqClientImpl::show() - IN");
-    
-    if (!isConnected())
-    {
-      logInfoAndSetResponse("Not connected");
-    }
-    else
-    {
-      StringBuilder sb = new StringBuilder('\n');
-      
-      IMqMessage<?> request = MqMessageFactory.createShowInfoRequest();
-      mLogger.debug("MqClientImpl::show() - sending show-info request: " + request.toPrintableString(0));
-      try
-      {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
-        MqResponse response = new MqResponse(responseMessage);
-        mLogger.debug("MqClientImpl::show() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
-        {
-          NetworkAddress addr = getNetworkAddress();
-          sb.append("Session ID.................: ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertySessionId, "*N/A*")).append('\n');
-          sb.append("    KAS/MQ server.......:    ").append(addr == null ? "*N/A*" : addr.toString()).append('\n');
-          sb.append("    Client..............:    ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertyNetworkAddress, "*N/A*")).append('\n');
-          sb.append("    Connected as........:    ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertyUserName, "*N/A*")).append('\n');
-          sb.append("    Opened queue........:    ").append(responseMessage.getStringProperty(IMqConstants.cKasPropertyQueueName, "*N/A*"));
-          logInfoAndSetResponse(sb.toString());
-        }
-        else
-        {
-          logInfoAndSetResponse(response.getDesc());
-        }
-      }
-      catch (IOException e)
-      {
-        StringBuilder sbe = new StringBuilder();
-        sbe.append("Exception occurred while getting session info. Exception: ").append(StringUtils.format(e));
-        logErrorAndSetResponse(sbe.toString());
-      }
-    }
-    
-    mLogger.debug("MqClientImpl::show() - OUT");
+    return mResponse;
+  }
+  
+  /**
+   * Set response from last {@link IClient} call.
+   * 
+   * @param response The response from last {@link IClient} call
+   * 
+   * @see com.kas.mq.client.IClient#getResponse()
+   */
+  public void setResponse(String response)
+  {
+    mResponse = response;
   }
   
   /**

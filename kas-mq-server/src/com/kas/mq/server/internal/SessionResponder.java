@@ -252,25 +252,6 @@ public class SessionResponder extends AKasObject
   }
   
   /**
-   * Process show info request
-   * 
-   * @param request The request message
-   * @return The {@link MqMessage} response object
-   */
-  public IMqMessage<?> show(IMqMessage<?> request)
-  {
-    IMqMessage<?> responseMessage = generateResponse(new MqResponse(EMqResponseCode.cOkay, ""));
-    
-    responseMessage.setStringProperty(IMqConstants.cKasPropertySessionId, mHandler.getSessionId().toString());
-    responseMessage.setStringProperty(IMqConstants.cKasPropertyNetworkAddress, mHandler.getNetworkAddress().toString());
-    responseMessage.setStringProperty(IMqConstants.cKasPropertyUserName, mHandler.getActiveUserName());
-    if (mHandler.getActiveQueue() != null)
-      responseMessage.setStringProperty(IMqConstants.cKasPropertyQueueName, mHandler.getActiveQueue().getName());
-    
-    return responseMessage;
-  }
-  
-  /**
    * Merge {@code resp} into {@code msg}
    * 
    * @param resp The {@link MqResponse} object

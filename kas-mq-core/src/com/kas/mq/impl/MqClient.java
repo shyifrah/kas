@@ -40,6 +40,8 @@ public final class MqClient
    * @param port The port number
    * @param user The user's name
    * @param pwd The user's password
+   * 
+   * @throws KasException if client failed to connect to KAS/MQ server
    */
   public void connect(String host, int port, String user, String pwd) throws KasException
   {
@@ -53,7 +55,11 @@ public final class MqClient
   }
 
   /**
-   * Disconnecting from the remote KAS/MQ server.
+   * Disconnecting from the remote KAS/MQ server.<br>
+   * <br>
+   * If client was not previously connected, this method has no effect
+   * 
+   * @throws KasException if client failed to disconnect from KAS/MQ server
    */
   public void disconnect() throws KasException
   {
@@ -80,6 +86,8 @@ public final class MqClient
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
+   * 
+   * @throws KasException if client failed to open {@code queue}
    */
   public void open(String queue) throws KasException
   {
@@ -93,7 +101,11 @@ public final class MqClient
   }
   
   /**
-   * Close opened queue.
+   * Close opened queue.<br>
+   * <br>
+   * If no queue was previously opened, this method has no effect
+   * 
+   * @throws KasException if client failed to close the opened queue
    */
   public void close() throws KasException
   {
@@ -152,7 +164,7 @@ public final class MqClient
    * Get a message from queue.
    * 
    * @param priority The priority of the message to retrieve
-   * @param timeout The number of milliseconds to wait until a message available
+   * @param timeout The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
