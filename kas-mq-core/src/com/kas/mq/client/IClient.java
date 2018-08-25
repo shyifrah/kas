@@ -1,7 +1,7 @@
 package com.kas.mq.client;
 
+import com.kas.infra.base.KasException;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessage;
 
 /**
  * This is the interface all KAS/MQ clients should implement. 
@@ -11,52 +11,46 @@ import com.kas.mq.impl.MqMessage;
 public interface IClient
 {
   /**
-   * Connect client to the queue manager defined on {@code destination}
+   * Connect client to the KAS/MQ server.
    * 
    * @param host The host name or IP address
    * @param port The port number
    * @param user The user's name
    * @param pwd The user's password
+   * 
+   * @throws KasException if client failed to connect to KAS/MQ server
    */
-  public abstract void connect(String host, int port, String user, String pwd);
+  public abstract void connect(String host, int port, String user, String pwd) throws KasException;
   
   /**
-   * Disconnect from the queue manager.
+   * Disconnecting from the remote KAS/MQ server.
+   * 
+   * @throws KasException if client failed to disconnect from KAS/MQ server
    */
-  public abstract void disconnect();
+  public abstract void disconnect() throws KasException;
   
   /**
-   * Get the connection status.<br>
-   * <br>
-   * A connected socket is one that is marked as connected AND not closed.
+   * Get the connection status.
    * 
-   * @return {@code true} if socket is connected and not closed, {@code false} otherwise
-   * 
-   * @see java.net.Socket#isConnected()
+   * @return {@code true} if client is connected, {@code false} otherwise
    */
   public abstract boolean isConnected();
-  
-  /**
-   * Switch login credentials
-   * 
-   * @param user The user's name
-   * @param pwd The user's password
-   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration},
-   * {@code false} otherwise
-   */
-  public abstract boolean login(String user, String pwd);
   
   /**
    * Open the specified queue.
    * 
    * @param queue The queue name to open.
+   * 
+   * @throws KasException if client failed to open {@code queue}
    */
-  public abstract void open(String queue);
+  public abstract void open(String queue) throws KasException;
   
   /**
-   * Close the specified queue.
+   * Close opened queue.
+   * 
+   * @throws KasException if client failed to close an opened queue
    */
-  public abstract void close();
+  public abstract void close() throws KasException;
   
   /**
    * Get the queue status.
@@ -66,35 +60,35 @@ public interface IClient
   public abstract boolean isOpen();
   
   /**
-   * Define the specified queue.
+   * Define a new queue.
    * 
    * @param queue The queue name to define.
-   * @return {@code true} if queue was defined, {@code false} otherwise
+   * @return the {@code true} if queue was defined, {@code false} otherwise
    */
   public abstract boolean define(String queue);
   
   /**
-   * Delete the specified queue.
+   * Delete an existing queue.
    * 
    * @param queue The queue name to delete.
-   * @return {@code true} if queue was deleted, {@code false} otherwise
+   * @return the {@code true} if queue was deleted, {@code false} otherwise
    */
   public abstract boolean delete(String queue);
   
   /**
-   * Get a {@link MqMessage message} from the opened queue
+   * Get a message from queue.
    * 
    * @param priority The priority of the message to retrieve
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
+   * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
   public abstract IMqMessage<?> get(int priority, long timeout, long interval);
   
   /**
-   * Put a {@link MqMessage} into the opened queue.
+   * Put a message into the opened queue.
    * 
-   * @param message The {@link MqMessage} to put into the opened queue
+   * @param message The message to be put
    */
   public abstract void put(IMqMessage<?> message);
   
@@ -106,9 +100,9 @@ public interface IClient
   public abstract String getResponse();
   
   /**
-   * Set {@link IClient} response to {@code response}.
+   * Set response from last {@link IClient} call.
    * 
-   * @param response The text that will be saved for {@link #getResponse} call
+   * @param response The response from last {@link IClient} call
    */
   public abstract void setResponse(String response);
 }

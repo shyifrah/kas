@@ -3,6 +3,7 @@ package com.kas.mq.impl;
 import com.kas.infra.base.KasException;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessage;
@@ -12,7 +13,7 @@ import com.kas.mq.impl.MqMessage;
  * 
  * @author Pippo
  */
-public final class MqClient
+public final class MqClient implements IClient
 {
   /**
    * Logger
@@ -193,20 +194,22 @@ public final class MqClient
   }
   
   /**
-   * Switch login credentials
+   * Get last response from last {@link IClient} call.
    * 
-   * @param user The user's name
-   * @param pwd The user's password
-   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration},
-   * {@code false} otherwise
+   * @return the last message the {@link IClient} issued for a call.
    */
-  public boolean login(String user, String pwd)
+  public String getResponse()
   {
-    mLogger.debug("MqClient::login() - IN, User=" + user + ", Pwd=" + pwd);
-    
-    boolean success = mDelegator.login(user, pwd);
-    
-    mLogger.debug("MqClient::login() - OUT, Returns=" + success);
-    return success;
+    return mDelegator.getResponse();
+  }
+
+  /**
+   * Set {@link IClient} response to {@code response}.
+   * 
+   * @param response The text that will be saved for {@link #getResponse} call
+   */
+  public void setResponse(String response)
+  {
+    mDelegator.setResponse(response);
   }
 }

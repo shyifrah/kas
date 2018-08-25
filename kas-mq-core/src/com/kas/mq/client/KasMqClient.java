@@ -2,6 +2,7 @@ package com.kas.mq.client;
 
 import com.kas.infra.base.KasException;
 import com.kas.mq.AKasMqAppl;
+import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqClient;
 import com.kas.mq.impl.MqMessageFactory;
@@ -62,8 +63,10 @@ public class KasMqClient extends AKasMqAppl
           IMqMessage<?> getMessage = client.get(priority, timeout, interval);
           while (getMessage != null)
           {
-            ++priority;
             System.out.println("Read message: " + getMessage.toString());
+            
+            ++priority;
+            if (priority > IMqConstants.cMaximumPriority) priority = IMqConstants.cMaximumPriority;
             getMessage = client.get(priority, timeout, interval);
           }
           

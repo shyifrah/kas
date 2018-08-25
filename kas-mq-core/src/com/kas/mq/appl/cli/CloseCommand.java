@@ -3,6 +3,7 @@ package com.kas.mq.appl.cli;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.base.KasException;
 import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
@@ -83,7 +84,12 @@ public class CloseCommand extends ACliCommand
       return false;
     }
     
-    mClient.close();
+    try
+    {
+      mClient.close();
+    }
+    catch (KasException e) {}
+    
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

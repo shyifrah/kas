@@ -53,8 +53,6 @@ public class HelpCommand extends ACliCommand
     writeln("                   |                               |");
     writeln("                   +--- EXIT|TERM|QUIT ------------+");
     writeln("                   |                               |");
-    writeln("                   +--- LOGIN|AUTHENTICATE|AUTH ---+");
-    writeln("                   |                               |");
     writeln("                   +--- CONNECT|CONN --------------+");
     writeln("                   |                               |");
     writeln("                   +--- DISCONNECT|DISC -----------+");
@@ -130,8 +128,6 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- PUT -----------------------+");
       writeln("          |                               |");
       writeln("          +--- GET -----------------------+");
-      writeln("          |                               |");
-      writeln("          +--- LOGIN|AUTHENTICATE|AUTH ---+");
       writeln(" ");
       writeln("Description: ");
       writeln(" ");

@@ -412,10 +412,7 @@ public class MqClientImpl extends AKasObject implements IClient
   }
   
   /**
-   * Put a message into queue.<br>
-   * <br>
-   * The message is basically handled by the server side, except for the target queue name, which must be
-   * filled prior to sending it.
+   * Put a message into the opened queue.
    * 
    * @param message The message to be put
    */
