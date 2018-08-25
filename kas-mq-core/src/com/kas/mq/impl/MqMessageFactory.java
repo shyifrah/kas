@@ -54,13 +54,6 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createShowInfoRequest()
-  {
-    MqObjectMessage message = new MqObjectMessage();
-    message.setRequestType(ERequestType.cShowInfo);
-    return message;
-  }
-  
   /**
    * Create a text message, with a body containing {@code text}
    * 

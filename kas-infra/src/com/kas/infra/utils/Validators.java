@@ -2,7 +2,7 @@ package com.kas.infra.utils;
 
 import java.util.regex.Pattern;
 
-public class ValidatorUtils
+public class Validators
 {
   static private final String cIpAddressPattern = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
   static private Pattern cIpAddressCompiledPattern = Pattern.compile(cIpAddressPattern);

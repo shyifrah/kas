@@ -1,6 +1,7 @@
 package com.kas.mq.impl;
 
 import com.kas.infra.base.KasException;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.client.IClient;
@@ -13,7 +14,7 @@ import com.kas.mq.impl.MqMessage;
  * 
  * @author Pippo
  */
-public final class MqClient implements IClient
+public final class MqContext implements IClient
 {
   /**
    * Logger
@@ -28,7 +29,7 @@ public final class MqClient implements IClient
   /**
    * Construct the client
    */
-  public MqClient()
+  public MqContext()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mDelegator = new MqClientImpl();
@@ -46,13 +47,13 @@ public final class MqClient implements IClient
    */
   public void connect(String host, int port, String user, String pwd) throws KasException
   {
-    mLogger.debug("MqClient::connect() - IN, Host=" + host + ", Port=" + port + ", User=" + user + ", Pwd=" + pwd);
+    mLogger.debug("MqContext::connect() - IN, Host=" + host + ", Port=" + port + ", User=" + user + ", Pwd=" + pwd);
     
     mDelegator.connect(host, port, user, pwd);
     if (!isConnected())
       throw new KasException("Error - connect() failed. Client response: " + mDelegator.getResponse());
     
-    mLogger.debug("MqClient::connect() - OUT");
+    mLogger.debug("MqContext::connect() - OUT");
   }
 
   /**
@@ -64,13 +65,13 @@ public final class MqClient implements IClient
    */
   public void disconnect() throws KasException
   {
-    mLogger.debug("MqClient::disconnect() - IN");
+    mLogger.debug("MqContext::disconnect() - IN");
     
     mDelegator.disconnect();
     if (isConnected())
       throw new KasException("Error - disconnect() failed. Client response: " + mDelegator.getResponse());
     
-    mLogger.debug("MqClient::disconnect() - OUT");
+    mLogger.debug("MqContext::disconnect() - OUT");
   }
 
   /**
@@ -92,13 +93,13 @@ public final class MqClient implements IClient
    */
   public void open(String queue) throws KasException
   {
-    mLogger.debug("MqClient::open() - IN, Queue=" + queue);
+    mLogger.debug("MqContext::open() - IN, Queue=" + queue);
     
     mDelegator.open(queue);
     if (!mDelegator.isOpen())
       throw new KasException("Error - open() failed. Client response: " + mDelegator.getResponse()); 
     
-    mLogger.debug("MqClient::open() - OUT");
+    mLogger.debug("MqContext::open() - OUT");
   }
   
   /**
@@ -110,13 +111,13 @@ public final class MqClient implements IClient
    */
   public void close() throws KasException
   {
-    mLogger.debug("MqClient::close() - IN");
+    mLogger.debug("MqContext::close() - IN");
 
     mDelegator.close();
     if (mDelegator.isOpen())
       throw new KasException("Error - close() failed. Client response: " + mDelegator.getResponse());
     
-    mLogger.debug("MqClient::close() - OUT");
+    mLogger.debug("MqContext::close() - OUT");
   }
   
   /**
@@ -137,11 +138,11 @@ public final class MqClient implements IClient
    */
   public boolean define(String queue)
   {
-    mLogger.debug("MqClient::define() - IN, Queue=" + queue);
+    mLogger.debug("MqContext::define() - IN, Queue=" + queue);
     
     boolean success = mDelegator.define(queue);
     
-    mLogger.debug("MqClient::define() - OUT, Returns=" + success);
+    mLogger.debug("MqContext::define() - OUT, Returns=" + success);
     return success;
   }
   
@@ -153,11 +154,11 @@ public final class MqClient implements IClient
    */
   public boolean delete(String queue)
   {
-    mLogger.debug("MqClient::delete() - IN, Queue=" + queue);
+    mLogger.debug("MqContext::delete() - IN, Queue=" + queue);
     
     boolean success = mDelegator.delete(queue);
     
-    mLogger.debug("MqClient::delete() - OUT, Returns=" + success);
+    mLogger.debug("MqContext::delete() - OUT, Returns=" + success);
     return success;
   }
   
@@ -171,11 +172,11 @@ public final class MqClient implements IClient
    */
   public IMqMessage<?> get(int priority, long timeout, long interval)
   {
-    mLogger.debug("MqClient::get() - IN, Priority=" + priority + ", Timeout=" + timeout + ", Interval=" + interval);
+    mLogger.debug("MqContext::get() - IN, Priority=" + priority + ", Timeout=" + timeout + ", Interval=" + interval);
     
     IMqMessage<?> result = mDelegator.get(priority, timeout, interval);
     
-    mLogger.debug("MqClient::get() - OUT, Returns=" + result.toPrintableString(0));
+    mLogger.debug("MqContext::get() - OUT, Returns=" + StringUtils.asPrintableString(result));
     return result;
   }
   
@@ -186,11 +187,11 @@ public final class MqClient implements IClient
    */
   public void put(IMqMessage<?> message)
   {
-    mLogger.debug("MqClient::put() - IN, Message=" + message.toPrintableString(0));
+    mLogger.debug("MqContext::put() - IN, Message=" + StringUtils.asPrintableString(message));
     
     mDelegator.put(message);
     
-    mLogger.debug("MqClient::put() - OUT");
+    mLogger.debug("MqContext::put() - OUT");
   }
   
   /**

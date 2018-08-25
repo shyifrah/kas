@@ -171,6 +171,8 @@ public class KasMqLauncher
    */
   static private void launchApplication(String className)
   {
+    AKasMqAppl app = null;
+    boolean init = false;
     try
     {
       Class<?> cls = Class.forName(className);
@@ -181,8 +183,8 @@ public class KasMqLauncher
       }
       else
       {
-        AKasMqAppl app = (AKasMqAppl)instance;
-        boolean init = app.init();
+        app = (AKasMqAppl)instance;
+        init = app.init();
         if (!init)
         {
           sLogger.error("KAS/MQ application failed initialization. See previous error messages. Terminating...");
@@ -198,7 +200,11 @@ public class KasMqLauncher
     }
     catch (Exception e)
     {
-      sLogger.fatal("KAS/MQ launcher failed to instantiate application class: " + className);
+      sLogger.fatal("KAS/MQ launcher failed. Exception encountered: ", e);
+    }
+    finally
+    {
+      if (init) app.term();
     }
   }
 }

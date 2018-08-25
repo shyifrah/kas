@@ -47,11 +47,7 @@ public class KasMqAdmin extends AKasMqAppl
   public boolean term()
   {
     mLogger.info("KAS/MQ admin CLI termination in progress");
-    boolean term = true;
-    
-    // ============>>>>  actual admin CLI termination goes here  <<<<==============
-    
-    term = super.term();
+    boolean term = super.term();
     return term;
   }
   

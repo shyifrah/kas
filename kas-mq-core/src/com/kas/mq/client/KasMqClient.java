@@ -1,10 +1,11 @@
 package com.kas.mq.client;
 
 import com.kas.infra.base.KasException;
+import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqClient;
+import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqTextMessage;
 
@@ -25,17 +26,19 @@ public class KasMqClient extends AKasMqAppl
   
   public boolean init()
   {
+    super.init();
     return true;
   }
   
   public boolean term()
   {
+    super.term();
     return true;
   }
   
   public void run()
   {
-    MqClient client = new MqClient();
+    MqContext client = new MqContext();
     try
     {
       client.connect(cHost, cPort, cUser, cPass);
@@ -61,13 +64,13 @@ public class KasMqClient extends AKasMqAppl
           long timeout = 1000L;
           long interval = 1000L;
           IMqMessage<?> getMessage = client.get(priority, timeout, interval);
+          System.out.println("Read message: " + StringUtils.asPrintableString(getMessage));
           while (getMessage != null)
           {
-            System.out.println("Read message: " + getMessage.toString());
-            
             ++priority;
             if (priority > IMqConstants.cMaximumPriority) priority = IMqConstants.cMaximumPriority;
             getMessage = client.get(priority, timeout, interval);
+            System.out.println("Read message: " + StringUtils.asPrintableString(getMessage));
           }
           
           client.close();
