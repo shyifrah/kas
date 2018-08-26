@@ -53,6 +53,15 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqObjectMessage createShutdownRequest(String user, String pass)
+  {
+    MqObjectMessage message = new MqObjectMessage();
+    message.setRequestType(ERequestType.cShutdown);
+    message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
+    message.setStringProperty(IMqConstants.cKasPropertyPassword, pass);
+    return message;
+  }
+  
   /**
    * Create a text message, with a body containing {@code text}
    * 

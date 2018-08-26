@@ -1,5 +1,6 @@
 package com.kas.mq.client;
 
+import java.util.Map;
 import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
@@ -17,6 +18,11 @@ public class KasMqClient extends AKasMqAppl
   
   static private final String cQueueName = "temp.admin.queue";
   static private final int cNumOfMessages = 10;
+  
+  public KasMqClient(Map<String, String> args)
+  {
+    super(args);
+  }
   
   public String toPrintableString(int level)
   {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.threads.ThreadPool;
@@ -47,6 +48,16 @@ public class KasMqServer extends AKasMqAppl
    * Indicator for server's termination
    */
   private boolean mTerminating = false;
+  
+  /**
+   * Construct the {@link KasMqServer} passing it the startup arguments
+   * 
+   * @param args The startup arguments
+   */
+  public KasMqServer(Map<String, String> args)
+  {
+    super(args);
+  }
   
   /**
    * Initializing the KAS/MQ server.<br>
@@ -115,7 +126,7 @@ public class KasMqServer extends AKasMqAppl
    * - terminate server repository
    * - super class termination
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public boolean term()
   {

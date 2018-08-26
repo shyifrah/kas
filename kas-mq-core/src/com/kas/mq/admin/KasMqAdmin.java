@@ -1,5 +1,6 @@
 package com.kas.mq.admin;
 
+import java.util.Map;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
@@ -13,6 +14,16 @@ import com.kas.mq.AKasMqAppl;
 public class KasMqAdmin extends AKasMqAppl 
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
+  
+  /**
+   * Construct the {@link KasMqAdmin} passing it the startup arguments
+   * 
+   * @param args The startup arguments
+   */
+  public KasMqAdmin(Map<String, String> args)
+  {
+    super(args);
+  }
   
   /**
    * Initializing the KAS/MQ admin CLI.<br>

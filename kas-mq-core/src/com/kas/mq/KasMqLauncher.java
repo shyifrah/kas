@@ -1,6 +1,7 @@
 package com.kas.mq;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import com.kas.infra.base.ConsoleLogger;
@@ -42,7 +43,7 @@ public class KasMqLauncher
     if (appClass == null)
       sLogger.info("KAS/MQ launcher terminates. Could not determine which application should be launched...");
     else
-      launchApplication(appClass);
+      launchApplication(appClass, pArgumentsMap);
   }
   
   /**
@@ -129,14 +130,15 @@ public class KasMqLauncher
    * 
    * @param className The name of the class to be loaded
    */
-  static private void launchApplication(String className)
+  static private void launchApplication(String className, Map<String, String> args)
   {
     AKasMqAppl app = null;
     boolean init = false;
     try
     {
       Class<?> cls = Class.forName(className);
-      Object instance = cls.newInstance();
+      Constructor<?> ctor = cls.getConstructor(Map.class);
+      Object instance = ctor.newInstance(args);
       if (!(instance instanceof AKasMqAppl))
       {
         sLogger.error("KAS/MQ application not an instance of basic application class: " + AKasMqAppl.class.getName());
@@ -157,6 +159,10 @@ public class KasMqLauncher
     catch (ClassNotFoundException e)
     {
       sLogger.fatal("KAS/MQ launcher failed to locate application class: " + className);
+    }
+    catch (NoSuchMethodException e)
+    {
+      sLogger.fatal("KAS/MQ launcher failed to locate appropriate constructor for class: " + className);
     }
     catch (Exception e)
     {

@@ -5,7 +5,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
 /**
- * The {@link KasMqStopper} is a thread that kicks in the minute a shutdown signal is sent to the application.<br>
+ * The {@link KasMqShutdownHook} is a thread that kicks in the minute a shutdown signal is sent to the application.<br>
  * 
  * This is actually a shutdown hook that is registered via a call to {@link Runtime#addShutdownHook(Thread)}.
  * 
@@ -13,7 +13,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @see java.lang.Runtime#addShutdownHook(Thread)
  */
-public class KasMqStopper extends AKasThread
+public class KasMqShutdownHook extends AKasThread
 {
   /**
    * Logger
@@ -30,9 +30,9 @@ public class KasMqStopper extends AKasThread
    * 
    * @param appl The MQ application
    */
-  public KasMqStopper(AKasMqAppl appl)
+  public KasMqShutdownHook(AKasMqAppl appl)
   {
-    super(KasMqStopper.class.getSimpleName());
+    super(KasMqShutdownHook.class.getSimpleName());
     mLogger = LoggerFactory.getLogger(this.getClass());
     mApplication = appl;
   }

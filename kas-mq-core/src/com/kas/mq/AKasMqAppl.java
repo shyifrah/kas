@@ -1,5 +1,6 @@
 package com.kas.mq;
 
+import java.util.Map;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.IInitializable;
@@ -26,7 +27,7 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
   /**
    * Shutdown hook
    */
-  protected KasMqStopper mShutdownHook = null;
+  protected KasMqShutdownHook mShutdownHook = null;
   
   /**
    * The Mq configuration object
@@ -37,6 +38,18 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
    * The product version
    */
   protected ProductVersion mVersion = null;
+  
+  protected Map<String, String> mStartupArgs = null;
+  
+  /**
+   * Construct the {@link AKasMqAppl application} passing it the startup arguments
+   * 
+   * @param args The startup arguments
+   */
+  protected AKasMqAppl(Map<String, String> args)
+  {
+    mStartupArgs = args;
+  }
   
   /**
    * Initializing the KAS/MQ server.<br>
@@ -60,7 +73,7 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
     mLogger = LoggerFactory.getLogger(this.getClass());
     sStartupLogger.info("KAS/MQ logging services are now active, switching to log file...");
     
-    mShutdownHook = new KasMqStopper(this);
+    mShutdownHook = new KasMqShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     return true;
   }
@@ -80,7 +93,7 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
     if (mShutdownHook != null)
     {
       mLogger.info("Shutdown hook is registered, will try to remove it...");
-      if (Thread.currentThread().getName().equals(KasMqStopper.class.getSimpleName()))
+      if (Thread.currentThread().getName().equals(KasMqShutdownHook.class.getSimpleName()))
       {
         mLogger.info("Skipping removal of shutdown hook as termination process is executed under it...");
       }
