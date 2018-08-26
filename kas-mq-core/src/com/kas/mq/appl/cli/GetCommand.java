@@ -83,7 +83,7 @@ public class GetCommand extends ACliCommand
       return false;
     }
     
-    mClient.get(IMqConstants.cDefaultPriority, IMqConstants.cDefaultTimeout, IMqConstants.cDefaultPollingInterval);
+    mClient.get(IMqConstants.cDefaultTimeout, IMqConstants.cDefaultPollingInterval);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

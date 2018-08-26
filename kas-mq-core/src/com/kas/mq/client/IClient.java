@@ -78,12 +78,11 @@ public interface IClient
   /**
    * Get a message from queue.
    * 
-   * @param priority The priority of the message to retrieve
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract IMqMessage<?> get(int priority, long timeout, long interval);
+  public abstract IMqMessage<?> get(long timeout, long interval);
   
   /**
    * Put a message into the opened queue.

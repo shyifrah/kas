@@ -361,12 +361,11 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Get a message from queue.
    * 
-   * @param priority The priority of the message to retrieve
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public IMqMessage<?> get(int priority, long timeout, long interval)
+  public IMqMessage<?> get(long timeout, long interval)
   {
     mLogger.debug("MqClientImpl::get() - IN");
     
@@ -380,7 +379,7 @@ public class MqClientImpl extends AKasObject implements IClient
     {
       try
       {
-        IMqMessage<?> request = MqMessageFactory.createGetRequest(priority, timeout, interval);
+        IMqMessage<?> request = MqMessageFactory.createGetRequest(timeout, interval);
         mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
         IPacket packet = mMessenger.sendAndReceive(request);
         IMqMessage<?> responseMessage = (IMqMessage<?>)packet;

@@ -223,7 +223,6 @@ public class SessionResponder extends AKasObject
     MqResponse response = null;
     IMqMessage<?>  result = null;
     
-    int priority  = request.getIntProperty(IMqConstants.cKasPropertyGetPriority, IMqConstants.cDefaultPriority);
     long timeout  = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
     long interval = request.getLongProperty(IMqConstants.cKasPropertyGetInterval, IMqConstants.cDefaultPollingInterval);
     
@@ -235,7 +234,7 @@ public class SessionResponder extends AKasObject
     }
     else
     {
-      result = activeq.get(priority, timeout, interval);
+      result = activeq.get(timeout, interval);
       if (result == null)
       {
         response = new MqResponse(EMqResponseCode.cWarn, "No message was found");

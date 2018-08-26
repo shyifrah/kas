@@ -294,7 +294,7 @@ public class MqQueue extends AKasObject
    * @param message The message that should be stored at this {@link MqQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean put(IMqMessage<?> message)
+  public synchronized boolean put(IMqMessage<?> message)
   {
     if (message == null)
       return false;
@@ -304,32 +304,17 @@ public class MqQueue extends AKasObject
   }
   
   /**
-   * Get a message with the default priority, and wait indefinitely for one to be available.<br>
+   * Get a message and wait indefinitely for one to be available.<br>
    * 
    * @return The {@link MqMessage}
    */
   public IMqMessage<?> get()
   {
-    return internalGet(IMqConstants.cDefaultPriority, 0, IMqConstants.cDefaultPollingInterval);
+    return internalGet(0, IMqConstants.cDefaultPollingInterval);
   }
   
   /**
-   * Get a message with the specified priority, and wait indefinitely for one to be available.<br>
-   * 
-   * @return The {@link MqMessage}
-   * 
-   * @throws IllegalArgumentException if {@code priority} is out of valid range
-   */
-  public IMqMessage<?> get(int priority)
-  {
-    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
-      throw new IllegalArgumentException("Invalid message priority: " + priority);
-    
-    return internalGet(priority, 0, IMqConstants.cDefaultPollingInterval);
-  }
-  
-  /**
-   * Get a message with the default priority, and wait {@code timeout} milliseconds for one to be available.<br>
+   * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
    * <br>
    * If {@code timeout} is 0, this method is equivalent to {@link #get()}.
    * 
@@ -342,31 +327,11 @@ public class MqQueue extends AKasObject
     if (timeout < 0)
       throw new IllegalArgumentException("Invalid timeout: " + timeout);
     
-    return internalGet(IMqConstants.cDefaultPriority, timeout, IMqConstants.cDefaultPollingInterval);
+    return internalGet(timeout, IMqConstants.cDefaultPollingInterval);
   }
   
   /**
-   * Get a message with the specified priority, and wait {@code timeout} milliseconds for one to be available.<br>
-   * <br>
-   * If {@code timeout} is 0, this method is equivalent to {@link #get(int)}.
-   * 
-   * @return The {@link MqMessage} or {@code null} if one is unavailable
-   * 
-   * @throws IllegalArgumentException if {@code priority} is out of valid range or {@code timeout} is lower than 0
-   */
-  public IMqMessage<?> get(int priority, long timeout)
-  {
-    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
-      throw new IllegalArgumentException("Invalid message priority: " + priority);
-    
-    if (timeout < 0)
-      throw new IllegalArgumentException("Invalid timeout: " + timeout);
-    
-    return internalGet(priority, timeout, IMqConstants.cDefaultPollingInterval);
-  }
-  
-  /**
-   * Get a message with the default priority, and wait {@code timeout} milliseconds for one to be available.<br>
+   * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
    * <br>
    * Execution is suspended for {@code interval} milliseconds between each polling operation.
    * 
@@ -382,34 +347,11 @@ public class MqQueue extends AKasObject
     if (interval <= 0)
       throw new IllegalArgumentException("Invalid polling interval: " + interval);
     
-    return internalGet(IMqConstants.cDefaultPriority, timeout, interval);
+    return internalGet(timeout, interval);
   }
   
   /**
-   * Get a message with the specified priority, and wait {@code timeout} milliseconds for one to be available.<br>
-   * <br>
-   * Execution is suspended for {@code interval} milliseconds between each polling operation.
-   * 
-   * @return The {@link MqMessage} or {@code null} if one is unavailable
-   * 
-   * @throws IllegalArgumentException if {@code priority} is out of valid range or if {@code timeout} or {@code interval} are lower than 0
-   */
-  public IMqMessage<?> get(int priority, long timeout, long interval)
-  {
-    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
-      throw new IllegalArgumentException("Invalid message priority: " + priority);
-    
-    if (timeout < 0)
-      throw new IllegalArgumentException("Invalid timeout: " + timeout);
-    
-    if (interval <= 0)
-      throw new IllegalArgumentException("Invalid polling interval: " + interval);
-    
-    return internalGet(priority, timeout, interval);
-  }
-  
-  /**
-   * Get a {@link MqMessage} message with a specified {@code priority} from {@link MqQueue} object.<br>
+   * Get the {@link MqMessage message} with the highest priority from this {@link MqQueue} object.<br>
    * <br>
    * Since the actual message store is implemented by {@link MessageDeque}, the actual "get" operations
    * are translated to {@link MessageDeque#poll()}.<br>
@@ -419,12 +361,11 @@ public class MqQueue extends AKasObject
    * If a message is not available, the method will poll for one until {@code timeout} expires.
    * If {@code timeout} is 0, the method will poll indefinitely.
    * 
-   * @param priority The message priority
    * @param timeout The timeout until which the method will give up
    * @param interval The gap length between polling operations
    * @return The {@link MqMessage} or {@code null} if one is unavailable
    */
-  private IMqMessage<?> internalGet(int priority, long timeout, long interval)
+  private synchronized IMqMessage<?> internalGet(long timeout, long interval)
   {
     IMqMessage<?> result = null;
     
@@ -432,202 +373,35 @@ public class MqQueue extends AKasObject
     boolean timeoutExpired = false;
     while ((result == null) && (!timeoutExpired))
     {
-      RunTimeUtils.sleepForMilliSeconds(interval);
-      millisPassed += interval;
-      result = mQueueArray[priority].poll();
-      
-      if (timeout != 0)
-        timeoutExpired = millisPassed >= timeout;
+      int priority = internalGetPriorityIndex();
+      if (priority > -1)
+      {
+        result = mQueueArray[priority].poll();
+      }
+      else
+      {
+        RunTimeUtils.sleepForMilliSeconds(interval);
+        millisPassed += interval;
+        
+        if (timeout != 0)
+          timeoutExpired = millisPassed >= timeout;
+      }
     }
     
     return result;
   }
   
-//  /**
-//   * Get a {@link MqMessage} by taking one.<br>
-//   * <br>
-//   * Taking a message means that if a message is unavailable, the caller is blocked until one is available.<br>
-//   * Note that this method can still return a {@code null} value if while blocking the thread was interrupted.
-//   * 
-//   * @param priority The message priority
-//   * @return a {@link MqMessage} or {@code null} if an {@link InterruptedException} was thrown during wait for one. 
-//   */
-//  private MqMessage getMessageByTake(int priority)
-//  {
-//    MqMessage result = null;
-//    try
-//    {
-//      result = mQueueArray[priority].take();
-//    }
-//    catch (InterruptedException e) {}
-//    return result;
-//  }
-//  
-//  /**
-//   * Get a {@link MqMessage} by taking one.<br>
-//   * <br>
-//   * Taking a message means that if a message is unavailable, the caller is blocked until one is available.
-//   * 
-//   * @param priority The message priority
-//   * @return a {@link MqMessage} or {@code null} if an {@link InterruptedException} was thrown during wait for one. 
-//   */
-//  private MqMessage internalGetMessageByTake(int priority)
-//  {
-//    MqMessage result = null;
-//    //int prio;
-//    if (priority == IMqConstants.cOmmittedPriority)
-//    {
-//      for (int prio = IMqConstants.cMaximumPriority; (prio >= IMqConstants.cMinimumPriority) && (result == null); --prio)
-//      {
-//        result = getMessageByTake(prio);
-//      }
-//    }
-//    else
-//    {
-//      result = getMessageByTake(priority);
-//    }
-//    return result;
-//  }
-//  
-//  /**
-//   * Get a {@link MqMessage} by polling for one.<br>
-//   * <br>
-//   * Polling for a message means that if a message is unavailable, a value of {@code null} will be
-//   * returned for the caller.
-//   * 
-//   * @param priority The message priority
-//   * @return a {@link MqMessage} or {@code null} if one is unavailable
-//   */
-//  private MqMessage internalGetMessageByPoll(int priority)
-//  {
-//    MqMessage result = null;
-//    if (priority == IMqConstants.cOmmittedPriority)
-//    {
-//      for (int prio = IMqConstants.cMaximumPriority; (prio >= IMqConstants.cMinimumPriority) && (result == null); --prio)
-//      {
-//        result = getMessageByPoll(prio);
-//      }
-//    }
-//    else
-//    {
-//      result = getMessageByPoll(priority);
-//    }
-//    return result;
-//  }
-//  
-//  /**
-//   * Get a message with max priority from this {@link MqQueue} object
-//   * 
-//   * @return the returned message or {@code null} if there is no message
-//   */
-//  public MqMessage get()
-//  {
-//    return internalGetMessageByPoll(IMqConstants.cOmmittedPriority);
-//  }
-//  
-//  /**
-//   * Get a message with a specific priority from this {@link MqQueue} object
-//   * 
-//   * @param priority The priority of the message to be retrieved
-//   * @return the returned message or {@code null} if there is no message
-//   */
-//  public MqMessage get(int priority)
-//  {
-//    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
-//      throw new IllegalArgumentException("Invalid message priority: " + priority);
-//    
-//    return internalGetMessageByPoll(priority);
-//  }
-//  
-//  /**
-//   * Get a message with max priority from this {@link MqQueue} object, and wait indefinitely if one is not available.
-//   * 
-//   * @return the returned message
-//   */
-//  public MqMessage getAndWait()
-//  {
-//    return internalGetMessageByTake(IMqConstants.cOmmittedPriority);
-//  }
-//  
-//  /**
-//   * Get a message with a specific priority from this {@link MqQueue} object, and wait indefinitely if one is not available.
-//   * 
-//   * @param priority The priority of the message to be retrieved 
-//   * @return the returned message
-//   */
-//  public MqMessage getAndWait(int priority)
-//  {
-//    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
-//      throw new IllegalArgumentException("Invalid message priority: " + priority);
-//    
-//    return internalGetMessageByTake(priority);
-//  }
-//  
-//  /**
-//   * Get a message with max priority from this {@link MqQueue} object. If a message is not available immediately
-//   * wait for {@code timeout} milliseconds at most.<br>
-//   * <br>
-//   * Because this operation is done in a manner of polling, the thread is delayed for {@code 1000} milliseconds after each
-//   * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
-//   * exceeded the timeout value or a message was retrieved.
-//   * 
-//   * @param timeout The number of milliseconds to wait until the get operation is aborted.
-//   * @return the returned message or {@code null} if timeout occurred. 
-//   */
-//  public MqMessage getAndWaitWithTimeout(long timeout)
-//  {
-//    return getAndWaitWithTimeout(IMqConstants.cDefaultPriority, timeout, IMqConstants.cDefaultPollingInterval);
-//  }
-//  
-//  /**
-//   * Get a message with a specific priority from this {@link MqQueue} object. If a message is not available immediately
-//   * wait for {@code timeout} milliseconds at most.<br>
-//   * <br>
-//   * Because this operation is done in a manner of polling, the thread is delayed for {@code 1000} milliseconds after each
-//   * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
-//   * exceeded the timeout value or a message was retrieved.
-//   * 
-//   * @param priority The priority of the message to be retrieved
-//   * @param timeout The number of milliseconds to wait until the get operation is aborted.
-//   * @return the returned message or {@code null} if timeout occurred. 
-//   */
-//  public MqMessage getAndWaitWithTimeout(int priority, long timeout)
-//  {
-//    return getAndWaitWithTimeout(priority, timeout, IMqConstants.cDefaultPollingInterval);
-//  }
-//  
-//  /**
-//   * Get a message with a specific priority from this {@link MqQueue} object. If a message is not available immediately
-//   * wait for {@code timeout} milliseconds at most.<br>
-//   * <br>
-//   * Because this operation is done in a manner of polling, the thread is delayed for {@code interval} milliseconds after each
-//   * unsuccessful poll. Then it polls for a message again, and delayed again, etc. This continues until the total delayed time has
-//   * exceeded the timeout value or a message was retrieved.
-//   * 
-//   * @param priority The priority of the message to be retrieved
-//   * @param timeout The number of milliseconds to wait until the get operation is aborted
-//   * @param interval The number of milliseconds to delay between each polling operation
-//   * @return the returned message or {@code null} if timeout occurred. 
-//   */
-//  public MqMessage getAndWaitWithTimeout(int priority, long timeout, long interval)
-//  {
-//    if ((priority < IMqConstants.cMinimumPriority) || (priority > IMqConstants.cMaximumPriority))
-//      throw new IllegalArgumentException("Invalid message priority: " + priority);
-//    
-//    if (timeout <= 0)
-//      return null;
-//    
-//    MqMessage result = getMessageByPoll(priority);
-//    long millisPassed = 0;
-//    while ((result == null) && (millisPassed < timeout))
-//    {
-//      RunTimeUtils.sleepForMilliSeconds(interval);
-//      millisPassed += interval;
-//      result = getMessageByPoll(priority);
-//    }
-//    
-//    return result;
-//  }
+  /**
+   * Find the first non-empty {@link MessageDeque} object in the queue array.
+   * 
+   * @return the index of the first non-empty queue, or -1 if all are empty.
+   */
+  private int internalGetPriorityIndex()
+  {
+    for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
+      if (mQueueArray[prio].size() > 0) return prio;
+    return -1;
+  }
   
   /**
    * Get the object's string representation

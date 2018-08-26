@@ -44,11 +44,10 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createGetRequest(int priority, long timeout, long interval)
+  static public MqObjectMessage createGetRequest(long timeout, long interval)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cGet);
-    message.setIntProperty(IMqConstants.cKasPropertyGetPriority, priority);
     message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
     message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
     return message;

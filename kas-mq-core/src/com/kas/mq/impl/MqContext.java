@@ -2,6 +2,7 @@ package com.kas.mq.impl;
 
 import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.client.IClient;
@@ -49,6 +50,14 @@ public final class MqContext implements IClient
   {
     mLogger.debug("MqContext::connect() - IN, Host=" + host + ", Port=" + port + ", User=" + user + ", Pwd=" + pwd);
     
+    if (!Validators.isHostName(host) && !Validators.isIpAddress(host))
+      throw new KasException("Validation failed. \"" + host + "\" is neither a valid host name nor a valid IP address");
+    if (!Validators.isPort(port))
+      throw new KasException("Validation failed. \"" + port + "\" is not a valid port number");
+    if (!Validators.isUserName(user))
+      throw new KasException("Validation failed. \"" + user + "\" is not a valid user name");
+    
+    
     mDelegator.connect(host, port, user, pwd);
     if (!isConnected())
       throw new KasException("Error - connect() failed. Client response: " + mDelegator.getResponse());
@@ -95,6 +104,9 @@ public final class MqContext implements IClient
   {
     mLogger.debug("MqContext::open() - IN, Queue=" + queue);
     
+    if (!Validators.isQueueName(queue))
+      throw new KasException("Validation failed. \"" + queue + "\" is not a valid queue name");
+    
     mDelegator.open(queue);
     if (!mDelegator.isOpen())
       throw new KasException("Error - open() failed. Client response: " + mDelegator.getResponse()); 
@@ -140,7 +152,15 @@ public final class MqContext implements IClient
   {
     mLogger.debug("MqContext::define() - IN, Queue=" + queue);
     
-    boolean success = mDelegator.define(queue);
+    boolean success = false;
+    if (Validators.isQueueName(queue))
+    {
+      success = mDelegator.define(queue);
+    }
+    else
+    {
+      setResponse("Failed to define queue, invalid queue name: " + queue);
+    }
     
     mLogger.debug("MqContext::define() - OUT, Returns=" + success);
     return success;
@@ -156,7 +176,15 @@ public final class MqContext implements IClient
   {
     mLogger.debug("MqContext::delete() - IN, Queue=" + queue);
     
-    boolean success = mDelegator.delete(queue);
+    boolean success = false;
+    if (Validators.isQueueName(queue))
+    {
+      success = mDelegator.delete(queue);
+    }
+    else
+    {
+      setResponse("Failed to delete queue, invalid queue name: " + queue);
+    }
     
     mLogger.debug("MqContext::delete() - OUT, Returns=" + success);
     return success;
@@ -165,16 +193,15 @@ public final class MqContext implements IClient
   /**
    * Get a message from queue.
    * 
-   * @param priority The priority of the message to retrieve
    * @param timeout The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link MqMessage} object or {@code null} if a message is unavailable
    */
-  public IMqMessage<?> get(int priority, long timeout, long interval)
+  public IMqMessage<?> get(long timeout, long interval)
   {
-    mLogger.debug("MqContext::get() - IN, Priority=" + priority + ", Timeout=" + timeout + ", Interval=" + interval);
+    mLogger.debug("MqContext::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
-    IMqMessage<?> result = mDelegator.get(priority, timeout, interval);
+    IMqMessage<?> result = mDelegator.get(timeout, interval);
     
     mLogger.debug("MqContext::get() - OUT, Returns=" + StringUtils.asPrintableString(result));
     return result;

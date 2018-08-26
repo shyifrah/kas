@@ -33,7 +33,6 @@ public interface IMqConstants
   static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
   static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
   
-  static public final String cKasPropertyGetPriority    = cKasPropertyPrefix + "get.priority";
   static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";
   static public final String cKasPropertyGetUserName    = cKasPropertyPrefix + "get.username";
