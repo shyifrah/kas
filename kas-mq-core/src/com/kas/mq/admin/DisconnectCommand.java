@@ -1,4 +1,4 @@
-package com.kas.mq.appl.cli;
+package com.kas.mq.admin;
 
 import java.util.Scanner;
 import java.util.Set;

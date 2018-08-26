@@ -1,4 +1,4 @@
-package com.kas.mq.appl;
+package com.kas.mq.admin;
 
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;

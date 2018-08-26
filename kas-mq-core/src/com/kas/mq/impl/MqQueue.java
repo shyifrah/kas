@@ -294,13 +294,20 @@ public class MqQueue extends AKasObject
    * @param message The message that should be stored at this {@link MqQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public synchronized boolean put(IMqMessage<?> message)
+  public boolean put(IMqMessage<?> message)
   {
     if (message == null)
       return false;
     
     int prio = message.getPriority();
-    return mQueueArray[prio].offer(message);
+    
+    boolean success = false;
+    synchronized (mQueueArray[prio])
+    {
+      success = mQueueArray[prio].offer(message);
+    }
+    
+    return success;
   }
   
   /**
@@ -365,7 +372,7 @@ public class MqQueue extends AKasObject
    * @param interval The gap length between polling operations
    * @return The {@link MqMessage} or {@code null} if one is unavailable
    */
-  private synchronized IMqMessage<?> internalGet(long timeout, long interval)
+  private IMqMessage<?> internalGet(long timeout, long interval)
   {
     IMqMessage<?> result = null;
     
@@ -376,7 +383,10 @@ public class MqQueue extends AKasObject
       int priority = internalGetPriorityIndex();
       if (priority > -1)
       {
-        result = mQueueArray[priority].poll();
+        synchronized (mQueueArray[priority])
+        {
+          result = mQueueArray[priority].poll();
+        }
       }
       else
       {

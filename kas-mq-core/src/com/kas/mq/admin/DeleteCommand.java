@@ -1,34 +1,34 @@
-package com.kas.mq.appl.cli;
+package com.kas.mq.admin;
 
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
-import com.kas.infra.base.KasException;
 import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A OPEN command
+ * A DELETE command
  * 
  * @author Pippo
  */
-public class OpenCommand extends ACliCommand
+public class DeleteCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("OPEN");
+    sCommandVerbs.add("DELETE");
+    sCommandVerbs.add("DEL");
   }
   
   /**
-   * Construct a {@link OpenCommand} passing the command arguments and the client object
+   * Construct a {@link DeleteCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected OpenCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected DeleteCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
@@ -40,34 +40,36 @@ public class OpenCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Execssive command arguments are ignored for HELP OPEN");
+      writeln("Execssive command arguments are ignored for HELP DEFINE");
       writeln(" ");
     }
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Open a queue for put/get operations");
+    writeln("     Define a new queue");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- OPEN ---+--- queue ---+---><");
+    writeln("     >>--- DELETE ---+--- queue ---+---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Open the specified queue for get or put operations.");
-    writeln("     The opened queue will remain open until a CLOSE command is issued.");
+    writeln("     Delete the specified queue.");
+    writeln("     Once a queue is deleted, you cannot undo this operation. All the contents of the queue");
+    writeln("     is permanentely erased, including the backup file.");
+    writeln("     The DELETE command will fail if a queue with the specified name does not exist.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Open queue TEMP_Q_A for get or put operations:");
-    writeln("          KAS/MQ Admin> OPEN TEMP_Q_A");
+    writeln("     Delete queue TEMP_Q_2DEL:");
+    writeln("          KAS/MQ Admin> DELETE TEMP_Q_2DEL");
     writeln(" ");
   }
   
   /**
-   * An open command.<br>
+   * A Delete command.<br>
    * <br>
-   * For only the "OPEN" verb, the command will fail with a missing queue name message.
+   * For only the "DELETE" verb, the command will fail with a missing queue name message.
    * For more than a single argument, the command will fail with excessive arguments message.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
@@ -76,7 +78,7 @@ public class OpenCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Open failed. Missing queue name");
+      writeln("Delete failed. Missing queue name");
       writeln(" ");
       return false;
     }
@@ -85,17 +87,12 @@ public class OpenCommand extends ACliCommand
     String extra = mCommandArgs.poll();
     if (extra != null)
     {
-      writeln("Open failed. Excessive token \"" + extra + "\"");
+      writeln("Delete failed. Excessive token \"" + extra + "\"");
       writeln(" ");
       return false;
     }
     
-    try
-    {
-      mClient.open(queue);
-    }
-    catch (KasException e) {}
-    
+    mClient.delete(queue);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

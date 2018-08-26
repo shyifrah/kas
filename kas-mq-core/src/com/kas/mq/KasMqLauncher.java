@@ -20,7 +20,7 @@ import com.kas.infra.utils.RunTimeUtils;
 public class KasMqLauncher
 {
   static private final String cKasHomeSystemProperty = RunTimeUtils.cProductHomeDirProperty;
-  static private final String cAppTypeSystemProperty = "kas.appl";
+  static private final String cAppClassSystemProperty = "kas.class";
   
   static private IBaseLogger sLogger = new ConsoleLogger(KasMqLauncher.class.getName());
   
@@ -34,17 +34,15 @@ public class KasMqLauncher
     String kasHome = pArgumentsMap.get(cKasHomeSystemProperty);
     setHomeDirectory(kasHome);
     
-    String appType = pArgumentsMap.get(cAppTypeSystemProperty);
-    String className = getApplicationClass(appType);
-    
     TimeStamp end = TimeStamp.now();
     reportLaunchTime(start, end);
     
     
-    if (className == null)
+    String appClass = pArgumentsMap.get(cAppClassSystemProperty);
+    if (appClass == null)
       sLogger.info("KAS/MQ launcher terminates. Could not determine which application should be launched...");
     else
-      launchApplication(className);
+      launchApplication(appClass);
   }
   
   /**
@@ -103,45 +101,7 @@ public class KasMqLauncher
     sLogger.info("KAS/MQ launcher set system property '" + cKasHomeSystemProperty + "' to '" + kasHome + "'");
   }
   
-  /**
-   * Get the application class name
-   * 
-   * @param appType the value of the "kas.appl" argument passed to {@link #main(String[]) main} function
-   * @return the name of the class to be loaded and executed
-   */
-  static private String getApplicationClass(String appType)
-  {
-    String className = null;
-    if (appType == null)
-    {
-      sLogger.fatal("Missing application type. '" + cAppTypeSystemProperty + "' should be set to either 'client' or 'server'");
-    }
-    else if ("client".equalsIgnoreCase(appType))
-    {
-      className = "com.kas.mq.client.KasMqClient";
-      RunTimeUtils.setProperty(cAppTypeSystemProperty, "client", true);
-      sLogger.info("KAS/MQ launcher set system property '" + cAppTypeSystemProperty + "' to 'client'");
-    }
-    else if ("server".equalsIgnoreCase(appType))
-    {
-      className = "com.kas.mq.server.KasMqServer";
-      RunTimeUtils.setProperty(cAppTypeSystemProperty, "server", true);
-      sLogger.info("KAS/MQ launcher set system property '" + cAppTypeSystemProperty + "' to 'server'");
-    }
-    else if ("admin".equalsIgnoreCase(appType))
-    {
-      className = "com.kas.mq.appl.KasMqAdmin";
-      RunTimeUtils.setProperty(cAppTypeSystemProperty, "admin", true);
-      sLogger.info("KAS/MQ launcher set system property '" + cAppTypeSystemProperty + "' to 'admin'");
-    }
-    else
-    {
-      sLogger.fatal("Invalid application type. '" + cAppTypeSystemProperty + "' should be set to either 'client' or 'server'");
-    }
-    return className;
-  }
-  
-  /**
+ /**
    * Report launch time
    * 
    * @param start The {@link TimeStamp timestamp} of the time the launcher started

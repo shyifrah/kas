@@ -1,9 +1,7 @@
-package com.kas.mq.appl;
+package com.kas.mq.admin;
 
 import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
-import com.kas.mq.appl.cli.CliCommandFactory;
-import com.kas.mq.appl.cli.ICliCommand;
 import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
 import com.kas.mq.internal.TokenDeque;
