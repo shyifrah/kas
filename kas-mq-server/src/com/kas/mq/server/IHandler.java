@@ -51,6 +51,13 @@ public interface IHandler extends IObject
   public abstract void setActiveQueue(MqQueue queue);
   
   /**
+   * Get the controller
+   * 
+   * @return the {@link SessionController} object
+   */
+  public abstract IController getController();
+  
+  /**
    * Get repository
    * 
    * @return the {@link QueueRepository} object

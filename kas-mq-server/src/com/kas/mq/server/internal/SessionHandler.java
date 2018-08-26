@@ -180,6 +180,10 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         response = mSessionResponder.get(request);
       }
+      else if (requestType == ERequestType.cShutdown)
+      {
+        response = mSessionResponder.shutdown(request);
+      }
       
       mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
       mMessenger.send(response);
@@ -245,6 +249,18 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   public void setActiveQueue(MqQueue queue)
   {
     mActiveQueue = queue;
+  }
+  
+  /**
+   * Get the controller
+   * 
+   * @return the {@link SessionController} object
+   * 
+   * @see com.kas.mq.server.IHandler#getController()
+   */
+  public IController getController()
+  {
+    return mController;
   }
   
   /**

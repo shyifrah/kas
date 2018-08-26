@@ -11,6 +11,7 @@ import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.internal.QueueRepository;
 import com.kas.mq.server.internal.ServerHouseKeeper;
@@ -20,7 +21,7 @@ import com.kas.mq.server.internal.ServerHouseKeeper;
  * 
  * @author Pippo
  */
-public class KasMqServer extends AKasMqAppl 
+public class KasMqServer extends AKasMqAppl implements IMqServer
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqServer.class.getName());
   
@@ -48,6 +49,11 @@ public class KasMqServer extends AKasMqAppl
    * Indicator for server's termination
    */
   private boolean mTerminating = false;
+  
+  /**
+   * Indicator is the server was signaled to stop
+   */
+  private boolean mShouldStop = false;
   
   /**
    * Construct the {@link KasMqServer} passing it the startup arguments
@@ -81,7 +87,7 @@ public class KasMqServer extends AKasMqAppl
     {
       mLogger.info("KAS/MQ base application initialized successfully");
       mRepository = new QueueRepository(mConfig);
-      mController = new SessionController(mConfig, mRepository);
+      mController = new SessionController(this);
       
       try
       {
@@ -170,8 +176,7 @@ public class KasMqServer extends AKasMqAppl
   public void run()
   {
     int errors = 0;
-    boolean shouldStop = false;
-    while (!shouldStop)
+    while (!isTerminating())
     {
       try
       {
@@ -186,7 +191,7 @@ public class KasMqServer extends AKasMqAppl
       {
         if (mListenSocket.isClosed())
         {
-          shouldStop = true;
+          markTerminating();
           mLogger.debug("KasMqServer::run() - Socket was closed, Terminating KAS/MQ server...");
         }
         else
@@ -197,14 +202,60 @@ public class KasMqServer extends AKasMqAppl
           {
             mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
             mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
-            shouldStop = true;
+            markTerminating();
           }
         }
       }
       
       // re-check if needs to shutdown
-      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (shouldStop ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (mShouldStop ? "yep. Terminating main loop..." : "nope..."));
     }
+  }
+  
+  /**
+   * Get the {@link QueueRepository} object
+   * 
+   * @return the {@link QueueRepository} object
+   * 
+   * @see IMqServer#getRepository()
+   */
+  public IRepository getRepository()
+  {
+    return mRepository;
+  }
+  
+  /**
+   * Get the {@link MqConfiguration} object
+   * 
+   * @return the {@link MqConfiguration} object
+   * 
+   * @see IMqServer#getConfig()
+   */
+  public MqConfiguration getConfig()
+  {
+    return mConfig;
+  }
+  
+  /**
+   * Mark server it should stop
+   * 
+   * @see IMqServer#markTerminating()
+   */
+  public synchronized void markTerminating()
+  {
+    mTerminating = true;
+  }
+  
+  /**
+   * Get indication if the server should stop
+   * 
+   * @return an indication if the server should stop
+   * 
+   * @see IMqServer#isTerminating()
+   */
+  public synchronized boolean isTerminating()
+  {
+    return mTerminating;
   }
   
   /**

@@ -57,8 +57,6 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cShutdown);
-    message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
-    message.setStringProperty(IMqConstants.cKasPropertyPassword, pass);
     return message;
   }
   

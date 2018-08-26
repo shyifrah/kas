@@ -32,4 +32,9 @@ public interface IController extends IObject
    * @return the handlers map
    */
   public abstract Map<UniqueId, SessionHandler> getHandlers();
+  
+  /**
+   * Shutdown KAS/MQ server
+   */
+  public abstract void shutdown();
 }

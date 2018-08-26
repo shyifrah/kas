@@ -251,6 +251,25 @@ public class SessionResponder extends AKasObject
   }
   
   /**
+   * Process get message from opened queue request
+   * 
+   * @param request The request message
+   * @return The {@link MqMessage} response object
+   */
+  public IMqMessage<?> shutdown(IMqMessage<?> request)
+  {
+    MqResponse response = null;
+    IMqMessage<?>  result = null;
+    
+    mHandler.getController().shutdown();
+    
+    response = new MqResponse(EMqResponseCode.cOkay, "");
+    result = generateResponse(response);
+    
+    return result;
+  }
+  
+  /**
    * Merge {@code resp} into {@code msg}
    * 
    * @param resp The {@link MqResponse} object

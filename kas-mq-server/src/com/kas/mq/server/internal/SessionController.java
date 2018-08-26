@@ -13,6 +13,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IMqServer;
 import com.kas.mq.server.IRepository;
 
 /**
@@ -44,18 +45,23 @@ public class SessionController extends AKasObject implements IController
   private IRepository mRepository;
   
   /**
+   * KAS/MQ server
+   */
+  private IMqServer mServer;
+  
+  /**
    * Constructs a {@link SessionController} which is basically the object that supervises active sessions
    * 
    * @param config The {@link MqConfiguration}
    * @param repository The repository of queues
    */
-  public SessionController(MqConfiguration config, IRepository repository)
+  public SessionController(IMqServer server)
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getStdout(this.getClass());
     mHandlers = new HashMap<UniqueId, SessionHandler>();
-    mConfig = config;
-    mRepository = repository;
+    mConfig = server.getConfig();
+    mRepository = server.getRepository();
   }
   
   /**
@@ -116,6 +122,30 @@ public class SessionController extends AKasObject implements IController
   public Map<UniqueId, SessionHandler> getHandlers()
   {
     return mHandlers;
+  }
+  
+  /**
+   * Shutdown KAS/MQ server
+   */
+  public void shutdown()
+  {
+    mLogger.debug("SessionController::shutdown() - IN");
+    
+    mConsole.info("KAS/MQ server received a Shutdown request");
+    mConsole.info("Signaling all handlers to terminate...");
+    
+    for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
+    {
+      UniqueId uid = entry.getKey();
+      SessionHandler handler = entry.getValue();
+      
+      mLogger.trace("Handler " + uid.toString() + " was signaled to terminate processing...");
+      handler.stop();
+    }
+    
+    mServer.markTerminating();
+    
+    mLogger.debug("SessionController::shutdown() - OUT");
   }
 
   /**
