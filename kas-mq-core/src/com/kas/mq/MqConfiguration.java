@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
+import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 
 /**
@@ -69,9 +70,9 @@ public class MqConfiguration extends AConfiguration
   private long mHskpInterval = cDefaultHskpInterval; 
   
   /**
-   * The timeout, in milliseconds, before socket operations like {@link java.net.ServerSocket#accept() accept()} call will timeout
+   * A map of users and passwords (base64 encrypted)
    */
-  private Map<String, String> mUserMap = new ConcurrentHashMap<String, String>(); 
+  private Map<String, byte []> mUserMap = new ConcurrentHashMap<String, byte []>(); 
   
   /**
    * Refresh configuration - reload values of all properties
@@ -95,7 +96,8 @@ public class MqConfiguration extends AConfiguration
       String user = ((String)entry.getKey()).substring(cMqUserConfigPrefix.length());
       user = user.toUpperCase();
       String pass = (String)entry.getValue();
-      mUserMap.put(user, pass);
+      byte [] encpass = Base64Utils.encode(pass.getBytes());
+      mUserMap.put(user, encpass);
     }
   }
   
@@ -185,7 +187,7 @@ public class MqConfiguration extends AConfiguration
    * @param user The user's name
    * @return the user's password or {@code null} if user's name isn't defined
    */
-  public String getUserPassword(String user)
+  public byte [] getUserPassword(String user)
   {
     if (user == null)
       return null;

@@ -1,6 +1,8 @@
 package com.kas.mq.server.internal;
 
+import java.util.Arrays;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.ByteArray;
 import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
@@ -51,14 +53,15 @@ public class SessionResponder extends AKasObject
     MqResponse response = null;
     
     String user = request.getStringProperty(IMqConstants.cKasPropertyUserName, null);
-    String pwd  = request.getStringProperty(IMqConstants.cKasPropertyPassword, null);
-    String confPwd = mHandler.getConfig().getUserPassword(user);
+    ByteArray bapwd = (ByteArray)request.getObjectProperty(IMqConstants.cKasPropertyPassword, null);
+    byte [] pwd = bapwd.getByteArray();
+    byte [] confPwd = mHandler.getConfig().getUserPassword(user);
     
     if ((user == null) || (user.length() == 0))
       response = new MqResponse(EMqResponseCode.cError, "Invalid user name");
     else if (confPwd == null)
       response = new MqResponse(EMqResponseCode.cFail, "User " + user + " is not defined");
-    else if (!confPwd.equals(pwd))
+    else if (!Arrays.equals(pwd, confPwd))
       response = new MqResponse(EMqResponseCode.cFail, "Password does not match");
     else
     {

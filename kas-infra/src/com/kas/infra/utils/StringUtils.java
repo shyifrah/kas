@@ -11,6 +11,8 @@ import com.kas.infra.base.IObject;
  */
 public class StringUtils
 {
+  static private final char [] cHexChars = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+  
   /**
    * Return {@link Object#toString()} value, or "null" if object is null
    * 
@@ -223,6 +225,28 @@ public class StringUtils
     for (int i = 0; i < len - str.length(); ++i)
       sb.append(pad);
     
+    return sb.toString();
+  }
+  
+  /**
+   * Return the byte array contents as hex string
+   * 
+   * @param bytearray The byte array
+   * @return the hex-string
+   */
+  static public String asHexString(byte [] bytearray)
+  {
+    if (bytearray == null)
+      return "null";
+          
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < bytearray.length; ++i)
+    {
+      byte by = bytearray[i];
+      byte right = (byte)(by & 0x0F);
+      byte left = (byte)((by & 0xF0) >>> 4);
+      sb.append(cHexChars[left]).append(cHexChars[right]);
+    }
     return sb.toString();
   }
 }
