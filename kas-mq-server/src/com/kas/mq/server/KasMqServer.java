@@ -21,6 +21,12 @@ import com.kas.mq.server.internal.ServerHouseKeeper;
  */
 public class KasMqServer extends AKasMqAppl implements IMqServer
 {
+  static enum EServerState {
+    cTerminated,
+    cRunning,
+    cTerminationInProgress
+  };
+  
   /**
    * Server socket
    */
@@ -44,7 +50,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   /**
    * Indicator for server's termination
    */
-  private boolean mTerminating = false;
+  //private boolean mTerminating = false;
+  private EServerState mState;
   
   /**
    * Construct the {@link KasMqServer} passing it the startup arguments
@@ -107,6 +114,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       
       mHousekeeper = new ServerHouseKeeper(mController, mRepository);
       ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
+      mState = EServerState.cRunning;
     }
     
     String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
@@ -118,6 +126,9 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   /**
    * Terminating the KAS/MQ server.<br>
    * <br>
+   * Termination is synchronized because it could be executed by the main thread (if a SHUTDOWN request has arrived)
+   * or by the Shutdown Hook thread, if, for instance, the user sent a SIGTERM signal (via CTRL-C).
+   * <br>
    * Termination consisting of:
    * - closing server's listener socket
    * - terminate server repository
@@ -125,34 +136,38 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
-  public boolean term()
+  public synchronized boolean term()
   {
-    boolean term = true;
-    mLogger.info("KAS/MQ server termination in progress");
-    
-    try
+    boolean success = false;
+    if (isRunning())
     {
-      mListenSocket.close();
-    }
-    catch (IOException e)
-    {
-      mLogger.warn("An error occurred while trying to close server socket", e);
-    }
-    
-    term = mRepository.term();
-    if (!term)
-    {
-      mLogger.warn("An error occurred while shutting the server's repository");
-    }
+      mLogger.info("KAS/MQ server termination in progress");
+      success = mRepository.term();
+      if (!success)
+      {
+        mLogger.warn("An error occurred while shutting the server's repository");
+      }
+        
+      try
+      {
+        mListenSocket.close();
+      }
+      catch (IOException e)
+      {
+        mLogger.warn("An error occurred while trying to close server socket", e);
+      }
       
-    term = super.term();
-    if (!term)
-    {
-      sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
+      success = super.term();
+      if (!success)
+      {
+        sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
+      }
+      
+      sStartupLogger.info("KAS/MQ server shutdown complete");
+      mState = EServerState.cTerminated;
     }
     
-    sStartupLogger.info("KAS/MQ server shutdown complete");
-    return term;
+    return success;
   }
   
   /**
@@ -164,7 +179,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public void run()
   {
     int errors = 0;
-    while (!isStopping())
+    while (!isStopInProgress())
     {
       try
       {
@@ -196,7 +211,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       }
       
       // re-check if needs to shutdown
-      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (isStopping() ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (isStopInProgress() ? "yep. Terminating main loop..." : "nope..."));
     }
   }
   
@@ -231,7 +246,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    */
   public synchronized void stop()
   {
-    mTerminating = true;
+    //mTerminating = true;
+    mState = EServerState.cTerminationInProgress;
   }
   
   /**
@@ -241,9 +257,22 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * 
    * @see IMqServer#isTerminating()
    */
-  public synchronized boolean isStopping()
+  public synchronized boolean isStopInProgress()
   {
-    return mTerminating;
+    //return mTerminating;
+    return mState == EServerState.cTerminationInProgress;
+  }
+  
+  /**
+   * Get indication if the server is in running state
+   * 
+   * @return an indication if the server should stop
+   * 
+   * @see IMqServer#isTerminating()
+   */
+  public synchronized boolean isRunning()
+  {
+    return mState == EServerState.cRunning;
   }
   
   /**

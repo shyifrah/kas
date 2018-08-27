@@ -29,5 +29,5 @@ public interface IMqServer
    * 
    * @return an indication if the server should stop
    */
-  public abstract boolean isStopping();
+  public abstract boolean isStopInProgress();
 }
