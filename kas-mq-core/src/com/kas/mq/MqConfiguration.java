@@ -93,6 +93,7 @@ public class MqConfiguration extends AConfiguration
     for (Map.Entry<Object, Object> entry : props.entrySet())
     {
       String user = ((String)entry.getKey()).substring(cMqUserConfigPrefix.length());
+      user = user.toUpperCase();
       String pass = (String)entry.getValue();
       mUserMap.put(user, pass);
     }
@@ -189,7 +190,9 @@ public class MqConfiguration extends AConfiguration
     if (user == null)
       return null;
     
-    return mUserMap.get(user);
+    String u = user.toUpperCase();
+    
+    return mUserMap.get(u);
   }
   
   /**

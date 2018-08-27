@@ -64,9 +64,9 @@ public class MqClientImpl extends AKasObject implements IClient
    * <br>
    * If the {@link MqClientImpl} is already connected, it will be disconnected first.
    * 
-   * @param host The host name or IP address
+   * @param host The host name or IP address (uppercased)
    * @param port The port number
-   * @param user The user's name
+   * @param user The user's name (uppercased)
    * @param pwd The user's password
    * 
    * @see com.kas.mq.client.IClient#connect(String, int, String, String)

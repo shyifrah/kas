@@ -260,7 +260,7 @@ public class SessionResponder extends AKasObject
   {
     MqResponse response = null;
     
-    if (!"admin".equals(mHandler.getActiveUserName()))
+    if (!"admin".equalsIgnoreCase(mHandler.getActiveUserName()))
     {
       response = new MqResponse(EMqResponseCode.cFail, "Cannot shutdown KAS/MQ server with non-admin user");
     }

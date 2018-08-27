@@ -124,6 +124,7 @@ public class ConnectCommand extends ACliCommand
       writeln(" ");
       return false;
     }
+    username = username.toUpperCase();
     
     if (extra != null)
     {
