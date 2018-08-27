@@ -22,12 +22,12 @@ public interface IMqServer
   /**
    * Mark server it should stop
    */
-  public abstract void markTerminating();
+  public abstract void stop();
   
   /**
    * Get indication if the server should stop
    * 
    * @return an indication if the server should stop
    */
-  public abstract boolean isTerminating();
+  public abstract boolean isStopping();
 }

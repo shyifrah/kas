@@ -51,11 +51,6 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   private boolean mTerminating = false;
   
   /**
-   * Indicator is the server was signaled to stop
-   */
-  private boolean mShouldStop = false;
-  
-  /**
    * Construct the {@link KasMqServer} passing it the startup arguments
    * 
    * @param args The startup arguments
@@ -137,33 +132,30 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public boolean term()
   {
     boolean term = true;
-    if (!mTerminating)
+    mLogger.info("KAS/MQ server termination in progress");
+    
+    try
     {
-      mTerminating = true;
-      mLogger.info("KAS/MQ server termination in progress");
-      
-      try
-      {
-        mListenSocket.close();
-      }
-      catch (IOException e)
-      {
-        mLogger.warn("An error occurred while trying to close server socket", e);
-      }
-      
-      term = mRepository.term();
-      if (!term)
-      {
-        mLogger.warn("An error occurred while shutting the server's repository");
-      }
-        
-      term = super.term();
-      if (!term)
-      {
-        mLogger.warn("An error occurred during KAS/MQ base application termination");
-      }
+      mListenSocket.close();
+    }
+    catch (IOException e)
+    {
+      mLogger.warn("An error occurred while trying to close server socket", e);
     }
     
+    term = mRepository.term();
+    if (!term)
+    {
+      mLogger.warn("An error occurred while shutting the server's repository");
+    }
+      
+    term = super.term();
+    if (!term)
+    {
+      sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
+    }
+    
+    sStartupLogger.info("KAS/MQ server shutdown complete");
     return term;
   }
   
@@ -176,7 +168,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public void run()
   {
     int errors = 0;
-    while (!isTerminating())
+    while (!isStopping())
     {
       try
       {
@@ -191,7 +183,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       {
         if (mListenSocket.isClosed())
         {
-          markTerminating();
+          stop();
           mLogger.debug("KasMqServer::run() - Socket was closed, Terminating KAS/MQ server...");
         }
         else
@@ -202,13 +194,13 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
           {
             mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
             mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
-            markTerminating();
+            stop();
           }
         }
       }
       
       // re-check if needs to shutdown
-      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (mShouldStop ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (isStopping() ? "yep. Terminating main loop..." : "nope..."));
     }
   }
   
@@ -241,7 +233,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * 
    * @see IMqServer#markTerminating()
    */
-  public synchronized void markTerminating()
+  public synchronized void stop()
   {
     mTerminating = true;
   }
@@ -253,7 +245,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * 
    * @see IMqServer#isTerminating()
    */
-  public synchronized boolean isTerminating()
+  public synchronized boolean isStopping()
   {
     return mTerminating;
   }

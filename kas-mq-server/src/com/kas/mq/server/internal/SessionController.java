@@ -62,6 +62,7 @@ public class SessionController extends AKasObject implements IController
     mHandlers = new HashMap<UniqueId, SessionHandler>();
     mConfig = server.getConfig();
     mRepository = server.getRepository();
+    mServer = server;
   }
   
   /**
@@ -143,7 +144,8 @@ public class SessionController extends AKasObject implements IController
       handler.stop();
     }
     
-    mServer.markTerminating();
+    mConsole.info("Signaling main thread to terminate...");
+    mServer.stop();
     
     mLogger.debug("SessionController::shutdown() - OUT");
   }

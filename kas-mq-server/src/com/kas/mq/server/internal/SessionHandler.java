@@ -183,6 +183,8 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       else if (requestType == ERequestType.cShutdown)
       {
         response = mSessionResponder.shutdown(request);
+        if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
+          cont = false;
       }
       
       mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
