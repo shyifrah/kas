@@ -41,6 +41,7 @@ public class HelpCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP HELP");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");
@@ -68,6 +69,8 @@ public class HelpCommand extends ACliCommand
     writeln("                   +--- PUT -----------------------+");
     writeln("                   |                               |");
     writeln("                   +--- GET -----------------------+");
+    writeln("                   |                               |");
+    writeln("                   +--- SHUTDOWN ------------------+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -128,6 +131,8 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- PUT -----------------------+");
       writeln("          |                               |");
       writeln("          +--- GET -----------------------+");
+      writeln("          |                               |");
+      writeln("          +--- SHUTDOWN ------------------+");
       writeln(" ");
       writeln("Description: ");
       writeln(" ");

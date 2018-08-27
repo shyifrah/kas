@@ -17,7 +17,7 @@ import com.kas.logging.LoggerFactory;
  */
 public abstract class AKasMqAppl extends AKasObject implements IInitializable, Runnable
 {
-  static IBaseLogger sStartupLogger = new ConsoleLogger(AKasMqAppl.class.getName());
+  static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasMqAppl.class.getName());
   
   /**
    * Logger

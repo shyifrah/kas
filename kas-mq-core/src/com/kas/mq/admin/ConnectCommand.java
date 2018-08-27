@@ -43,6 +43,7 @@ public class ConnectCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP CONN");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

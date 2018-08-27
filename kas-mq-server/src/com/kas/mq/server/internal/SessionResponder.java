@@ -259,14 +259,18 @@ public class SessionResponder extends AKasObject
   public IMqMessage<?> shutdown(IMqMessage<?> request)
   {
     MqResponse response = null;
-    IMqMessage<?>  result = null;
     
-    mHandler.getController().shutdown();
+    if (!"admin".equals(mHandler.getActiveUserName()))
+    {
+      response = new MqResponse(EMqResponseCode.cFail, "Cannot shutdown KAS/MQ server with non-admin user");
+    }
+    else
+    {
+      mHandler.getController().shutdown();
+      response = new MqResponse(EMqResponseCode.cOkay, "");
+    }
     
-    response = new MqResponse(EMqResponseCode.cOkay, "");
-    result = generateResponse(response);
-    
-    return result;
+    return generateResponse(response);
   }
   
   /**

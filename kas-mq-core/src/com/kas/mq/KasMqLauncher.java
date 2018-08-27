@@ -153,7 +153,6 @@ public class KasMqLauncher
         }
         
         app.run();
-        app.term();
       }
     }
     catch (ClassNotFoundException e)

@@ -53,7 +53,7 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createShutdownRequest(String user, String pass)
+  static public MqObjectMessage createShutdownRequest()
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cShutdown);

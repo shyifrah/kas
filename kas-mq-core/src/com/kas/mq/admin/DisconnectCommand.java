@@ -43,6 +43,7 @@ public class DisconnectCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP DISC");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

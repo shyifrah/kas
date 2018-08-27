@@ -42,6 +42,7 @@ public class DefineCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP DEFINE");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

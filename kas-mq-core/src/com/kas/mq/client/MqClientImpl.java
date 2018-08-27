@@ -498,6 +498,54 @@ public class MqClientImpl extends AKasObject implements IClient
   }
   
   /**
+   * Mark the KAS/MQ server it should shutdown
+   * 
+   * @return {@code true} if the server accepted the request, {@code false} otherwise
+   * 
+   * @see IClient#shutdown()
+   */
+  public boolean shutdown()
+  {
+    mLogger.debug("MqClientImpl::shutdown() - IN");
+    
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqMessageFactory.createShutdownRequest();
+      mLogger.debug("MqClientImpl::shutdown() - sending shutdown request: " + request.toPrintableString(0));
+      try
+      {
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
+        mLogger.debug("MqClientImpl::shutdown() - received response: " + response.toPrintableString());
+        if (response.getCode() == EMqResponseCode.cOkay)
+        {
+          success = true;
+          logInfoAndSetResponse("Shutdown request was posted");
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getDesc());
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to signal KAS/MQ server to shutdown. Exception: ")
+          .append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::shutdown() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
    * Get last response from last {@link IClient} call.
    * 
    * @return the last message the {@link IClient} issued for a call.

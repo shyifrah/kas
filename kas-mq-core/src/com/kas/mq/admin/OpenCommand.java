@@ -42,6 +42,7 @@ public class OpenCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP OPEN");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

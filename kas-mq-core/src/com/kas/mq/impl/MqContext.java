@@ -222,6 +222,21 @@ public final class MqContext implements IClient
   }
   
   /**
+   * Mark the KAS/MQ server it should shutdown
+   * 
+   * @return {@code true} if the server accepted the request, {@code false} otherwise
+   */
+  public boolean shutdown()
+  {
+    mLogger.debug("MqContext::put() - IN");
+    
+    boolean success = mDelegator.shutdown();
+    
+    mLogger.debug("MqContext::put() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
    * Get last response from last {@link IClient} call.
    * 
    * @return the last message the {@link IClient} issued for a call.

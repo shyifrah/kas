@@ -43,6 +43,7 @@ public class ExitCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP EXIT");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

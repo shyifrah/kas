@@ -43,6 +43,7 @@ public class PutCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP PUT");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

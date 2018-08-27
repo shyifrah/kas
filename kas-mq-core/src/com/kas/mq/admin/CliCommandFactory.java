@@ -52,6 +52,9 @@ public class CliCommandFactory
     if (GetCommand.sCommandVerbs.contains(verb))
       return new GetCommand(scanner, cmdWords, client);
     
+    if (ShutdownCommand.sCommandVerbs.contains(verb))
+      return new ShutdownCommand(scanner, cmdWords, client);
+    
     // Unknown command
     return null;
   }

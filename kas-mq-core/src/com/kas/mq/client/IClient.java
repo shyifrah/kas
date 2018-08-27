@@ -92,6 +92,13 @@ public interface IClient
   public abstract void put(IMqMessage<?> message);
   
   /**
+   * Mark the KAS/MQ server it should shutdown
+   * 
+   * @return {@code true} if the server accepted the request, {@code false} otherwise
+   */
+  public abstract boolean shutdown();
+  
+  /**
    * Get last response from last {@link IClient} call.
    * 
    * @return the last message the {@link IClient} issued for a call.

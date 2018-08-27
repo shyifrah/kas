@@ -6,9 +6,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.threads.ThreadPool;
-import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.MqConfiguration;
@@ -23,8 +21,6 @@ import com.kas.mq.server.internal.ServerHouseKeeper;
  */
 public class KasMqServer extends AKasMqAppl implements IMqServer
 {
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqServer.class.getName());
-  
   /**
    * Server socket
    */

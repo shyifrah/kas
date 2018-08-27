@@ -42,6 +42,7 @@ public class CloseCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP CLOSE");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");

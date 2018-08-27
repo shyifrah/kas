@@ -119,7 +119,7 @@ public class KasMqStopper extends AKasMqAppl
     
     if (shouldContinue)
     {
-      IMqMessage<?> request = MqMessageFactory.createShutdownRequest(user, pass);
+      IMqMessage<?> request = MqMessageFactory.createShutdownRequest();
       try
       {
         sStartupLogger.info("Putting shutdown request...");
