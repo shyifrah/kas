@@ -1,5 +1,6 @@
 package com.kas.mq.admcons;
 
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
 import com.kas.mq.admcons.commands.CliCommandFactory;
@@ -41,6 +42,10 @@ public class AdminConsoleProcessor extends AKasObject
           command = read(scanner);
         }
       }
+    }
+    catch (NoSuchElementException e)
+    {
+      // do nothing
     }
     catch (Throwable e)
     {

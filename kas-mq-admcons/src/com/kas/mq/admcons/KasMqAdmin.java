@@ -16,6 +16,11 @@ public class KasMqAdmin extends AKasMqAppl
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
   
   /**
+   * Termination method was called
+   */
+  private boolean mTermCalled = false;
+  
+  /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments
    * 
    * @param args The startup arguments
@@ -55,8 +60,14 @@ public class KasMqAdmin extends AKasMqAppl
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public boolean term()
+  public synchronized boolean term()
   {
+    if (mTermCalled)
+    {
+      return false;
+    }
+    
+    mTermCalled = true;
     mLogger.info("KAS/MQ admin CLI termination in progress");
     boolean term = super.term();
     return term;

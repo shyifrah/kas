@@ -41,6 +41,9 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    */
   private ServerHouseKeeper mHousekeeper = null;
   
+  /**
+   * Termination method was called
+   */
   private boolean mTermCalled = false;
   
   /**
@@ -133,9 +136,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     }
     
     mTermCalled = true;
-    boolean success = false;
-    
     mLogger.info("KAS/MQ server termination in progress");
+    boolean success = false;
     success = mRepository.term();
     if (!success)
     {
