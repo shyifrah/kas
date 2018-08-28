@@ -47,10 +47,11 @@ public class KasMqShutdownHook extends AKasThread
    */
   public void run()
   {
-    mLogger.warn("Shutdown hook was called. Signaling KAS/MQ application to shutdown...");
+    mLogger.warn("Shutdown hook was called. Terminating application...");
+    mApplication.stop();
     mApplication.term();
   }
-
+  
   /**
    * Get the object's detailed string representation
    * 

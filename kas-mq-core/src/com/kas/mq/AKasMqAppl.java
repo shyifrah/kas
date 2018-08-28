@@ -3,7 +3,6 @@ package com.kas.mq;
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ConsoleLogger;
-import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
@@ -15,7 +14,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public abstract class AKasMqAppl extends AKasObject implements IInitializable, Runnable
+public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
 {
   static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasMqAppl.class.getName());
   
@@ -45,6 +44,12 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
   protected Map<String, String> mStartupArgs = null;
   
   /**
+   * Indicator whether application should stop
+   */
+  protected boolean mStop = false;
+  
+  
+  /**
    * Construct the {@link AKasMqAppl application} passing it the startup arguments
    * 
    * @param args The startup arguments
@@ -61,7 +66,6 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
    * - configuration
    * - logger
    * - registering a shutdown hook
-   * 
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
@@ -119,4 +123,22 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
    * Running the application.
    */
   public abstract void run();
+  
+  /**
+   * Indicate that the caller wants the object to change its state to "stopping" 
+   */
+  public synchronized void stop()
+  {
+    mStop = true;
+  }
+  
+  /**
+   * Get indication if the object is in "stopping" state
+   * 
+   * @return indication if the object is in "stopping" state
+   */
+  public synchronized boolean isStopping()
+  {
+    return mStop;
+  }
 }
