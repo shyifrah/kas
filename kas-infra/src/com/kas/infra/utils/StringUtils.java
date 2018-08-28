@@ -237,7 +237,7 @@ public class StringUtils
   static public String asHexString(byte [] bytearray)
   {
     if (bytearray == null)
-      return "null";
+      return null;
           
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < bytearray.length; ++i)

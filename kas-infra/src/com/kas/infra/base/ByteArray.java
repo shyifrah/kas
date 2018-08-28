@@ -3,6 +3,7 @@ package com.kas.infra.base;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import com.kas.infra.utils.StringUtils;
 
 /**
@@ -10,8 +11,10 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-public class ByteArray extends AKasObject implements ISerializable
+public class ByteArray extends AKasObject implements ISerializable, Serializable
 {
+  private static final long serialVersionUID = 1L;
+  
   /**
    * The actual byte array
    */

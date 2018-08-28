@@ -1,7 +1,7 @@
 package com.kas.mq.impl;
 
-import com.kas.infra.base.ByteArray;
 import com.kas.infra.utils.Base64Utils;
+import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ERequestType;
 
 public class MqMessageFactory
@@ -11,8 +11,7 @@ public class MqMessageFactory
     MqObjectMessage message = new MqObjectMessage();
     message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
     byte [] b64pass = Base64Utils.encode(pass.getBytes());
-    ByteArray bapass = new ByteArray(b64pass);
-    message.setObjectProperty(IMqConstants.cKasPropertyPassword, bapass);
+    message.setStringProperty(IMqConstants.cKasPropertyPassword, StringUtils.asHexString(b64pass));
     message.setRequestType(ERequestType.cAuthenticate);
     return message;
   }
