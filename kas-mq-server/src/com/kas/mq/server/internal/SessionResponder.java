@@ -5,7 +5,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.AMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.impl.MqResponse;
@@ -45,7 +45,7 @@ public class SessionResponder extends AKasObject
    * Process authenticate request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> authenticate(IMqMessage<?> request)
   {
@@ -75,7 +75,7 @@ public class SessionResponder extends AKasObject
    * Process open queue request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> open(IMqMessage<?> request)
   {
@@ -105,7 +105,7 @@ public class SessionResponder extends AKasObject
    * Process close queue request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> close(IMqMessage<?> request)
   {
@@ -128,7 +128,7 @@ public class SessionResponder extends AKasObject
    * Process define queue request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> define(IMqMessage<?> request)
   {
@@ -158,7 +158,7 @@ public class SessionResponder extends AKasObject
    * Process delete queue request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> delete(IMqMessage<?> request)
   {
@@ -193,7 +193,7 @@ public class SessionResponder extends AKasObject
    * Process put message to opened queue request
    * 
    * @param message The put request message (the actual message to put)
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> put(IMqMessage<?> request)
   {
@@ -218,7 +218,7 @@ public class SessionResponder extends AKasObject
    * Process get message from opened queue request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> get(IMqMessage<?> request)
   {
@@ -256,7 +256,7 @@ public class SessionResponder extends AKasObject
    * Process get message from opened queue request
    * 
    * @param request The request message
-   * @return The {@link MqMessage} response object
+   * @return The {@link AMqMessage} response object
    */
   public IMqMessage<?> shutdown(IMqMessage<?> request)
   {
@@ -279,8 +279,8 @@ public class SessionResponder extends AKasObject
    * Merge {@code resp} into {@code msg}
    * 
    * @param resp The {@link MqResponse} object
-   * @param msg The {@link MqMessage} object
-   * @return the {@link MqMessage} with the response code and description from the {@link MqResponse} object
+   * @param msg The {@link AMqMessage} object
+   * @return the {@link AMqMessage} with the response code and description from the {@link MqResponse} object
    */
   private IMqMessage<?> mergeResponse(MqResponse resp, IMqMessage<?> msg)
   {
@@ -290,10 +290,10 @@ public class SessionResponder extends AKasObject
   }
   
   /**
-   * Generate a {@link MqMessage} based on a {@link MqResponse} object
+   * Generate a {@link AMqMessage} based on a {@link MqResponse} object
    * 
    * @param resp The {@link MqResponse} object
-   * @return the {@link MqMessage} response object
+   * @return the {@link AMqMessage} response object
    */
   private IMqMessage<?> generateResponse(MqResponse resp)
   {

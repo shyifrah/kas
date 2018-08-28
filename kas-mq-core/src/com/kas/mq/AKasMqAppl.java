@@ -39,6 +39,9 @@ public abstract class AKasMqAppl extends AKasObject implements IInitializable, R
    */
   protected ProductVersion mVersion = null;
   
+  /**
+   * Startup arguments
+   */
   protected Map<String, String> mStartupArgs = null;
   
   /**

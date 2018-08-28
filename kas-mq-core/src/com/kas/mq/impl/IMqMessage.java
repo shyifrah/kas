@@ -6,7 +6,7 @@ import com.kas.infra.base.UniqueId;
 import com.kas.mq.internal.ERequestType;
 
 /**
- * The rules all {@link MqMessage} driven classes must obey
+ * The rules all {@link AMqMessage} driven classes must obey
  * 
  * @author Pippo
  *

@@ -19,9 +19,24 @@ import com.kas.mq.server.IRepository;
  */
 public class ServerHouseKeeper extends AKasObject implements Runnable
 {
+  /**
+   * Logger
+   */
   private ILogger mLogger;
+  
+  /**
+   * Session controller
+   */
   private IController mController;
+  
+  /**
+   * Queue repository
+   */
   private IRepository mRepository;
+  
+  /**
+   * KAS/MQ configuration
+   */
   private MqConfiguration mConfig;
   
   /**

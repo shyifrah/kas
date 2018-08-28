@@ -4,10 +4,10 @@ import java.util.concurrent.LinkedBlockingDeque;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.AMqMessage;
 
 /**
- * {@link MessageDeque} is the actual container for {@link MqMessage}
+ * {@link MessageDeque} is the actual container for {@link AMqMessage}
  * 
  * @author Pippo
  */

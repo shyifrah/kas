@@ -15,7 +15,7 @@ import com.kas.mq.impl.MqResponse;
 import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.AMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 
 /**
@@ -363,7 +363,7 @@ public class MqClientImpl extends AKasObject implements IClient
    * 
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
+   * @return the {@link AMqMessage} object or {@code null} if a message is unavailable
    */
   public IMqMessage<?> get(long timeout, long interval)
   {

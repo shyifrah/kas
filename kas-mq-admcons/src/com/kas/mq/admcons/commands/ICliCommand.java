@@ -1,6 +1,7 @@
-package com.kas.mq.admcons;
+package com.kas.mq.admcons.commands;
 
 import com.kas.infra.base.IObject;
+import com.kas.mq.admcons.AdminConsoleProcessor;
 
 /**
  * A general purpose command processed by the {@link AdminConsoleProcessor}

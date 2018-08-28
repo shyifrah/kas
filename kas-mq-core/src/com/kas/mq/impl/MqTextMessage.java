@@ -14,7 +14,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-public class MqTextMessage extends MqMessage<String>
+public class MqTextMessage extends AMqMessage<String>
 {
   /**
    * The message body

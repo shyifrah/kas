@@ -8,7 +8,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.AMqMessage;
 
 /**
  * A KAS/MQ client
@@ -195,7 +195,7 @@ public final class MqContext implements IClient
    * 
    * @param timeout The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link MqMessage} object or {@code null} if a message is unavailable
+   * @return the {@link AMqMessage} object or {@code null} if a message is unavailable
    */
   public IMqMessage<?> get(long timeout, long interval)
   {

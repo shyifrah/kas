@@ -10,11 +10,6 @@ import com.kas.infra.base.IObject;
 public enum EMessageType implements IObject
 {
   /**
-   * Base message, no body
-   */
-  cMqMessage,
-  
-  /**
    * Text message
    */
   cMqTextMessage,

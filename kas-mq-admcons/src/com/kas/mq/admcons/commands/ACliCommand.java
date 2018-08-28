@@ -1,4 +1,4 @@
-package com.kas.mq.admcons;
+package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
 import com.kas.infra.base.AKasObject;

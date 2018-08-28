@@ -1,35 +1,34 @@
-package com.kas.mq.admcons;
+package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.base.KasException;
 import com.kas.mq.client.IClient;
-import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqTextMessage;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A PUT command
+ * A OPEN command
  * 
  * @author Pippo
  */
-public class PutCommand extends ACliCommand
+public class OpenCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("PUT");
+    sCommandVerbs.add("OPEN");
   }
   
   /**
-   * Construct a {@link PutCommand} passing the command arguments and the client object
+   * Construct a {@link OpenCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected PutCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected OpenCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
@@ -41,37 +40,36 @@ public class PutCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Execssive command arguments are ignored for HELP PUT");
+      writeln("Execssive command arguments are ignored for HELP OPEN");
       writeln(" ");
       return;
     }
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Put a text message into a previously opened queue");
+    writeln("     Open a queue for put/get operations");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- PUT ---+--- text ---+---><");
+    writeln("     >>--- OPEN ---+--- queue ---+---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Put a text message into a queue the was previously opened via the OPEN command.");
+    writeln("     Open the specified queue for get or put operations.");
+    writeln("     The opened queue will remain open until a CLOSE command is issued.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Put the text \"shy\" as a message into the previously opened queue:");
-    writeln("          KAS/MQ Admin> PUT shy");
+    writeln("     Open queue TEMP_Q_A for get or put operations:");
+    writeln("          KAS/MQ Admin> OPEN TEMP_Q_A");
     writeln(" ");
   }
   
   /**
-   * A put command.<br>
+   * An open command.<br>
    * <br>
+   * For only the "OPEN" verb, the command will fail with a missing queue name message.
    * For more than a single argument, the command will fail with excessive arguments message.
-   * For only the command verb, the command will fail with a missing argument message.
-   * If no queue was previously opened, the command will fail with a message stating there's no
-   * open queue.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -79,19 +77,26 @@ public class PutCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Put failed. Missing text to put");
+      writeln("Open failed. Missing queue name");
       writeln(" ");
       return false;
     }
     
-    StringBuilder sb = new StringBuilder();
-    for (String token : mCommandArgs)
-      sb.append(token).append(' ');
+    String queue = mCommandArgs.poll().toUpperCase();
+    String extra = mCommandArgs.poll();
+    if (extra != null)
+    {
+      writeln("Open failed. Excessive token \"" + extra + "\"");
+      writeln(" ");
+      return false;
+    }
     
-    String text = sb.toString().trim();
+    try
+    {
+      mClient.open(queue);
+    }
+    catch (KasException e) {}
     
-    MqTextMessage message = MqMessageFactory.createTextMessage(text);
-    mClient.put(message);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

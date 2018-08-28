@@ -313,7 +313,7 @@ public class MqQueue extends AKasObject
   /**
    * Get a message and wait indefinitely for one to be available.<br>
    * 
-   * @return The {@link MqMessage}
+   * @return The {@link AMqMessage}
    */
   public IMqMessage<?> get()
   {
@@ -325,7 +325,7 @@ public class MqQueue extends AKasObject
    * <br>
    * If {@code timeout} is 0, this method is equivalent to {@link #get()}.
    * 
-   * @return The {@link MqMessage} or {@code null} if one is unavailable
+   * @return The {@link AMqMessage} or {@code null} if one is unavailable
    * 
    * @throws IllegalArgumentException if {@code timeout} is lower than 0
    */
@@ -342,7 +342,7 @@ public class MqQueue extends AKasObject
    * <br>
    * Execution is suspended for {@code interval} milliseconds between each polling operation.
    * 
-   * @return The {@link MqMessage} or {@code null} if one is unavailable
+   * @return The {@link AMqMessage} or {@code null} if one is unavailable
    * 
    * @throws IllegalArgumentException if {@code timeout} or {@code interval} are lower than 0
    */
@@ -358,7 +358,7 @@ public class MqQueue extends AKasObject
   }
   
   /**
-   * Get the {@link MqMessage message} with the highest priority from this {@link MqQueue} object.<br>
+   * Get the {@link AMqMessage message} with the highest priority from this {@link MqQueue} object.<br>
    * <br>
    * Since the actual message store is implemented by {@link MessageDeque}, the actual "get" operations
    * are translated to {@link MessageDeque#poll()}.<br>
@@ -370,7 +370,7 @@ public class MqQueue extends AKasObject
    * 
    * @param timeout The timeout until which the method will give up
    * @param interval The gap length between polling operations
-   * @return The {@link MqMessage} or {@code null} if one is unavailable
+   * @return The {@link AMqMessage} or {@code null} if one is unavailable
    */
   private IMqMessage<?> internalGet(long timeout, long interval)
   {

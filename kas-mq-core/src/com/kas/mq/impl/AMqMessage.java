@@ -19,7 +19,7 @@ import com.kas.mq.internal.ERequestType;
  * 
  * @author Pippo
  */
-public abstract class MqMessage<T> extends AKasObject implements IPacket, IMqMessage<T>
+public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMessage<T>
 {
   /**
    * The message priority
@@ -44,7 +44,7 @@ public abstract class MqMessage<T> extends AKasObject implements IPacket, IMqMes
   /**
    * Construct a default message object
    */
-  MqMessage()
+  AMqMessage()
   {
     mPriority  = IMqConstants.cDefaultPriority;
     mMessageId = UniqueId.generate();
@@ -52,13 +52,13 @@ public abstract class MqMessage<T> extends AKasObject implements IPacket, IMqMes
   }
   
   /**
-   * Constructs a {@link MqMessage} object from {@link ObjectInputStream}
+   * Constructs a {@link AMqMessage} object from {@link ObjectInputStream}
    * 
    * @param istream The {@link ObjectInputStream}
    * 
    * @throws IOException if I/O error occurs
    */
-  public MqMessage(ObjectInputStream istream) throws IOException
+  public AMqMessage(ObjectInputStream istream) throws IOException
   {
     try
     {
@@ -84,7 +84,7 @@ public abstract class MqMessage<T> extends AKasObject implements IPacket, IMqMes
   }
   
   /**
-   * Serialize the {@link MqMessage} to the specified {@link ObjectOutputStream}
+   * Serialize the {@link AMqMessage} to the specified {@link ObjectOutputStream}
    * 
    * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
    * 
@@ -175,7 +175,7 @@ public abstract class MqMessage<T> extends AKasObject implements IPacket, IMqMes
   }
   
   /**
-   * Create the {@link PacketHeader} describing this {@link MqMessage}
+   * Create the {@link PacketHeader} describing this {@link AMqMessage}
    * 
    * @return the packet header
    * 

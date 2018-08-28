@@ -5,7 +5,7 @@ import com.kas.infra.base.AKasObject;
 /**
  * A KAS/MQ response message.<br>
  * <br>
- * This is an extension of the the base message object - {@link MqMessage} - with the additions of
+ * This is an extension of the the base message object - {@link AMqMessage} - with the additions of
  * two new data members: The response code and the response message.
  * 
  * @author Pippo
@@ -35,9 +35,9 @@ public class MqResponse extends AKasObject
   }
   
   /**
-   * Construct a response object using properties contained in {@link MqMessage} properties
+   * Construct a response object using properties contained in {@link AMqMessage} properties
    * 
-   * @param message The {@link MqMessage} containing the response code and description
+   * @param message The {@link AMqMessage} containing the response code and description
    */
   public MqResponse(IMqMessage<?> message)
   {

@@ -1,4 +1,4 @@
-package com.kas.mq.admcons;
+package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
 import java.util.Set;
@@ -7,28 +7,28 @@ import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A DELETE command
+ * A DEFINE command
  * 
  * @author Pippo
  */
-public class DeleteCommand extends ACliCommand
+public class DefineCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("DELETE");
-    sCommandVerbs.add("DEL");
+    sCommandVerbs.add("DEFINE");
+    sCommandVerbs.add("DEF");
   }
   
   /**
-   * Construct a {@link DeleteCommand} passing the command arguments and the client object
+   * Construct a {@link DefineCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DeleteCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected DefineCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
@@ -51,26 +51,26 @@ public class DeleteCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- DELETE ---+--- queue ---+---><");
+    writeln("     >>--- DEFINE ---+--- queue ---+---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Delete the specified queue.");
-    writeln("     Once a queue is deleted, you cannot undo this operation. All the contents of the queue");
-    writeln("     is permanentely erased, including the backup file.");
-    writeln("     The DELETE command will fail if a queue with the specified name does not exist.");
+    writeln("     Define the specified queue.");
+    writeln("     The queue will remain defined until a DELETE command is issued.");
+    writeln("     Following this command, the user can start putting messages to it and getting them.");
+    writeln("     The DEFINE command will fail if a queue with the specified name already exists.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Delete queue TEMP_Q_2DEL:");
-    writeln("          KAS/MQ Admin> DELETE TEMP_Q_2DEL");
+    writeln("     Define queue TEMP_Q_A:");
+    writeln("          KAS/MQ Admin> DEF TEMP_Q_A");
     writeln(" ");
   }
   
   /**
-   * A Delete command.<br>
+   * A Define command.<br>
    * <br>
-   * For only the "DELETE" verb, the command will fail with a missing queue name message.
+   * For only the "DEFINE" verb, the command will fail with a missing queue name message.
    * For more than a single argument, the command will fail with excessive arguments message.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
@@ -79,7 +79,7 @@ public class DeleteCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Delete failed. Missing queue name");
+      writeln("Define failed. Missing queue name");
       writeln(" ");
       return false;
     }
@@ -88,12 +88,12 @@ public class DeleteCommand extends ACliCommand
     String extra = mCommandArgs.poll();
     if (extra != null)
     {
-      writeln("Delete failed. Excessive token \"" + extra + "\"");
+      writeln("Define failed. Excessive token \"" + extra + "\"");
       writeln(" ");
       return false;
     }
     
-    mClient.delete(queue);
+    mClient.define(queue);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

@@ -14,7 +14,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-public class MqObjectMessage extends MqMessage<Object>
+public class MqObjectMessage extends AMqMessage<Object>
 {
   /**
    * The message body
