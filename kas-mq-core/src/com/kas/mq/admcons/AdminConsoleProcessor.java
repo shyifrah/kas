@@ -1,4 +1,4 @@
-package com.kas.mq.admin;
+package com.kas.mq.admcons;
 
 import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
@@ -7,11 +7,11 @@ import com.kas.mq.client.MqClientImpl;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * MQ administration CLI processor.
+ * KAS/MQ administration CLI processor.
  * 
  * @author Pippo
  */
-public class MqAdminProcessor extends AKasObject
+public class AdminConsoleProcessor extends AKasObject
 {
   private IClient mClientImpl = new MqClientImpl(); 
   

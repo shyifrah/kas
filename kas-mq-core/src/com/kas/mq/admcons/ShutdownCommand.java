@@ -1,4 +1,4 @@
-package com.kas.mq.admin;
+package com.kas.mq.admcons;
 
 import java.util.Scanner;
 import java.util.Set;

@@ -1,34 +1,35 @@
-package com.kas.mq.admin;
+package com.kas.mq.admcons;
 
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
-import com.kas.infra.base.KasException;
 import com.kas.mq.client.IClient;
+import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqTextMessage;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A CLOSE command
+ * A PUT command
  * 
  * @author Pippo
  */
-public class CloseCommand extends ACliCommand
+public class PutCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("CLOSE");
+    sCommandVerbs.add("PUT");
   }
   
   /**
-   * Construct a {@link CloseCommand} passing the command arguments and the client object
+   * Construct a {@link PutCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected CloseCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected PutCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
@@ -40,37 +41,35 @@ public class CloseCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Execssive command arguments are ignored for HELP CLOSE");
+      writeln("Execssive command arguments are ignored for HELP PUT");
       writeln(" ");
       return;
     }
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Close previously opened queue");
+    writeln("     Put a text message into a previously opened queue");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- CLOSE ---><");
+    writeln("     >>--- PUT ---+--- text ---+---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Close a queue the was previously opened via the OPEN command.");
-    writeln("     Following a close command, all PUT or GET operations will fail.");
+    writeln("     Put a text message into a queue the was previously opened via the OPEN command.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Close previously opened queue:");
-    writeln("          KAS/MQ Admin> CLOSE");
+    writeln("     Put the text \"shy\" as a message into the previously opened queue:");
+    writeln("          KAS/MQ Admin> PUT shy");
     writeln(" ");
   }
   
   /**
-   * A close command.<br>
+   * A put command.<br>
    * <br>
    * For more than a single argument, the command will fail with excessive arguments message.
-   * For only the command verb, a previously opened queue will be closed for all GET/PUT operations
-   * until a queue is opened again.
+   * For only the command verb, the command will fail with a missing argument message.
    * If no queue was previously opened, the command will fail with a message stating there's no
    * open queue.
    * 
@@ -78,19 +77,21 @@ public class CloseCommand extends ACliCommand
    */
   public boolean run()
   {
-    if (mCommandArgs.size() > 0)
+    if (mCommandArgs.size() == 0)
     {
-      writeln("Close failed. Excessive token \"" + mCommandArgs.peek().toUpperCase() + "\"");
+      writeln("Put failed. Missing text to put");
       writeln(" ");
       return false;
     }
     
-    try
-    {
-      mClient.close();
-    }
-    catch (KasException e) {}
+    StringBuilder sb = new StringBuilder();
+    for (String token : mCommandArgs)
+      sb.append(token).append(' ');
     
+    String text = sb.toString().trim();
+    
+    MqTextMessage message = MqMessageFactory.createTextMessage(text);
+    mClient.put(message);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

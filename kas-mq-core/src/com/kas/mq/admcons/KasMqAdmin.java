@@ -1,4 +1,4 @@
-package com.kas.mq.admin;
+package com.kas.mq.admcons;
 
 import java.util.Map;
 import com.kas.infra.base.ConsoleLogger;
@@ -70,7 +70,7 @@ public class KasMqAdmin extends AKasMqAppl
    */
   public void run()
   {
-    MqAdminProcessor processor = new MqAdminProcessor();
+    AdminConsoleProcessor processor = new AdminConsoleProcessor();
     processor.run();
   }
   
