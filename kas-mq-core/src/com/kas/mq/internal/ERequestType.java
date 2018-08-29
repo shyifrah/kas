@@ -20,21 +20,6 @@ public enum ERequestType implements IObject
   cAuthenticate,
   
   /**
-   * Open queue
-   */
-  cOpenQueue,
-  
-  /**
-   * Close queue
-   */
-  cCloseQueue,
-  
-  /**
-   * Show session information
-   */
-  cShowInfo,
-  
-  /**
    * Put message
    */
   cPut,

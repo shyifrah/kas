@@ -36,10 +36,17 @@ public interface IRepository extends IInitializable, IObject
   public abstract MqQueue removeQueue(String name);
   
   /**
-   * Remove a {@link MqQueue} object with the specified {@code name}.
+   * Get a {@link MqQueue} object with the specified {@code name}.
    * 
-   * @param name The name of the queue to be removed
-   * @return the {@link MqQueue} object removed
+   * @param name The name of the queue to be retrieved
+   * @return the {@link MqQueue} object or {@code null}, if {@code name} is {@code null}, or there's no queue with this name.
    */
   public abstract MqQueue getQueue(String name);
+  
+  /**
+   * Get the {@link MqQueue} object representing the dead queue
+   * 
+   * @return the {@link MqQueue} object of the dead queue
+   */
+  public abstract MqQueue getDeadQueue();
 }

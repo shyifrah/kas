@@ -38,29 +38,6 @@ public interface IClient extends IObject
   public abstract boolean isConnected();
   
   /**
-   * Open the specified queue.
-   * 
-   * @param queue The queue name to open.
-   * 
-   * @throws KasException if client failed to open {@code queue}
-   */
-  public abstract void open(String queue) throws KasException;
-  
-  /**
-   * Close opened queue.
-   * 
-   * @throws KasException if client failed to close an opened queue
-   */
-  public abstract void close() throws KasException;
-  
-  /**
-   * Get the queue status.
-   * 
-   * @return {@code true} if queue is open, {@code false} otherwise
-   */
-  public abstract boolean isOpen();
-  
-  /**
    * Define a new queue.
    * 
    * @param queue The queue name to define.
@@ -79,18 +56,20 @@ public interface IClient extends IObject
   /**
    * Get a message from queue.
    * 
+   * @param queue The target queue name
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract IMqMessage<?> get(long timeout, long interval);
+  public abstract IMqMessage<?> get(String queue, long timeout, long interval);
   
   /**
    * Put a message into the opened queue.
    * 
+   * @param queue The target queue name
    * @param message The message to be put
    */
-  public abstract void put(IMqMessage<?> message);
+  public abstract void put(String queue, IMqMessage<?> message);
   
   /**
    * Mark the KAS/MQ server it should shutdown

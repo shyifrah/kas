@@ -3,6 +3,11 @@ package com.kas.mq.impl;
 public interface IMqConstants
 {
   /**
+   * Queue threshold
+   */
+  static public final int cDefaultQueueThreshold = 1000;
+  
+  /**
    * Message priorities
    */
   static public final int cMinimumPriority = 0;
@@ -37,7 +42,9 @@ public interface IMqConstants
   static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";
   static public final String cKasPropertyGetUserName    = cKasPropertyPrefix + "get.username";
   static public final String cKasPropertyGetTimeStamp   = cKasPropertyPrefix + "get.timestamp";
+  static public final String cKasPropertyGetQueueName   = cKasPropertyPrefix + "get.queue";
   
   static public final String cKasPropertyPutUserName    = cKasPropertyPrefix + "put.username";
+  static public final String cKasPropertyPutQueueName   = cKasPropertyPrefix + "put.queue";
   static public final String cKasPropertyPutTimeStamp   = cKasPropertyPrefix + "put.timestamp";
 }

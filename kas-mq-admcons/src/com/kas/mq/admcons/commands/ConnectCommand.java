@@ -79,11 +79,8 @@ public class ConnectCommand extends ACliCommand
   /**
    * A connect command.<br>
    * <br>
-   * For only the "HELP" verb, the command will output all available commands and another line
-   * stating that for more information you should enter the command "HELP verb", where 'verb' is the command
-   * for which the user is seeking for assistance.
-   * For other HELP commands, we check the argument, and if it's a valid command verb, we display the proper
-   * help information.
+   * Read the host name and the port number, then input the username and password.
+   * Pass all this information to the client and try to connect.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -91,12 +88,13 @@ public class ConnectCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Connect failed. Missing host name");
+      writeln("Missing host name");
       writeln(" ");
       return false;
     }
     
     String host = mCommandArgs.poll().toUpperCase();
+    
     String sport = mCommandArgs.poll();
     if (sport == null)
       sport = "14560";
@@ -110,7 +108,14 @@ public class ConnectCommand extends ACliCommand
     
     if (port == -1)
     {
-      writeln("Connect failed. Invalid port number \"" + sport + "\"");
+      writeln("Invalid port number \"" + sport + "\"");
+      writeln(" ");
+      return false;
+    }
+    
+    if (mCommandArgs.size() > 0)
+    {
+      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
       writeln(" ");
       return false;
     }

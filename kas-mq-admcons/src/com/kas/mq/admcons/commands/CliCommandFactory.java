@@ -34,12 +34,6 @@ public class CliCommandFactory
     if (DisconnectCommand.sCommandVerbs.contains(verb))
       return new DisconnectCommand(scanner, cmdWords, client);
     
-    if (OpenCommand.sCommandVerbs.contains(verb))
-      return new OpenCommand(scanner, cmdWords, client);
-    
-    if (CloseCommand.sCommandVerbs.contains(verb))
-      return new CloseCommand(scanner, cmdWords, client);
-    
     if (DefineCommand.sCommandVerbs.contains(verb))
       return new DefineCommand(scanner, cmdWords, client);
     

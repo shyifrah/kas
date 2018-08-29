@@ -208,10 +208,10 @@ public class QueueRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Remove a {@link MqQueue} object with the specified {@code name}.
+   * Get a {@link MqQueue} object with the specified {@code name}.
    * 
-   * @param name The name of the queue to be removed
-   * @return the {@link MqQueue} object removed
+   * @param name The name of the queue to be retrieved
+   * @return the {@link MqQueue} object or {@code null}, if {@code name} is {@code null}, or there's no queue with this name.
    * 
    * @see com.kas.mq.server.IRepository#getQueue(String)
    */
@@ -228,6 +228,18 @@ public class QueueRepository extends AKasObject implements IRepository
     
     mLogger.debug("QueueRepository::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
+  }
+  
+  /**
+   * Get the {@link MqQueue} object representing the dead queue
+   * 
+   * @return the {@link MqQueue} object of the dead queue
+   * 
+   * @see com.kas.mq.server.IRepository#getDeadQueue()
+   */
+  public MqQueue getDeadQueue()
+  {
+    return mDeadQueue;
   }
   
   /**

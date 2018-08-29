@@ -79,10 +79,11 @@ public class ExitCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Exit failed. Excessive token \"" + mCommandArgs.peek().toUpperCase() + "\"");
+      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
       writeln(" ");
       return false;
     }
+    
     return true;
   }
 }

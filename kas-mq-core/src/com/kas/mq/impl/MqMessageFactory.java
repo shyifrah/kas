@@ -16,21 +16,6 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createOpenRequest(String queue)
-  {
-    MqObjectMessage message = new MqObjectMessage();
-    message.setRequestType(ERequestType.cOpenQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
-    return message;
-  }
-  
-  static public MqObjectMessage createCloseRequest(String queue)
-  {
-    MqObjectMessage message = new MqObjectMessage();
-    message.setRequestType(ERequestType.cCloseQueue);
-    return message;
-  }
-  
   static public MqObjectMessage createDefineRequest(String queue)
   {
     MqObjectMessage message = new MqObjectMessage();
@@ -47,10 +32,11 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createGetRequest(long timeout, long interval)
+  static public MqObjectMessage createGetRequest(String queue, long timeout, long interval)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cGet);
+    message.setStringProperty(IMqConstants.cKasPropertyGetQueueName, queue);
     message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
     message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
     return message;

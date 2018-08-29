@@ -72,59 +72,6 @@ public class SessionResponder extends AKasObject
   }
   
   /**
-   * Process open queue request
-   * 
-   * @param request The request message
-   * @return The {@link AMqMessage} response object
-   */
-  public IMqMessage<?> open(IMqMessage<?> request)
-  {
-    MqResponse response = null;
-    
-    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
-    MqQueue mqq = mRepository.getQueue(queue);
-    
-    if ((queue == null) || (queue.length() == 0))
-    {
-      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
-    }
-    else if (mqq == null)
-    {
-      response = new MqResponse(EMqResponseCode.cFail, "Queue does not exist");
-    }
-    else
-    {
-      mHandler.setActiveQueue(mqq);
-      response = new MqResponse(EMqResponseCode.cOkay, "");
-    }
-    
-    return generateResponse(response);
-  }
-  
-  /**
-   * Process close queue request
-   * 
-   * @param request The request message
-   * @return The {@link AMqMessage} response object
-   */
-  public IMqMessage<?> close(IMqMessage<?> request)
-  {
-    MqResponse response = null;
-    
-    if (mHandler.getActiveQueue() == null)
-    {
-      response = new MqResponse(EMqResponseCode.cWarn, "No open queue");
-    }
-    else
-    {
-      mHandler.setActiveQueue(null);
-      response = new MqResponse(EMqResponseCode.cOkay, "");
-    }
-    
-    return generateResponse(response);
-  }
-  
-  /**
    * Process define queue request
    * 
    * @param request The request message
@@ -164,33 +111,33 @@ public class SessionResponder extends AKasObject
   {
     MqResponse response = null;
     
-    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
-    MqQueue mqq = mRepository.getQueue(queue);
-    
-    if ((queue == null) || (queue.length() == 0))
-    {
-      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
-    }
-    else if (mqq == null)
-    {
-      response = new MqResponse(EMqResponseCode.cWarn, "Queue with name \"" + queue + "\" does not exist");
-    }
-    else
-    {
-      mqq = mRepository.removeQueue(queue);
-      
-      MqQueue activeq = mHandler.getActiveQueue();
-      if ((activeq != null) && (activeq.getName().equals(queue)))
-        mHandler.setActiveQueue(null);
-      
-      response = new MqResponse(EMqResponseCode.cOkay, "");
-    }
+//    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
+//    MqQueue mqq = mRepository.getQueue(queue);
+//    
+//    if ((queue == null) || (queue.length() == 0))
+//    {
+//      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
+//    }
+//    else if (mqq == null)
+//    {
+//      response = new MqResponse(EMqResponseCode.cWarn, "Queue with name \"" + queue + "\" does not exist");
+//    }
+//    else
+//    {
+//      mqq = mRepository.removeQueue(queue);
+//      
+//      MqQueue activeq = mHandler.getActiveQueue();
+//      if ((activeq != null) && (activeq.getName().equals(queue)))
+//        mHandler.setActiveQueue(null);
+//      
+//      response = new MqResponse(EMqResponseCode.cOkay, "");
+//    }
     
     return generateResponse(response);
   }
   
   /**
-   * Process put message to opened queue request
+   * Process put message to specified queue
    * 
    * @param message The put request message (the actual message to put)
    * @return The {@link AMqMessage} response object
@@ -199,61 +146,74 @@ public class SessionResponder extends AKasObject
   {
     MqResponse response = null;
     
-    MqQueue activeq = mHandler.getActiveQueue();
-    if (activeq == null)
-      response = new MqResponse(EMqResponseCode.cFail, "No open queue");
+    EMqResponseCode rc = EMqResponseCode.cOkay;
+    String rsn = "";
+    String qname = request.getStringProperty(IMqConstants.cKasPropertyPutQueueName, null);
+    MqQueue queue = mHandler.getRepository().getQueue(qname);
+    MqQueue deadq = mHandler.getRepository().getDeadQueue();
+    if (queue == null)
+    {
+      boolean putToDeadQ = deadq.put(request);
+      if (putToDeadQ)
+        rc = EMqResponseCode.cWarn;
+      else
+        rc = EMqResponseCode.cError;
+      rsn = "Queue " + qname + " does not exist, or target queue not specified";
+    }
     else
     {
-      boolean success = activeq.put(request);
-      if (!success)
-        response = new MqResponse(EMqResponseCode.cFail, "Failed to put message in queue");
-      else
-        response = new MqResponse(EMqResponseCode.cOkay, "");
+      boolean putToQueue = queue.put(request);
+      if (!putToQueue)
+      {
+        boolean putToDeadQ = deadq.put(request);
+        if (putToDeadQ)
+          rc = EMqResponseCode.cFail;
+        else
+          rc = EMqResponseCode.cError;
+        rsn = "Failed to put message with ID " + request.getMessageId().toString() + " into queue " + qname;
+      } 
     }
-    
+    response = new MqResponse(rc, rsn);
     return generateResponse(response);
   }
   
   /**
-   * Process get message from opened queue request
+   * Process get message from specified queue
    * 
    * @param request The request message
-   * @return The {@link AMqMessage} response object
+   * @return The {@link IMqMessage}
    */
   public IMqMessage<?> get(IMqMessage<?> request)
   {
-    MqResponse response = null;
-    IMqMessage<?>  result = null;
+    IMqMessage<?> result = null;
     
     long timeout  = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
     long interval = request.getLongProperty(IMqConstants.cKasPropertyGetInterval, IMqConstants.cDefaultPollingInterval);
+    String qname  = request.getStringProperty(IMqConstants.cKasPropertyGetQueueName, null);
+    MqQueue queue = mHandler.getRepository().getQueue(qname);
     
-    MqQueue activeq = mHandler.getActiveQueue();
-    if (activeq == null)
-    {
-      response = new MqResponse(EMqResponseCode.cFail, "No open queue");
-      result = generateResponse(response);
-    }
+    if (qname == null)
+      result = generateResponse(new MqResponse(EMqResponseCode.cFail, "Queue name not specified"));
+    else if (queue == null)
+      result = generateResponse(new MqResponse(EMqResponseCode.cFail, "Queue with name " + qname + " does not exist"));
     else
     {
-      result = activeq.get(timeout, interval);
-      if (result == null)
+      IMqMessage<?> msg = queue.get(timeout, interval);
+      if (msg == null)
       {
-        response = new MqResponse(EMqResponseCode.cWarn, "No message was found");
-        result = generateResponse(response);
+        result = generateResponse(new MqResponse(EMqResponseCode.cWarn, "No message found in queue " + qname));
       }
       else
       {
-        response = new MqResponse(EMqResponseCode.cOkay, "");
-        result = mergeResponse(response, result);
+        MqResponse resp = new MqResponse(EMqResponseCode.cOkay, "");
+        result = mergeResponse(resp, msg);
       }
     }
-    
     return result;
   }
   
   /**
-   * Process get message from opened queue request
+   * Process shutdown request
    * 
    * @param request The request message
    * @return The {@link AMqMessage} response object

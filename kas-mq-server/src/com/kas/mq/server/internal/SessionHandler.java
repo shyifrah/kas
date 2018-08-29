@@ -17,7 +17,6 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqQueue;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IHandler;
@@ -61,11 +60,6 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   private String mActiveUserName;
   
   /**
-   * Active queue
-   */
-  private MqQueue mActiveQueue;
-  
-  /**
    * Indicator whether handler is still running
    */
   private boolean mIsRunning = true;
@@ -90,7 +84,6 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     mSessionResponder = new SessionResponder(this);
     
     mActiveUserName = null;
-    mActiveQueue = null;
   }
   
   /**
@@ -157,14 +150,6 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
         if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
           cont = false;
       }
-      else if (requestType == ERequestType.cOpenQueue)
-      {
-        response = mSessionResponder.open(request);
-      }
-      else if (requestType == ERequestType.cCloseQueue)
-      {
-        response = mSessionResponder.close(request);
-      }
       else if (requestType == ERequestType.cDefineQueue)
       {
         response = mSessionResponder.define(request);
@@ -228,30 +213,6 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   public void setActiveUserName(String username)
   {
     mActiveUserName = username;
-  }
-  
-  /**
-   * Get the active queue
-   * 
-   * @return the active queue, or {@code null} if closed
-   * 
-   * @see com.kas.mq.server.IHandler#getQueue()
-   */
-  public MqQueue getActiveQueue()
-  {
-    return mActiveQueue;
-  }
-  
-  /**
-   * Set the active queue
-   * 
-   * @param queue The active queue
-   * 
-   * @see com.kas.mq.server.IHandler#setQueue(MqQueue)
-   */
-  public void setActiveQueue(MqQueue queue)
-  {
-    mActiveQueue = queue;
   }
   
   /**

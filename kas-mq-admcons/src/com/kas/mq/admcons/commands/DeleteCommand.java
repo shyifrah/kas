@@ -79,16 +79,16 @@ public class DeleteCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Delete failed. Missing queue name");
+      writeln("Missing queue name");
       writeln(" ");
       return false;
     }
     
     String queue = mCommandArgs.poll().toUpperCase();
-    String extra = mCommandArgs.poll();
-    if (extra != null)
+    
+    if (mCommandArgs.size() > 0)
     {
-      writeln("Delete failed. Excessive token \"" + extra + "\"");
+      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
       writeln(" ");
       return false;
     }

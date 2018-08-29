@@ -48,30 +48,29 @@ public class PutCommand extends ACliCommand
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Put a text message into a previously opened queue");
+    writeln("     Put a text message into queue");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- PUT ---+--- text ---+---><");
+    writeln("     >>--- PUT ---+--- queue ---+---+--- text ---+---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Put a text message into a queue the was previously opened via the OPEN command.");
+    writeln("     The command will create a text message with a body holding the specified text,");
+    writeln("     and then will put it into the specified queue.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Put the text \"shy\" as a message into the previously opened queue:");
-    writeln("          KAS/MQ Admin> PUT shy");
+    writeln("     Put the text \"shy\" as a message into queue TEMP1Q:");
+    writeln("          KAS/MQ Admin> PUT TEMP1Q shy");
     writeln(" ");
   }
   
   /**
    * A put command.<br>
    * <br>
-   * For more than a single argument, the command will fail with excessive arguments message.
-   * For only the command verb, the command will fail with a missing argument message.
-   * If no queue was previously opened, the command will fail with a message stating there's no
-   * open queue.
+   * First token is the queue name.
+   * All remaining tokens (at least one) are the message text.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -79,7 +78,16 @@ public class PutCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Put failed. Missing text to put");
+      writeln("Missing queue name");
+      writeln(" ");
+      return false;
+    }
+    
+    String queue = mCommandArgs.poll().toUpperCase();
+    
+    if (mCommandArgs.size() == 0)
+    {
+      writeln("Missing message text");
       writeln(" ");
       return false;
     }
@@ -87,11 +95,10 @@ public class PutCommand extends ACliCommand
     StringBuilder sb = new StringBuilder();
     for (String token : mCommandArgs)
       sb.append(token).append(' ');
-    
     String text = sb.toString().trim();
-    
     MqTextMessage message = MqMessageFactory.createTextMessage(text);
-    mClient.put(message);
+    
+    mClient.put(queue, message);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

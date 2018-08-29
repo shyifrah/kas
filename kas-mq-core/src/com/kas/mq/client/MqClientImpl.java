@@ -7,6 +7,7 @@ import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -15,7 +16,6 @@ import com.kas.mq.impl.MqResponse;
 import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.AMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 
 /**
@@ -34,11 +34,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * A logger
    */
   private ILogger mLogger;
-  
-  /**
-   * Target queue
-   */
-  private String mQueue;
   
   /**
    * Active user
@@ -105,11 +100,15 @@ public class MqClientImpl extends AKasObject implements IClient
   }
 
   /**
-   * Disconnecting from the remote KAS/MQ server.<br>
+   * Disconnecting from the remote KAS/MQ server.
    * <br>
    * First we verify the client is actually connected, otherwise there's no point in disconnecting.<br>
    * Note we allocate a new {@link Socket} following the call to {@link Socket#close() close()} because
    * a closed socket cannot be reused.
+   * 
+   * @throws KasException if client failed to disconnect from KAS/MQ server
+   * 
+   * @see com.kas.mq.client.IClient#disconnect()
    */
   public void disconnect()
   {
@@ -149,115 +148,6 @@ public class MqClientImpl extends AKasObject implements IClient
   }
   
   /**
-   * Open the specified queue.
-   * 
-   * @param queue The queue name to open.
-   * 
-   * @see com.kas.mq.client.IClient#open(String)
-   */
-  public void open(String queue)
-  {
-    mLogger.debug("MqClientImpl::open() - IN");
-    
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
-    else
-    {
-      if (isOpen()) close();
-      
-      IMqMessage<?> request = MqMessageFactory.createOpenRequest(queue);
-      mLogger.debug("MqClientImpl::open() - sending open request: " + request.toPrintableString(0));
-      try
-      {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::open() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
-        {
-          logInfoAndSetResponse("Queue " + queue + " was successfully opened");
-          mQueue = queue;
-        }
-        else
-        {
-          logInfoAndSetResponse(response.getDesc());
-        }
-      }
-      catch (IOException e)
-      {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to open queue [")
-          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
-        logErrorAndSetResponse(sb.toString());
-      }
-    }
-    
-    mLogger.debug("MqClientImpl::open() - OUT");
-  }
-  
-  /**
-   * Close opened queue.
-   * 
-   * @see com.kas.mq.client.IClient#close()
-   */
-  public void close()
-  {
-    mLogger.debug("MqClientImpl::close() - IN");
-    String queue = mQueue;
-    
-    if (!isConnected())
-    {
-      logInfoAndSetResponse("Not connected to host");
-    }
-    else if (!isOpen())
-    {
-      logInfoAndSetResponse("Queue is not open");
-    }
-    else
-    {
-      IMqMessage<?> request = MqMessageFactory.createCloseRequest(queue);
-      mLogger.debug("MqClientImpl::close() - sending close request: " + request.toPrintableString(0));
-      try
-      {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::close() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
-        {
-          logInfoAndSetResponse("Queue " + queue + " was successfully closed");
-          mQueue = null;
-        }
-        else
-        {
-          logInfoAndSetResponse(response.getDesc());
-        }
-      }
-      catch (IOException e)
-      {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to close queue [")
-          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
-        logErrorAndSetResponse(sb.toString());
-      }
-    }
-    
-    mLogger.debug("MqClientImpl::close() - OUT");
-  }
-  
-  /**
-   * Get the opened queue status
-   * 
-   * @return {@code true} if the client has already opened a queue, {@code false} otherwise
-   * 
-   * @see com.kas.mq.client.IClient#isOpened()
-   */
-  public boolean isOpen()
-  {
-    return mQueue != null;
-  }
-  
-  /**
    * Define a new queue.
    * 
    * @param queue The queue name to define.
@@ -287,7 +177,6 @@ public class MqClientImpl extends AKasObject implements IClient
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully defined");
-          mQueue = queue;
         }
         else
         {
@@ -337,8 +226,6 @@ public class MqClientImpl extends AKasObject implements IClient
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully deleted");
-          if ((mQueue != null) && (mQueue.equals(queue)))
-            mQueue = queue;
         }
         else
         {
@@ -361,49 +248,45 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Get a message from queue.
    * 
+   * @param queue The target queue name
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link AMqMessage} object or {@code null} if a message is unavailable
+   * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
+   * 
+   * @see com.kas.mq.client.IClient#get(String, long, long)
    */
-  public IMqMessage<?> get(long timeout, long interval)
+  public IMqMessage<?> get(String queue, long timeout, long interval)
   {
     mLogger.debug("MqClientImpl::get() - IN");
     
     IMqMessage<?> result = null;
     
-    if (!isOpen())
+    try
     {
-      logDebugAndSetResponse("MqClientImpl::get()", "Cannot get a message. Need to open a queue first");
+      IMqMessage<?> request = MqMessageFactory.createGetRequest(queue, timeout, interval);
+      mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
+      IPacket packet = mMessenger.sendAndReceive(request);
+      IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
+      MqResponse response = new MqResponse(responseMessage);
+      mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
+      if (response.getCode() == EMqResponseCode.cOkay)
+      {
+        responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
+        responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
+        logInfoAndSetResponse("Successfully got a message from queue " + queue + ", Message: " + responseMessage.toPrintableString(0));
+        result = responseMessage;
+      }
+      else
+      {
+        logInfoAndSetResponse(response.getDesc());
+      }
     }
-    else
+    catch (IOException e)
     {
-      try
-      {
-        IMqMessage<?> request = MqMessageFactory.createGetRequest(timeout, interval);
-        mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
-        IPacket packet = mMessenger.sendAndReceive(request);
-        IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
-        MqResponse response = new MqResponse(responseMessage);
-        mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
-        {
-          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
-          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
-          logInfoAndSetResponse("Successfully got a message from queue " + mQueue + ", Message: " + responseMessage.toPrintableString(0));
-          result = responseMessage;
-        }
-        else
-        {
-          logInfoAndSetResponse(response.getDesc());
-        }
-      }
-      catch (IOException e)
-      {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to get a message from queue [")
-          .append(mQueue).append("]. Exception: ").append(StringUtils.format(e));
-        logErrorAndSetResponse(sb.toString());
-      }
+      StringBuilder sb = new StringBuilder();
+      sb.append("Exception occurred while trying to get a message from queue [")
+        .append(queue).append("]. Exception: ").append(StringUtils.format(e));
+      logErrorAndSetResponse(sb.toString());
     }
     
     mLogger.debug("MqClientImpl::get() - OUT");
@@ -413,49 +296,45 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Put a message into the opened queue.
    * 
+   * @param queue The target queue name
    * @param message The message to be put
+   * 
+   * @see com.kas.mq.client.IClient#put(String, IMqMessage)
    */
-  public void put(IMqMessage<?> message)
+  public void put(String queue, IMqMessage<?> message)
   {
     mLogger.debug("MqClientImpl::put() - IN");
     
-    if (!isOpen())
+    try
     {
-      logDebugAndSetResponse("MqClientImpl::put()", "Cannot put a message. Need to open a queue first");
+      message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue);
+      message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
+      message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
+      IPacket packet = mMessenger.sendAndReceive(message);
+      MqResponse response = new MqResponse((IMqMessage<?>)packet);
+      mLogger.debug("MqClientImpl::put() - received response: " + response.toPrintableString());
+      if (response.getCode() == EMqResponseCode.cOkay)
+      {
+        logDebugAndSetResponse("put", "Successfully put to queue " + queue + " message: " + message.toPrintableString(0));
+      }
+      else
+      {
+        logInfoAndSetResponse(response.getDesc());
+      }
     }
-    else
+    catch (IOException e)
     {
-      try
-      {
-        message.setStringProperty(IMqConstants.cKasPropertyQueueName, mQueue);
-        message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
-        message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
-        IPacket packet = mMessenger.sendAndReceive(message);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::put() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
-        {
-          logInfoAndSetResponse("Successfully put to queue " + mQueue + " message: " + message.toPrintableString(0));
-        }
-        else
-        {
-          logInfoAndSetResponse(response.getDesc());
-        }
-      }
-      catch (IOException e)
-      {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to put a message into queue [")
-          .append(mQueue).append("]. Exception: ").append(StringUtils.format(e));
-        logErrorAndSetResponse(sb.toString());
-      }
+      StringBuilder sb = new StringBuilder();
+      sb.append("Exception occurred while trying to put a message into queue [")
+        .append(queue).append("]. Exception: ").append(StringUtils.format(e));
+      logErrorAndSetResponse(sb.toString());
     }
     
     mLogger.debug("MqClientImpl::put() - OUT");
   }
   
   /**
-   * Switch login credentials
+   * login to KAS/MQ server.
    * 
    * @param user The user's name
    * @param pwd The user's password
@@ -502,7 +381,7 @@ public class MqClientImpl extends AKasObject implements IClient
    * 
    * @return {@code true} if the server accepted the request, {@code false} otherwise
    * 
-   * @see IClient#shutdown()
+   * @see com.kas.mq.client.IClient#shutdown()
    */
   public boolean shutdown()
   {
@@ -570,13 +449,20 @@ public class MqClientImpl extends AKasObject implements IClient
   }
   
   /**
-   * Log INFO a message
+   * Log DEBUG a message
    * 
    * @param message The message to log and set as the client's response
    */
-  private void logDebugAndSetResponse(String where, String message)
+  private void logDebugAndSetResponse(String method, String message)
   {
-    mLogger.debug(where + " - " + message);
+    StringBuilder sb = new StringBuilder();
+    sb.append(this.getClass().getSimpleName())
+      .append("::")
+      .append(method)
+      .append("() - ")
+      .append(message);
+    
+    mLogger.debug(sb.toString());
     setResponse(message);
   }
   

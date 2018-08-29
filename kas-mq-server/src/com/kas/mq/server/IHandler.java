@@ -4,7 +4,6 @@ import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.internal.QueueRepository;
 import com.kas.mq.server.internal.SessionHandler;
 
@@ -35,20 +34,6 @@ public interface IHandler extends IObject
    * @param username The active user name
    */
   public abstract void setActiveUserName(String username);
-  
-  /**
-   * Get the active queue
-   * 
-   * @return the active queue, or {@code null} if closed
-   */
-  public abstract MqQueue getActiveQueue();
-  
-  /**
-   * Set the active queue
-   * 
-   * @param queue The active queue
-   */
-  public abstract void setActiveQueue(MqQueue queue);
   
   /**
    * Get the controller

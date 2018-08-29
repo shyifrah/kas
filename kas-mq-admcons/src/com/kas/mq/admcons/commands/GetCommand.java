@@ -42,48 +42,56 @@ public class GetCommand extends ACliCommand
     {
       writeln("Execssive command arguments are ignored for HELP GET");
       writeln(" ");
+      return;
     }
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Get a message from a previously opened queue");
+    writeln("     Get a message from queue");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- GET ---><");
+    writeln("     >>--- GET ---+--- queue ---+---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Get a message from a queue the was previously opened via the OPEN command.");
+    writeln("     Get a message from the specified queue.");
+    writeln("     If no message is available, the command will block until one is put to the queue.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Get a message from the previously opened queue:");
-    writeln("          KAS/MQ Admin> GET");
+    writeln("     Get a message from queue TEMP1Q:");
+    writeln("          KAS/MQ Admin> GET TEMP1Q");
     writeln(" ");
   }
   
   /**
    * A get command.<br>
    * <br>
-   * If the command is called with arguments, the command will fail with excessive arguments message.
-   * For only the command verb, the command will access the latest opened queue and try to retrieve
-   * a message from that queue.
-   * If no queue was previously opened, the command will fail with a message stating there's no
-   * open queue.
+   * First token is the queue name.
+   * If any excessive tokens follow the queue name, the command will fail.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
   public boolean run()
   {
-    if (mCommandArgs.size() > 0)
+    if (mCommandArgs.size() == 0)
     {
-      writeln("Get failed. Excessive token \"" + mCommandArgs.peek().toUpperCase() + "\"");
+      writeln("Missing queue name");
       writeln(" ");
       return false;
     }
     
-    mClient.get(IMqConstants.cDefaultTimeout, IMqConstants.cDefaultPollingInterval);
+    String queue = mCommandArgs.poll().toUpperCase();
+    
+    if (mCommandArgs.size() > 0)
+    {
+      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
+      writeln(" ");
+      return false;
+    }
+    
+    mClient.get(queue, IMqConstants.cDefaultTimeout, IMqConstants.cDefaultPollingInterval);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

@@ -34,6 +34,12 @@ public class MqQueue extends AKasObject
   private String mName;
   
   /**
+   * Maximum number of messages this queue can hold before
+   * starting to fail {@link #put(IMqMessage) put} operations.
+   */
+  private int mThreshold;
+  
+  /**
    * A UniqueId representing this message queue
    */
   private UniqueId mQueueId;
@@ -58,8 +64,19 @@ public class MqQueue extends AKasObject
    */
   public MqQueue(String name)
   {
+    this(name, IMqConstants.cDefaultQueueThreshold);
+  }
+  
+  /**
+   * Constructing a {@link MqQueue} object with the specified name.
+   * 
+   * @param name The name of this {@link MqQueue} object.
+   */
+  public MqQueue(String name, int threshold)
+  {
     mLogger     = LoggerFactory.getLogger(this.getClass());
     mName       = name;
+    mThreshold  = threshold;
     mQueueId    = UniqueId.generate();
     mQueueArray = new MessageDeque[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
@@ -67,13 +84,23 @@ public class MqQueue extends AKasObject
   }
   
   /**
-   * Get queue name
+   * Get the queue name
    * 
-   * @return queue name
+   * @return the queue name
    */
   public String getName()
   {
     return mName;
+  }
+  
+  /**
+   * Get the queue threshold
+   * 
+   * @return the queue threshold
+   */
+  public int getThreshold()
+  {
+    return mThreshold;
   }
   
   /**
@@ -91,7 +118,7 @@ public class MqQueue extends AKasObject
    * 
    * @return the number of messages in all priority queues
    */
-  public int size()
+  public synchronized int size()
   {
     int sum = 0;
     for (int i = 0; i < mQueueArray.length; ++i)
@@ -299,6 +326,9 @@ public class MqQueue extends AKasObject
     if (message == null)
       return false;
     
+    if (size() >= mThreshold)
+      return false;
+    
     int prio = message.getPriority();
     
     boolean success = false;
@@ -442,8 +472,9 @@ public class MqQueue extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
+      .append(pad).append("  Threshold=").append(mThreshold).append("\n")
       .append(pad).append("  UniqueId=").append(mQueueId.toString()).append("\n")
-      .append(pad).append("  Queues=(\n");
+      .append(pad).append("  PriorityStores=(\n");
     
     for (int i = 0; i < mQueueArray.length; ++i)
       sb.append(pad).append("    P").append(String.format("%02d=(", i)).append(mQueueArray[i].toPrintableString(0)).append(")\n");

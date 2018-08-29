@@ -85,7 +85,6 @@ public class KasMqStopper extends AKasMqAppl
     
     boolean shouldContinue = true;
     boolean connected = false;
-    boolean opened = false;
     
     if (shouldContinue)
     {
@@ -104,43 +103,14 @@ public class KasMqStopper extends AKasMqAppl
     
     if (shouldContinue)
     {
-      try
-      {
-        sStartupLogger.info("Openning dead-queue (" + deadq + ")...");
-        context.open(deadq);
-        opened = true;
-        RunTimeUtils.sleepForMilliSeconds(500);
-      }
-      catch (KasException e)
-      {
-        shouldContinue = false;
-      }
-    }
-    
-    if (shouldContinue)
-    {
       IMqMessage<?> request = MqMessageFactory.createShutdownRequest();
       try
       {
         sStartupLogger.info("Putting shutdown request...");
-        context.put(request);
+        context.put(deadq, request);
         RunTimeUtils.sleepForMilliSeconds(500);
       }
       catch (Exception e)
-      {
-        shouldContinue = false;
-      }
-    }
-    
-    if (shouldContinue || opened)
-    {
-      try
-      {
-        sStartupLogger.info("Closing dead-queue...");
-        context.close();
-        RunTimeUtils.sleepForMilliSeconds(500);
-      }
-      catch (KasException e)
       {
         shouldContinue = false;
       }

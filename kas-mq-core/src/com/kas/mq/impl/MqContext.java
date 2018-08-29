@@ -37,6 +37,8 @@ public final class MqContext extends AKasObject implements IClient
    * @param pwd The user's password
    * 
    * @throws KasException if client failed to connect to KAS/MQ server
+   * 
+   * @see com.kas.mq.client.IClient#connect(String, int, String, String)
    */
   public void connect(String host, int port, String user, String pwd) throws KasException
   {
@@ -63,6 +65,8 @@ public final class MqContext extends AKasObject implements IClient
    * If client was not previously connected, this method has no effect
    * 
    * @throws KasException if client failed to disconnect from KAS/MQ server
+   * 
+   * @see com.kas.mq.client.IClient#disconnect()
    */
   public void disconnect() throws KasException
   {
@@ -79,6 +83,8 @@ public final class MqContext extends AKasObject implements IClient
    * Get the connection status.
    * 
    * @return {@code true} if client is connected, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#isConnected()
    */
   public boolean isConnected()
   {
@@ -86,59 +92,12 @@ public final class MqContext extends AKasObject implements IClient
   }
   
   /**
-   * Open the specified queue.
-   * 
-   * @param queue The queue name to open.
-   * 
-   * @throws KasException if client failed to open {@code queue}
-   */
-  public void open(String queue) throws KasException
-  {
-    mLogger.debug("MqContext::open() - IN, Queue=" + queue);
-    
-    if (!Validators.isQueueName(queue))
-      throw new KasException("Validation failed. \"" + queue + "\" is not a valid queue name");
-    
-    mDelegator.open(queue);
-    if (!mDelegator.isOpen())
-      throw new KasException("Error - open() failed. Client response: " + mDelegator.getResponse()); 
-    
-    mLogger.debug("MqContext::open() - OUT");
-  }
-  
-  /**
-   * Close opened queue.<br>
-   * <br>
-   * If no queue was previously opened, this method has no effect
-   * 
-   * @throws KasException if client failed to close the opened queue
-   */
-  public void close() throws KasException
-  {
-    mLogger.debug("MqContext::close() - IN");
-
-    mDelegator.close();
-    if (mDelegator.isOpen())
-      throw new KasException("Error - close() failed. Client response: " + mDelegator.getResponse());
-    
-    mLogger.debug("MqContext::close() - OUT");
-  }
-  
-  /**
-   * Get the opened queue status
-   * 
-   * @return {@code true} if a queue is open, {@code false} otherwise
-   */
-  public boolean isOpen()
-  {
-    return mDelegator.isOpen();
-  }
-  
-  /**
    * Define a new queue.
    * 
    * @param queue The queue name to define.
    * @return the {@code true} if queue was defined, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#define(String)
    */
   public boolean define(String queue)
   {
@@ -163,6 +122,8 @@ public final class MqContext extends AKasObject implements IClient
    * 
    * @param queue The queue name to delete.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#delete(String)
    */
   public boolean delete(String queue)
   {
@@ -185,15 +146,26 @@ public final class MqContext extends AKasObject implements IClient
   /**
    * Get a message from queue.
    * 
+   * @param queue The target queue name
    * @param timeout The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link AMqMessage} object or {@code null} if a message is unavailable
+   * 
+   * @see com.kas.mq.client.IClient#get(String, long, long)
    */
-  public IMqMessage<?> get(long timeout, long interval)
+  public IMqMessage<?> get(String queue, long timeout, long interval)
   {
     mLogger.debug("MqContext::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
-    IMqMessage<?> result = mDelegator.get(timeout, interval);
+    IMqMessage<?> result = null;
+    if (Validators.isQueueName(queue))
+    {
+      result = mDelegator.get(queue, timeout, interval);
+    }
+    else
+    {
+      setResponse("Failed to get message, invalid queue name: " + queue);
+    }
     
     mLogger.debug("MqContext::get() - OUT, Returns=" + StringUtils.asPrintableString(result));
     return result;
@@ -202,13 +174,23 @@ public final class MqContext extends AKasObject implements IClient
   /**
    * Put a message into queue.
    * 
+   * @param queue The target queue name
    * @param message The message to be put
+   * 
+   * @see com.kas.mq.client.IClient#put(String, IMqMessage)
    */
-  public void put(IMqMessage<?> message)
+  public void put(String queue, IMqMessage<?> message)
   {
     mLogger.debug("MqContext::put() - IN, Message=" + StringUtils.asPrintableString(message));
     
-    mDelegator.put(message);
+    if (Validators.isQueueName(queue))
+    {
+      mDelegator.put(queue, message);
+    }
+    else
+    {
+      setResponse("Failed to put message, invalid queue name: " + queue);
+    }
     
     mLogger.debug("MqContext::put() - OUT");
   }

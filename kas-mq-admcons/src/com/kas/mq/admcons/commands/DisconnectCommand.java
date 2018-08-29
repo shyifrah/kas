@@ -77,7 +77,8 @@ public class DisconnectCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      mClient.setResponse("Excessive argument specified: \"" + mCommandArgs.poll() + "\". Type HELP DISC to see available command options");
+      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
+      writeln(" ");
       return false;
     }
     
