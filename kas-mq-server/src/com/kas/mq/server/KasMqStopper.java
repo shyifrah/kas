@@ -74,7 +74,7 @@ public class KasMqStopper extends AKasMqAppl
    * The main logic is quite simple: open a new session to the KAS/MQ server and send it
    * a shutdown request. 
    */
-  public void run()
+  public boolean run()
   {
     MqContext context = new MqContext();
     int port = mConfig.getPort();
@@ -159,6 +159,8 @@ public class KasMqStopper extends AKasMqAppl
         shouldContinue = false;
       }
     }
+    
+    return !mShutdownHook.isRunning();
   }
   
   /**

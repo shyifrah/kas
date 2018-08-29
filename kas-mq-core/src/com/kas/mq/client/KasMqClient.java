@@ -41,7 +41,7 @@ public class KasMqClient extends AKasMqAppl
     return true;
   }
   
-  public void run()
+  public boolean run()
   {
     MqContext client = new MqContext();
     try
@@ -113,5 +113,6 @@ public class KasMqClient extends AKasMqAppl
         }
       }
     }
+    return !mShutdownHook.isRunning();
   }
 }

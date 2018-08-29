@@ -1,5 +1,6 @@
 package com.kas.mq.impl;
 
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
@@ -15,26 +16,17 @@ import com.kas.mq.impl.AMqMessage;
  * 
  * @author Pippo
  */
-public final class MqContext implements IClient
+public final class MqContext extends AKasObject implements IClient
 {
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
    * The actual client
    */
-  private MqClientImpl mDelegator;
-  
-  /**
-   * Construct the client
-   */
-  public MqContext()
-  {
-    mLogger = LoggerFactory.getLogger(this.getClass());
-    mDelegator = new MqClientImpl();
-  }
+  private MqClientImpl mDelegator = new MqClientImpl();
   
   /**
    * Connect client to the KAS/MQ server.
@@ -254,5 +246,23 @@ public final class MqContext implements IClient
   public void setResponse(String response)
   {
     mDelegator.setResponse(response);
+  }
+  
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
+  public String toPrintableString(int level)
+  {
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  ClientImpl=(").append(mDelegator.toPrintableString(0)).append(")\n");
+    sb.append(pad).append(")\n");
+    return sb.toString();
   }
 }

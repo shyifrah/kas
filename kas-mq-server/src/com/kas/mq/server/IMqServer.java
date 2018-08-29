@@ -1,10 +1,11 @@
 package com.kas.mq.server;
 
+import com.kas.infra.base.IStoppable;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.QueueRepository;
 
-public interface IMqServer extends IKasMqAppl
+public interface IMqServer extends IKasMqAppl, IStoppable
 {
   /**
    * Get the {@link QueueRepository} object

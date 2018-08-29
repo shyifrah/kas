@@ -1,5 +1,6 @@
 package com.kas.mq.client;
 
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
 import com.kas.mq.impl.IMqMessage;
 
@@ -8,7 +9,7 @@ import com.kas.mq.impl.IMqMessage;
  * 
  * @author Pippo
  */
-public interface IClient
+public interface IClient extends IObject
 {
   /**
    * Connect client to the KAS/MQ server.

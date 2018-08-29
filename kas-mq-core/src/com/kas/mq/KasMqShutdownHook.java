@@ -26,6 +26,11 @@ public class KasMqShutdownHook extends AKasThread
   private AKasMqAppl mApplication;
   
   /**
+   * The MQ application that should be stopped
+   */
+  private boolean mIsRunning = false;
+  
+  /**
    * Construct KasMqStopper
    * 
    * @param appl The MQ application
@@ -48,8 +53,28 @@ public class KasMqShutdownHook extends AKasThread
   public void run()
   {
     mLogger.warn("Shutdown hook was called. Terminating application...");
-    mApplication.stop();
+    setRunning(true);
     mApplication.term();
+  }
+  
+  /**
+   * Mark the shutdown hook is running or not
+   * 
+   * @param b The running state of the shutdown hook
+   */
+  public synchronized void setRunning(boolean b)
+  {
+    mIsRunning = b;
+  }
+  
+  /**
+   * Get the shutdown hook running state
+   * 
+   * @return the shutdown hook running state
+   */
+  public synchronized boolean isRunning()
+  {
+    return mIsRunning;
   }
   
   /**

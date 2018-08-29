@@ -1,5 +1,6 @@
 package com.kas.mq.server.internal;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
@@ -117,9 +118,9 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       {
         mLogger.diag("SessionHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
       }
-      catch (SocketException e)
+      catch (SocketException | EOFException e)
       {
-        mLogger.info("Connection to remote host at " + mMessenger.getAddress() + " was dropped");
+        mLogger.info("Connection to remote host at " + mMessenger.getAddress() + " was lost");
         stop();
       }
       catch (IOException e)

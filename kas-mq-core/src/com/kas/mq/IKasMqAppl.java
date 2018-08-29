@@ -1,7 +1,6 @@
 package com.kas.mq;
 
 import com.kas.infra.base.IInitializable;
-import com.kas.infra.base.IStoppable;
 
 /**
  * A KAS/MQ application is one that has initialization/termination phases which occur
@@ -11,7 +10,7 @@ import com.kas.infra.base.IStoppable;
  * 
  * @author Pippo
  */
-public interface IKasMqAppl extends IInitializable, IStoppable
+public interface IKasMqAppl extends IInitializable
 {
   /**
    * Initializing the application. 
@@ -33,22 +32,8 @@ public interface IKasMqAppl extends IInitializable, IStoppable
   
   /**
    * Running the application.
-   */
-  public abstract void run();
-  
-  /**
-   * Indicate that the caller wants the object to change its state to "stopping" 
    * 
-   * @see IStoppable#stop()
+   * @return {@code true} if main thread should execute the termination, {@code false} otherwise 
    */
-  public abstract void stop();
-  
-  /**
-   * Get indication if the object is in "stopping" state
-   * 
-   * @return indication if the object is in "stopping" state
-   * 
-   * @see IStoppable#isStopping()
-   */
-  public abstract boolean isStopping();
+  public abstract boolean run();
 }

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
+import com.kas.mq.IKasMqAppl;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.internal.QueueRepository;
@@ -42,9 +43,9 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   private ServerHouseKeeper mHousekeeper = null;
   
   /**
-   * Termination method was called
+   * Stop indicator
    */
-  private boolean mTermCalled = false;
+  private boolean mStop = false;
   
   /**
    * Construct the {@link KasMqServer} passing it the startup arguments
@@ -130,12 +131,6 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    */
   public synchronized boolean term()
   {
-    if (mTermCalled)
-    {
-      return false;
-    }
-    
-    mTermCalled = true;
     mLogger.info("KAS/MQ server termination in progress");
     boolean success = false;
     success = mRepository.term();
@@ -167,9 +162,13 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * Run KAS/MQ server.<br>
    * <br>
    * The main logic is quite simple: keep accepting new sessions as long as the main thread
-   * was not signaled to shutdown. 
+   * was not signaled to shutdown.
+   * 
+   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
+   * 
+   * @see IKasMqAppl#run()
    */
-  public void run()
+  public boolean run()
   {
     int errors = 0;
     while (!isStopping())
@@ -196,16 +195,35 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
           ++errors;
           if (errors >= mConfig.getConnMaxErrors())
           {
+            stop();
             mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
             mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
-            stop();
           }
         }
       }
       
-      // re-check if needs to shutdown
-      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (isStopping() ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (mStop ? "yep. Terminating main loop..." : "nope..."));
     }
+    
+    return end();
+  }
+  
+  /**
+   * Stop the main loop
+   */
+  public synchronized void stop()
+  {
+    mStop = true;
+  }
+  
+  /**
+   * Return the stop-state of the server
+   * 
+   * @return the stop-state of the server
+   */
+  public synchronized boolean isStopping()
+  {
+    return mStop;
   }
   
   /**

@@ -44,12 +44,6 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
   protected Map<String, String> mStartupArgs = null;
   
   /**
-   * Indicator whether application should stop
-   */
-  protected boolean mStop = false;
-  
-  
-  /**
    * Construct the {@link AKasMqAppl application} passing it the startup arguments
    * 
    * @param args The startup arguments
@@ -97,20 +91,6 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
    */
   public boolean term()
   {
-    if (mShutdownHook != null)
-    {
-      mLogger.info("Shutdown hook is registered, will try to remove it...");
-      if (Thread.currentThread().getName().equals(KasMqShutdownHook.class.getSimpleName()))
-      {
-        mLogger.info("Skipping removal of shutdown hook as termination process is executed under it...");
-      }
-      else
-      {
-        Runtime.getRuntime().removeShutdownHook(mShutdownHook);
-        mLogger.info("Shutdown hook was successfully removed");
-      }
-    }
-    
     mLogger.info("Terminating configuration object and switching back to Console logging...");
     if (mConfig.isInitialized())
       mConfig.term();
@@ -121,24 +101,37 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
   
   /**
    * Running the application.
-   */
-  public abstract void run();
-  
-  /**
-   * Indicate that the caller wants the object to change its state to "stopping" 
-   */
-  public synchronized void stop()
-  {
-    mStop = true;
-  }
-  
-  /**
-   * Get indication if the object is in "stopping" state
    * 
-   * @return indication if the object is in "stopping" state
+   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
+   * 
+   * @see IKasMqAppl#run()
    */
-  public synchronized boolean isStopping()
+  public abstract boolean run();
+  
+  /**
+   * Finalizing {@link #run() main function} execution.
+   *  
+   * @return {@code true} if shutdown hook was successfully de-registered, {@code false} otherwise.
+   * The meaning of the shutdown hook removal is that the main thread should execute the {@link #term()}
+   * function, or leave it for the shutdown hook.
+   */
+  protected boolean end()
   {
-    return mStop;
+    mLogger.debug("AKasMqAppl::end() - IN");
+    
+    mLogger.info("Try de-registering the shutdown hook...");
+    boolean okay = false;
+    try
+    {
+      okay = Runtime.getRuntime().removeShutdownHook(mShutdownHook);
+      mLogger.debug("KasMqServer::run() - Shutdown hook was successfully de-registered");
+    }
+    catch (IllegalStateException e)
+    {
+      mLogger.debug("KasMqServer::run() - Shutdown hook could not be de-registered. It is probably because JVM is alreadu shutting down");
+    }
+    
+    mLogger.debug("AKasMqAppl::end() - OUT, Returns=" + okay);
+    return okay;
   }
 }

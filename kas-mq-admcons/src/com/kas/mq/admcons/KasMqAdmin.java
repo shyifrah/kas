@@ -1,10 +1,18 @@
 package com.kas.mq.admcons;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
+import com.kas.mq.IKasMqAppl;
+import com.kas.mq.admcons.commands.CliCommandFactory;
+import com.kas.mq.admcons.commands.ICliCommand;
+import com.kas.mq.client.IClient;
+import com.kas.mq.client.MqClientImpl;
+import com.kas.mq.internal.TokenDeque;
 
 /**
  * MQ administration CLI.
@@ -16,9 +24,9 @@ public class KasMqAdmin extends AKasMqAppl
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
   
   /**
-   * Termination method was called
+   * A {@link MqClientImpl} which will act as the client
    */
-  private boolean mTermCalled = false;
+  private IClient mClientImpl = new MqClientImpl(); 
   
   /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments
@@ -62,15 +70,8 @@ public class KasMqAdmin extends AKasMqAppl
    */
   public synchronized boolean term()
   {
-    if (mTermCalled)
-    {
-      return false;
-    }
-    
-    mTermCalled = true;
     mLogger.info("KAS/MQ admin CLI termination in progress");
-    boolean term = super.term();
-    return term;
+    return super.term();
   }
   
   /**
@@ -78,11 +79,114 @@ public class KasMqAdmin extends AKasMqAppl
    * <br>
    * The main logic is quite simple: keep reading commands from the command line until
    * it is terminated via the "exit" or SIGTERM signal.
+   * 
+   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
+   * 
+   * @see IKasMqAppl#run()
    */
-  public void run()
+  public boolean run()
   {
-    AdminConsoleProcessor processor = new AdminConsoleProcessor();
-    processor.run();
+    writeln("KAS/MQ Admin Command Processor started");
+    writeln(" ");
+    
+    Scanner scanner = null;
+    try
+    {
+      scanner = new Scanner(System.in);
+      TokenDeque command = read(scanner);
+      boolean stop = false;
+      while (!stop)
+      {
+        stop = process(scanner, command);
+        if (!stop)
+        {
+          command = read(scanner);
+        }
+      }
+    }
+    catch (NoSuchElementException e)
+    {
+      // do nothing
+    }
+    catch (Throwable e)
+    {
+      writeln(" ");
+      writeln("Exception caught: ");
+      e.printStackTrace();
+    }
+    finally
+    {
+      if (scanner != null)
+        scanner.close();
+    }
+    
+    writeln(" ");
+    writeln("KAS/MQ Admin Command Processor ended");
+    return !mShutdownHook.isRunning();
+  }
+  
+  /**
+   * Process a command represented by a queue of tokens.<br>
+   * <br>
+   * According to the first element in the queue - the command verb - we determine which type of Command object
+   * should be created and then we execute it.
+   * 
+   * @param cmdWords The queue containing the command tokens
+   * @param scanner The scanner, in case further interaction with the user is needed
+   * @return {@code true} if an "exit" command was issued, {@code false} otherwise
+   */
+  private boolean process(Scanner scanner, TokenDeque cmdWords)
+  {
+    if (cmdWords.isEmpty() || cmdWords.peek().equals(""))
+    {
+      writeln(" ");
+      return false;
+    }
+    
+    String verb = cmdWords.peek();
+    ICliCommand command = CliCommandFactory.newCommand(scanner, cmdWords, mClientImpl);
+    if (command == null)
+    {
+      writeln("Unknown command verb: \"" + verb + "\". Type HELP to see available commands");
+      writeln(" ");
+      return false;
+    }
+    
+    return command.run();
+  }
+  
+  /**
+   * Reading a command (one line) from STDIN and return it as a queue of tokens.
+   * 
+   * @param scanner The {@link Scanner} object associated with STDIN
+   * 
+   * @return a queue in which each element is a token from the read line
+   */
+  private TokenDeque read(Scanner scanner)
+  {
+    write("KAS/MQ Admin> ");
+    String cmd = scanner.nextLine();
+    return new TokenDeque(cmd);
+  }
+  
+  /**
+   * Writing a message to STDOUT.
+   * 
+   * @param message The message to print
+   */
+  private void write(String message)
+  {
+    System.out.print(message);
+  }
+  
+  /**
+   * Writing a message to STDOUT. The message will be followed by a Newline character.
+   * 
+   * @param message The message to print
+   */
+  private void writeln(String message)
+  {
+    System.out.println(message);
   }
   
   /**
@@ -99,7 +203,8 @@ public class KasMqAdmin extends AKasMqAppl
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Config=(").append(StringUtils.asPrintableString(mConfig)).append(")\n")
-      .append(pad).append("  ShutdownHook=(").append(StringUtils.asPrintableString(mShutdownHook)).append(")\n");;
+      .append(pad).append("  ShutdownHook=(").append(StringUtils.asPrintableString(mShutdownHook)).append(")\n")
+      .append(pad).append("  ClientImpl=(").append(mClientImpl.toPrintableString(0)).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();
   }
