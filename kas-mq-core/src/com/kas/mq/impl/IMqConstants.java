@@ -39,11 +39,11 @@ public interface IMqConstants
   
   static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
   static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
-  //static public final String cKasPropertyQueueName      = cKasPropertyPrefix + "target.queue";
   static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
   static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
   
   static public final String cKasPropertyDefQueueName   = cKasPropertyPrefix + "def.queue";
+  static public final String cKasPropertyDefThreshold   = cKasPropertyPrefix + "def.threshold";
   
   static public final String cKasPropertyDelQueueName   = cKasPropertyPrefix + "del.queue";
   static public final String cKasPropertyDelForce       = cKasPropertyPrefix + "del.force";

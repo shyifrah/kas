@@ -41,9 +41,10 @@ public interface IClient extends IObject
    * Define a new queue.
    * 
    * @param queue The queue name to define.
+   * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public abstract boolean define(String queue);
+  public abstract boolean define(String queue, int threshold);
   
   /**
    * Delete an existing queue.

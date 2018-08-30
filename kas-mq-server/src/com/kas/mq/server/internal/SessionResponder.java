@@ -82,6 +82,7 @@ public class SessionResponder extends AKasObject
     MqResponse response = null;
     
     String queue = request.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
+    int threshold = request.getIntProperty(IMqConstants.cKasPropertyDefThreshold, IMqConstants.cDefaultQueueThreshold);
     MqQueue mqq = mRepository.getQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))
@@ -94,7 +95,7 @@ public class SessionResponder extends AKasObject
     }
     else
     {
-      mqq = mRepository.createQueue(queue);
+      mqq = mRepository.createQueue(queue, threshold);
       response = new MqResponse(EMqResponseCode.cOkay, "");
     }
     
@@ -112,7 +113,7 @@ public class SessionResponder extends AKasObject
     MqResponse response = null;
     
     String queue = request.getStringProperty(IMqConstants.cKasPropertyDelQueueName, null);
-    boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelQueueName, false);
+    boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelForce, false);
     MqQueue mqq = mRepository.getQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))

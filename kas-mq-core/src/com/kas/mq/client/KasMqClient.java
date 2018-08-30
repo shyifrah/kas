@@ -74,7 +74,7 @@ public class KasMqClient extends AKasMqAppl
     }
     catch (NumberFormatException e)
     {
-      mMaxMessages = 10000;
+      mMaxMessages = 1000;
     }
     
     return true;
@@ -99,7 +99,9 @@ public class KasMqClient extends AKasMqAppl
     try
     {
       client.connect(cHost, cPort, cUser, cPass);
-      boolean defined = client.define(mQueueName);
+      
+      System.out.println("Defining queue with name " + mQueueName + " and a threshold of " + mMaxMessages + " messages");
+      boolean defined = client.define(mQueueName, mMaxMessages);
       if (defined)
       {
         System.out.println("Starting putting " + mMaxMessages + " messages in queue...");
@@ -127,6 +129,8 @@ public class KasMqClient extends AKasMqAppl
         while (getMessage != null)
         {
           getMessage = client.get(mQueueName, timeout, interval);
+          if (getMessage == null)
+            System.out.println("Failed to get message...");
           ++total;
           if (total%100==0)
             System.out.println("...." + total);
@@ -192,8 +196,8 @@ public class KasMqClient extends AKasMqAppl
     diff = diff / 60;
     long hours = diff;
     
-    String s1 = (hours > 0 ? hours + "hours, " : "");
-    String s2 = (minutes > 0 ? minutes + "minutes, " : "");
+    String s1 = (hours > 0 ? hours + " hours, " : "");
+    String s2 = (minutes > 0 ? minutes + " minutes, " : "");
     return String.format("%s%s%d.%03d seconds", s1, s2, seconds, millis);
   }
 }

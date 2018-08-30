@@ -16,9 +16,10 @@ public interface IRepository extends IInitializable, IObject
    * Create a {@link MqQueue} object with the specified {@code name}
    * 
    * @param name The name of the queue
+   * @param threshold The queue threshold
    * @return the {@link MqQueue} object created
    */
-  public abstract MqQueue createQueue(String name);
+  public abstract MqQueue createQueue(String name, int threshold);
   
   /**
    * Get or Create a {@link MqQueue} object with the specified {@code name}.

@@ -1,6 +1,6 @@
 package com.kas.mq.internal;
 
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
@@ -11,7 +11,7 @@ import com.kas.mq.impl.AMqMessage;
  * 
  * @author Pippo
  */
-public class MessageDeque extends LinkedBlockingDeque<IMqMessage<?>> implements IObject
+public class MessageDeque extends ConcurrentLinkedQueue<IMqMessage<?>> implements IObject
 {
   private static final long serialVersionUID = 1L;
   

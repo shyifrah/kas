@@ -57,15 +57,15 @@ public class MqQueue extends AKasObject
    */
   protected transient File mBackupFile = null;
   
-  /**
-   * Constructing a {@link MqQueue} object with the specified name.
-   * 
-   * @param name The name of this {@link MqQueue} object.
-   */
-  public MqQueue(String name)
-  {
-    this(name, IMqConstants.cDefaultQueueThreshold);
-  }
+//  /**
+//   * Constructing a {@link MqQueue} object with the specified name.
+//   * 
+//   * @param name The name of this {@link MqQueue} object.
+//   */
+//  public MqQueue(String name)
+//  {
+//    this(name, IMqConstants.cDefaultQueueThreshold);
+//  }
   
   /**
    * Constructing a {@link MqQueue} object with the specified name.
@@ -123,10 +123,7 @@ public class MqQueue extends AKasObject
     int sum = 0;
     for (int i = 0; i < mQueueArray.length; ++i)
     {
-      synchronized (mQueueArray[i])
-      {
-        sum += mQueueArray[i].size();
-      }
+      sum += mQueueArray[i].size();
     }
     return sum;
   }
@@ -337,10 +334,7 @@ public class MqQueue extends AKasObject
     int prio = message.getPriority();
     
     boolean success = false;
-    synchronized (mQueueArray[prio])
-    {
-      success = mQueueArray[prio].offer(message);
-    }
+    success = mQueueArray[prio].offer(message);
     
     return success;
   }
@@ -418,10 +412,7 @@ public class MqQueue extends AKasObject
       int priority = internalGetPriorityIndex();
       if (priority > -1)
       {
-        synchronized (mQueueArray[priority])
-        {
-          result = mQueueArray[priority].poll();
-        }
+        result = mQueueArray[priority].poll();
       }
       else
       {
@@ -446,10 +437,7 @@ public class MqQueue extends AKasObject
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
       int size;
-      synchronized (mQueueArray[prio])
-      {
-        size = mQueueArray[prio].size();
-      }
+      size = mQueueArray[prio].size();
       if (size > 0) return prio;
     }
     return -1;
@@ -468,14 +456,11 @@ public class MqQueue extends AKasObject
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
       MessageDeque mdq = mQueueArray[prio];
-      synchronized (mdq)
+      for (IMqMessage<?> msg : mdq)
       {
-        for (IMqMessage<?> msg : mdq)
+        if (msg.isExpired())
         {
-          if (msg.isExpired())
-          {
-            mdq.remove(msg);
-          }
+          mdq.remove(msg);
         }
       }
     }

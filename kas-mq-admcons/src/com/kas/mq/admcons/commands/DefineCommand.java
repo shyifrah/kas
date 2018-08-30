@@ -51,7 +51,9 @@ public class DefineCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- DEFINE ---+--- queue ---+---><");
+    writeln("     >>--- DEFINE ---+--- queue ---+---+-----------------+---><");
+    writeln("                                       |                 |");
+    writeln("                                       +--- threshold ---+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -59,6 +61,7 @@ public class DefineCommand extends ACliCommand
     writeln("     The queue will remain defined until a DELETE command is issued.");
     writeln("     Following this command, the user can start putting messages to it and getting them.");
     writeln("     The DEFINE command will fail if a queue with the specified name already exists.");
+    writeln("     The threshold is the maximum capacity of the queue.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
@@ -86,6 +89,24 @@ public class DefineCommand extends ACliCommand
     
     String queue = mCommandArgs.poll().toUpperCase();
     
+    String sthreshold = mCommandArgs.poll();
+    if (sthreshold == null)
+      sthreshold = "1000";
+    
+    int threshold = -1;
+    try
+    {
+      threshold = Integer.valueOf(sthreshold.toUpperCase());
+    }
+    catch (NumberFormatException e) {}
+    
+    if (threshold == -1)
+    {
+      writeln("Invalid threshold number \"" + sthreshold + "\"");
+      writeln(" ");
+      return false;
+    }
+    
     if (mCommandArgs.size() > 0)
     {
       writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
@@ -93,7 +114,7 @@ public class DefineCommand extends ACliCommand
       return false;
     }
     
-    mClient.define(queue);
+    mClient.define(queue, threshold);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

@@ -10,6 +10,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.IRepository;
 
@@ -133,7 +134,7 @@ public class QueueRepository extends AKasObject implements IRepository
   }
 
   /**
-   * Create a {@link MqQueue} object with the specified {@code name}.<br>
+   * Create a {@link MqQueue} object with the specified {@code name} and default threshold.<br>
    * <br>
    * Note that this method does not verify if a queue with that name already exists
    * 
@@ -144,13 +145,29 @@ public class QueueRepository extends AKasObject implements IRepository
    */
   public MqQueue createQueue(String name)
   {
+    return createQueue(name, IMqConstants.cDefaultQueueThreshold);
+  }
+  
+  /**
+   * Create a {@link MqQueue} object with the specified {@code name} and {@code threshold}.<br>
+   * <br>
+   * Note that this method does not verify if a queue with that name already exists
+   * 
+   * @param name The name of the queue
+   * @param queue The queue threshold
+   * @return the {@link MqQueue} object created
+   * 
+   * @see com.kas.mq.server.IRepository#createQueue(String)
+   */
+  public MqQueue createQueue(String name, int threshold)
+  {
     mLogger.debug("QueueRepository::createQueue() - IN");
     MqQueue queue = null;
     
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = new MqQueue(name);
+      queue = new MqQueue(name, threshold);
       mQueueMap.put(name, queue);
     }
     

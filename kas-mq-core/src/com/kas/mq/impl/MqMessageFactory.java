@@ -16,11 +16,12 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createDefineRequest(String queue)
+  static public MqObjectMessage createDefineRequest(String queue, int threshold)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDefineQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDefQueueName, queue);
+    message.setIntProperty(IMqConstants.cKasPropertyDefThreshold, threshold);
     return message;
   }
   

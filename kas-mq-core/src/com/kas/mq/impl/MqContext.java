@@ -95,22 +95,28 @@ public final class MqContext extends AKasObject implements IClient
    * Define a new queue.
    * 
    * @param queue The queue name to define.
+   * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    * 
-   * @see com.kas.mq.client.IClient#define(String)
+   * @see com.kas.mq.client.IClient#define(String, int)
    */
-  public boolean define(String queue)
+  public boolean define(String queue, int threshold)
   {
     mLogger.debug("MqContext::define() - IN, Queue=" + queue);
     
     boolean success = false;
-    if (Validators.isQueueName(queue))
+    if (!Validators.isQueueName(queue))
     {
-      success = mDelegator.define(queue);
+      setResponse("Failed to define queue, invalid queue name: " + queue);
+      
+    }
+    else if (threshold <= 0)
+    {
+      setResponse("Failed to define queue, invalid threshold: " + threshold);
     }
     else
     {
-      setResponse("Failed to define queue, invalid queue name: " + queue);
+      success = mDelegator.define(queue, threshold);
     }
     
     mLogger.debug("MqContext::define() - OUT, Returns=" + success);
