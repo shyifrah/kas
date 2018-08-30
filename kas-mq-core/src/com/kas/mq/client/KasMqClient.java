@@ -22,6 +22,89 @@ import com.kas.mq.impl.MqTextMessage;
  */
 public class KasMqClient extends AKasMqAppl 
 {
+  static class ProdThread extends Thread
+  {
+    private MqContext mContext;
+    private int mMaxMessages;
+    private String mQueueName;
+    
+    ProdThread(int tix, int maxMsgs, String qname)
+    {
+      super(ProdThread.class.getSimpleName() + tix);
+      mContext = new MqContext();
+      mMaxMessages = maxMsgs;
+      mQueueName = qname;
+    }
+    
+    public void run()
+    {
+      try
+      {
+        mContext.connect(cHost, cPort, cUser, cPass);
+      }
+      catch (KasException e) {}
+      
+      for (int i = 0; i < mMaxMessages; ++i)
+      {
+        String messageBody = "message number: " + (i + 1);
+        MqTextMessage putMessage = MqMessageFactory.createTextMessage(messageBody);
+        putMessage.setPriority(i%10);
+        mContext.put(mQueueName, putMessage);
+        
+        if (i%100==0)
+          System.out.println("...." + i);
+      }
+      
+      try
+      {
+        mContext.disconnect();
+      }
+      catch (KasException e) {}
+    }
+  }
+  
+  static class ConsThread extends Thread
+  {
+    private MqContext mContext;
+    private String mQueueName;
+    
+    ConsThread(int tix, String qname)
+    {
+      super(ConsThread.class.getSimpleName() + tix);
+      mContext = new MqContext();
+      mQueueName = qname;
+    }
+    
+    public void run()
+    {
+      try
+      {
+        mContext.connect(cHost, cPort, cUser, cPass);
+      }
+      catch (KasException e) {}
+      
+      long timeout = 60000L;
+      long interval = 1000L;
+      int total = 0;
+      IMqMessage<?> getMessage = mContext.get(mQueueName, timeout, interval);
+      while (getMessage != null)
+      {
+        getMessage = mContext.get(mQueueName, timeout, interval);
+        if (getMessage == null)
+          System.out.println("Failed to get message...");
+        ++total;
+        if (total%100==0)
+          System.out.println("...." + total);
+      }
+      
+      try
+      {
+        mContext.disconnect();
+      }
+      catch (KasException e) {}
+    }
+  }
+  
   /**
    * KAS/MQ address and credentials
    */
@@ -30,17 +113,12 @@ public class KasMqClient extends AKasMqAppl
   static private final String cUser = "admin";
   static private final String cPass = "admin";
   
-  /**
-   * Change this: queue name
-   */
-  //static private final String cQueueName = "temp.queue";
-  
-  /**
-   * Change this: number of messages
-   */
-  //static private final int cNumOfMessages = 100000;
   private String mQueueName = "temp.queue";
   private int    mMaxMessages = 10000;
+  private int    mNumOfProducers = 1;
+  private int    mNumOfConsumers = 1;
+  private Thread [] mProducers;
+  private Thread [] mConsumers;
   
   /**
    * Construct the application
@@ -66,16 +144,12 @@ public class KasMqClient extends AKasMqAppl
   public boolean init()
   {
     super.init();
-    mQueueName = mStartupArgs.get("client.app.queue");
-    String str = mStartupArgs.get("client.app.max.messages");
-    try
-    {
-      mMaxMessages = Integer.valueOf(str);
-    }
-    catch (NumberFormatException e)
-    {
-      mMaxMessages = 1000;
-    }
+    mQueueName = getStrArg("client.app.queue", "temp.queue");
+    mNumOfProducers = getIntArg("client.app.producers", 2);
+    mNumOfConsumers = getIntArg("client.app.consumers", 10);
+    
+    mProducers = new Thread [mNumOfProducers];
+    mConsumers = new Thread [mNumOfConsumers];
     
     return true;
   }
@@ -100,44 +174,46 @@ public class KasMqClient extends AKasMqAppl
     {
       client.connect(cHost, cPort, cUser, cPass);
       
-      System.out.println("Defining queue with name " + mQueueName + " and a threshold of " + mMaxMessages + " messages");
-      boolean defined = client.define(mQueueName, mMaxMessages);
-      if (defined)
+      System.out.println("Defining queue with name " + mQueueName + " and a threshold of " + (mMaxMessages * mNumOfProducers) + " messages");
+      boolean defined = client.define(mQueueName, mMaxMessages * mNumOfProducers);
+      if (!defined)
+        throw new KasException("failed to define queue with name " + mQueueName);
+      
+      for (int i = 0; i < mNumOfConsumers; ++i)
       {
-        System.out.println("Starting putting " + mMaxMessages + " messages in queue...");
-        
-        // put messages
-        for (int i = 0; i < mMaxMessages; ++i)
-        {
-          String messageBody = "message number: " + (i + 1);
-          MqTextMessage putMessage = MqMessageFactory.createTextMessage(messageBody);
-          putMessage.setPriority(i%10);
-          client.put(mQueueName, putMessage);
-          
-          if (i%100==0)
-            System.out.println("...." + i);
-        }
-        
-        
-        System.out.println("Starting getting back " + mMaxMessages + " messages from queue...");
-        
-        // get messages
-        long timeout = 1000L;
-        long interval = 1000L;
-        int total = 0;
-        IMqMessage<?> getMessage = client.get(mQueueName, timeout, interval);
-        while (getMessage != null)
-        {
-          getMessage = client.get(mQueueName, timeout, interval);
-          if (getMessage == null)
-            System.out.println("Failed to get message...");
-          ++total;
-          if (total%100==0)
-            System.out.println("...." + total);
-        }
-        
-        client.delete(mQueueName, true);
+        System.out.println("Creating consumer thread number " + (i+1));
+        mConsumers[i] = new ConsThread(i, mQueueName);
+        mConsumers[i].start();
       }
+      
+      for (int i = 0; i < mNumOfProducers; ++i)
+      {
+        System.out.println("Creating producer thread number " + (i+1));
+        mProducers[i] = new ProdThread(i, mMaxMessages, mQueueName);
+        mProducers[i].start();
+      }
+      
+      System.out.println("Awaiting threads termination...");
+      for (int i = 0; i < mNumOfConsumers; ++i)
+      {
+        try
+        {
+          mConsumers[i].join();
+        }
+        catch (InterruptedException e) {}
+      }
+      
+      for (int i = 0; i < mNumOfProducers; ++i)
+      {
+        try
+        {
+          mProducers[i].join();
+        }
+        catch (InterruptedException e) {}
+      }
+      
+      System.out.println("Deleting forcefully queue with name " + mQueueName);
+      client.delete(mQueueName, true);
     }
     catch (KasException e)
     {
@@ -145,7 +221,15 @@ public class KasMqClient extends AKasMqAppl
     }
     finally
     {
-      disconnectIfNeeded(client);
+      if (client != null)
+      {
+        if (client.isConnected())
+        {
+          try
+          { client.disconnect(); }
+          catch (KasException e) {}
+        }
+      }
     }
     
     /**
@@ -162,21 +246,42 @@ public class KasMqClient extends AKasMqAppl
   }
   
   /**
-   * Disconnect from server if needed
-   * 
-   * @param client
+   * Get int argument value
+   * @param key
+   * @param defval
+   * @return the value
    */
-  private void disconnectIfNeeded(MqContext client)
+  private int getIntArg(String key, int defval)
   {
-    if (client != null)
+    String strval = mStartupArgs.get(key);
+    int result = defval;
+    if (strval != null)
     {
-      if (client.isConnected())
+      try
       {
-        try
-        { client.disconnect(); }
-        catch (KasException e) {}
+        int temp = Integer.valueOf(strval);
+        result = temp;
       }
+      catch (NumberFormatException e) {}
     }
+    return result;
+  }
+  
+  /**
+   * Get string argument value
+   * @param key
+   * @param defval
+   * @return the value
+   */
+  private String getStrArg(String key, String defval)
+  {
+    String strval = mStartupArgs.get(key);
+    String result = defval;
+    if (strval != null)
+    {
+      result = strval;
+    }
+    return result;
   }
   
   /**
