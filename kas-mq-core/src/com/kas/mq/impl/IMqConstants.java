@@ -17,7 +17,12 @@ public interface IMqConstants
   /**
    * Get polling interval length
    */
-  static public final long cDefaultPollingInterval = 1000L;
+  static public final long cDefaultPollingInterval = 150000L;
+  
+  /**
+   * Expiration
+   */
+  static public final long cDefaultExpiration = 604800000L; // 1 week
   
   /**
    * Get timeout
@@ -34,9 +39,14 @@ public interface IMqConstants
   
   static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
   static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
-  static public final String cKasPropertyQueueName      = cKasPropertyPrefix + "target.queue";
+  //static public final String cKasPropertyQueueName      = cKasPropertyPrefix + "target.queue";
   static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
   static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
+  
+  static public final String cKasPropertyDefQueueName   = cKasPropertyPrefix + "def.queue";
+  
+  static public final String cKasPropertyDelQueueName   = cKasPropertyPrefix + "del.queue";
+  static public final String cKasPropertyDelForce       = cKasPropertyPrefix + "del.force";
   
   static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";

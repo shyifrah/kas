@@ -33,12 +33,14 @@ public class KasMqClient extends AKasMqAppl
   /**
    * Change this: queue name
    */
-  static private final String cQueueName = "temp.queue";
+  //static private final String cQueueName = "temp.queue";
   
   /**
    * Change this: number of messages
    */
-  static private final int cNumOfMessages = 100000;
+  //static private final int cNumOfMessages = 100000;
+  private String mQueueName = "temp.queue";
+  private int    mMaxMessages = 10000;
   
   /**
    * Construct the application
@@ -64,6 +66,17 @@ public class KasMqClient extends AKasMqAppl
   public boolean init()
   {
     super.init();
+    mQueueName = mStartupArgs.get("client.app.queue");
+    String str = mStartupArgs.get("client.app.max.messages");
+    try
+    {
+      mMaxMessages = Integer.valueOf(str);
+    }
+    catch (NumberFormatException e)
+    {
+      mMaxMessages = 10000;
+    }
+    
     return true;
   }
   
@@ -86,40 +99,40 @@ public class KasMqClient extends AKasMqAppl
     try
     {
       client.connect(cHost, cPort, cUser, cPass);
-      boolean defined = client.define(cQueueName);
+      boolean defined = client.define(mQueueName);
       if (defined)
       {
-        System.out.println("Starting putting " + cNumOfMessages + " messages in queue...");
+        System.out.println("Starting putting " + mMaxMessages + " messages in queue...");
         
         // put messages
-        for (int i = 0; i < cNumOfMessages; ++i)
+        for (int i = 0; i < mMaxMessages; ++i)
         {
           String messageBody = "message number: " + (i + 1);
           MqTextMessage putMessage = MqMessageFactory.createTextMessage(messageBody);
           putMessage.setPriority(i%10);
-          client.put(cQueueName, putMessage);
+          client.put(mQueueName, putMessage);
           
           if (i%100==0)
             System.out.println("...." + i);
         }
         
         
-        System.out.println("Starting getting back " + cNumOfMessages + " messages from queue...");
+        System.out.println("Starting getting back " + mMaxMessages + " messages from queue...");
         
         // get messages
         long timeout = 1000L;
         long interval = 1000L;
         int total = 0;
-        IMqMessage<?> getMessage = client.get(cQueueName, timeout, interval);
+        IMqMessage<?> getMessage = client.get(mQueueName, timeout, interval);
         while (getMessage != null)
         {
-          getMessage = client.get(cQueueName, timeout, interval);
+          getMessage = client.get(mQueueName, timeout, interval);
           ++total;
           if (total%100==0)
             System.out.println("...." + total);
         }
         
-        client.delete(cQueueName);
+        client.delete(mQueueName);
       }
     }
     catch (KasException e)

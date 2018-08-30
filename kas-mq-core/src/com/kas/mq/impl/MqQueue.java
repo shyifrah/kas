@@ -122,7 +122,12 @@ public class MqQueue extends AKasObject
   {
     int sum = 0;
     for (int i = 0; i < mQueueArray.length; ++i)
-      sum += mQueueArray[i].size();
+    {
+      synchronized (mQueueArray[i])
+      {
+        sum += mQueueArray[i].size();
+      }
+    }
     return sum;
   }
   
@@ -131,7 +136,7 @@ public class MqQueue extends AKasObject
    * 
    * @return {@code true} if queue contents restored successfully, {@code false} otherwise
    */
-  public boolean restore()
+  public synchronized boolean restore()
   {
     mLogger.debug("MqQueue::restore() - IN");
     boolean success = true;
@@ -222,7 +227,7 @@ public class MqQueue extends AKasObject
    * 
    * @return {@code true} if completed writing all queue contents successfully, {@code false} otherwise
    */
-  public boolean backup()
+  public synchronized boolean backup()
   {
     mLogger.debug("MqQueue::backup() - IN, name=[" + mName + "]");
     boolean success = true;
@@ -439,8 +444,44 @@ public class MqQueue extends AKasObject
   private int internalGetPriorityIndex()
   {
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
-      if (mQueueArray[prio].size() > 0) return prio;
+    {
+      int size;
+      synchronized (mQueueArray[prio])
+      {
+        size = mQueueArray[prio].size();
+      }
+      if (size > 0) return prio;
+    }
     return -1;
+  }
+  
+  /**
+   * Expire old messages
+   * 
+   * @return the total number of messages expired
+   */
+  public int expire()
+  {
+    mLogger.debug("MqQueue::expire() - IN");
+    
+    int total = 0;
+    for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
+    {
+      MessageDeque mdq = mQueueArray[prio];
+      synchronized (mdq)
+      {
+        for (IMqMessage<?> msg : mdq)
+        {
+          if (msg.isExpired())
+          {
+            mdq.remove(msg);
+          }
+        }
+      }
+    }
+    
+    mLogger.debug("MqQueue::expire() - OUT, Returns=" + total);
+    return total;
   }
   
   /**

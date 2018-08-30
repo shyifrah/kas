@@ -1,5 +1,6 @@
 package com.kas.mq.server;
 
+import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.MqQueue;
@@ -49,4 +50,11 @@ public interface IRepository extends IInitializable, IObject
    * @return the {@link MqQueue} object of the dead queue
    */
   public abstract MqQueue getDeadQueue();
+  
+  /**
+   * Get a collection of all queues
+   * 
+   * @return collection of all queues
+   */
+  public abstract Collection<MqQueue> getElements();
 }

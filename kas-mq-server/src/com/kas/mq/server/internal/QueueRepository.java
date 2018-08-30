@@ -1,6 +1,7 @@
 package com.kas.mq.server.internal;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AKasObject;
@@ -240,6 +241,18 @@ public class QueueRepository extends AKasObject implements IRepository
   public MqQueue getDeadQueue()
   {
     return mDeadQueue;
+  }
+  
+  /**
+   * Get a collection of all queues
+   * 
+   * @return collection of all queues
+   * 
+   * @see com.kas.mq.server.IRepository#getElements()
+   */
+  public Collection<MqQueue> getElements()
+  {
+    return mQueueMap.values();
   }
   
   /**

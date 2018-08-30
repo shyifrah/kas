@@ -131,6 +131,10 @@ public class Deserializer extends AKasObject implements IInitializable
     {
       throw new KasException("Failed to instantiate " + className, e);
     }
+    catch (Throwable e)
+    {
+      throw new KasException("Exception caught during deserialization of class with ID: (" + id + ")", e);
+    }
     
     mLogger.debug("Deserializer::deserialize() - OUT");
     return (IObject)object;

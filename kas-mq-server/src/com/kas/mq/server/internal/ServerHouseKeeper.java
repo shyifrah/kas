@@ -1,5 +1,6 @@
 package com.kas.mq.server.internal;
 
+import java.util.Collection;
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
@@ -8,6 +9,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 
@@ -87,6 +89,17 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
           handlers.remove(uid);
           ThreadPool.removeTask(handler);
         }
+      }
+      
+      mLogger.debug("AdminTask::run() - Expiring messages...");
+      Collection<MqQueue> queues = mRepository.getElements();
+      for (MqQueue q : queues)
+      {
+        mLogger.debug("AdminTask::run() - Expiring messages for queue " + q.getName() + ":");
+        mLogger.diag("AdminTask::run() - Total messages in queue: " + q.size());
+        int exp = q.expire();
+        mLogger.diag("AdminTask::run() - Total messages in queue: " + q.size());
+        mLogger.debug("AdminTask::run() - Total messages expired: " + exp);
       }
     }
     

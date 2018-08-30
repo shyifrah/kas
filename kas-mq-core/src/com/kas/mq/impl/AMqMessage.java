@@ -22,19 +22,29 @@ import com.kas.mq.internal.ERequestType;
 public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMessage<T>
 {
   /**
-   * The message priority
-   */
-  protected int mPriority;
-  
-  /**
    * The message unique identifier
    */
   protected UniqueId mMessageId;
   
   /**
+   * The message priority
+   */
+  protected int mPriority;
+  
+  /**
    * Request type
    */
   protected ERequestType mRequestType = ERequestType.cUnknown;;
+  
+  /**
+   * When message was created
+   */
+  protected long mTimeStamp;
+  
+  /**
+   * Expiration
+   */
+  protected long mExpiration;
   
   /**
    * Message properties
@@ -46,9 +56,11 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
    */
   AMqMessage()
   {
-    mPriority  = IMqConstants.cDefaultPriority;
     mMessageId = UniqueId.generate();
+    mPriority  = IMqConstants.cDefaultPriority;
     mProperties = new Properties();
+    mTimeStamp = System.currentTimeMillis();
+    mExpiration = IMqConstants.cDefaultExpiration;
   }
   
   /**
@@ -62,14 +74,17 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   {
     try
     {
-      mPriority = istream.readInt();
-      
       byte [] ba = new byte [16];
       istream.read(ba);
       mMessageId = UniqueId.fromByteArray(ba);
       
+      mPriority = istream.readInt();
+      
       int reqType = istream.readInt();
       mRequestType = ERequestType.fromInt(reqType);
+      
+      mTimeStamp = istream.readLong();
+      mExpiration = istream.readLong();
       
       mProperties = new Properties(istream);
     }
@@ -94,14 +109,20 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
-    ostream.writeInt(mPriority);
-    ostream.reset();
-    
     byte [] ba = mMessageId.toByteArray();
     ostream.write(ba);
     ostream.reset();
     
+    ostream.writeInt(mPriority);
+    ostream.reset();
+    
     ostream.writeInt(mRequestType.ordinal());
+    ostream.reset();
+    
+    ostream.writeLong(mTimeStamp);
+    ostream.reset();
+    
+    ostream.writeLong(mExpiration);
     ostream.reset();
     
     mProperties.serialize(ostream);
@@ -175,13 +196,84 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Create the {@link PacketHeader} describing this {@link AMqMessage}
+   * Get the timestamp at which the message was created
    * 
-   * @return the packet header
+   * @return the timestamp at which the message was created
    * 
-   * @see com.kas.comm.IPacket#createHeader()
+   * @see com.kas.mq.impl.IMqMessage#getTimeStamp()
    */
-  public abstract PacketHeader createHeader();
+  public long getTimeStamp()
+  {
+    return mTimeStamp;
+  }
+  
+  /**
+   * Set the number of milliseconds from message creation till the message expires
+   * 
+   * @param exp The number of milliseconds from message creation till the message expires
+   * 
+   * @see com.kas.mq.impl.IMqMessage#setExpiration(long)
+   */
+  public void setExpiration(long exp)
+  {
+    mExpiration = exp;
+  }
+  
+  /**
+   * Get the number of milliseconds from message creation till the message expires
+   * 
+   * @return the number of milliseconds from message creation till the message expires
+   * 
+   * @see com.kas.mq.impl.IMqMessage#getExpiration()
+   */
+  public long getExpiration()
+  {
+    return mExpiration;
+  }
+  
+  /**
+   * An indicator whether the message is expired
+   * 
+   * @return {@code true} if message expired, {@code false} otherwise
+   * 
+   * @see com.kas.mq.impl.IMqMessage#isExpired()
+   */
+  public boolean isExpired()
+  {
+    long millisFromCreation = System.currentTimeMillis() - mTimeStamp;
+    return millisFromCreation > mExpiration;
+  }
+  
+  /**
+   * Set the message's body
+   * 
+   * @param body The message's body
+   * 
+   * @see com.kas.mq.impl.IMqMessage#setBody(Object)
+   */
+  public abstract void setBody(T body);
+  
+  /**
+   * Get the message's body
+   * 
+   * @return the message's body
+   * 
+   * @see com.kas.mq.impl.IMqMessage#getBody()
+   */
+  public abstract T getBody();
+  
+  /**
+   * Set a Object property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   * 
+   * @see com.kas.mq.impl.IMqMessage#setObjectProperty(String, Object)
+   */
+  public void setObjectProperty(String key, Object value)
+  {
+    mProperties.setObjectProperty(key, value);
+  }
   
   /**
    * Get a Object property with default value if one is not present
@@ -198,16 +290,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Object property.
+   * Set a Boolean property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setObjectProperty(String, Object)
+   * @see com.kas.mq.impl.IMqMessage#setBoolProperty(String, boolean)
    */
-  public void setObjectProperty(String key, Object value)
+  public void setBoolProperty(String key, boolean value)
   {
-    mProperties.setObjectProperty(key, value);
+    mProperties.setBoolProperty(key, value);
   }
   
   /**
@@ -225,16 +317,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Boolean property.
+   * Set a String property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setBoolProperty(String, boolean)
+   * @see com.kas.mq.impl.IMqMessage#setStringProperty(String, String)
    */
-  public void setBoolProperty(String key, boolean value)
+  public void setStringProperty(String key, String value)
   {
-    mProperties.setBoolProperty(key, value);
+    mProperties.setStringProperty(key, value);
   }
   
   /**
@@ -252,16 +344,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a String property.
+   * Set a Byte property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setStringProperty(String, String)
+   * @see com.kas.mq.impl.IMqMessage#setByteProperty(String, byte)
    */
-  public void setStringProperty(String key, String value)
+  public void setByteProperty(String key, byte value)
   {
-    mProperties.setStringProperty(key, value);
+    mProperties.setByteProperty(key, value);
   }
   
   /**
@@ -279,16 +371,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Byte property.
+   * Set a Short property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setByteProperty(String, byte)
+   * @see com.kas.mq.impl.IMqMessage#setShortProperty(String, short)
    */
-  public void setByteProperty(String key, byte value)
+  public void setShortProperty(String key, short value)
   {
-    mProperties.setByteProperty(key, value);
+    mProperties.setShortProperty(key, value);
   }
   
   /**
@@ -306,16 +398,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Short property.
+   * Set an Integer property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setShortProperty(String, short)
+   * @see com.kas.mq.impl.IMqMessage#setIntProperty(String, int)
    */
-  public void setShortProperty(String key, short value)
+  public void setIntProperty(String key, int value)
   {
-    mProperties.setShortProperty(key, value);
+    mProperties.setIntProperty(key, value);
   }
   
   /**
@@ -333,16 +425,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set an Integer property.
+   * Set a Long property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setIntProperty(String, int)
+   * @see com.kas.mq.impl.IMqMessage#setLongProperty(String, long)
    */
-  public void setIntProperty(String key, int value)
+  public void setLongProperty(String key, long value)
   {
-    mProperties.setIntProperty(key, value);
+    mProperties.setLongProperty(key, value);
   }
   
   /**
@@ -360,16 +452,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Long property.
+   * Set a Float property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setLongProperty(String, long)
+   * @see com.kas.mq.impl.IMqMessage#setFloatProperty(String, float)
    */
-  public void setLongProperty(String key, long value)
+  public void setFloatProperty(String key, float value)
   {
-    mProperties.setLongProperty(key, value);
+    mProperties.setFloatProperty(key, value);
   }
   
   /**
@@ -387,16 +479,16 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Float property.
+   * Set a Double property.
    * 
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setFloatProperty(String, float)
+   * @see com.kas.mq.impl.IMqMessage#setDoubleProperty(String, double)
    */
-  public void setFloatProperty(String key, float value)
+  public void setDoubleProperty(String key, double value)
   {
-    mProperties.setFloatProperty(key, value);
+    mProperties.setDoubleProperty(key, value);
   }
   
   /**
@@ -414,17 +506,13 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set a Double property.
+   * Create the {@link PacketHeader} describing this {@link AMqMessage}
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @return the packet header
    * 
-   * @see com.kas.mq.impl.IMqMessage#setDoubleProperty(String, double)
+   * @see com.kas.comm.IPacket#createHeader()
    */
-  public void setDoubleProperty(String key, double value)
-  {
-    mProperties.setDoubleProperty(key, value);
-  }
+  public abstract PacketHeader createHeader();
   
   /**
    * Get the object's detailed string representation
@@ -442,6 +530,8 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
       .append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
+      .append(pad).append("  TimeStamp=").append(mTimeStamp).append("\n")
+      .append(pad).append("  Expiration=").append(mExpiration).append("\n")
       .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();

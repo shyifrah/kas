@@ -20,15 +20,16 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDefineQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
+    message.setStringProperty(IMqConstants.cKasPropertyDefQueueName, queue);
     return message;
   }
   
-  static public MqObjectMessage createDeleteRequest(String queue)
+  static public MqObjectMessage createDeleteRequest(String queue, boolean force)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDeleteQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyQueueName, queue);
+    message.setStringProperty(IMqConstants.cKasPropertyDelQueueName, queue);
+    message.setBoolProperty(IMqConstants.cKasPropertyDelForce, force);
     return message;
   }
   

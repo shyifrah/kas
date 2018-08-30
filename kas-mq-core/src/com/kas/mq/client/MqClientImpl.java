@@ -215,7 +215,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createDeleteRequest(queue);
+      IMqMessage<?> request = MqMessageFactory.createDeleteRequest(queue, false);
       mLogger.debug("MqClientImpl::delete() - sending delete request: " + request.toPrintableString(0));
       try
       {

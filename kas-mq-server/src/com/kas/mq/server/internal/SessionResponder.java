@@ -81,7 +81,7 @@ public class SessionResponder extends AKasObject
   {
     MqResponse response = null;
     
-    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
     MqQueue mqq = mRepository.getQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))
@@ -111,28 +111,36 @@ public class SessionResponder extends AKasObject
   {
     MqResponse response = null;
     
-//    String queue = request.getStringProperty(IMqConstants.cKasPropertyQueueName, null);
-//    MqQueue mqq = mRepository.getQueue(queue);
-//    
-//    if ((queue == null) || (queue.length() == 0))
-//    {
-//      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
-//    }
-//    else if (mqq == null)
-//    {
-//      response = new MqResponse(EMqResponseCode.cWarn, "Queue with name \"" + queue + "\" does not exist");
-//    }
-//    else
-//    {
-//      mqq = mRepository.removeQueue(queue);
-//      
-//      MqQueue activeq = mHandler.getActiveQueue();
-//      if ((activeq != null) && (activeq.getName().equals(queue)))
-//        mHandler.setActiveQueue(null);
-//      
-//      response = new MqResponse(EMqResponseCode.cOkay, "");
-//    }
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyDelQueueName, null);
+    boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelQueueName, false);
+    MqQueue mqq = mRepository.getQueue(queue);
     
+    if ((queue == null) || (queue.length() == 0))
+    {
+      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name");
+    }
+    else if (mqq == null)
+    {
+      response = new MqResponse(EMqResponseCode.cWarn, "Queue with name \"" + queue + "\" doesn't exist");
+    }
+    else
+    {
+      int size = mqq.size();
+      if (size == 0)
+      {
+        mRepository.removeQueue(queue);
+        response = new MqResponse(EMqResponseCode.cOkay, "");
+      }
+      else if (force)
+      {
+        mRepository.removeQueue(queue);
+        response = new MqResponse(EMqResponseCode.cOkay, "");
+      }
+      else
+      {
+        response = new MqResponse(EMqResponseCode.cFail, "Queue is not empty (" + size + " messages) and FORCE was not specified");
+      }
+    }
     return generateResponse(response);
   }
   
