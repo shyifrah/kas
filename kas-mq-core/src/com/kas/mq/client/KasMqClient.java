@@ -136,7 +136,7 @@ public class KasMqClient extends AKasMqAppl
             System.out.println("...." + total);
         }
         
-        client.delete(mQueueName);
+        client.delete(mQueueName, true);
       }
     }
     catch (KasException e)

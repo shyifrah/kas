@@ -50,9 +50,10 @@ public interface IClient extends IObject
    * Delete an existing queue.
    * 
    * @param queue The queue name to delete.
+   * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
    */
-  public abstract boolean delete(String queue);
+  public abstract boolean delete(String queue, boolean force);
   
   /**
    * Get a message from queue.

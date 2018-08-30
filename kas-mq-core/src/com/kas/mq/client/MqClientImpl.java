@@ -201,11 +201,12 @@ public class MqClientImpl extends AKasObject implements IClient
    * Delete an existing queue.
    * 
    * @param queue The queue name to delete.
+   * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
    * 
    * @see com.kas.mq.client.IClient#delete(String)
    */
-  public boolean delete(String queue)
+  public boolean delete(String queue, boolean force)
   {
     mLogger.debug("MqClientImpl::delete() - IN");
     
@@ -216,7 +217,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createDeleteRequest(queue, false);
+      IMqMessage<?> request = MqMessageFactory.createDeleteRequest(queue, force);
       mLogger.debug("MqClientImpl::delete() - sending delete request: " + request.toPrintableString(0));
       try
       {

@@ -127,18 +127,19 @@ public final class MqContext extends AKasObject implements IClient
    * Delete an existing queue.
    * 
    * @param queue The queue name to delete.
+   * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
    * 
    * @see com.kas.mq.client.IClient#delete(String)
    */
-  public boolean delete(String queue)
+  public boolean delete(String queue, boolean force)
   {
     mLogger.debug("MqContext::delete() - IN, Queue=" + queue);
     
     boolean success = false;
     if (Validators.isQueueName(queue))
     {
-      success = mDelegator.delete(queue);
+      success = mDelegator.delete(queue, force);
     }
     else
     {
