@@ -1,4 +1,4 @@
-package com.kas.mq.client;
+package com.kas.mq.samples;
 
 import java.util.Map;
 import com.kas.infra.base.KasException;
