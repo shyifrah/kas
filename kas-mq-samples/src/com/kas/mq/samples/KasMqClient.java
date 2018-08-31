@@ -48,8 +48,8 @@ public class KasMqClient extends AKasMqAppl
       
       try
       {
-        mLogger.debug("ProdThread::run() - Connecting to " + cHost + ':' + cPort);
-        mContext.connect(cHost, cPort, cUser, cPass);
+        mLogger.debug("ProdThread::run() - Connecting to " + sHost + ':' + sPort);
+        mContext.connect(sHost, sPort, sUserName, sPassword);
       }
       catch (KasException e) {}
       
@@ -98,8 +98,8 @@ public class KasMqClient extends AKasMqAppl
       
       try
       {
-        mLogger.debug("ConsThread::run() - Connecting to " + cHost + ':' + cPort);
-        mContext.connect(cHost, cPort, cUser, cPass);
+        mLogger.debug("ConsThread::run() - Connecting to " + sHost + ':' + sPort);
+        mContext.connect(sHost, sPort, sUserName, sPassword);
       }
       catch (KasException e) {}
       
@@ -127,18 +127,19 @@ public class KasMqClient extends AKasMqAppl
   /**
    * KAS/MQ address and credentials
    */
-  static private final String cHost = "localhost";
-  static private final int    cPort = 14560;
-  static private final String cUser = "admin";
-  static private final String cPass = "admin";
-  
   static private final long cConsumerPollingInterval = 1000L;
   static private final long cConsumerGetTimeout      = 5000L;
   
-  private String mQueueName = "temp.queue";
-  private int    mMaxMessages = 10000;
-  private int    mNumOfProducers = 1;
-  private int    mNumOfConsumers = 1;
+  private static String sUserName;
+  private static String sPassword;
+  private static String sHost;
+  private static int    sPort;
+  
+  private String mQueueName;
+  private int    mMaxMessages;
+  private int    mNumOfProducers;
+  private int    mNumOfConsumers;
+  
   private Thread [] mProducers;
   private Thread [] mConsumers;
   
@@ -166,6 +167,10 @@ public class KasMqClient extends AKasMqAppl
   public boolean init()
   {
     super.init();
+    sUserName = getStrArg("client.app.username", null);
+    sPassword = getStrArg("client.app.password", null);
+    sHost = getStrArg("client.app.host", "localhost");
+    sPort = getIntArg("client.app.port", 14560);
     mQueueName = getStrArg("client.app.queue", "temp.queue");
     mNumOfProducers = getIntArg("client.app.producers", 2);
     mNumOfConsumers = getIntArg("client.app.consumers", 10);
@@ -194,7 +199,7 @@ public class KasMqClient extends AKasMqAppl
     MqContext client = new MqContext();
     try
     {
-      client.connect(cHost, cPort, cUser, cPass);
+      client.connect(sHost, sPort, sUserName, sPassword);
       
       System.out.println("Defining queue with name " + mQueueName + " and a threshold of " + (mMaxMessages * mNumOfProducers) + " messages");
       boolean defined = client.define(mQueueName, mMaxMessages);
