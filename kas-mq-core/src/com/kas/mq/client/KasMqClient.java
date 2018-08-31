@@ -3,6 +3,8 @@ package com.kas.mq.client;
 import java.util.Map;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContext;
@@ -24,7 +26,9 @@ public class KasMqClient extends AKasMqAppl
 {
   static class ProdThread extends Thread
   {
+    private ILogger mLogger;
     private MqContext mContext;
+    private int mThreadIndex;
     private int mMaxMessages;
     private String mQueueName;
     
@@ -32,18 +36,24 @@ public class KasMqClient extends AKasMqAppl
     {
       super(ProdThread.class.getSimpleName() + tix);
       mContext = new MqContext();
+      mThreadIndex = tix;
       mMaxMessages = maxMsgs;
       mQueueName = qname;
+      mLogger = LoggerFactory.getLogger(this.getClass());
     }
     
     public void run()
     {
+      mLogger.debug("ProdThread::run() - IN, TIX=" + mThreadIndex + ", Queue=" + mQueueName + ", MaxMessages=" + mMaxMessages);
+      
       try
       {
+        mLogger.debug("ProdThread::run() - Connecting to " + cHost + ':' + cPort);
         mContext.connect(cHost, cPort, cUser, cPass);
       }
       catch (KasException e) {}
       
+      mLogger.debug("ProdThread::run() - Starting actual work...");
       for (int i = 0; i < mMaxMessages; ++i)
       {
         String messageBody = "message number: " + (i + 1);
@@ -52,56 +62,65 @@ public class KasMqClient extends AKasMqAppl
         mContext.put(mQueueName, putMessage);
         
         if (i%100==0)
-          System.out.println("...." + i);
+          System.out.println(String.format("[P%d] ... %d", mThreadIndex, i));
       }
       
       try
       {
+        mLogger.debug("ProdThread::run() - Disconnecting from remote host");
         mContext.disconnect();
       }
       catch (KasException e) {}
+      
+      mLogger.debug("ProdThread::run() - OUT");
     }
   }
   
   static class ConsThread extends Thread
   {
+    private ILogger mLogger;
     private MqContext mContext;
+    private int mThreadIndex;
     private String mQueueName;
     
     ConsThread(int tix, String qname)
     {
       super(ConsThread.class.getSimpleName() + tix);
       mContext = new MqContext();
+      mThreadIndex = tix;
       mQueueName = qname;
+      mLogger = LoggerFactory.getLogger(this.getClass());
     }
     
     public void run()
     {
+      mLogger.debug("ConsThread::run() - IN, TIX=" + mThreadIndex + ", Queue=" + mQueueName);
+      
       try
       {
+        mLogger.debug("ConsThread::run() - Connecting to " + cHost + ':' + cPort);
         mContext.connect(cHost, cPort, cUser, cPass);
       }
       catch (KasException e) {}
       
-      long timeout = 60000L;
-      long interval = 1000L;
+      mLogger.debug("ConsThread::run() - Starting actual work...");
       int total = 0;
-      IMqMessage<?> getMessage = mContext.get(mQueueName, timeout, interval);
+      IMqMessage<?> getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
       while (getMessage != null)
       {
-        getMessage = mContext.get(mQueueName, timeout, interval);
-        if (getMessage == null)
-          System.out.println("Failed to get message...");
+        if ((total%100==0) && (total != 0))
+          System.out.println(String.format("[C%d] ... %d", mThreadIndex, total));
         ++total;
-        if (total%100==0)
-          System.out.println("...." + total);
+        getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
       }
       
       try
       {
+        mLogger.debug("ConsThread::run() - Disconnecting from remote host");
         mContext.disconnect();
       }
       catch (KasException e) {}
+      mLogger.debug("ConsThread::run() - OUT");
     }
   }
   
@@ -112,6 +131,9 @@ public class KasMqClient extends AKasMqAppl
   static private final int    cPort = 14560;
   static private final String cUser = "admin";
   static private final String cPass = "admin";
+  
+  static private final long cConsumerPollingInterval = 1000L;
+  static private final long cConsumerGetTimeout      = 5000L;
   
   private String mQueueName = "temp.queue";
   private int    mMaxMessages = 10000;
@@ -175,7 +197,7 @@ public class KasMqClient extends AKasMqAppl
       client.connect(cHost, cPort, cUser, cPass);
       
       System.out.println("Defining queue with name " + mQueueName + " and a threshold of " + (mMaxMessages * mNumOfProducers) + " messages");
-      boolean defined = client.define(mQueueName, mMaxMessages * mNumOfProducers);
+      boolean defined = client.define(mQueueName, mMaxMessages);
       if (!defined)
         throw new KasException("failed to define queue with name " + mQueueName);
       
@@ -183,31 +205,36 @@ public class KasMqClient extends AKasMqAppl
       {
         System.out.println("Creating consumer thread number " + (i+1));
         mConsumers[i] = new ConsThread(i, mQueueName);
-        mConsumers[i].start();
       }
       
       for (int i = 0; i < mNumOfProducers; ++i)
       {
         System.out.println("Creating producer thread number " + (i+1));
-        mProducers[i] = new ProdThread(i, mMaxMessages, mQueueName);
-        mProducers[i].start();
+        mProducers[i] = new ProdThread(i, mMaxMessages/mNumOfProducers, mQueueName);
       }
+      
+      System.out.println("Consumers and Producers created. starting...");
+      for (int i = 0; i < mNumOfConsumers; ++i)
+        mConsumers[i].start();
+      
+      for (int i = 0; i < mNumOfProducers; ++i)
+        mProducers[i].start();
       
       System.out.println("Awaiting threads termination...");
-      for (int i = 0; i < mNumOfConsumers; ++i)
-      {
-        try
-        {
-          mConsumers[i].join();
-        }
-        catch (InterruptedException e) {}
-      }
-      
       for (int i = 0; i < mNumOfProducers; ++i)
       {
         try
         {
           mProducers[i].join();
+        }
+        catch (InterruptedException e) {}
+      }
+      
+      for (int i = 0; i < mNumOfConsumers; ++i)
+      {
+        try
+        {
+          mConsumers[i].join();
         }
         catch (InterruptedException e) {}
       }
@@ -236,8 +263,13 @@ public class KasMqClient extends AKasMqAppl
      * Print execution stats
      */
     TimeStamp tsEnd = TimeStamp.now();
-    System.out.println("Started at......: " + tsStart.toString());
-    System.out.println("Ended at........: " + tsEnd.toString());
+    System.out.println("Total traffic (msgs)......: " + mMaxMessages);
+    System.out.println("Producer threads..........: " + mNumOfProducers);
+    System.out.println("Consumer threads..........: " + mNumOfConsumers);
+    System.out.println("   Consume interval....: " + cConsumerPollingInterval);
+    System.out.println("   Consume timeout.....: " + cConsumerGetTimeout);
+    System.out.println("Started at................: " + tsStart.toString());
+    System.out.println("Ended at..................: " + tsEnd.toString());
     
     String runTime = reportTime(tsStart, tsEnd);
     System.out.println("Total run time.....: " + runTime);

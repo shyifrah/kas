@@ -162,25 +162,15 @@ public class SessionResponder extends AKasObject
     MqQueue deadq = mHandler.getRepository().getDeadQueue();
     if (queue == null)
     {
-      boolean putToDeadQ = deadq.put(request);
-      if (putToDeadQ)
-        rc = EMqResponseCode.cWarn;
-      else
-        rc = EMqResponseCode.cError;
-      rsn = "Queue " + qname + " does not exist, or target queue not specified";
+      deadq.put(request);
+      rc = EMqResponseCode.cError;
+      rsn = "Target queue " + (qname == null ? "not specified" : "does not exist");
     }
-    else
+    else if (!queue.put(request))
     {
-      boolean putToQueue = queue.put(request);
-      if (!putToQueue)
-      {
-        boolean putToDeadQ = deadq.put(request);
-        if (putToDeadQ)
-          rc = EMqResponseCode.cFail;
-        else
-          rc = EMqResponseCode.cError;
-        rsn = "Failed to put message with ID " + request.getMessageId().toString() + " into queue " + qname;
-      } 
+      deadq.put(request);
+      rc = EMqResponseCode.cFail;
+      rsn = "Failed to put message with ID " + request.getMessageId().toString() + " into queue " + qname;
     }
     response = new MqResponse(rc, rsn);
     return generateResponse(response);

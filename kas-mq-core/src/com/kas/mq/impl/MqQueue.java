@@ -57,16 +57,6 @@ public class MqQueue extends AKasObject
    */
   protected transient File mBackupFile = null;
   
-//  /**
-//   * Constructing a {@link MqQueue} object with the specified name.
-//   * 
-//   * @param name The name of this {@link MqQueue} object.
-//   */
-//  public MqQueue(String name)
-//  {
-//    this(name, IMqConstants.cDefaultQueueThreshold);
-//  }
-  
   /**
    * Constructing a {@link MqQueue} object with the specified name.
    * 
@@ -118,7 +108,7 @@ public class MqQueue extends AKasObject
    * 
    * @return the number of messages in all priority queues
    */
-  public synchronized int size()
+  public int size()
   {
     int sum = 0;
     for (int i = 0; i < mQueueArray.length; ++i)
