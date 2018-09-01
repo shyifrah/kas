@@ -5,6 +5,7 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.MqContext;
+import com.kas.mq.samples.Utils;
 
 /**
  * This is a sample {@link AKasMqAppl KAS/MQ application} that is intended
@@ -75,11 +76,21 @@ public class ClientApp extends AKasMqAppl
     {
       client.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);
       
-      System.out.println("Defining queue with name " + mParams.mQueueName + " and a threshold of " + (mParams.mTotalMessages) + " messages");
-      boolean defined = client.define(mParams.mQueueName, mParams.mTotalMessages);
-      if (!defined)
-        throw new KasException("failed to define queue with name " + mParams.mQueueName);
+      //===========================================================================================
+      // defining queues which are used by producers and consumers
+      //===========================================================================================
+      if (mParams.mCreateResources)
+      {
+        Utils.createQueue(client, mParams.mProdQueueName, mParams.mTotalMessages);
+        if (!mParams.mProdQueueName.equals(mParams.mConsQueueName))
+        {
+          Utils.createQueue(client, mParams.mConsQueueName, mParams.mTotalMessages);
+        }
+      }
       
+      //===========================================================================================
+      // creating consumers and producers
+      //===========================================================================================
       for (int i = 0; i < mParams.mTotalConsumers; ++i)
       {
         System.out.println("Creating consumer thread number " + (i+1));
@@ -92,6 +103,9 @@ public class ClientApp extends AKasMqAppl
         mProducers[i] = new ProducerThread(i, mParams);
       }
       
+      //===========================================================================================
+      // starting consumers and producers
+      //===========================================================================================
       System.out.println("Consumers and Producers created. starting...");
       for (int i = 0; i < mParams.mTotalConsumers; ++i)
         mConsumers[i].start();
@@ -99,6 +113,9 @@ public class ClientApp extends AKasMqAppl
       for (int i = 0; i < mParams.mTotalProducers; ++i)
         mProducers[i].start();
       
+      //===========================================================================================
+      // awaiting consumers and producers termination
+      //===========================================================================================
       System.out.println("Awaiting threads termination...");
       for (int i = 0; i < mParams.mTotalProducers; ++i)
       {
@@ -118,8 +135,11 @@ public class ClientApp extends AKasMqAppl
         catch (InterruptedException e) {}
       }
       
-      System.out.println("Deleting forcefully queue with name " + mParams.mQueueName);
-      client.delete(mParams.mQueueName, true);
+      //===========================================================================================
+      // deleting queues which were used by producers and consumers
+      //===========================================================================================
+      Utils.deleteQueue(client, mParams.mProdQueueName);
+      Utils.deleteQueue(client, mParams.mConsQueueName);
     }
     catch (KasException e)
     {
@@ -150,31 +170,9 @@ public class ClientApp extends AKasMqAppl
     System.out.println("Started at................: " + tsStart.toString());
     System.out.println("Ended at..................: " + tsEnd.toString());
     
-    String runTime = reportTime(tsStart, tsEnd);
+    String runTime = Utils.reportTime(tsStart, tsEnd);
     System.out.println("Total run time.....: " + runTime);
     
     return end();
-  }
-  
-  /**
-   * Report execution time
-   * 
-   * @param start The {@link TimeStamp timestamp} of the time the launcher started
-   * @param end The {@link TimeStamp timestamp} of the time the launcher ended
-   */
-  private String reportTime(TimeStamp start, TimeStamp end)
-  {
-    long diff = end.diff(start);
-    long millis = diff % 1000;
-    diff = diff / 1000;
-    long seconds = diff % 60;
-    diff = diff / 60;
-    long minutes = diff % 60;
-    diff = diff / 60;
-    long hours = diff;
-    
-    String s1 = (hours > 0 ? hours + " hours, " : "");
-    String s2 = (minutes > 0 ? minutes + " minutes, " : "");
-    return String.format("%s%s%d.%03d seconds", s1, s2, seconds, millis);
   }
 }

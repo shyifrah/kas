@@ -7,7 +7,8 @@
 ::
 :: available arguments to the application:
 ::
-:: client.app.queuename=<queue_name>          -- name of the queue to be used
+:: client.app.put.queuename=<queue_name>      -- name of the queue to which messages are put
+:: client.app.get.queuename=<queue_name>      -- name of the queue frmo which messages are get
 :: client.app.total.messages=<total_messages> -- the number of messages to produce
 :: client.app.total.producers=<prod_num>      -- the number of producer threads
 :: client.app.total.consumers=<cons_num>      -- the number of consumer threads
@@ -21,7 +22,8 @@
 
 set "BATCH_DIR=%~dp0"
 call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.clientapp.ClientApp ^
-  client.app.queuename=clientappq1 ^
+  client.app.put.queuename=clientappq1 ^
+  client.app.get.queuename=clientappq1 ^
   client.app.total.messages=10000 ^
   client.app.total.producers=4 ^
   client.app.total.consumers=4 ^

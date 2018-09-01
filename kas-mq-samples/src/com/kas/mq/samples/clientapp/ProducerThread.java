@@ -1,16 +1,12 @@
 package com.kas.mq.samples.clientapp;
 
-import com.kas.infra.base.KasException;
-import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.samples.GenThread;
 
-class ProducerThread extends Thread
+class ProducerThread extends GenThread
 {
-  private ILogger mLogger;
-  private MqContext mContext;
   private int mThreadIndex;
   private ClientAppParams mParams;
   
@@ -19,27 +15,19 @@ class ProducerThread extends Thread
   
   ProducerThread(int tix, ClientAppParams params)
   {
-    super(ProducerThread.class.getSimpleName() + tix);
-    mContext = new MqContext();
+    super(ProducerThread.class.getSimpleName() + tix, params);
+    mLogger = LoggerFactory.getLogger(this.getClass());
     mThreadIndex = tix;
     mParams = params;
     mTotalMessages = mParams.mTotalMessages / mParams.mTotalProducers;
-    mQueueName = mParams.mQueueName;
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mQueueName = mParams.mProdQueueName;
   }
   
-  public void run()
+  public void work()
   {
-    mLogger.debug("ProducerThread::run() - IN, TIX=" + mThreadIndex + ", Queue=" + mQueueName + ", TotalMessages=" + mTotalMessages);
-    
-    try
-    {
-      mLogger.debug("ProducerThread::run() - Connecting to " + mParams.mHost + ':' + mParams.mPort);
-      mContext.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);
-    }
-    catch (KasException e) {}
-    
-    mLogger.debug("ProducerThread::run() - Starting actual work...");
+    mLogger.debug("ProducerThread::work() - IN");
+  
+    mLogger.debug("ProducerThread::work() - Starting actual work...");
     for (int i = 0; i < mTotalMessages; ++i)
     {
       String messageBody = "message number: " + (i + 1);
@@ -51,13 +39,6 @@ class ProducerThread extends Thread
         System.out.println(String.format("[P%d] ... %d", mThreadIndex, i));
     }
     
-    try
-    {
-      mLogger.debug("ProducerThread::run() - Disconnecting from remote host");
-      mContext.disconnect();
-    }
-    catch (KasException e) {}
-    
-    mLogger.debug("ProducerThread::run() - OUT");
+    mLogger.debug("ProducerThread::work() - OUT");
   }
 }
