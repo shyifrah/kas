@@ -47,16 +47,19 @@ public class DefineCommand extends ACliCommand
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Define a new queue");
+    writeln("     Define a new entity");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- DEFINE ---+--- queue ---+---+-----------------+---><");
-    writeln("                                       |                 |");
-    writeln("                                       +--- threshold ---+");
+    writeln("     >>--- DEFINE|DEF ---+--- QUEUE|Q ---+---+--- queue ---+---+-----------------+---><");
+    writeln("                                                               |                 |");
+    writeln("                                                               +--- threshold ---+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
+    writeln("     Define a new entity.");
+    writeln(" ");
+    writeln("     -- For QUEUE --");
     writeln("     Define the specified queue.");
     writeln("     The queue will remain defined until a DELETE command is issued.");
     writeln("     Following this command, the user can start putting messages to it and getting them.");
@@ -66,10 +69,10 @@ public class DefineCommand extends ACliCommand
     writeln("Examples:");
     writeln(" ");
     writeln("     Define queue TEMP_Q_A:");
-    writeln("          KAS/MQ Admin> DEF TEMP_Q_A");
+    writeln("          KAS/MQ Admin> DEF QUEUE TEMP_Q_A");
     writeln(" ");
     writeln("     Define queue QUEUE_OF_HEARTS win a threshold of 50,000 messages:");
-    writeln("          KAS/MQ Admin> DEF QUEUE_OF_HEARTS 50000");
+    writeln("          KAS/MQ Admin> DEF QUEUE QUEUE_OF_HEARTS 50000");
     writeln(" ");
   }
   
@@ -85,40 +88,20 @@ public class DefineCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Missing queue name");
+      writeln("Missing entity type");
       writeln(" ");
       return false;
     }
     
-    String queue = mCommandArgs.poll().toUpperCase();
+    String type = mCommandArgs.poll().toUpperCase();
     
-    String sthreshold = mCommandArgs.poll();
-    if (sthreshold == null)
-      sthreshold = "1000";
+    if (type.equals("QUEUE"))
+      return new DefQueueCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("Q"))
+      return new DefQueueCommand(mScanner, mCommandArgs, mClient).run();
     
-    int threshold = -1;
-    try
-    {
-      threshold = Integer.valueOf(sthreshold.toUpperCase());
-    }
-    catch (NumberFormatException e) {}
     
-    if (threshold == -1)
-    {
-      writeln("Invalid threshold number \"" + sthreshold + "\"");
-      writeln(" ");
-      return false;
-    }
-    
-    if (mCommandArgs.size() > 0)
-    {
-      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
-      writeln(" ");
-      return false;
-    }
-    
-    mClient.define(queue, threshold);
-    writeln(mClient.getResponse());
+    writeln("Invalid entity type \"" + type + "\"");
     writeln(" ");
     return false;
   }

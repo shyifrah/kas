@@ -154,9 +154,9 @@ public class MqClientImpl extends AKasObject implements IClient
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    * 
-   * @see com.kas.mq.client.IClient#define(String,int)
+   * @see com.kas.mq.client.IClient#defineQueue(String,int)
    */
-  public boolean define(String queue, int threshold)
+  public boolean defineQueue(String queue, int threshold)
   {
     mLogger.debug("MqClientImpl::define() - IN");
     
@@ -174,7 +174,7 @@ public class MqClientImpl extends AKasObject implements IClient
         IPacket packet = mMessenger.sendAndReceive(request);
         MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::define() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
+        if ((response.getCode() == EMqResponseCode.cOkay) || (response.getCode() == EMqResponseCode.cWarn))
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully defined");
@@ -206,7 +206,7 @@ public class MqClientImpl extends AKasObject implements IClient
    * 
    * @see com.kas.mq.client.IClient#delete(String)
    */
-  public boolean delete(String queue, boolean force)
+  public boolean deleteQueue(String queue, boolean force)
   {
     mLogger.debug("MqClientImpl::delete() - IN");
     
@@ -224,7 +224,7 @@ public class MqClientImpl extends AKasObject implements IClient
         IPacket packet = mMessenger.sendAndReceive(request);
         MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::delete() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
+        if ((response.getCode() == EMqResponseCode.cOkay) || (response.getCode() == EMqResponseCode.cWarn))
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully deleted");

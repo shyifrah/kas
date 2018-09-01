@@ -86,28 +86,19 @@ public class DeleteCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Missing queue name");
+      writeln("Missing entity type");
       writeln(" ");
       return false;
     }
     
-    String queue = mCommandArgs.poll().toUpperCase();
-    
-    boolean force = false;
-    String opt = mCommandArgs.poll();
-    if ((opt != null) && (opt.equalsIgnoreCase("FORCE")))
-      force = true;
-    
-    if (mCommandArgs.size() > 0)
+    String type = mCommandArgs.poll().toUpperCase();
+    if (!type.equals("QUEUE"))
     {
-      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
+      writeln("Invalid entity type \"" + type + "\"");
       writeln(" ");
       return false;
     }
-    
-    mClient.delete(queue, force);
-    writeln(mClient.getResponse());
-    writeln(" ");
-    return false;
+
+    return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
   }
 }

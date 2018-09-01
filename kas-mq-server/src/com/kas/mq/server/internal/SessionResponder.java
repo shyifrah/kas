@@ -91,7 +91,7 @@ public class SessionResponder extends AKasObject
     }
     else if (mqq != null)
     {
-      response = new MqResponse(EMqResponseCode.cFail, "Queue with name \"" + queue + "\" already exists");
+      response = new MqResponse(EMqResponseCode.cWarn, "Queue with name \"" + queue + "\" already exists");
     }
     else
     {

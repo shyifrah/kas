@@ -98,9 +98,9 @@ public final class MqContext extends AKasObject implements IClient
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    * 
-   * @see com.kas.mq.client.IClient#define(String, int)
+   * @see com.kas.mq.client.IClient#defineQueue(String, int)
    */
-  public boolean define(String queue, int threshold)
+  public boolean defineQueue(String queue, int threshold)
   {
     mLogger.debug("MqContext::define() - IN, Queue=" + queue);
     
@@ -116,7 +116,7 @@ public final class MqContext extends AKasObject implements IClient
     }
     else
     {
-      success = mDelegator.define(queue, threshold);
+      success = mDelegator.defineQueue(queue, threshold);
     }
     
     mLogger.debug("MqContext::define() - OUT, Returns=" + success);
@@ -132,14 +132,14 @@ public final class MqContext extends AKasObject implements IClient
    * 
    * @see com.kas.mq.client.IClient#delete(String)
    */
-  public boolean delete(String queue, boolean force)
+  public boolean deleteQueue(String queue, boolean force)
   {
     mLogger.debug("MqContext::delete() - IN, Queue=" + queue);
     
     boolean success = false;
     if (Validators.isQueueName(queue))
     {
-      success = mDelegator.delete(queue, force);
+      success = mDelegator.deleteQueue(queue, force);
     }
     else
     {

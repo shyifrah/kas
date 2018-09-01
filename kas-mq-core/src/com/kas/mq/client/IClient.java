@@ -44,7 +44,7 @@ public interface IClient extends IObject
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public abstract boolean define(String queue, int threshold);
+  public abstract boolean defineQueue(String queue, int threshold);
   
   /**
    * Delete an existing queue.
@@ -53,7 +53,7 @@ public interface IClient extends IObject
    * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
    */
-  public abstract boolean delete(String queue, boolean force);
+  public abstract boolean deleteQueue(String queue, boolean force);
   
   /**
    * Get a message from queue.
