@@ -1,5 +1,6 @@
 package com.kas.mq.server.internal;
 
+import java.util.Collection;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.EMqResponseCode;
@@ -77,7 +78,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link AMqMessage} response object
    */
-  public IMqMessage<?> define(IMqMessage<?> request)
+  public IMqMessage<?> defineQueue(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -108,7 +109,7 @@ public class SessionResponder extends AKasObject
    * @param request The request message
    * @return The {@link AMqMessage} response object
    */
-  public IMqMessage<?> delete(IMqMessage<?> request)
+  public IMqMessage<?> deleteQueue(IMqMessage<?> request)
   {
     MqResponse response = null;
     
@@ -141,6 +142,62 @@ public class SessionResponder extends AKasObject
       {
         response = new MqResponse(EMqResponseCode.cFail, "Queue is not empty (" + size + " messages) and FORCE was not specified");
       }
+    }
+    return generateResponse(response);
+  }
+  
+  /**
+   * Process delete queue request
+   * 
+   * @param request The request message
+   * @return The {@link AMqMessage} response object
+   */
+  public IMqMessage<?> queryQueue(IMqMessage<?> request)
+  {
+    MqResponse response = null;
+    
+    String prefix = request.getStringProperty(IMqConstants.cKasPropertyQryQueueName, null);
+    boolean alldata = request.getBoolProperty(IMqConstants.cKasPropertyQryAllData, false);
+    if ((prefix == null) || (prefix.length() == 0))
+    {
+      response = new MqResponse(EMqResponseCode.cError, "Invalid queue name prefix");
+    }
+    else 
+    {
+      Collection<MqQueue> queues = mRepository.getElements();
+      StringBuilder sb = new StringBuilder();
+      sb.append("Query ").append((alldata ? "all" : "basic")).append(" data on ").append(prefix).append(":\n").append("  \n");
+      int total = 0;
+      for (MqQueue mqq : queues)
+      {
+        if (mqq.getName().startsWith(prefix))
+        {
+          ++total;
+          sb.append("Queue....................: ").append(mqq.getName()).append('\n');
+          sb.append("    ID...............: ").append(mqq.getId().toString()).append('\n');
+          if (alldata)
+          {
+            sb.append("    Threshold........: ").append(mqq.getThreshold()).append('\n');
+            sb.append("    Size.............: ").append(mqq.size()).append('\n');
+          }
+          sb.append(" ").append('\n');
+        }
+      }
+      
+      EMqResponseCode rc;
+      if (total == 0)
+      {
+        sb.append(" ").append('\n');
+        sb.append("No queues matched specified prefix");
+        rc = EMqResponseCode.cWarn;
+      }
+      else
+      {
+        sb.append(" ").append('\n');
+        sb.append(total).append(" queues matched specified prefix");
+        rc = EMqResponseCode.cOkay;
+      }
+      response = new MqResponse(rc, sb.toString());
     }
     return generateResponse(response);
   }

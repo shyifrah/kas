@@ -56,6 +56,15 @@ public interface IClient extends IObject
   public abstract boolean deleteQueue(String queue, boolean force);
   
   /**
+   * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
+   * 
+   * @param prefix The queue name prefix
+   * @param all if {@code true}, display all information on all queues 
+   * @return {@code true} if query command was successful, {@code false} otherwise
+   */
+  public abstract boolean queryQueue(String prefix, boolean all);
+  
+  /**
    * Get a message from queue.
    * 
    * @param queue The target queue name

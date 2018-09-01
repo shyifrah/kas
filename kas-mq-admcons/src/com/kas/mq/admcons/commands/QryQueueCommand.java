@@ -5,28 +5,28 @@ import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A DEFINE QUEUE command
+ * A QUERY QUEUE command
  * 
  * @author Pippo
  */
-public class DefQueueCommand extends ACliCommand
+public class QryQueueCommand extends ACliCommand
 {
   /**
-   * Construct a {@link DefQueueCommand} passing the command arguments and the client object
+   * Construct a {@link QryQueueCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DefQueueCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected QryQueueCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
 
   /**
    * Display help screen for this command.
-   * Not in use for DEFINE QUEUE.
+   * Not in use for QUERY QUEUE.
    */
   public void help()
   {
@@ -45,30 +45,17 @@ public class DefQueueCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Missing queue name");
+      writeln("Missing regular expression");
       writeln(" ");
       return false;
     }
     
-    String queue = mCommandArgs.poll().toUpperCase();
+    String prefix = mCommandArgs.poll().toUpperCase();
     
-    String sthreshold = mCommandArgs.poll();
-    if (sthreshold == null)
-      sthreshold = "1000";
-    
-    int threshold = -1;
-    try
-    {
-      threshold = Integer.valueOf(sthreshold.toUpperCase());
-    }
-    catch (NumberFormatException e) {}
-    
-    if (threshold == -1)
-    {
-      writeln("Invalid threshold number \"" + sthreshold + "\"");
-      writeln(" ");
-      return false;
-    }
+    boolean alldata = false;
+    String opt = mCommandArgs.poll();
+    if ((opt != null) && (opt.equalsIgnoreCase("ALL")))
+      alldata = true;
     
     if (mCommandArgs.size() > 0)
     {
@@ -77,7 +64,7 @@ public class DefQueueCommand extends ACliCommand
       return false;
     }
     
-    mClient.defineQueue(queue, threshold);
+    mClient.queryQueue(prefix, alldata);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

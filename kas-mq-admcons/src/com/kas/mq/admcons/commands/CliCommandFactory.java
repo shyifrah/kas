@@ -40,6 +40,9 @@ public class CliCommandFactory
     if (DeleteCommand.sCommandVerbs.contains(verb))
       return new DeleteCommand(scanner, cmdWords, client);
     
+    if (QueryCommand.sCommandVerbs.contains(verb))
+      return new QueryCommand(scanner, cmdWords, client);
+    
     if (PutCommand.sCommandVerbs.contains(verb))
       return new PutCommand(scanner, cmdWords, client);
     

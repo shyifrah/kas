@@ -102,7 +102,7 @@ public final class MqContext extends AKasObject implements IClient
    */
   public boolean defineQueue(String queue, int threshold)
   {
-    mLogger.debug("MqContext::define() - IN, Queue=" + queue);
+    mLogger.debug("MqContext::defineQueue() - IN, Queue=" + queue);
     
     boolean success = false;
     if (!Validators.isQueueName(queue))
@@ -119,7 +119,7 @@ public final class MqContext extends AKasObject implements IClient
       success = mDelegator.defineQueue(queue, threshold);
     }
     
-    mLogger.debug("MqContext::define() - OUT, Returns=" + success);
+    mLogger.debug("MqContext::defineQueue() - OUT, Returns=" + success);
     return success;
   }
   
@@ -134,7 +134,7 @@ public final class MqContext extends AKasObject implements IClient
    */
   public boolean deleteQueue(String queue, boolean force)
   {
-    mLogger.debug("MqContext::delete() - IN, Queue=" + queue);
+    mLogger.debug("MqContext::deleteQueue() - IN, Queue=" + queue);
     
     boolean success = false;
     if (Validators.isQueueName(queue))
@@ -146,7 +146,34 @@ public final class MqContext extends AKasObject implements IClient
       setResponse("Failed to delete queue, invalid queue name: " + queue);
     }
     
-    mLogger.debug("MqContext::delete() - OUT, Returns=" + success);
+    mLogger.debug("MqContext::deleteQueue() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
+   * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
+   * 
+   * @param prefix The queue name prefix
+   * @param all if {@code true}, display all information on all queues 
+   * @return {@code true} if query command was successful, {@code false} otherwise
+   * 
+   * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
+   */
+  public boolean queryQueue(String prefix, boolean all)
+  {
+    mLogger.debug("MqContext::queryQueue() - IN, Queue=" + prefix);
+    
+    boolean success = false;
+    if (Validators.isQueueName(prefix))
+    {
+      success = mDelegator.queryQueue(prefix, all);
+    }
+    else
+    {
+      setResponse("Query failed, invalid queue name prefix: " + prefix);
+    }
+    
+    mLogger.debug("MqContext::queryQueue() - OUT, Returns=" + success);
     return success;
   }
   

@@ -40,6 +40,11 @@ public enum ERequestType implements IObject
   cDeleteQueue,
   
   /**
+   * Query a queue
+   */
+  cQueryQueue,
+  
+  /**
    * Shutdown KAS/MQ server
    */
   cShutdown,

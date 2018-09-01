@@ -16,7 +16,7 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createDefineRequest(String queue, int threshold)
+  static public MqObjectMessage createDefineQueueRequest(String queue, int threshold)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDefineQueue);
@@ -25,12 +25,21 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createDeleteRequest(String queue, boolean force)
+  static public MqObjectMessage createDeleteQueueRequest(String queue, boolean force)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDeleteQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDelQueueName, queue);
     message.setBoolProperty(IMqConstants.cKasPropertyDelForce, force);
+    return message;
+  }
+  
+  static public MqObjectMessage createQueryQueueRequest(String queue, boolean alldata)
+  {
+    MqObjectMessage message = new MqObjectMessage();
+    message.setRequestType(ERequestType.cQueryQueue);
+    message.setStringProperty(IMqConstants.cKasPropertyQryQueueName, queue);
+    message.setBoolProperty(IMqConstants.cKasPropertyQryAllData, alldata);
     return message;
   }
   
