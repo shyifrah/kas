@@ -357,17 +357,8 @@ public class MqClientImpl extends AKasObject implements IClient
       message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue);
       message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
       message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
-      IPacket packet = mMessenger.sendAndReceive(message);
-      MqResponse response = new MqResponse((IMqMessage<?>)packet);
-      mLogger.debug("MqClientImpl::put() - received response: " + response.toPrintableString());
-      if (response.getCode() == EMqResponseCode.cOkay)
-      {
-        logDebugAndSetResponse("put", "Successfully put to queue " + queue + " message: " + message.toPrintableString(0));
-      }
-      else
-      {
-        logInfoAndSetResponse(response.getDesc());
-      }
+      mMessenger.send(message);
+      logDebugAndSetResponse("put", "Put to queue " + queue + " ended successfully. message: " + message.toPrintableString(0));
     }
     catch (IOException e)
     {

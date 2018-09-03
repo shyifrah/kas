@@ -48,8 +48,6 @@ public enum ERequestType implements IObject
    * Shutdown KAS/MQ server
    */
   cShutdown,
-  
-  
   ;
   
   static final private ERequestType [] cValues = ERequestType.values();

@@ -8,26 +8,26 @@ import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
-import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.AMqMessage;
+import com.kas.mq.impl.EMqResponseCode;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqQueue;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IController;
-import com.kas.mq.server.IHandler;
-import com.kas.mq.server.IRepository;
 
 /**
  * A {@link SessionHandler} is the object that handles the traffic in and from a remote client.
  * 
  * @author Pippo
  */
-public class SessionHandler extends AKasObject implements Runnable, IHandler
+public class SessionHandler extends AKasObject implements Runnable
 {
   /**
    * Logger
@@ -50,9 +50,9 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   private IController mController;
   
   /**
-   * The session responder
+   * A responder's client
    */
-  private SessionResponder mSessionResponder;
+  private ClientResponder mClient;
   
   /**
    * Active user name
@@ -79,9 +79,9 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
     socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
     mMessenger = MessengerFactory.create(socket);
     
+    mClient = new ClientResponder(mController.getRepository());
     mSessionId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mSessionResponder = new SessionResponder(this);
     
     mActiveUserName = null;
   }
@@ -146,39 +146,42 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
       
       if (requestType == ERequestType.cAuthenticate)
       {
-        response = mSessionResponder.authenticate(request);
+        response = authenticate(request);
         if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
           cont = false;
       }
       else if (requestType == ERequestType.cDefineQueue)
       {
-        response = mSessionResponder.defineQueue(request);
+        response = defineQueue(request);
       }
       else if (requestType == ERequestType.cDeleteQueue)
       {
-        response = mSessionResponder.deleteQueue(request);
+        response = deleteQueue(request);
       }
       else if (requestType == ERequestType.cQueryQueue)
       {
-        response = mSessionResponder.queryQueue(request);
+        response = queryQueue(request);
       }
       else if (requestType == ERequestType.cPut)
       {
-        response = mSessionResponder.put(request);
+        put(request);
       }
       else if (requestType == ERequestType.cGet)
       {
-        response = mSessionResponder.get(request);
+        response = get(request);
       }
       else if (requestType == ERequestType.cShutdown)
       {
-        response = mSessionResponder.shutdown(request);
+        response = shutdown(request);
         if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
           cont = false;
       }
       
-      mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
-      mMessenger.send(response);
+      if (response != null)
+      {
+        mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
+        mMessenger.send(response);
+      }
     }
     catch (ClassCastException e)
     {
@@ -196,75 +199,206 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
   }
   
   /**
-   * Get the active user name
+   * Process authenticate request.<br>
+   * <br>
+   * Read the user name and its password, then - if user name is a valid user - compare password
+   * to the one defined in the configuration. If passwords match - authentication is successful. 
    * 
-   * @return the active user name
-   * 
-   * @see com.kas.mq.server.IHandler#getActiveUserName()
+   * @param request The request message
+   * @return The {@link IMqMessage} response object
    */
-  public String getActiveUserName()
+  private IMqMessage<?> authenticate(IMqMessage<?> request)
   {
-    return mActiveUserName;
+    mLogger.debug("SessionHandler::authenticate() - OUT");
+    
+    String desc = "";
+    boolean success = false;
+    
+    String user = request.getStringProperty(IMqConstants.cKasPropertyUserName, null);
+    String sb64pass = request.getStringProperty(IMqConstants.cKasPropertyPassword, null);
+    byte [] confPwd = mController.getConfig().getUserPassword(user);
+    String sb64ConfPass = StringUtils.asHexString(confPwd);
+    
+    if ((user == null) || (user.length() == 0))
+      desc = "Invalid user name";
+    else if (confPwd == null)
+      desc = "User " + user + " is not defined";
+    else if (!sb64pass.equals(sb64ConfPass))
+      desc = "Incorrect password for " + user;
+    else
+    {
+      mActiveUserName = user;
+      success = true;
+    }
+    
+    IMqMessage<?> result = generateResponse(success, desc);
+    mLogger.debug("SessionHandler::authenticate() - OUT");
+    return result;
   }
   
   /**
-   * Set the active user name
+   * Process a define queue request.<br>
+   * <br>
+   * Extract the queue name and the threshold and pass them to the client responder.
    * 
-   * @param username The active user name
-   * 
-   * @see com.kas.mq.server.IHandler#setActiveUserName(String)
+   * @param request The request message
+   * @return The {@link IMqMessage} response message
    */
-  public void setActiveUserName(String username)
+  private IMqMessage<?> defineQueue(IMqMessage<?> request)
   {
-    mActiveUserName = username;
+    mLogger.debug("SessionHandler::defineQueue() - IN");
+    
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
+    int threshold = request.getIntProperty(IMqConstants.cKasPropertyDefThreshold, IMqConstants.cDefaultQueueThreshold);
+    
+    boolean success = mClient.defineQueue(queue, threshold);
+    
+    IMqMessage<?> result = generateResponse(success, mClient.getResponse());
+    mLogger.debug("SessionHandler::defineQueue() - OUT");
+    return result;
   }
   
   /**
-   * Get the controller
+   * Process delete queue request.<br>
+   * <br>
+   * Extract the queue name and the <b>force indicator</b> and pass them to the client responder.
    * 
-   * @return the {@link SessionController} object
-   * 
-   * @see com.kas.mq.server.IHandler#getController()
+   * @param request The request message
+   * @return The {@link IMqMessage} response object
    */
-  public IController getController()
+  public IMqMessage<?> deleteQueue(IMqMessage<?> request)
   {
-    return mController;
+    mLogger.debug("SessionHandler::deleteQueue() - IN");
+    
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyDelQueueName, null);
+    boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelForce, false);
+    
+    boolean success = mClient.deleteQueue(queue, force);
+    
+    IMqMessage<?> result = generateResponse(success, mClient.getResponse());
+    mLogger.debug("SessionHandler::deleteQueue() - OUT");
+    return result;
   }
   
   /**
-   * Get repository
+   * Process query queue request.<br>
+   * <br>
+   * Extract the queue name and the <b>alldata indicator</b> and pass them to the client responder.
    * 
-   * @return the {@link QueueRepository} object
-   * 
-   * @see com.kas.mq.server.IHandler#getRepository()
+   * @param request The request message
+   * @return The {@link IMqMessage} response object
    */
-  public IRepository getRepository()
+  public IMqMessage<?> queryQueue(IMqMessage<?> request)
   {
-    return mController.getRepository();
+    mLogger.debug("SessionHandler::queryQueue() - IN");
+    
+    String prefix = request.getStringProperty(IMqConstants.cKasPropertyQryQueueName, null);
+    boolean alldata = request.getBoolProperty(IMqConstants.cKasPropertyQryAllData, false);
+    
+    boolean success = mClient.queryQueue(prefix, alldata);
+    
+    IMqMessage<?> result = generateResponse(success, mClient.getResponse());
+    mLogger.debug("SessionHandler::queryQueue() - OUT");
+    return result;
   }
   
   /**
-   * Get configuration
+   * Process get message from specified queue.<br>
+   * <br>
+   * Extract the timeout, interval and queue name and pass them client responder.
    * 
-   * @return the {@link MqConfiguration} object
-   * 
-   * @see com.kas.mq.server.IHandler#getConfig()
+   * @param request The request message
+   * @return The {@link IMqMessage} retrieved from the queue or a response object
    */
-  public MqConfiguration getConfig()
+  public IMqMessage<?> get(IMqMessage<?> request)
   {
-    return mController.getConfig();
+    mLogger.debug("SessionHandler::get() - IN");
+    
+    long timeout  = request.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
+    long interval = request.getLongProperty(IMqConstants.cKasPropertyGetInterval, IMqConstants.cDefaultPollingInterval);
+    String qname  = request.getStringProperty(IMqConstants.cKasPropertyGetQueueName, null);
+    
+    IMqMessage<?> msg = mClient.get(qname, timeout, interval);
+    
+    MqQueue mqq = mController.getRepository().getQueue(qname);
+    if (mqq != null)
+    {
+      String user = request.getStringProperty(IMqConstants.cKasPropertyGetUserName, null);
+      mqq.setLastAccess(user, "get");
+    }
+    
+    if (msg == null)
+    {
+      msg = MqMessageFactory.createResponse(EMqResponseCode.cFail, mClient.getResponse());
+    }
+    else
+    {
+      msg.setIntProperty(IMqConstants.cKasPropertyResponseCode, EMqResponseCode.cOkay.ordinal());
+      msg.setStringProperty(IMqConstants.cKasPropertyResponseDesc, "");
+    }
+    
+    mLogger.debug("SessionHandler::get() - OUT");
+    return msg;
   }
   
   /**
-   * Get network address
+   * Process put message to specified queue.<br>
+   * <br>
+   * Extract the queue name and pass it along with the request message to the client responder.
    * 
-   * @return the {@link IMessenger}'s {@link NetworkAddress} object
-   * 
-   * @see com.kas.mq.server.IHandler#getNetworkAddress()
+   * @param request The request message
+   * @return The {@link IMqMessage} response object
    */
-  public NetworkAddress getNetworkAddress()
+  public IMqMessage<?> put(IMqMessage<?> request)
   {
-    return mMessenger.getAddress();
+    mLogger.debug("SessionHandler::put() - IN");
+    
+    String qname = request.getStringProperty(IMqConstants.cKasPropertyPutQueueName, null);
+    
+    mClient.put(qname, request);
+    
+    IMqMessage<?> result = generateResponse(mClient.getResponse().length() > 0 ? false : true, mClient.getResponse());
+    mLogger.debug("SessionHandler::put() - OUT");
+    return result;
+  }
+  
+  /**
+   * Process shutdown request.<br>
+   * <br>
+   * Signal the controller to shutdown if and only if the current user is {@code admin}.
+   * 
+   * @param request The request message
+   * @return The {@link IMqMessage} response object
+   */
+  private IMqMessage<?> shutdown(IMqMessage<?> request)
+  {
+    mLogger.debug("SessionHandler::shutdown() - IN");
+    
+    boolean success = false;
+    String desc = "Cannot shutdown KAS/MQ server with non-admin user";
+    String user = mActiveUserName;
+    if ("admin".equalsIgnoreCase(user))
+    {
+      success = true;
+      desc = "";
+      mController.shutdown();
+    }
+    
+    IMqMessage<?> result = generateResponse(success, desc);
+    mLogger.debug("SessionHandler::shutdown() - OUT");
+    return result;
+  }
+  
+  /**
+   * Generate a {@link AMqMessage} which will be sent back to remote client
+   * 
+   * @param success A boolean indicating whether last operation was successful or not
+   * @param desc The response text
+   * @return the {@link AMqMessage} response object
+   */
+  private IMqMessage<?> generateResponse(boolean success, String desc)
+  {
+    return MqMessageFactory.createResponse(success ? EMqResponseCode.cOkay : EMqResponseCode.cFail, desc);
   }
   
   /**
@@ -300,7 +434,7 @@ public class SessionHandler extends AKasObject implements Runnable, IHandler
    * 
    * @param isRunning A boolean indicating whether the handler should run ({@code true}) or stop ({@code false})
    */
-  public synchronized void setRunningState(boolean isRunning)
+  private synchronized void setRunningState(boolean isRunning)
   {
     mIsRunning = isRunning;
   }
