@@ -7,28 +7,28 @@ import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
 /**
- * A DEFINE command
+ * A QUERY command
  * 
  * @author Pippo
  */
-public class DefineCommand extends ACliCommand
+public class QueryCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("DEFINE");
-    sCommandVerbs.add("DEF");
+    sCommandVerbs.add("QUERY");
+    sCommandVerbs.add("Q");
   }
   
   /**
-   * Construct a {@link DefineCommand} passing the command arguments and the client object
+   * Construct a {@link QueryCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DefineCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected QueryCommand(Scanner scanner, TokenDeque args, IClient client)
   {
     super(scanner, args, client);
   }
@@ -40,39 +40,38 @@ public class DefineCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Execssive command arguments are ignored for HELP DEFINE");
+      writeln("Execssive command arguments are ignored for HELP QUERY");
       writeln(" ");
       return;
     }
     
     writeln("Purpose: ");
     writeln(" ");
-    writeln("     Define a new entity");
+    writeln("     Query entity");
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- DEFINE|DEF ---+--- QUEUE|Q ---+---+--- queue ---+---+-----------------+---><");
-    writeln("                                                               |                 |");
-    writeln("                                                               +--- threshold ---+");
+    writeln("                                                             +--- BASIC ---+");
+    writeln("                                                             |             |");
+    writeln("     >>--- QUERY|Q ---+--- QUEUE|Q ---+---+--- prefix ---+---+-------------+---><");
+    writeln("                                                             |             |");
+    writeln("                                                             +--- ALL -----+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
-    writeln("     Define a new entity.");
+    writeln("     Query entity.");
     writeln(" ");
     writeln("     -- For QUEUE --");
-    writeln("     Define the specified queue.");
-    writeln("     The queue will remain defined until a DELETE command is issued.");
-    writeln("     Following this command, the user can start putting messages to it and getting them.");
-    writeln("     The DEFINE command will fail if a queue with the specified name already exists.");
-    writeln("     The threshold is the maximum capacity of the queue.");
+    writeln("     Provide basic information about all queues matching the prefix (the default).");
+    writeln("     If the keyword ALL is used following the prefix, all messages in that queue are displayed as well.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
-    writeln("     Define queue TEMP_Q_A:");
-    writeln("          KAS/MQ Admin> DEF QUEUE TEMP_Q_A");
+    writeln("     Query basic information about all queues matching regexp \\CLIENT.APP.*\\:");
+    writeln("          KAS/MQ Admin> QUERY QUEUE CLIENT.APP.*");
     writeln(" ");
-    writeln("     Define queue QUEUE_OF_HEARTS win a threshold of 50,000 messages:");
-    writeln("          KAS/MQ Admin> DEF QUEUE QUEUE_OF_HEARTS 50000");
+    writeln("     Query all information about the contents of queue QUEUE1");
+    writeln("          KAS/MQ Admin> Q Q QUEUE1 ALL");
     writeln(" ");
   }
   
@@ -96,9 +95,9 @@ public class DefineCommand extends ACliCommand
     String type = mCommandArgs.poll().toUpperCase();
     
     if (type.equals("QUEUE"))
-      return new DefQueueCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
     if (type.equals("Q"))
-      return new DefQueueCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

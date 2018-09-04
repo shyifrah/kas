@@ -95,7 +95,7 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
       Collection<MqQueue> queues = mRepository.getElements();
       for (MqQueue q : queues)
       {
-        mLogger.debug("AdminTask::run() - Expiring messages for queue " + q.getName() + ":");
+        mLogger.debug("AdminTask::run() - Expiring messages in queue " + q.getName() + ":");
         mLogger.diag("AdminTask::run() - Total messages in queue: " + q.size());
         int exp = q.expire();
         mLogger.diag("AdminTask::run() - Total messages in queue: " + q.size());

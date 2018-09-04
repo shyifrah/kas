@@ -15,11 +15,25 @@ import com.kas.mq.internal.ERequestType;
 public interface IMqMessage<T> extends IObject, IPacket
 {
   /**
-   * Get the message Id
+   * Get the message ID
    * 
    * @return the message id
    */
   public abstract UniqueId getMessageId();
+  
+  /**
+   * Set the response ID
+   * 
+   * @param id The response ID to set
+   */
+  public abstract void setResponseId(UniqueId id);
+  
+  /**
+   * Get the response ID
+   * 
+   * @return the response id
+   */
+  public abstract UniqueId getResponseId();
   
   /**
    * Set the message priority

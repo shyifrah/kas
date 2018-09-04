@@ -27,6 +27,11 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   protected UniqueId mMessageId;
   
   /**
+   * The response identifier
+   */
+  protected UniqueId mResponseId;
+  
+  /**
    * The message priority
    */
   protected int mPriority;
@@ -129,7 +134,7 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Get the message Id
+   * Get the message ID
    * 
    * @return the message id
    * 
@@ -138,6 +143,30 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   public UniqueId getMessageId()
   {
     return mMessageId;
+  }
+  
+  /**
+   * Set the response ID
+   * 
+   * @param id The response ID to set
+   * 
+   * @see com.kas.mq.impl.IMqMessage#setResponseId(UniqueId)
+   */
+  public void setResponseId(UniqueId id)
+  {
+    mResponseId = id;
+  }
+  
+  /**
+   * Get the response ID
+   * 
+   * @return the response id
+   * 
+   * @see com.kas.mq.impl.IMqMessage#getResponseId()
+   */
+  public UniqueId getResponseId()
+  {
+    return mResponseId;
   }
   
   /**

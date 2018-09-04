@@ -62,6 +62,8 @@ public class HelpCommand extends ACliCommand
     writeln("                   |                               |");
     writeln("                   +--- DELETE --------------------+");
     writeln("                   |                               |");
+    writeln("                   +--- QUERY ---------------------+");
+    writeln("                   |                               |");
     writeln("                   +--- PUT -----------------------+");
     writeln("                   |                               |");
     writeln("                   +--- GET -----------------------+");
@@ -119,6 +121,8 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- DEFINE --------------------+");
       writeln("          |                               |");
       writeln("          +--- DELETE --------------------+");
+      writeln("          |                               |");
+      writeln("          +--- QUERY ---------------------+");
       writeln("          |                               |");
       writeln("          +--- PUT -----------------------+");
       writeln("          |                               |");

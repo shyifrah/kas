@@ -15,6 +15,18 @@ public class TimeStamp extends AKasObject
   static private Calendar sCalendar = Calendar.getInstance();
   
   /**
+   * Get current timestamp as long
+   * 
+   * @return current timestamp as a long value
+   * 
+   * @see System#currentTimeMillis()
+   */
+  static public long nowAsLong()
+  {
+    return System.currentTimeMillis();
+  }
+  
+  /**
    * Get current timestamp in string format
    * 
    * @return current timestamp in string format

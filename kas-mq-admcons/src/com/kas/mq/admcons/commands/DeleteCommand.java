@@ -51,19 +51,26 @@ public class DeleteCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- DELETE ---+--- queue ---+---><");
+    writeln("     >>--- DELETE ---+--- queue ---+---+-------------+---><");
+    writeln("                                       |             |");
+    writeln("                                       +--- FORCE ---+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
     writeln("     Delete the specified queue.");
     writeln("     Once a queue is deleted, you cannot undo this operation. All the contents of the queue");
     writeln("     is permanentely erased, including the backup file.");
-    writeln("     The DELETE command will fail if a queue with the specified name does not exist.");
+    writeln("     The DELETE command will fail if a queue with the specified name does not exist or");
+    writeln("     If the queue is not empty. To ignore the queue contents and delete the queue anyway,");
+    writeln("     The user must use the FORCE keyword.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
     writeln("     Delete queue TEMP_Q_2DEL:");
     writeln("          KAS/MQ Admin> DELETE TEMP_Q_2DEL");
+    writeln(" ");
+    writeln("     Delete queue TEMP_Q_2DEL and ignore its contents:");
+    writeln("          KAS/MQ Admin> DELETE TEMP_Q_2DEL FORCE");
     writeln(" ");
   }
   
@@ -79,23 +86,19 @@ public class DeleteCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Missing queue name");
+      writeln("Missing entity type");
       writeln(" ");
       return false;
     }
     
-    String queue = mCommandArgs.poll().toUpperCase();
-    
-    if (mCommandArgs.size() > 0)
+    String type = mCommandArgs.poll().toUpperCase();
+    if (!type.equals("QUEUE"))
     {
-      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
+      writeln("Invalid entity type \"" + type + "\"");
       writeln(" ");
       return false;
     }
-    
-    mClient.delete(queue);
-    writeln(mClient.getResponse());
-    writeln(" ");
-    return false;
+
+    return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
   }
 }

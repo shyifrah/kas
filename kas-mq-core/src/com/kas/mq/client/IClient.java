@@ -44,15 +44,25 @@ public interface IClient extends IObject
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public abstract boolean define(String queue, int threshold);
+  public abstract boolean defineQueue(String queue, int threshold);
   
   /**
    * Delete an existing queue.
    * 
    * @param queue The queue name to delete.
+   * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
    */
-  public abstract boolean delete(String queue);
+  public abstract boolean deleteQueue(String queue, boolean force);
+  
+  /**
+   * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
+   * 
+   * @param prefix The queue name prefix
+   * @param all if {@code true}, display all information on all queues 
+   * @return {@code true} if query command was successful, {@code false} otherwise
+   */
+  public abstract boolean queryQueue(String prefix, boolean all);
   
   /**
    * Get a message from queue.

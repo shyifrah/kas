@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
@@ -45,6 +46,13 @@ public class MqQueue extends AKasObject
   private UniqueId mQueueId;
   
   /**
+   * Last access
+   */
+  private String mLastAccessUser;
+  private TimeStamp mLastAccessTimeStamp;
+  private String mLastAccessMethod;
+  
+  /**
    * The actual message container. An array of {@link MessageDeque} objects, one for each priority.<br>
    * <br>
    * When a message with priority of 0 is received by this {@link MqQueue} object, it is stored in the 
@@ -56,16 +64,6 @@ public class MqQueue extends AKasObject
    * The file backing up this {@link MqQueue} object.
    */
   protected transient File mBackupFile = null;
-  
-//  /**
-//   * Constructing a {@link MqQueue} object with the specified name.
-//   * 
-//   * @param name The name of this {@link MqQueue} object.
-//   */
-//  public MqQueue(String name)
-//  {
-//    this(name, IMqConstants.cDefaultQueueThreshold);
-//  }
   
   /**
    * Constructing a {@link MqQueue} object with the specified name.
@@ -118,7 +116,7 @@ public class MqQueue extends AKasObject
    * 
    * @return the number of messages in all priority queues
    */
-  public synchronized int size()
+  public int size()
   {
     int sum = 0;
     for (int i = 0; i < mQueueArray.length; ++i)
@@ -424,6 +422,8 @@ public class MqQueue extends AKasObject
       }
     }
     
+    setLastAccess("System", "expire");
+    
     return result;
   }
   
@@ -441,6 +441,33 @@ public class MqQueue extends AKasObject
       if (size > 0) return prio;
     }
     return -1;
+  }
+  
+  /**
+   * Set the last access to the queue
+   * 
+   * @param user Last user to access this {@link MqQueue}
+   * @param method The last method that was used to access this {@link MqQueue}
+   */
+  public synchronized void setLastAccess(String user, String method)
+  {
+    mLastAccessUser = user;
+    mLastAccessTimeStamp = TimeStamp.now();
+    mLastAccessMethod = method;
+  }
+  
+  /**
+   * Get the last access to the queue
+   * 
+   * @return A string describing the last access info
+   */
+  public synchronized String getLastAccess()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("By ").append(mLastAccessUser)
+      .append(" at ").append(mLastAccessTimeStamp.toString())
+      .append(" for method ").append(mLastAccessMethod).append("()");
+    return sb.toString();
   }
   
   /**
@@ -464,6 +491,8 @@ public class MqQueue extends AKasObject
         }
       }
     }
+    
+    setLastAccess("System", "expire");
     
     mLogger.debug("MqQueue::expire() - OUT, Returns=" + total);
     return total;
@@ -500,6 +529,11 @@ public class MqQueue extends AKasObject
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
       .append(pad).append("  UniqueId=").append(mQueueId.toString()).append("\n")
+      .append(pad).append("  LastAccess=(\n")
+      .append(pad).append("    By=").append(mLastAccessUser).append("\n")
+      .append(pad).append("    At=").append(mLastAccessTimeStamp.toString()).append("\n")
+      .append(pad).append("    For=").append(mLastAccessMethod).append("\n")
+      .append(pad).append("  )\n")
       .append(pad).append("  PriorityStores=(\n");
     
     for (int i = 0; i < mQueueArray.length; ++i)
