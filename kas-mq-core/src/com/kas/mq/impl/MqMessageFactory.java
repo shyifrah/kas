@@ -34,17 +34,13 @@ public class MqMessageFactory
     return message;
   }
   
-  static public MqObjectMessage createQueryQueueRequest(String queue, boolean alldata)
+  static public MqObjectMessage createQueryQueueRequest(String name, boolean prefix, boolean all)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cQueryQueue);
-    message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, alldata);
-    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, queue);
-    if (queue.endsWith("*"))
-    {
-      message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
-      message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, queue.substring(0, queue.length()-1));
-    }
+    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
+    message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, prefix);
+    message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);
     return message;
   }
   
@@ -96,15 +92,15 @@ public class MqMessageFactory
   /**
    * Create a response message
    * 
-   * @param code The code of the response. An integer value representing how successful was the request.
+   * @param int An integer value representing how successful was the request.
    * @param response The message sent by the server to the client which describes the response code.
    * @return a {@link MqResponse}
    */
-  static public MqObjectMessage createResponse(EMqResponseCode code, String response)
+  static public MqObjectMessage createResponse(int code, String response)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cUnknown);
-    message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code.ordinal());
+    message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code);
     message.setStringProperty(IMqConstants.cKasPropertyResponseDesc, response);
     return message;
   }

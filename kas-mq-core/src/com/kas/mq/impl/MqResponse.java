@@ -13,9 +13,9 @@ import com.kas.infra.base.AKasObject;
 public class MqResponse extends AKasObject
 {
   /**
-   * The response code
+   * The response code integer value
    */
-  private EMqResponseCode mResponseCode;
+  private int mIntResponseCode;
   
   /**
    * The response description
@@ -28,9 +28,9 @@ public class MqResponse extends AKasObject
    * @param code The {@link EMqResponseCode response code}
    * @param desc The description of the response code
    */
-  public MqResponse(EMqResponseCode code, String desc)
+  public MqResponse(int code, String desc)
   {
-    mResponseCode = code;
+    mIntResponseCode = code;
     mResponseDesc = desc;
   }
   
@@ -41,19 +41,28 @@ public class MqResponse extends AKasObject
    */
   public MqResponse(IMqMessage<?> message)
   {
-    int code = message.getIntProperty(IMqConstants.cKasPropertyResponseCode, EMqResponseCode.cError.ordinal());
-    mResponseCode = EMqResponseCode.fromInt(code);
+    mIntResponseCode = message.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1);
     mResponseDesc = message.getStringProperty(IMqConstants.cKasPropertyResponseDesc, null);
   }
   
   /**
-   * Get the response code
+   * Get the response code as integer value
    * 
-   * @return the response code
+   * @return the response code as integer value
+   */
+  public int getIntCode()
+  {
+    return mIntResponseCode;
+  }
+  
+  /**
+   * Get the response code as Enum value
+   * 
+   * @return the response code as Enum value
    */
   public EMqResponseCode getCode()
   {
-    return mResponseCode;
+    return EMqResponseCode.fromInt(mIntResponseCode);
   }
   
   /**
@@ -79,7 +88,7 @@ public class MqResponse extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  ResponseCode=").append(mResponseCode).append("\n")
+      .append(pad).append("  ResponseCode=").append(mIntResponseCode).append("\n")
       .append(pad).append("  ResponseDesc=").append(mResponseDesc).append("\n")
       .append(pad).append(")");
     return sb.toString();

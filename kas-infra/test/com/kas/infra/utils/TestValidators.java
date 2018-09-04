@@ -17,7 +17,6 @@ public class TestValidators
       String qn = cQueueNames[i];
       System.out.println("Queue Name........................: " + qn);
       System.out.println("   Valid queue name..........: " + Validators.isQueueName(qn));
-      System.out.println("   Valid queue name prefix...: " + Validators.isQueueNamePrefix(qn) + " (Prefix: " + qn.substring(0,  qn.length()-1) + ")");
     }
   }
 }

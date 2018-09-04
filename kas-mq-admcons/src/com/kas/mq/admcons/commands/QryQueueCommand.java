@@ -1,6 +1,7 @@
 package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
@@ -50,12 +51,25 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    String prefix = mCommandArgs.poll().toUpperCase();
+    String name = mCommandArgs.poll().toUpperCase();
+    boolean prefix = false;
+    if (name.endsWith("*"))
+    {
+      name = name.substring(0, name.length()-1);
+      prefix = true;
+    }
     
-    boolean alldata = false;
+    if (!Validators.isQueueName(name))
+    {
+      writeln("Invalid queue name \"" + name + "\"");
+      writeln(" ");
+      return false;
+    }
+    
+    boolean all = false;
     String opt = mCommandArgs.poll();
     if ((opt != null) && (opt.equalsIgnoreCase("ALL")))
-      alldata = true;
+      all = true;
     
     if (mCommandArgs.size() > 0)
     {
@@ -64,7 +78,7 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    mClient.queryQueue(prefix, alldata);
+    mClient.queryQueue(name, prefix, all);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

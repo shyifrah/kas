@@ -48,9 +48,9 @@ public class MqQueue extends AKasObject
   /**
    * Last access
    */
-  private String mLastAccessUser;
-  private TimeStamp mLastAccessTimeStamp;
-  private String mLastAccessMethod;
+  private String mLastAccessUser = "SYSTEM";
+  private TimeStamp mLastAccessTimeStamp = TimeStamp.now();
+  private String mLastAccessMethod = "<init>";
   
   /**
    * The actual message container. An array of {@link MessageDeque} objects, one for each priority.<br>

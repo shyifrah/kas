@@ -26,7 +26,7 @@ public final class MqContext extends AKasObject implements IClient
   /**
    * The actual client
    */
-  private MqClientImpl mDelegator = new MqClientImpl();
+  private IClient mDelegator = new MqClientImpl();
   
   /**
    * Connect client to the KAS/MQ server.
@@ -152,32 +152,28 @@ public final class MqContext extends AKasObject implements IClient
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param name The queue name. If ends with {@code asterisk}, then the name is a prefix
-   * @param all if {@code true}, display all information on all queues 
-   * @return {@code true} if query command was successful, {@code false} otherwise
+   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @return the number of records returned that matched the query, or -1 if an error occurred
    * 
    * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
    */
-  public boolean queryQueue(String name, boolean all)
+  public int queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("MqContext::queryQueue() - IN, Queue=" + name);
     
-    boolean success = false;
+    int result = -1;
     if (Validators.isQueueName(name))
     {
-      success = mDelegator.queryQueue(name, all);
-    }
-    else if (Validators.isQueueNamePrefix(name))
-    {
-      success = mDelegator.queryQueue(name, all);
+      result = mDelegator.queryQueue(name, prefix, all);
     }
     else
     {
-      setResponse("Query failed, invalid queue name: " + name);
+      setResponse("Query failed, invalid queue name" + (prefix ? " prefix: " : ": ") + ":" + name);
     }
     
-    mLogger.debug("MqContext::queryQueue() - OUT, Returns=" + success);
-    return success;
+    mLogger.debug("MqContext::queryQueue() - OUT, Returns=" + result);
+    return result;
   }
   
   /**

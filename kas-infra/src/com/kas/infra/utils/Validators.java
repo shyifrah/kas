@@ -67,22 +67,6 @@ public class Validators
   }
   
   /**
-   * Validate queue name prefix with regular expression
-   * 
-   * @param queue The queue name for validation
-   * @return {@code true} if {@code queue} is a valid queue name, {@code false} otherwise
-   */
-  static public boolean isQueueNamePrefix(String queue)
-  {
-    if ((queue == null) || (queue.trim().length() == 0)) return false;
-    if (!queue.endsWith("*")) return false;
-    
-    String qpref = queue.substring(0, queue.length()-1);
-    
-    return cQueueNameCompiledPattern.matcher(qpref).matches(); 
-  }
-  
-  /**
    * Validate user name with regular expression
    * 
    * @param user The user name for validation

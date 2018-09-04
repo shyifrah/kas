@@ -1,6 +1,7 @@
 package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
@@ -51,6 +52,12 @@ public class DefQueueCommand extends ACliCommand
     }
     
     String queue = mCommandArgs.poll().toUpperCase();
+    if (!Validators.isQueueName(queue))
+    {
+      writeln("Invalid queue name \"" + queue + "\"");
+      writeln(" ");
+      return false;
+    }
     
     String sthreshold = mCommandArgs.poll();
     if (sthreshold == null)
@@ -63,7 +70,7 @@ public class DefQueueCommand extends ACliCommand
     }
     catch (NumberFormatException e) {}
     
-    if (threshold == -1)
+    if (threshold <= 0)
     {
       writeln("Invalid threshold number \"" + sthreshold + "\"");
       writeln(" ");

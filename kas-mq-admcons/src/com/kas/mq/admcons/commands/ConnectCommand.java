@@ -4,6 +4,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.base.KasException;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
@@ -94,6 +95,12 @@ public class ConnectCommand extends ACliCommand
     }
     
     String host = mCommandArgs.poll().toUpperCase();
+    if (!(Validators.isHostName(host)) && (!Validators.isIpAddress(host)))
+    {
+      writeln("Host \"" + host + "\" does not designate a host name nor IP address");
+      writeln(" ");
+      return false;
+    }
     
     String sport = mCommandArgs.poll();
     if (sport == null)
@@ -106,7 +113,7 @@ public class ConnectCommand extends ACliCommand
     }
     catch (NumberFormatException e) {}
     
-    if (port == -1)
+    if (!Validators.isPort(port))
     {
       writeln("Invalid port number \"" + sport + "\"");
       writeln(" ");
@@ -121,15 +128,21 @@ public class ConnectCommand extends ACliCommand
     }
     
     TokenDeque input = read("Enter user name: ");
-    String username = input.poll().trim();
+    String username = input.poll();
     String extra = input.poll();
     if ((username == null) || (username.length() == 0))
     {
-      writeln("Invalid user name \"\". Cannot be empty string");
+      writeln("User name cannot be empty string");
       writeln(" ");
       return false;
     }
-    username = username.toUpperCase();
+    username = username.trim().toUpperCase();
+    if (!Validators.isUserName(username))
+    {
+      writeln("Invalid user name \"" + username + "\"");
+      writeln(" ");
+      return false;
+    }
     
     if (extra != null)
     {

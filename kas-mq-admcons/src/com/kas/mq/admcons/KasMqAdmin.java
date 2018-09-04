@@ -26,7 +26,7 @@ public class KasMqAdmin extends AKasMqAppl
   /**
    * A {@link MqClientImpl} which will act as the client
    */
-  private IClient mClientImpl = new MqClientImpl(); 
+  private IClient mClientImpl = new MqClientImpl();
   
   /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments

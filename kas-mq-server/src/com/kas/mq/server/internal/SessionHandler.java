@@ -292,13 +292,13 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mLogger.debug("SessionHandler::queryQueue() - IN");
     
-    boolean alldata = request.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
+    boolean all = request.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
     boolean prefix = request.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
     String name = request.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
     
-    boolean success = mClient.queryQueue(name, alldata);
+    int total = mClient.queryQueue(name, prefix, all);
     
-    IMqMessage<?> result = generateResponse(success, mClient.getResponse());
+    IMqMessage<?> result = generateResponse(total, mClient.getResponse());
     mLogger.debug("SessionHandler::queryQueue() - OUT");
     return result;
   }
@@ -330,7 +330,7 @@ public class SessionHandler extends AKasObject implements Runnable
     
     if (msg == null)
     {
-      msg = MqMessageFactory.createResponse(EMqResponseCode.cFail, mClient.getResponse());
+      msg = MqMessageFactory.createResponse(EMqResponseCode.cFail.ordinal(), mClient.getResponse());
     }
     else
     {
@@ -399,7 +399,19 @@ public class SessionHandler extends AKasObject implements Runnable
    */
   private IMqMessage<?> generateResponse(boolean success, String desc)
   {
-    return MqMessageFactory.createResponse(success ? EMqResponseCode.cOkay : EMqResponseCode.cFail, desc);
+    return generateResponse(success ? EMqResponseCode.cOkay.ordinal() : EMqResponseCode.cFail.ordinal(), desc);
+  }
+  
+  /**
+   * Generate a {@link AMqMessage} which will be sent back to remote client
+   * 
+   * @param success A boolean indicating whether last operation was successful or not
+   * @param desc The response text
+   * @return the {@link AMqMessage} response object
+   */
+  private IMqMessage<?> generateResponse(int code, String desc)
+  {
+    return MqMessageFactory.createResponse(code, desc);
   }
   
   /**

@@ -250,32 +250,32 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param name The queue name. If ends with {@code asterisk}, then the name is a prefix
+   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all if {@code true}, display all information on all queues 
-   * @return {@code true} if query command was successful, {@code false} otherwise
+   * @return the number of records returned that matched the query, or -1 if an error occurred
    * 
    * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
    */
-  public boolean queryQueue(String name, boolean all)
+  public int queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("MqClientImpl::queryQueue() - IN");
     
-    boolean success = false;
+    int result = -1;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createQueryQueueRequest(name, all);
+      IMqMessage<?> request = MqMessageFactory.createQueryQueueRequest(name, prefix, all);
       mLogger.debug("MqClientImpl::queryQueue() - sending query queue request: " + request.toPrintableString(0));
       try
       {
         IPacket packet = mMessenger.sendAndReceive(request);
         MqResponse response = new MqResponse((IMqMessage<?>)packet);
         mLogger.debug("MqClientImpl::queryQueue() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
-          success = true;
+        result = response.getIntCode();
         
         logInfoAndSetResponse(response.getDesc());
       }
@@ -288,8 +288,8 @@ public class MqClientImpl extends AKasObject implements IClient
       }
     }
     
-    mLogger.debug("MqClientImpl::queryQueue() - OUT, Returns=" + success);
-    return success;
+    mLogger.debug("MqClientImpl::queryQueue() - OUT, Returns=" + result);
+    return result;
   }
   
   /**

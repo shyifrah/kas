@@ -3,6 +3,7 @@ package com.kas.mq.admcons.commands;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.client.IClient;
 import com.kas.mq.internal.TokenDeque;
 
@@ -61,11 +62,23 @@ public class DelQueueCommand extends ACliCommand
     }
     
     String queue = mCommandArgs.poll().toUpperCase();
+    if (!Validators.isQueueName(queue))
+    {
+      writeln("Invalid queue name \"" + queue + "\"");
+      writeln(" ");
+      return false;
+    }
     
     boolean force = false;
     String opt = mCommandArgs.poll();
     if ((opt != null) && (opt.equalsIgnoreCase("FORCE")))
       force = true;
+    else if (opt != null)
+    {
+      writeln("Invalid option \"" + opt + "\"");
+      writeln(" ");
+      return false;
+    }
     
     if (mCommandArgs.size() > 0)
     {
