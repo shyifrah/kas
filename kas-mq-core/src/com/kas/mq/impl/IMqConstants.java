@@ -42,11 +42,15 @@ public interface IMqConstants
   static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
   static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
   
-  static public final String cKasPropertyDefQueueName   = cKasPropertyPrefix + "def.queue";
-  static public final String cKasPropertyDefThreshold   = cKasPropertyPrefix + "def.threshold";
+  static public final String cKasPropertyDefqQueueName  = cKasPropertyPrefix + "defq.queue";
+  static public final String cKasPropertyDefqThreshold  = cKasPropertyPrefix + "defq.threshold";
   
-  static public final String cKasPropertyDelQueueName   = cKasPropertyPrefix + "del.queue";
-  static public final String cKasPropertyDelForce       = cKasPropertyPrefix + "del.force";
+  static public final String cKasPropertyDelqQueueName  = cKasPropertyPrefix + "delq.queue";
+  static public final String cKasPropertyDelqForce      = cKasPropertyPrefix + "delq.force";
+  
+  static public final String cKasPropertyQryqQueueName  = cKasPropertyPrefix + "qryq.queue";
+  static public final String cKasPropertyQryqPrefix     = cKasPropertyPrefix + "qryq.prefix";
+  static public final String cKasPropertyQryqAllData    = cKasPropertyPrefix + "qryq.alldata";
   
   static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";
@@ -57,7 +61,4 @@ public interface IMqConstants
   static public final String cKasPropertyPutUserName    = cKasPropertyPrefix + "put.username";
   static public final String cKasPropertyPutQueueName   = cKasPropertyPrefix + "put.queue";
   static public final String cKasPropertyPutTimeStamp   = cKasPropertyPrefix + "put.timestamp";
-  
-  static public final String cKasPropertyQryQueueName   = cKasPropertyPrefix + "qry.queue";
-  static public final String cKasPropertyQryAllData     = cKasPropertyPrefix + "qry.alldata";
 }

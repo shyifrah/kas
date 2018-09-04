@@ -108,7 +108,6 @@ public final class MqContext extends AKasObject implements IClient
     if (!Validators.isQueueName(queue))
     {
       setResponse("Failed to define queue, invalid queue name: " + queue);
-      
     }
     else if (threshold <= 0)
     {
@@ -153,24 +152,28 @@ public final class MqContext extends AKasObject implements IClient
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param prefix The queue name prefix
+   * @param name The queue name. If ends with {@code asterisk}, then the name is a prefix
    * @param all if {@code true}, display all information on all queues 
    * @return {@code true} if query command was successful, {@code false} otherwise
    * 
    * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
    */
-  public boolean queryQueue(String prefix, boolean all)
+  public boolean queryQueue(String name, boolean all)
   {
-    mLogger.debug("MqContext::queryQueue() - IN, Queue=" + prefix);
+    mLogger.debug("MqContext::queryQueue() - IN, Queue=" + name);
     
     boolean success = false;
-    if (Validators.isQueueName(prefix))
+    if (Validators.isQueueName(name))
     {
-      success = mDelegator.queryQueue(prefix, all);
+      success = mDelegator.queryQueue(name, all);
+    }
+    else if (Validators.isQueueNamePrefix(name))
+    {
+      success = mDelegator.queryQueue(name, all);
     }
     else
     {
-      setResponse("Query failed, invalid queue name prefix: " + prefix);
+      setResponse("Query failed, invalid queue name: " + name);
     }
     
     mLogger.debug("MqContext::queryQueue() - OUT, Returns=" + success);

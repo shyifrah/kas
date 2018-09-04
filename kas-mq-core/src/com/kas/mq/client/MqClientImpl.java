@@ -250,13 +250,13 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param prefix The queue name prefix
+   * @param name The queue name. If ends with {@code asterisk}, then the name is a prefix
    * @param all if {@code true}, display all information on all queues 
    * @return {@code true} if query command was successful, {@code false} otherwise
    * 
    * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
    */
-  public boolean queryQueue(String prefix, boolean all)
+  public boolean queryQueue(String name, boolean all)
   {
     mLogger.debug("MqClientImpl::queryQueue() - IN");
     
@@ -267,7 +267,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createQueryQueueRequest(prefix, all);
+      IMqMessage<?> request = MqMessageFactory.createQueryQueueRequest(name, all);
       mLogger.debug("MqClientImpl::queryQueue() - sending query queue request: " + request.toPrintableString(0));
       try
       {
@@ -283,7 +283,7 @@ public class MqClientImpl extends AKasObject implements IClient
       {
         StringBuilder sb = new StringBuilder();
         sb.append("Exception occurred while trying to query KAS/MQ server for queues prefixed with ")
-          .append(prefix).append(". Exception: ").append(StringUtils.format(e));
+          .append(name).append(". Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
     }

@@ -58,11 +58,11 @@ public interface IClient extends IObject
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param prefix The queue name prefix
+   * @param name The queue name. If ends with {@code asterisk}, then the name is a prefix
    * @param all if {@code true}, display all information on all queues 
    * @return {@code true} if query command was successful, {@code false} otherwise
    */
-  public abstract boolean queryQueue(String prefix, boolean all);
+  public abstract boolean queryQueue(String name, boolean all);
   
   /**
    * Get a message from queue.

@@ -185,26 +185,26 @@ public class ClientResponder extends AKasObject implements IClient
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param prefix The queue name prefix
+   * @param name The queue name. If ends with {@code asterisk}, then the name is a prefix
    * @param all if {@code true}, display all information on all queues 
    * @return {@code true} if query command was successful, {@code false} otherwise
    * 
    * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
    */
-  public boolean queryQueue(String prefix, boolean all)
+  public boolean queryQueue(String name, boolean all)
   {
-    mLogger.debug("ResponderClient::queryQueue() - IN, QueuePrefix=" + prefix + ", Alldata=" + all);
+    mLogger.debug("ResponderClient::queryQueue() - IN, QueuePrefix=" + name + ", Alldata=" + all);
     
-    if (prefix == null)
-      prefix = "";
+    if (name == null)
+      name = "";
     
     Collection<MqQueue> queues = mRepository.getElements();
     StringBuilder sb = new StringBuilder();
-    sb.append("Query ").append((all ? "all" : "basic")).append(" data on ").append(prefix).append(":\n").append("  \n");
+    sb.append("Query ").append((all ? "all" : "basic")).append(" data on ").append(name).append(":\n").append("  \n");
     int total = 0;
     for (MqQueue mqq : queues)
     {
-      if (mqq.getName().startsWith(prefix))
+      if (mqq.getName().startsWith(name))
       {
         ++total;
         sb.append("Queue....................: ").append(mqq.getName()).append('\n');

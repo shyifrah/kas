@@ -20,8 +20,8 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDefineQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyDefQueueName, queue);
-    message.setIntProperty(IMqConstants.cKasPropertyDefThreshold, threshold);
+    message.setStringProperty(IMqConstants.cKasPropertyDefqQueueName, queue);
+    message.setIntProperty(IMqConstants.cKasPropertyDefqThreshold, threshold);
     return message;
   }
   
@@ -29,8 +29,8 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cDeleteQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyDelQueueName, queue);
-    message.setBoolProperty(IMqConstants.cKasPropertyDelForce, force);
+    message.setStringProperty(IMqConstants.cKasPropertyDelqQueueName, queue);
+    message.setBoolProperty(IMqConstants.cKasPropertyDelqForce, force);
     return message;
   }
   
@@ -38,8 +38,13 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cQueryQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyQryQueueName, queue);
-    message.setBoolProperty(IMqConstants.cKasPropertyQryAllData, alldata);
+    message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, alldata);
+    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, queue);
+    if (queue.endsWith("*"))
+    {
+      message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
+      message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, queue.substring(0, queue.length()-1));
+    }
     return message;
   }
   

@@ -248,8 +248,8 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mLogger.debug("SessionHandler::defineQueue() - IN");
     
-    String queue = request.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
-    int threshold = request.getIntProperty(IMqConstants.cKasPropertyDefThreshold, IMqConstants.cDefaultQueueThreshold);
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyDefqQueueName, null);
+    int threshold = request.getIntProperty(IMqConstants.cKasPropertyDefqThreshold, IMqConstants.cDefaultQueueThreshold);
     
     boolean success = mClient.defineQueue(queue, threshold);
     
@@ -270,8 +270,8 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mLogger.debug("SessionHandler::deleteQueue() - IN");
     
-    String queue = request.getStringProperty(IMqConstants.cKasPropertyDelQueueName, null);
-    boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelForce, false);
+    String queue = request.getStringProperty(IMqConstants.cKasPropertyDelqQueueName, null);
+    boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelqForce, false);
     
     boolean success = mClient.deleteQueue(queue, force);
     
@@ -292,10 +292,11 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mLogger.debug("SessionHandler::queryQueue() - IN");
     
-    String prefix = request.getStringProperty(IMqConstants.cKasPropertyQryQueueName, null);
-    boolean alldata = request.getBoolProperty(IMqConstants.cKasPropertyQryAllData, false);
+    boolean alldata = request.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
+    boolean prefix = request.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
+    String name = request.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
     
-    boolean success = mClient.queryQueue(prefix, alldata);
+    boolean success = mClient.queryQueue(name, alldata);
     
     IMqMessage<?> result = generateResponse(success, mClient.getResponse());
     mLogger.debug("SessionHandler::queryQueue() - OUT");
