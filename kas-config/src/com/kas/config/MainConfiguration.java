@@ -335,6 +335,21 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   }
   
   /**
+   * Get a subset of the {@link IConfiguration} object.
+   * 
+   * @param keyPrefix The prefix of the keys to include in the subset
+   * @param keySuffix The suffix of the keys to include in the subset
+   * @return a new {@link Properties} object including only keys that are
+   * prefixed with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
+   * 
+   * @see com.kas.infra.config.IConfiguration#getSubset(String, String)
+   */
+  public Properties getSubset(String keyPrefix, String keySuffix)
+  {
+    return mProperties.getSubset(keyPrefix, keySuffix);
+  }
+  
+  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

@@ -2,6 +2,7 @@ package com.kas.comm.impl;
 
 import java.net.Socket;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.utils.Validators;
 
 /**
  * An object used to simplify data extraction from {@link Socket} object
@@ -38,6 +39,44 @@ public class NetworkAddress extends AKasObject
    */
   public NetworkAddress(String host, int port)
   {
+    mHost = host;
+    mPort = port;
+  }
+  
+  /**
+   * Construct a {@link NetworkAddress} using the string
+   * 
+   * @param str A string in the format of {@code <host>:<port>}
+   * 
+   * @throws NullPointerException if {@code str} is {@code null}
+   * @throws IllegalArgumentException if {@code str} contains invalid host/port values
+   */
+  public NetworkAddress(String str)
+  {
+    if (str == null)
+      throw new NullPointerException("Cannot construct a NetworkAddress object from null string");
+    String [] vals = str.split(":");
+    if (vals.length != 2)
+      throw new IllegalArgumentException("Invalid argument format: " + str);
+    
+    String host = vals[0];
+    if ((!Validators.isHostName(host)) && (!Validators.isIpAddress(host)))
+      throw new IllegalArgumentException("Invalid host name/IP address: " + host);
+    
+    String sport = vals[1];
+    int port = -1;
+    try
+    {
+      port = Integer.valueOf(sport.toUpperCase());
+    }
+    catch (NumberFormatException e)
+    {
+      throw new IllegalArgumentException("Invalid port number: " + sport);
+    }
+    
+    if (!Validators.isPort(port))
+      throw new IllegalArgumentException("Invalid port number: " + port);
+   
     mHost = host;
     mPort = port;
   }

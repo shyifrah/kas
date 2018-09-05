@@ -2,11 +2,11 @@ package com.kas.mq;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.internal.DestinationManager;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -19,7 +19,7 @@ public class MqConfiguration extends AConfiguration
   static private final String  cMqUserConfigPrefix    = cMqConfigPrefix + "user.";
   static private final String  cMqConnConfigPrefix    = cMqConfigPrefix + "conn.";
   static private final String  cMqHskpConfigPrefix    = cMqConfigPrefix + "hskp.";
-  static private final String  cMqRemoteConfigPrefix  = cMqConfigPrefix + "remote.";
+  static private final String  cMqRemoteConfigPrefix  = cMqConfigPrefix + "remoteManager.";
   
   static public final boolean cDefaultEnabled           = true;
   static public final int     cDefaultPort              = 14560;
@@ -72,12 +72,12 @@ public class MqConfiguration extends AConfiguration
   private long mHskpInterval = cDefaultHskpInterval; 
   
   /**
-   * A map of users and passwords (base64 encrypted)
+   * A map of remote destination managers to associated network addresses
    */
-  private Map<String, DestinationManager> mRemoteDestinationMap = new ConcurrentHashMap<String, DestinationManager>();
+  private Map<String, NetworkAddress> mRemoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
   
   /**
-   * A map of users and passwords (base64 encrypted)
+   * A map of users to passwords (base64 encrypted)
    */
   private Map<String, byte []> mUserMap = new ConcurrentHashMap<String, byte []>();
   
@@ -95,8 +95,16 @@ public class MqConfiguration extends AConfiguration
     mHskpEnabled        = mMainConfig.getBoolProperty    ( cMqHskpConfigPrefix + "enabled"       , mHskpEnabled       );
     mHskpInterval       = mMainConfig.getLongProperty    ( cMqHskpConfigPrefix + "interval"      , mHskpInterval      );
     
-    mUserMap.clear();
-    
+    refreshUserMap();
+    refreshRemoteManagersMap();
+  }
+  
+  /**
+   * Refresh the user's map
+   */
+  private void refreshUserMap()
+  {
+    Map<String, byte[]> usermap = new ConcurrentHashMap<String, byte[]>();
     Properties props = mMainConfig.getSubset(cMqUserConfigPrefix);
     for (Map.Entry<Object, Object> entry : props.entrySet())
     {
@@ -104,10 +112,34 @@ public class MqConfiguration extends AConfiguration
       user = user.toUpperCase();
       String pass = (String)entry.getValue();
       byte [] encpass = Base64Utils.encode(pass.getBytes());
-      mUserMap.put(user, encpass);
+      usermap.put(user, encpass);
     }
-    
-    mRemoteDestinationMap.clear();
+    mUserMap = usermap;
+  }
+  
+  /**
+   * Refresh the remote managers map
+   */
+  private void refreshRemoteManagersMap()
+  {
+    Map<String, NetworkAddress> remoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
+    Properties props = mMainConfig.getSubset(cMqRemoteConfigPrefix);
+    for (Map.Entry<Object, Object> entry : props.entrySet())
+    {
+      NetworkAddress address = null;
+      String key = (String)entry.getKey();
+      String name = key.substring(cMqRemoteConfigPrefix.length());
+      String value = (String)entry.getValue();
+      try
+      {
+        address = new NetworkAddress(value);
+      }
+      catch (NullPointerException | IllegalArgumentException e) {}
+      
+      if (address != null)
+        remoteManagersMap.put(name, address);
+    }
+    mRemoteManagersMap = remoteManagersMap;
   }
   
   /**
@@ -233,6 +265,9 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("  )\n")
       .append(pad).append("  Users=(\n")
       .append(pad).append(StringUtils.asPrintableString(mUserMap, level+2))
+      .append(pad).append("  )\n")
+      .append(pad).append("  RemoteManagers=(\n")
+      .append(pad).append(StringUtils.asPrintableString(mRemoteManagersMap, level+2))
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

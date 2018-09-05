@@ -60,4 +60,14 @@ public interface IConfiguration
    * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
    */
   public abstract Properties getSubset(String keyPrefix);
+  
+  /**
+   * Get a subset of the {@link IConfiguration} object.
+   * 
+   * @param keyPrefix The prefix of the keys to include in the subset
+   * @param keySuffix The suffix of the keys to include in the subset
+   * @return a new {@link Properties} object including only keys that are prefixed
+   * with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
+   */
+  public abstract Properties getSubset(String keyPrefix, String keySuffix);
 }

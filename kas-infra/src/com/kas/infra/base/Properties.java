@@ -7,6 +7,7 @@ import java.io.ObjectOutputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.kas.infra.config.IConfiguration;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
@@ -686,16 +687,35 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public Properties getSubset(String keyPrefix)
   {
+    return getSubset(keyPrefix, "");
+  }
+
+  /**
+   * Get a subset of the {@link IConfiguration} object.<br>
+   * <br>
+   * All properties in the subset have a common prefix specified by {@code keyPrefix}
+   * and a common suffix specified by {@code keySuffix}.<br>
+   * For a {@code null} or empty string, all contents are replicated.
+   * 
+   * @param keyPrefix The prefix of the keys to include in the subset
+   * @param keySuffix The suffix of the keys to include in the subset
+   * @return a new {@link Properties} object including only keys that are prefixed
+   * with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
+   */
+  public Properties getSubset(String keyPrefix, String keySuffix)
+  {
     Properties subset = new Properties();
     subset.putAll(this);
-    if ((keyPrefix != null) && (keyPrefix.length() > 0))
+    String pref = keyPrefix == null ? "" : keyPrefix;
+    String suff = keySuffix == null ? "" : keySuffix;
+    
+    for (Map.Entry<Object, Object> entry : entrySet())
     {
-      for (Map.Entry<Object, Object> entry : entrySet())
-      {
-        String key = (String)entry.getKey();
-        if (!key.startsWith(keyPrefix))
-          subset.remove(key);
-      }
+      String key = (String)entry.getKey();
+      if (!key.startsWith(pref))
+        subset.remove(key);
+      else if (!key.endsWith(suff))
+        subset.remove(key);
     }
     
     return subset;
