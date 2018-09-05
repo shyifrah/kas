@@ -144,7 +144,12 @@ public class SessionHandler extends AKasObject implements Runnable
       ERequestType requestType = request.getRequestType();
       mLogger.debug("SessionHandler::process() - Received request of type: " + requestType.toPrintableString(0));
       
-      if (requestType == ERequestType.cAuthenticate)
+      if (!mController.getConfig().isEnabled())
+      {
+        mLogger.debug("SessionHandler::process() - KAS/MQ server is disabled and request will be rejected");
+        response = reject();
+      }
+      else if (requestType == ERequestType.cAuthenticate)
       {
         response = authenticate(request);
         if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
@@ -388,6 +393,18 @@ public class SessionHandler extends AKasObject implements Runnable
     IMqMessage<?> result = generateResponse(success, desc);
     mLogger.debug("SessionHandler::shutdown() - OUT");
     return result;
+  }
+  
+  /**
+   * Generate a {@link AMqMessage} which will be sent back to remote client
+   * 
+   * @param success A boolean indicating whether last operation was successful or not
+   * @param desc The response text
+   * @return the {@link AMqMessage} response object
+   */
+  private IMqMessage<?> reject()
+  {
+    return generateResponse(EMqResponseCode.cError.ordinal(), "KAS/MQ server is disabled, operation rejected");
   }
   
   /**

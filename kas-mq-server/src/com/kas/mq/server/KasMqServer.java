@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.kas.config.MainConfiguration;
 import com.kas.infra.base.threads.ThreadPool;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
@@ -173,31 +175,39 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     int errors = 0;
     while (!isStopping())
     {
-      try
+      if (!mConfig.isEnabled())
       {
-        Socket socket = mListenSocket.accept();
-        mController.newSession(socket);
+        mLogger.diag("KasMqServer::run() - KAS/MQ server is disabled");
+        RunTimeUtils.sleepForMilliSeconds(mConfig.getConnSocketTimeout());
       }
-      catch (SocketTimeoutException e)
+      else
       {
-        mLogger.diag("KasMqServer::run() - Accept() timed out, no new connections...");
-      }
-      catch (IOException e)
-      {
-        if (mListenSocket.isClosed())
+        try
         {
-          stop();
-          mLogger.debug("KasMqServer::run() - Socket was closed, Terminating KAS/MQ server...");
+          Socket socket = mListenSocket.accept();
+          mController.newSession(socket);
         }
-        else
+        catch (SocketTimeoutException e)
         {
-          mLogger.warn("An error occurred while trying to accept new client connection");
-          ++errors;
-          if (errors >= mConfig.getConnMaxErrors())
+          mLogger.diag("KasMqServer::run() - Accept() timed out, no new connections...");
+        }
+        catch (IOException e)
+        {
+          if (mListenSocket.isClosed())
           {
             stop();
-            mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
-            mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
+            mLogger.debug("KasMqServer::run() - Socket was closed, Terminating KAS/MQ server...");
+          }
+          else
+          {
+            mLogger.warn("An error occurred while trying to accept new client connection");
+            ++errors;
+            if (errors >= mConfig.getConnMaxErrors())
+            {
+              stop();
+              mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
+              mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
+            }
           }
         }
       }

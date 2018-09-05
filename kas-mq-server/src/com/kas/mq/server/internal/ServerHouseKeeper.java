@@ -67,43 +67,51 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
    */
   public void run()
   {
-    mLogger.debug("AdminTask::run() - IN");
+    mLogger.debug("ServerHouseKeeper::run() - IN");
     
-    if (mConfig.isHousekeeperEnabled())
+    if (!mConfig.isEnabled())
     {
-      mLogger.debug("AdminTask::run() - Perform handlers cleanup...");
+      mLogger.debug("ServerHouseKeeper::run() - KAS/MQ Server is disabled");
+    }
+    else if (!mConfig.isHousekeeperEnabled())
+    {
+      mLogger.debug("ServerHouseKeeper::run() - KAS/MQ Server housekeeper is disabled");
+    }
+    else
+    {
+      mLogger.debug("ServerHouseKeeper::run() - Perform handlers cleanup...");
       Map<UniqueId, SessionHandler> handlers = mController.getHandlers();
       for (Map.Entry<UniqueId, SessionHandler> entry : handlers.entrySet())
       {
         UniqueId uid = entry.getKey();
         SessionHandler handler = entry.getValue();
         
-        mLogger.diag("AdminTask::run() - Checking handler ID: " + uid);
+        mLogger.diag("ServerHouseKeeper::run() - Checking handler ID: " + uid);
         if (handler.isRunning())
         {
-          mLogger.diag("AdminTask::run() - Handler is still running, skip it");
+          mLogger.diag("ServerHouseKeeper::run() - Handler is still running, skip it");
         }
         else
         {
-          mLogger.debug("AdminTask::run() - Handler " + uid + " finished working. Remove from the map");
+          mLogger.debug("ServerHouseKeeper::run() - Handler " + uid + " finished working. Remove from the map");
           handlers.remove(uid);
           ThreadPool.removeTask(handler);
         }
       }
       
-      mLogger.debug("AdminTask::run() - Expiring messages...");
+      mLogger.debug("ServerHouseKeeper::run() - Expiring messages...");
       Collection<MqQueue> queues = mRepository.getElements();
       for (MqQueue q : queues)
       {
-        mLogger.debug("AdminTask::run() - Expiring messages in queue " + q.getName() + ":");
-        mLogger.diag("AdminTask::run() - Total messages in queue: " + q.size());
+        mLogger.debug("ServerHouseKeeper::run() - Expiring messages in queue " + q.getName() + ":");
+        mLogger.diag("ServerHouseKeeper::run() - Total messages in queue: " + q.size());
         int exp = q.expire();
-        mLogger.diag("AdminTask::run() - Total messages in queue: " + q.size());
-        mLogger.debug("AdminTask::run() - Total messages expired: " + exp);
+        mLogger.diag("ServerHouseKeeper::run() - Total messages in queue: " + q.size());
+        mLogger.debug("ServerHouseKeeper::run() - Total messages expired: " + exp);
       }
     }
     
-    mLogger.debug("AdminTask::run() - OUT");
+    mLogger.debug("ServerHouseKeeper::run() - OUT");
   }
   
   /**
