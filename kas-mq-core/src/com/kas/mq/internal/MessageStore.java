@@ -7,16 +7,16 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.AMqMessage;
 
 /**
- * {@link MessageDeque} is the actual container for {@link AMqMessage}
+ * {@link MessageStore} is the actual container for {@link AMqMessage}
  * 
  * @author Pippo
  */
-public class MessageDeque extends ConcurrentLinkedQueue<IMqMessage<?>> implements IObject
+public class MessageStore extends ConcurrentLinkedQueue<IMqMessage<?>> implements IObject
 {
   private static final long serialVersionUID = 1L;
   
   /**
-   * Returns the {@link MessageDeque} simple class name enclosed with chevrons.
+   * Returns the {@link MessageStore} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -32,7 +32,7 @@ public class MessageDeque extends ConcurrentLinkedQueue<IMqMessage<?>> implement
   }
   
   /**
-   * Returns the {@link MessageDeque} string representation.
+   * Returns the {@link MessageStore} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

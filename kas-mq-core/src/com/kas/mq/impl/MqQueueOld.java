@@ -8,23 +8,47 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.PacketHeader;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.mq.internal.MessageStore;
 
 /**
- * A {@link MqQueue} object is a locally-managed destination
+ * A {@link MqQueueOld} object is the simplest destination that is managed by the KAS/MQ system.
  * 
  * @author Pippo
  */
-public class MqQueue extends MqDestination
+public class MqQueueOld extends AKasObject
 {
+  /**
+   * Logger
+   */
+  private ILogger mLogger;
+  
+  /**
+   * Name of this message queue
+   */
+  private String mName;
+  
+  /**
+   * Name of the queue manager that owns this queue
+   */
+  private String mQmgrName;
+  
   /**
    * Maximum number of messages this queue can hold before
    * starting to fail {@link #put(IMqMessage) put} operations.
    */
   private int mThreshold;
+  
+  /**
+   * A UniqueId representing this message queue
+   */
+  private UniqueId mQueueId;
   
   /**
    * Last access
@@ -36,39 +60,60 @@ public class MqQueue extends MqDestination
   /**
    * The actual message container. An array of {@link MessageStore} objects, one for each priority.<br>
    * <br>
-   * When a message with priority of 0 is received by this {@link MqQueue} object, it is stored in the 
+   * When a message with priority of 0 is received by this {@link MqQueueOld} object, it is stored in the 
    * {@link MessageStore} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
-  protected transient MessageStore [] mStoresArray;
+  protected transient MessageStore [] mQueueArray;
   
   /**
-   * The file backing up this {@link MqQueue} object.
+   * The file backing up this {@link MqQueueOld} object.
    */
   protected transient File mBackupFile = null;
   
   /**
-   * Constructing a {@link MqQueue} object with the specified name.
+   * Constructing a {@link MqQueueOld} object with the specified name.
    * 
-   * @param mgr The name of the manager that owns this {@link MqQueue}
-   * @param name The name of this {@link MqQueue} object.
-   * @param threshold The maximum message capacity this {@link MqQueue} can hold
+   * @param name The name of this {@link MqQueueOld} object.
    */
-  public MqQueue(String mgr, String name, int threshold)
+  public MqQueueOld(String name, int threshold)
   {
-    super(mgr, name);
-    mStoresArray = new MessageStore[ IMqConstants.cMaximumPriority + 1 ];
+    mLogger     = LoggerFactory.getLogger(this.getClass());
+    mName       = name;
+    mThreshold  = threshold;
+    mQueueId    = UniqueId.generate();
+    mQueueArray = new MessageStore[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
-      mStoresArray[i] = new MessageStore();
+      mQueueArray[i] = new MessageStore();
   }
   
   /**
-   * Get the {@link MqQueue} threshold
+   * Get the queue name
    * 
-   * @return the {@link MqQueue} threshold
+   * @return the queue name
+   */
+  public String getName()
+  {
+    return mName;
+  }
+  
+  /**
+   * Get the queue threshold
+   * 
+   * @return the queue threshold
    */
   public int getThreshold()
   {
     return mThreshold;
+  }
+  
+  /**
+   * Get queue ID
+   * 
+   * @return queue ID
+   */
+  public UniqueId getId()
+  {
+    return mQueueId;
   }
   
   /**
@@ -79,15 +124,15 @@ public class MqQueue extends MqDestination
   public int size()
   {
     int sum = 0;
-    for (int i = 0; i < mStoresArray.length; ++i)
+    for (int i = 0; i < mQueueArray.length; ++i)
     {
-      sum += mStoresArray[i].size();
+      sum += mQueueArray[i].size();
     }
     return sum;
   }
   
   /**
-   * Restore the {@link MqQueue} contents from the file system
+   * Restore the {@link MqQueueOld} contents from the file system
    * 
    * @return {@code true} if queue contents restored successfully, {@code false} otherwise
    */
@@ -178,7 +223,7 @@ public class MqQueue extends MqDestination
   }
 
   /**
-   * Backup the {@link MqQueue} contents to file system
+   * Backup the {@link MqQueueOld} contents to file system
    * 
    * @return {@code true} if completed writing all queue contents successfully, {@code false} otherwise
    */
@@ -229,12 +274,12 @@ public class MqQueue extends MqDestination
         
         try
         {
-          for (int i = 0; i < mStoresArray.length; ++i)
+          for (int i = 0; i < mQueueArray.length; ++i)
           {
-            MessageStore store = mStoresArray[i];
-            while (!store.isEmpty())
+            MessageStore msgDeq = mQueueArray[i];
+            while (!msgDeq.isEmpty())
             {
-              IMqMessage<?> message = store.poll();
+              IMqMessage<?> message = msgDeq.poll();
               
               PacketHeader header = message.createHeader();
               header.serialize(ostream);
@@ -276,9 +321,9 @@ public class MqQueue extends MqDestination
   }
   
   /**
-   * Put a message into this {@link MqQueue} object.
+   * Put a message into this {@link MqQueueOld} object.
    * 
-   * @param message The message that should be stored at this {@link MqQueue} object.
+   * @param message The message that should be stored at this {@link MqQueueOld} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
   public boolean put(IMqMessage<?> message)
@@ -292,7 +337,7 @@ public class MqQueue extends MqDestination
     int prio = message.getPriority();
     
     boolean success = false;
-    success = mStoresArray[prio].offer(message);
+    success = mQueueArray[prio].offer(message);
     
     return success;
   }
@@ -345,7 +390,7 @@ public class MqQueue extends MqDestination
   }
   
   /**
-   * Get the {@link AMqMessage message} with the highest priority from this {@link MqQueue} object.<br>
+   * Get the {@link AMqMessage message} with the highest priority from this {@link MqQueueOld} object.<br>
    * <br>
    * Since the actual message store is implemented by {@link MessageStore}, the actual "get" operations
    * are translated to {@link MessageStore#poll()}.<br>
@@ -370,7 +415,7 @@ public class MqQueue extends MqDestination
       int priority = internalGetPriorityIndex();
       if (priority > -1)
       {
-        result = mStoresArray[priority].poll();
+        result = mQueueArray[priority].poll();
       }
       else
       {
@@ -381,6 +426,8 @@ public class MqQueue extends MqDestination
           timeoutExpired = millisPassed >= timeout;
       }
     }
+    
+    setLastAccess("System", "expire");
     
     return result;
   }
@@ -395,7 +442,7 @@ public class MqQueue extends MqDestination
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
       int size;
-      size = mStoresArray[prio].size();
+      size = mQueueArray[prio].size();
       if (size > 0) return prio;
     }
     return -1;
@@ -404,8 +451,8 @@ public class MqQueue extends MqDestination
   /**
    * Set the last access to the queue
    * 
-   * @param user Last user to access this {@link MqQueue}
-   * @param method The last method that was used to access this {@link MqQueue}
+   * @param user Last user to access this {@link MqQueueOld}
+   * @param method The last method that was used to access this {@link MqQueueOld}
    */
   public synchronized void setLastAccess(String user, String method)
   {
@@ -440,7 +487,7 @@ public class MqQueue extends MqDestination
     int total = 0;
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
-      MessageStore mdq = mStoresArray[prio];
+      MessageStore mdq = mQueueArray[prio];
       for (IMqMessage<?> msg : mdq)
       {
         if (msg.isExpired())
@@ -450,10 +497,25 @@ public class MqQueue extends MqDestination
       }
     }
     
-    setLastAccess("SYSTEM", "expire");
+    setLastAccess("System", "expire");
     
     mLogger.debug("MqQueue::expire() - OUT, Returns=" + total);
     return total;
+  }
+  
+  /**
+   * Get the object's string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("Name=").append(mName).append(",Id=").append(mQueueId.toString());
+    return sb.toString();
   }
   
   /**
@@ -469,9 +531,10 @@ public class MqQueue extends MqDestination
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Manager=").append(mManager).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
+      .append(pad).append("  Manager=").append(mQmgrName).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
+      .append(pad).append("  UniqueId=").append(mQueueId.toString()).append("\n")
       .append(pad).append("  LastAccess=(\n")
       .append(pad).append("    By=").append(mLastAccessUser).append("\n")
       .append(pad).append("    At=").append(mLastAccessTimeStamp.toString()).append("\n")
@@ -479,8 +542,8 @@ public class MqQueue extends MqDestination
       .append(pad).append("  )\n")
       .append(pad).append("  PriorityStores=(\n");
     
-    for (int i = 0; i < mStoresArray.length; ++i)
-      sb.append(pad).append("    P").append(String.format("%02d=(", i)).append(mStoresArray[i].toPrintableString(0)).append(")\n");
+    for (int i = 0; i < mQueueArray.length; ++i)
+      sb.append(pad).append("    P").append(String.format("%02d=(", i)).append(mQueueArray[i].toPrintableString(0)).append(")\n");
     
     sb.append(pad).append("  )\n")
       .append(pad).append(")");

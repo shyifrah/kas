@@ -55,7 +55,7 @@ public class TokenDeque extends ArrayDeque<String> implements IObject
   }
   
   /**
-   * Returns the {@link MessageDeque} string representation.
+   * Returns the {@link TokenDeque} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

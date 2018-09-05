@@ -209,7 +209,6 @@ public class ClientResponder extends AKasObject implements IClient
       {
         ++total;
         sb.append("Queue....................: ").append(mqq.getName()).append('\n');
-        sb.append("    ID...............: ").append(mqq.getId().toString()).append('\n');
         if (all)
         {
           sb.append("    Threshold........: ").append(mqq.getThreshold()).append('\n');

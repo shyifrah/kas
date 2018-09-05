@@ -6,6 +6,7 @@ import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.internal.DestinationManager;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -15,9 +16,10 @@ import com.kas.infra.utils.StringUtils;
 public class MqConfiguration extends AConfiguration
 {
   static private final String  cMqConfigPrefix  = "kas.mq.";
-  static private final String  cMqUserConfigPrefix  = cMqConfigPrefix + "user.";
-  static private final String  cMqConnConfigPrefix  = cMqConfigPrefix + "conn.";
-  static private final String  cMqHskpConfigPrefix  = cMqConfigPrefix + "hskp.";
+  static private final String  cMqUserConfigPrefix    = cMqConfigPrefix + "user.";
+  static private final String  cMqConnConfigPrefix    = cMqConfigPrefix + "conn.";
+  static private final String  cMqHskpConfigPrefix    = cMqConfigPrefix + "hskp.";
+  static private final String  cMqRemoteConfigPrefix  = cMqConfigPrefix + "remote.";
   
   static public final boolean cDefaultEnabled           = true;
   static public final int     cDefaultPort              = 14560;
@@ -72,7 +74,12 @@ public class MqConfiguration extends AConfiguration
   /**
    * A map of users and passwords (base64 encrypted)
    */
-  private Map<String, byte []> mUserMap = new ConcurrentHashMap<String, byte []>(); 
+  private Map<String, DestinationManager> mRemoteDestinationMap = new ConcurrentHashMap<String, DestinationManager>();
+  
+  /**
+   * A map of users and passwords (base64 encrypted)
+   */
+  private Map<String, byte []> mUserMap = new ConcurrentHashMap<String, byte []>();
   
   /**
    * Refresh configuration - reload values of all properties
@@ -99,6 +106,8 @@ public class MqConfiguration extends AConfiguration
       byte [] encpass = Base64Utils.encode(pass.getBytes());
       mUserMap.put(user, encpass);
     }
+    
+    mRemoteDestinationMap.clear();
   }
   
   /**

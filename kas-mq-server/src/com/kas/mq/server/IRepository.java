@@ -3,6 +3,7 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
+import com.kas.mq.impl.MqDestination;
 import com.kas.mq.impl.MqQueue;
 
 /**
@@ -12,6 +13,13 @@ import com.kas.mq.impl.MqQueue;
  */
 public interface IRepository extends IInitializable, IObject
 {
+  /**
+   * Synchronize repository contents with remote KAS/MQ manager
+   * 
+   * @param destinations A list of {@link MqDestination} objects that exist on a remote queue manager
+   */
+  public abstract void sync(Collection<MqDestination> destinations);
+  
   /**
    * Create a {@link MqQueue} object with the specified {@code name}
    * 
