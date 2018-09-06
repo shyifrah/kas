@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.config.IConfiguration;
+import com.kas.infra.types.StringList;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
@@ -761,9 +762,8 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
           String key = parsedLine[0].trim();
           String val = parsedLine[1].trim();
           String actualVal = new PropertyResolver(val).getActual();
-          
-          // if we encounter an "include" statement - load the new file
-          if (key.equalsIgnoreCase(cIncludeKey))
+
+          if (key.equalsIgnoreCase(cIncludeKey))           // if we encounter an "include" statement - load the new file
           {
             load(actualVal, properties);
           }
@@ -775,14 +775,15 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
       }
       
       // add file to list of monitored files
-      String included = (String)properties.get(cIncludeKey);
+      StringList included = (StringList)properties.get(cIncludeKey);
       if (included == null)
       {
-        included = fileName;
+        included = new StringList();
+        included.add(fileName);
       }
       else
       {
-        included = included + "," + fileName;
+        included.add(fileName);
       }
       properties.put(cIncludeKey, included);
     }

@@ -2,7 +2,7 @@ package com.kas.mq.impl;
 
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.internal.ERequestType;
+import com.kas.mq.types.ERequestType;
 
 public class MqMessageFactory
 {

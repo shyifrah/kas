@@ -5,8 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
+import com.kas.infra.types.StringList;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.infra.utils.Validators;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -123,21 +125,18 @@ public class MqConfiguration extends AConfiguration
   private void refreshRemoteManagersMap()
   {
     Map<String, NetworkAddress> remoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
+    
     Properties props = mMainConfig.getSubset(cMqRemoteConfigPrefix);
-    for (Map.Entry<Object, Object> entry : props.entrySet())
+    StringList listOfRemoteNames = (StringList)props.getObjectProperty(cMqRemoteConfigPrefix + "name", new StringList());
+    for (String name : listOfRemoteNames)
     {
-      NetworkAddress address = null;
-      String key = (String)entry.getKey();
-      String name = key.substring(cMqRemoteConfigPrefix.length());
-      String value = (String)entry.getValue();
-      try
+      String host = props.getStringProperty(cMqRemoteConfigPrefix + name + ".host", null);
+      if (Validators.isHostName(host) || Validators.isIpAddress(host))
       {
-        address = new NetworkAddress(value);
+        int port = props.getIntProperty(cMqRemoteConfigPrefix + name + ".port", -1);
+        if (port == -1) port = 14560;
+        remoteManagersMap.put(name, new NetworkAddress(host, port));
       }
-      catch (NullPointerException | IllegalArgumentException e) {}
-      
-      if (address != null)
-        remoteManagersMap.put(name, address);
     }
     mRemoteManagersMap = remoteManagersMap;
   }

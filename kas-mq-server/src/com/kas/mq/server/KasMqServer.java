@@ -139,7 +139,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     {
       mLogger.warn("An error occurred while shutting the server's repository");
     }
-      
+    
     try
     {
       mListenSocket.close();

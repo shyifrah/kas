@@ -1,43 +1,18 @@
-package com.kas.mq.internal;
+package com.kas.infra.types;
 
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
 /**
- * A {@link TokenDeque} is a means for passing command line arguments after tokenizing.
+ * A {@link StringList} is simply a list of strings implementing the {@link IObject} interface.
  * 
  * @author Pippo
  */
-public class TokenDeque extends ArrayDeque<String> implements IObject
+public class StringList extends ArrayList<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
-  
-  private String mOriginalString;
-  
-  /**
-   * Construct a {@link TokenDeque} with the specified string {@code str}
-   * 
-   * @param str The string to tokenize
-   */
-  public TokenDeque(String str)
-  {
-    mOriginalString = str;
-    String [] a = str.split(" ");
-    for (String word : a)
-      super.offer(word);
-  }
-  
-  /**
-   * Get the original string
-   * 
-   * @return the original string
-   */
-  public String getOriginalString()
-  {
-    return mOriginalString;
-  }
-  
+
   /**
    * Returns the {@link TokenDeque} simple class name enclosed with chevrons.
    * 
@@ -53,9 +28,9 @@ public class TokenDeque extends ArrayDeque<String> implements IObject
       .append(">");
     return sb.toString();
   }
-  
+
   /**
-   * Returns the {@link TokenDeque} string representation.
+   * Returns the {@link StringList} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

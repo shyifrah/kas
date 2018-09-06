@@ -4,8 +4,8 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.base.KasException;
+import com.kas.infra.types.TokenDeque;
 import com.kas.mq.client.IClient;
-import com.kas.mq.internal.TokenDeque;
 
 /**
  * A DISCONNECT command

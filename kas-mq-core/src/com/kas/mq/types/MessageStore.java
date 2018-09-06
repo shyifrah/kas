@@ -1,4 +1,4 @@
-package com.kas.mq.internal;
+package com.kas.mq.types;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.kas.infra.base.IObject;

@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
+import com.kas.infra.types.TokenDeque;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
@@ -12,7 +13,6 @@ import com.kas.mq.admcons.commands.CliCommandFactory;
 import com.kas.mq.admcons.commands.ICliCommand;
 import com.kas.mq.client.IClient;
 import com.kas.mq.client.MqClientImpl;
-import com.kas.mq.internal.TokenDeque;
 
 /**
  * MQ administration CLI.

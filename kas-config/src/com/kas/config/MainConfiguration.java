@@ -12,6 +12,7 @@ import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
 import com.kas.infra.config.IConfiguration;
 import com.kas.infra.config.IMainConfiguration;
+import com.kas.infra.types.StringList;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
@@ -165,20 +166,11 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     
     mConfigFiles.clear();
     
-    String monitoredFiles = mProperties.getStringProperty(Properties.cIncludeKey, null);
+    StringList monitoredFiles = (StringList)mProperties.getObjectProperty(Properties.cIncludeKey, null);
     if (monitoredFiles == null) // this should not happen, cIncludeKey should have at least one file name 
-    {
       return false;
-    }
-    else
-    {
-      String [] listOfMonitoredFiles = monitoredFiles.split(",");
-      for (String file : listOfMonitoredFiles)
-      {
-        mConfigFiles.add(file);
-      }
-    }
     
+    mConfigFiles.addAll(monitoredFiles);
     return true;
   }
 

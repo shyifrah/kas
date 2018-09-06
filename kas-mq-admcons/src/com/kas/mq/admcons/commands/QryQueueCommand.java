@@ -1,9 +1,9 @@
 package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
+import com.kas.infra.types.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.client.IClient;
-import com.kas.mq.internal.TokenDeque;
 
 /**
  * A QUERY QUEUE command

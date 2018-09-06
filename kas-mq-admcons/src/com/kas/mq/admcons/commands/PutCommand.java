@@ -3,11 +3,11 @@ package com.kas.mq.admcons.commands;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.types.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.client.IClient;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqTextMessage;
-import com.kas.mq.internal.TokenDeque;
 
 /**
  * A PUT command
