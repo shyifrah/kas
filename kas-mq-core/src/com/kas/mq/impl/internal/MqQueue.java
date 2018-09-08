@@ -57,6 +57,7 @@ public class MqQueue extends MqDestination
   public MqQueue(MqManager mgr, String name, int threshold)
   {
     super(mgr, name);
+    mThreshold = threshold;
     mStoresArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
       mStoresArray[i] = new MessageQueue();
@@ -287,7 +288,7 @@ public class MqQueue extends MqDestination
     if (message == null)
       return false;
     
-    if (size() >= mThreshold)
+    if ((mThreshold > 0) && (size() > mThreshold))
       return false;
     
     int prio = message.getPriority();

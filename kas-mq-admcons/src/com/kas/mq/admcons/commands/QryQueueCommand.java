@@ -59,7 +59,7 @@ public class QryQueueCommand extends ACliCommand
       prefix = true;
     }
     
-    if (!Validators.isQueueName(name))
+    if ((name.length() > 0) && (!Validators.isQueueName(name)))
     {
       writeln("Invalid queue name \"" + name + "\"");
       writeln(" ");

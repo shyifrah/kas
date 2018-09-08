@@ -126,7 +126,6 @@ public class ClientResponder extends AKasObject implements IClient
     {
       mLogger.debug("ResponderClient::defineQueue() - Queue with name \"" + queue + "\" already exists");
       setResponse("Queue with name \"" + queue + "\" already exists");
-      success = true;
     }
     else
     {

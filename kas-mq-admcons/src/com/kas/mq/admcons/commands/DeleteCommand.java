@@ -92,13 +92,15 @@ public class DeleteCommand extends ACliCommand
     }
     
     String type = mCommandArgs.poll().toUpperCase();
-    if (!type.equals("QUEUE"))
-    {
-      writeln("Invalid entity type \"" + type + "\"");
-      writeln(" ");
-      return false;
-    }
-
-    return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
+    
+    if (type.equals("QUEUE"))
+      return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("Q"))
+      return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
+    
+    
+    writeln("Invalid entity type \"" + type + "\"");
+    writeln(" ");
+    return false;
   }
 }

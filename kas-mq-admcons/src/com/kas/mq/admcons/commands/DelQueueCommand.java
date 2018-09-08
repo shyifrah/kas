@@ -1,8 +1,6 @@
 package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.internal.IClient;
@@ -14,14 +12,6 @@ import com.kas.mq.impl.internal.IClient;
  */
 public class DelQueueCommand extends ACliCommand
 {
-  static public final Set<String> sCommandVerbs = new TreeSet<String>();
-  static
-  {
-    sCommandVerbs.add("DELETEQUEUE");
-    sCommandVerbs.add("DELQUEUE");
-    sCommandVerbs.add("DELQ");
-  }
-  
   /**
    * Construct a {@link DelQueueCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.

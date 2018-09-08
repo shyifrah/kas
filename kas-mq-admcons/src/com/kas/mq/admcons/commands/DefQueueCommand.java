@@ -4,6 +4,7 @@ import java.util.Scanner;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.IMqConstants;
 
 /**
  * A DEFINE QUEUE command
@@ -61,7 +62,7 @@ public class DefQueueCommand extends ACliCommand
     
     String sthreshold = mCommandArgs.poll();
     if (sthreshold == null)
-      sthreshold = "1000";
+      sthreshold = "" + IMqConstants.cDefaultQueueThreshold;
     
     int threshold = -1;
     try
