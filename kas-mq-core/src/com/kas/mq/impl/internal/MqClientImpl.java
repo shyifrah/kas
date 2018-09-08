@@ -58,12 +58,10 @@ public class MqClientImpl extends AKasObject implements IClient
    * 
    * @param host The host name or IP address (uppercased)
    * @param port The port number
-   * @param user The user's name (uppercased)
-   * @param pwd The user's password
    * 
-   * @see com.kas.mq.impl.internal.IClient#connect(String, int, String, String)
+   * @see com.kas.mq.impl.internal.IClient#connect(String, int)
    */
-  public void connect(String host, int port, String user, String pwd)
+  public void connect(String host, int port)
   {
     mLogger.debug("MqClientImpl::connect() - IN");
     
@@ -72,18 +70,6 @@ public class MqClientImpl extends AKasObject implements IClient
     try
     {
       mMessenger = MessengerFactory.create(host, port);
-      boolean authenticated = login(user, pwd);
-      if (!authenticated)
-      {
-        logErrorAndSetResponse(getResponse());
-        mMessenger.cleanup();
-        mMessenger = null;
-      }
-      else
-      {
-        logInfoAndSetResponse("Connection established with host at " + mMessenger.getAddress());
-        mUser = user;
-      }
     }
     catch (IOException e)
     {
@@ -304,33 +290,39 @@ public class MqClientImpl extends AKasObject implements IClient
     mLogger.debug("MqClientImpl::get() - IN");
     
     IMqMessage<?> result = null;
-    
-    try
+    if (!isConnected())
     {
-      IMqMessage<?> request = MqMessageFactory.createGetRequest(queue, timeout, interval);
-      mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
-      IPacket packet = mMessenger.sendAndReceive(request);
-      IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
-      MqResponse response = new MqResponse(responseMessage);
-      mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
-      if (response.getCode() == EMqResponseCode.cOkay)
-      {
-        responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
-        responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
-        logInfoAndSetResponse("Successfully got a message from queue " + queue + ", Message: " + responseMessage.toPrintableString(0));
-        result = responseMessage;
-      }
-      else
-      {
-        logInfoAndSetResponse(response.getDesc());
-      }
+      logErrorAndSetResponse("Not connected to host");
     }
-    catch (IOException e)
+    else
     {
-      StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred while trying to get a message from queue [")
-        .append(queue).append("]. Exception: ").append(StringUtils.format(e));
-      logErrorAndSetResponse(sb.toString());
+      try
+      {
+        IMqMessage<?> request = MqMessageFactory.createGetRequest(queue, timeout, interval);
+        mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
+        IPacket packet = mMessenger.sendAndReceive(request);
+        IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
+        MqResponse response = new MqResponse(responseMessage);
+        mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
+        if (response.getCode() == EMqResponseCode.cOkay)
+        {
+          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
+          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
+          logInfoAndSetResponse("Successfully got a message from queue " + queue + ", Message: " + responseMessage.toPrintableString(0));
+          result = responseMessage;
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getDesc());
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to get a message from queue [")
+          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
     }
     
     mLogger.debug("MqClientImpl::get() - OUT");
@@ -349,20 +341,27 @@ public class MqClientImpl extends AKasObject implements IClient
   {
     mLogger.debug("MqClientImpl::put() - IN");
     
-    try
+    if (!isConnected())
     {
-      message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue);
-      message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
-      message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
-      mMessenger.send(message);
-      logDebugAndSetResponse("put", "Put to queue " + queue + " ended successfully. message: " + message.toPrintableString(0));
+      logErrorAndSetResponse("Not connected to host");
     }
-    catch (IOException e)
+    else
     {
-      StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred while trying to put a message into queue [")
-        .append(queue).append("]. Exception: ").append(StringUtils.format(e));
-      logErrorAndSetResponse(sb.toString());
+      try
+      {
+        message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue);
+        message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
+        message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
+        mMessenger.send(message);
+        logDebugAndSetResponse("put", "Put to queue " + queue + " ended successfully. message: " + message.toPrintableString(0));
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to put a message into queue [")
+          .append(queue).append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
     }
     
     mLogger.debug("MqClientImpl::put() - OUT");
@@ -373,38 +372,44 @@ public class MqClientImpl extends AKasObject implements IClient
    * 
    * @param user The user's name
    * @param pwd The user's password
-   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration},
-   * {@code false} otherwise
+   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration}, {@code false} otherwise
    */
   public boolean login(String user, String pwd)
   {
     mLogger.debug("MqClientImpl::login() - IN");
     
     boolean success = false;
-    IMqMessage<?> request = MqMessageFactory.createAuthenticationRequest(user, pwd);
-    mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString(0));
-    try
+    if (!isConnected())
     {
-      IPacket packet = mMessenger.sendAndReceive(request);
-      MqResponse response = new MqResponse((IMqMessage<?>)packet);
-      mLogger.debug("MqClientImpl::login() - received response: " + response.toPrintableString());
-      if (response.getCode() == EMqResponseCode.cOkay)
-      {
-        success = true;
-        logInfoAndSetResponse("User " + user + " successfully authenticated");
-        mUser = user;
-      }
-      else
-      {
-        logInfoAndSetResponse(response.getDesc());
-      }
+      logErrorAndSetResponse("Not connected to host");
     }
-    catch (IOException e)
+    else
     {
-      StringBuilder sb = new StringBuilder();
-      sb.append("Exception occurred during authentication of user [")
-        .append(user).append("]. Exception: ").append(StringUtils.format(e));
-      logErrorAndSetResponse(sb.toString());
+      IMqMessage<?> request = MqMessageFactory.createAuthenticationRequest(user, pwd);
+      mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString(0));
+      try
+      {
+        IPacket packet = mMessenger.sendAndReceive(request);
+        MqResponse response = new MqResponse((IMqMessage<?>)packet);
+        mLogger.debug("MqClientImpl::login() - received response: " + response.toPrintableString());
+        if (response.getCode() == EMqResponseCode.cOkay)
+        {
+          success = true;
+          logInfoAndSetResponse("User " + user + " successfully authenticated");
+          mUser = user;
+        }
+        else
+        {
+          logInfoAndSetResponse(response.getDesc());
+        }
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred during authentication of user [")
+          .append(user).append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
     }
     
     mLogger.debug("MqClientImpl::login() - OUT, Returns=" + success);

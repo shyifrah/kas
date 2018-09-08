@@ -16,12 +16,10 @@ public interface IClient extends IObject
    * 
    * @param host The host name or IP address
    * @param port The port number
-   * @param user The user's name
-   * @param pwd The user's password
    * 
    * @throws KasException if client failed to connect to KAS/MQ server
    */
-  public abstract void connect(String host, int port, String user, String pwd) throws KasException;
+  public abstract void connect(String host, int port) throws KasException;
   
   /**
    * Disconnecting from the remote KAS/MQ server.
@@ -36,6 +34,16 @@ public interface IClient extends IObject
    * @return {@code true} if client is connected, {@code false} otherwise
    */
   public abstract boolean isConnected();
+  
+  /**
+   * Authenticate client against the KAS/MQ server.
+   * 
+   * @param user The user's name
+   * @param pwd The user's password
+   * 
+   * @return {@code true} if user successfully authenticated, {@code false} otherwise
+   */
+  public abstract boolean login(String user, String pwd);
   
   /**
    * Define a new queue.

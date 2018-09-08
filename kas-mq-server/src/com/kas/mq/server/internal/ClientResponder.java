@@ -51,14 +51,12 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @param host The host name or IP address
    * @param port The port number
-   * @param user The user's name
-   * @param pwd The user's password
    * 
    * @throws RuntimeException Always. This method cannot be invoked
    * 
-   * @see com.kas.mq.impl.internal.IClient#connect(String, int, String, String)
+   * @see com.kas.mq.impl.internal.IClient#connect(String, int)
    */
-  public void connect(String host, int port, String user, String pwd) throws KasException
+  public void connect(String host, int port) throws KasException
   {
     throw new RuntimeException("Cannot call connect()");
   }
@@ -88,6 +86,21 @@ public class ClientResponder extends AKasObject implements IClient
     throw new RuntimeException("Cannot call isConnected()");
   }
 
+  /**
+   * Authenticate client against the KAS/MQ server.
+   * 
+   * @param user The user's name
+   * @param pwd The user's password
+   * 
+   * @throws RuntimeException Always. This method cannot be invoked
+   * 
+   * @return {@code true} if user successfully authenticated, {@code false} otherwise
+   */
+  public boolean login(String user, String pwd)
+  {
+    throw new RuntimeException("Cannot call login()");
+  }
+  
   /**
    * Define a new queue.
    * 
@@ -205,7 +218,13 @@ public class ClientResponder extends AKasObject implements IClient
     int total = 0;
     for (MqQueue mqq : queues)
     {
-      if (mqq.getName().startsWith(name))
+      boolean include = false;
+      if (prefix)
+        include = mqq.getName().startsWith(name);
+      else
+        include = mqq.getName().equals(name);
+      
+      if (include)
       {
         ++total;
         sb.append("Queue....................: ").append(mqq.getName()).append('\n');
@@ -220,9 +239,9 @@ public class ClientResponder extends AKasObject implements IClient
     }
     
     if (total == 0)
-      sb.append(" ").append('\n').append("No queues matched specified prefix");
+      sb.append(" ").append('\n').append("No queues matched specified criteria");
     else
-      sb.append(" ").append('\n').append(total).append(" queues matched specified prefix");
+      sb.append(" ").append('\n').append(total).append(" queues matched specified criteria");
     
     setResponse(sb.toString());
     mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + true);

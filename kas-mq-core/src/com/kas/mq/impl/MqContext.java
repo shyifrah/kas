@@ -16,7 +16,7 @@ import com.kas.mq.impl.internal.MqClientImpl;
  * 
  * @author Pippo
  */
-public final class MqContext extends AKasObject implements IClient
+public final class MqContext extends AKasObject
 {
   /**
    * Logger
@@ -52,9 +52,13 @@ public final class MqContext extends AKasObject implements IClient
       throw new KasException("Validation failed. \"" + user + "\" is not a valid user name");
     
     
-    mDelegator.connect(host, port, user, pwd);
+    mDelegator.connect(host, port);
     if (!isConnected())
       throw new KasException("Error - connect() failed. Client response: " + mDelegator.getResponse());
+    
+    boolean authenticated = mDelegator.login(user, pwd);
+    if (!authenticated)
+      throw new KasException("Error - login() failed. Client response: " + mDelegator.getResponse());
     
     mLogger.debug("MqContext::connect() - OUT");
   }

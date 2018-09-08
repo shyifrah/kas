@@ -127,6 +127,17 @@ public class ConnectCommand extends ACliCommand
       return false;
     }
     
+    try
+    {
+      mClient.connect(host, port);
+    }
+    catch (KasException e)
+    {
+      writeln(mClient.getResponse());
+      writeln(" ");
+      return false;
+    }
+    
     TokenDeque input = read("Enter user name: ");
     String username = input.poll();
     String extra = input.poll();
@@ -154,12 +165,7 @@ public class ConnectCommand extends ACliCommand
     input = read("Enter password: ");
     String password = input.getOriginalString();
     
-    
-    try
-    {
-      mClient.connect(host, port, username, password);
-    }
-    catch (KasException e) {}
+    mClient.login(username, password);
     
     writeln(mClient.getResponse());
     writeln(" ");
