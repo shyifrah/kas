@@ -4,7 +4,7 @@ import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.client.IClient;
+import com.kas.mq.impl.internal.IClient;
 
 /**
  * A basic command

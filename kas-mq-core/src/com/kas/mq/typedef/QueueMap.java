@@ -3,8 +3,8 @@ package com.kas.mq.typedef;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.MqQueue;
-import com.kas.mq.impl.AMqMessage;
+import com.kas.mq.impl.internal.AMqMessage;
+import com.kas.mq.impl.internal.MqQueue;
 
 /**
  * {@link QueueMap} is the actual container for {@link AMqMessage}

@@ -2,6 +2,7 @@ package com.kas.mq.impl;
 
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.impl.internal.ERequestType;
 
 public class MqMessageFactory
 {
@@ -93,7 +94,7 @@ public class MqMessageFactory
    * 
    * @param int An integer value representing how successful was the request.
    * @param response The message sent by the server to the client which describes the response code.
-   * @return a {@link MqResponse}
+   * @return a {@link MqObjectMessage}
    */
   static public MqObjectMessage createResponse(int code, String response)
   {

@@ -1,4 +1,4 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.internal;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -9,6 +9,8 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.impl.IMqConstants;
+import com.kas.mq.impl.IMqMessage;
 
 /**
  * A KAS/MQ base message.<br>
@@ -58,7 +60,7 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   /**
    * Construct a default message object
    */
-  AMqMessage()
+  public AMqMessage()
   {
     mMessageId = UniqueId.generate();
     mPriority  = IMqConstants.cDefaultPriority;

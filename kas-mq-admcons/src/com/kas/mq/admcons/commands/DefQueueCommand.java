@@ -3,7 +3,7 @@ package com.kas.mq.admcons.commands;
 import java.util.Scanner;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
-import com.kas.mq.client.IClient;
+import com.kas.mq.impl.internal.IClient;
 
 /**
  * A DEFINE QUEUE command

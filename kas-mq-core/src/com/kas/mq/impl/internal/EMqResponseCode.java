@@ -1,4 +1,4 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.internal;
 
 import com.kas.infra.base.IObject;
 
@@ -7,50 +7,31 @@ import com.kas.infra.base.IObject;
  * 
  * @author Pippo
  */
-public enum ERequestType implements IObject
+public enum EMqResponseCode implements IObject
 {
   /**
-   * Unknown request type. Just put the message in the designated queue
+   * Operation ended okay
    */
-  cUnknown,
+  cOkay,
   
   /**
-   * Authentication
+   * Operation ended with a warning
    */
-  cAuthenticate,
+  cWarn,
   
   /**
-   * Put message
+   * Operation ended with a failure
    */
-  cPut,
+  cFail,
   
   /**
-   * Get message
+   * Operation ended with a severe error
    */
-  cGet,
-  
-  /**
-   * Define a queue
-   */
-  cDefineQueue,
-  
-  /**
-   * Define a queue
-   */
-  cDeleteQueue,
-  
-  /**
-   * Query a queue
-   */
-  cQueryQueue,
-  
-  /**
-   * Shutdown KAS/MQ server
-   */
-  cShutdown,
+  cError,
+    
   ;
   
-  static final private ERequestType [] cValues = ERequestType.values();
+  static final private EMqResponseCode [] cValues = EMqResponseCode.values();
   
   /**
    * Get the enum value by its ordinal.
@@ -58,7 +39,7 @@ public enum ERequestType implements IObject
    * @param id The ordinal of the enum
    * @return the enum value
    */
-  static public ERequestType fromInt(int id)
+  static public EMqResponseCode fromInt(int id)
   {
     return cValues[id];
   }

@@ -3,7 +3,7 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
-import com.kas.mq.impl.MqQueue;
+import com.kas.mq.impl.internal.MqQueue;
 
 /**
  * A Repository of queues

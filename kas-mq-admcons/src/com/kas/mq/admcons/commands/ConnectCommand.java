@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
-import com.kas.mq.client.IClient;
+import com.kas.mq.impl.internal.IClient;
 
 /**
  * A CONNECT command

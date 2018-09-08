@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.impl.internal.AMqMessage;
 
 /**
  * A KAS/MQ text message.<br>
@@ -14,7 +15,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-public class MqTextMessage extends AMqMessage<String>
+public final class MqTextMessage extends AMqMessage<String>
 {
   /**
    * The message body

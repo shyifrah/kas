@@ -7,10 +7,10 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.client.IClient;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqQueue;
+import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.server.IRepository;
 
 /**
@@ -56,7 +56,7 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @throws RuntimeException Always. This method cannot be invoked
    * 
-   * @see com.kas.mq.client.IClient#connect(String, int, String, String)
+   * @see com.kas.mq.impl.internal.IClient#connect(String, int, String, String)
    */
   public void connect(String host, int port, String user, String pwd) throws KasException
   {
@@ -68,7 +68,7 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @throws RuntimeException Always. This method cannot be invoked
    * 
-   * @see com.kas.mq.client.IClient#disconnect()
+   * @see com.kas.mq.impl.internal.IClient#disconnect()
    */
   public void disconnect() throws KasException
   {
@@ -81,7 +81,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @return {@code true} if client is connected, {@code false} otherwise
    * @throws RuntimeException Always. This method cannot be invoked
    * 
-   * @see com.kas.mq.client.IClient#isConnected()
+   * @see com.kas.mq.impl.internal.IClient#isConnected()
    */
   public boolean isConnected()
   {
@@ -95,7 +95,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
    * 
-   * @see com.kas.mq.client.IClient#defineQueue(String, int)
+   * @see com.kas.mq.impl.internal.IClient#defineQueue(String, int)
    */
   public boolean defineQueue(String queue, int threshold)
   {
@@ -134,7 +134,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
    * 
-   * @see com.kas.mq.client.IClient#deleteQueue(String, boolean)
+   * @see com.kas.mq.impl.internal.IClient#deleteQueue(String, boolean)
    */
   public boolean deleteQueue(String queue, boolean force)
   {
@@ -190,7 +190,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @param all if {@code true}, display all information on all queues 
    * @return the number of records returned that matched the query, or -1 if an error occurred
    * 
-   * @see com.kas.mq.client.IClient#queryQueue(String, boolean)
+   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean)
    */
   public int queryQueue(String name, boolean prefix, boolean all)
   {
@@ -237,7 +237,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    * 
-   * @see com.kas.mq.client.IClient#get(String, long, long)
+   * @see com.kas.mq.impl.internal.IClient#get(String, long, long)
    */
   public IMqMessage<?> get(String queue, long timeout, long interval)
   {
@@ -280,7 +280,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @param queue The target queue name
    * @param message The message to be put
    * 
-   * @see com.kas.mq.client.IClient#put(String, IMqMessage)
+   * @see com.kas.mq.impl.internal.IClient#put(String, IMqMessage)
    */
   public void put(String queue, IMqMessage<?> message)
   {
@@ -322,7 +322,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @return {@code true} if the server accepted the request, {@code false} otherwise
    * @throws RuntimeException Always. This method cannot be invoked
    * 
-   * @see com.kas.mq.client.IClient#shutdown()
+   * @see com.kas.mq.impl.internal.IClient#shutdown()
    */
   public boolean shutdown()
   {
@@ -334,7 +334,7 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @return the last message the {@link IClient} issued for a call.
    * 
-   * @see com.kas.mq.client.IClient#getResponse()
+   * @see com.kas.mq.impl.internal.IClient#getResponse()
    */
   public String getResponse()
   {
@@ -346,7 +346,7 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @param response The response from last {@link IClient} call
    * 
-   * @see com.kas.mq.client.IClient#setResponse(String)
+   * @see com.kas.mq.impl.internal.IClient#setResponse(String)
    */
   public void setResponse(String response)
   {

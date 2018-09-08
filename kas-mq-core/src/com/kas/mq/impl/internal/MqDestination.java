@@ -1,9 +1,10 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.internal;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.IMqMessage;
 
 /**
  * A {@link MqDestination} object is the simplest destination that is managed by the KAS/MQ system.

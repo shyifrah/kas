@@ -2,7 +2,7 @@ package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.client.IClient;
+import com.kas.mq.impl.internal.IClient;
 
 /**
  * A Factory for creating {@link ICliCommand} objects based on the command verb (the first argument)

@@ -1,4 +1,4 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +15,8 @@ import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.IMqConstants;
+import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.typedef.MessageQueue;
 
 /**

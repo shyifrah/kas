@@ -11,8 +11,8 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.admcons.commands.CliCommandFactory;
 import com.kas.mq.admcons.commands.ICliCommand;
-import com.kas.mq.client.IClient;
-import com.kas.mq.client.MqClientImpl;
+import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
  * MQ administration CLI.

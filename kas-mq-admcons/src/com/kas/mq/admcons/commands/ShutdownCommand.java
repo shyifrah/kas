@@ -5,7 +5,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.client.IClient;
+import com.kas.mq.impl.internal.IClient;
 
 /**
  * A SHUTDOWN command
