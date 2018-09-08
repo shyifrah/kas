@@ -1,22 +1,20 @@
-package com.kas.mq.types;
+package com.kas.infra.typedef;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.AMqMessage;
 
 /**
- * {@link MessageStore} is the actual container for {@link AMqMessage}
+ * A {@link StringList} is simply a list of strings implementing the {@link IObject} interface.
  * 
  * @author Pippo
  */
-public class MessageStore extends ConcurrentLinkedQueue<IMqMessage<?>> implements IObject
+public class StringList extends ArrayList<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
-  
+
   /**
-   * Returns the {@link MessageStore} simple class name enclosed with chevrons.
+   * Returns the {@link TokenDeque} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -30,9 +28,9 @@ public class MessageStore extends ConcurrentLinkedQueue<IMqMessage<?>> implement
       .append(">");
     return sb.toString();
   }
-  
+
   /**
-   * Returns the {@link MessageStore} string representation.
+   * Returns the {@link StringList} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -14,7 +15,7 @@ import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.MqManager;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.IRepository;
-import com.kas.mq.types.QueueMap;
+import com.kas.mq.typedef.QueueMap;
 
 /**
  * The server repository is the class that manages queues
@@ -113,13 +114,22 @@ public class ServerRepository extends AKasObject implements IRepository
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
           mLogger.trace("QueueRepository::init() - Restoring contents of queue [" + qName + ']');
-          MqQueue q = createQueue(qName);
+          MqQueue q = createQueue(qName, IMqConstants.cDefaultQueueThreshold);
           q.restore();
         }
       }
       
       if (mLocalQueues.get(mConfig.getDeadQueueName()) == null)
         mDeadQueue = createQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold);
+      
+      Map<String, NetworkAddress> remoteManagersMap = mConfig.getRemoteManagers();
+      for (Map.Entry<String, NetworkAddress> entry : remoteManagersMap.entrySet())
+      {
+        String name = entry.getKey();
+        NetworkAddress addr = entry.getValue();
+        MqManager mgr = new MqManager(name, addr.getHost(), addr.getPort());
+        mRemoteManagers.put(name, mgr);
+      }
     }
     
     mLogger.debug("QueueRepository::init() - OUT, Returns=" + success);
@@ -151,23 +161,6 @@ public class ServerRepository extends AKasObject implements IRepository
     return success;
   }
 
-  /**
-   * Create a {@link MqQueue} object with the specified {@code name} and default threshold.<br>
-   * <br>
-   * Note that this method does not verify if a queue with that name already exists
-   * 
-   * @param name The name of the queue
-   * @return the {@link MqQueue} object created
-   * 
-   * @deprecated Use {@link #createQueue(String, int)}
-   * 
-   * @see com.kas.mq.server.IRepository#createQueue(String)
-   */
-  public MqQueue createQueue(String name)
-  {
-    return createQueue(name, IMqConstants.cDefaultQueueThreshold);
-  }
-  
   /**
    * Create a {@link MqQueue} object with the specified {@code name} and {@code threshold}.<br>
    * <br>

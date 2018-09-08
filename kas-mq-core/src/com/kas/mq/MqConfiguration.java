@@ -260,6 +260,16 @@ public class MqConfiguration extends AConfiguration
   }
   
   /**
+   * Get the remote managers map
+   * 
+   * @return the remote managers map
+   */
+  public Map<String, NetworkAddress> getRemoteManagers()
+  {
+    return mRemoteManagersMap;
+  }
+  
+  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -284,9 +294,10 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("    Enabled=").append(mHskpEnabled).append("\n")
       .append(pad).append("    Interval=").append(mHskpInterval).append(" milliseconds\n")
       .append(pad).append("  )\n")
-      .append(pad).append("  Users=(\n")
-      .append(pad).append(StringUtils.asPrintableString(mUserMap, level+2)).append("\n")
-      .append(pad).append("  )\n")
+      .append(pad).append("  Users=(\n");
+    for (Map.Entry<String, byte[]> entry : mUserMap.entrySet())
+      sb.append(pad).append("    {" + entry.getKey() + '=' + StringUtils.asHexString(entry.getValue()) + "}\n");
+    sb.append(pad).append("  )\n")
       .append(pad).append("  RemoteManagers=(\n")
       .append(pad).append(StringUtils.asPrintableString(mRemoteManagersMap, level+2)).append("\n")
       .append(pad).append("  )\n")

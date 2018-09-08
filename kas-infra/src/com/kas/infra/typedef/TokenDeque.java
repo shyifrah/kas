@@ -1,22 +1,45 @@
-package com.kas.mq.types;
+package com.kas.infra.typedef;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.ArrayDeque;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.MqQueue;
-import com.kas.mq.impl.AMqMessage;
 
 /**
- * {@link QueueMap} is the actual container for {@link AMqMessage}
+ * A {@link TokenDeque} is a means for passing several tokens as a Deque of Strings
  * 
  * @author Pippo
  */
-public class QueueMap extends ConcurrentHashMap<String, MqQueue> implements IObject
+public class TokenDeque extends ArrayDeque<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
   
+  private String mOriginalString;
+  
   /**
-   * Returns the {@link QueueMap} simple class name enclosed with chevrons.
+   * Construct a {@link TokenDeque} with the specified string {@code str}
+   * 
+   * @param str The string to tokenize
+   */
+  public TokenDeque(String str)
+  {
+    mOriginalString = str;
+    String [] a = str.split(" ");
+    for (String word : a)
+      super.offer(word);
+  }
+  
+  /**
+   * Get the original string
+   * 
+   * @return the original string
+   */
+  public String getOriginalString()
+  {
+    return mOriginalString;
+  }
+  
+  /**
+   * Returns the {@link TokenDeque} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
@@ -32,7 +55,7 @@ public class QueueMap extends ConcurrentHashMap<String, MqQueue> implements IObj
   }
   
   /**
-   * Returns the {@link QueueMap} string representation.
+   * Returns the {@link TokenDeque} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
@@ -45,9 +68,6 @@ public class QueueMap extends ConcurrentHashMap<String, MqQueue> implements IObj
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Size=").append(size()).append("\n")
-      .append(pad).append("  Queues=(\n")
-      .append(pad).append(StringUtils.asPrintableString(this, level+2)).append("\n")
-      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

@@ -3,7 +3,7 @@ package com.kas.mq.impl;
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.types.QueueMap;
+import com.kas.mq.typedef.QueueMap;
 
 /**
  * A {@link MqManager} is an object representing a manager of destinations

@@ -1,4 +1,4 @@
-package com.kas.mq.types;
+package com.kas.mq.impl;
 
 import com.kas.infra.base.IObject;
 

@@ -15,7 +15,7 @@ import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.types.MessageStore;
+import com.kas.mq.typedef.MessageQueue;
 
 /**
  * A {@link MqQueueOld} object is the simplest destination that is managed by the KAS/MQ system.
@@ -58,12 +58,12 @@ public class MqQueueOld extends AKasObject
   private String mLastAccessMethod = "<init>";
   
   /**
-   * The actual message container. An array of {@link MessageStore} objects, one for each priority.<br>
+   * The actual message container. An array of {@link MessageQueue} objects, one for each priority.<br>
    * <br>
    * When a message with priority of 0 is received by this {@link MqQueueOld} object, it is stored in the 
-   * {@link MessageStore} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
+   * {@link MessageQueue} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
-  protected transient MessageStore [] mQueueArray;
+  protected transient MessageQueue [] mQueueArray;
   
   /**
    * The file backing up this {@link MqQueueOld} object.
@@ -81,9 +81,9 @@ public class MqQueueOld extends AKasObject
     mName       = name;
     mThreshold  = threshold;
     mQueueId    = UniqueId.generate();
-    mQueueArray = new MessageStore[ IMqConstants.cMaximumPriority + 1 ];
+    mQueueArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
-      mQueueArray[i] = new MessageStore();
+      mQueueArray[i] = new MessageQueue();
   }
   
   /**
@@ -276,7 +276,7 @@ public class MqQueueOld extends AKasObject
         {
           for (int i = 0; i < mQueueArray.length; ++i)
           {
-            MessageStore msgDeq = mQueueArray[i];
+            MessageQueue msgDeq = mQueueArray[i];
             while (!msgDeq.isEmpty())
             {
               IMqMessage<?> message = msgDeq.poll();
@@ -392,9 +392,9 @@ public class MqQueueOld extends AKasObject
   /**
    * Get the {@link AMqMessage message} with the highest priority from this {@link MqQueueOld} object.<br>
    * <br>
-   * Since the actual message store is implemented by {@link MessageStore}, the actual "get" operations
-   * are translated to {@link MessageStore#poll()}.<br>
-   * Polling is done by calling the {@link MessageStore#poll()} method and then suspend the thread
+   * Since the actual message store is implemented by {@link MessageQueue}, the actual "get" operations
+   * are translated to {@link MessageQueue#poll()}.<br>
+   * Polling is done by calling the {@link MessageQueue#poll()} method and then suspend the thread
    * execution for {@code interval} milliseconds.<br>
    * <br>
    * If a message is not available, the method will poll for one until {@code timeout} expires.
@@ -433,7 +433,7 @@ public class MqQueueOld extends AKasObject
   }
   
   /**
-   * Find the first non-empty {@link MessageStore} object in the queue array.
+   * Find the first non-empty {@link MessageQueue} object in the queue array.
    * 
    * @return the index of the first non-empty queue, or -1 if all are empty.
    */
@@ -487,7 +487,7 @@ public class MqQueueOld extends AKasObject
     int total = 0;
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
-      MessageStore mdq = mQueueArray[prio];
+      MessageQueue mdq = mQueueArray[prio];
       for (IMqMessage<?> msg : mdq)
       {
         if (msg.isExpired())

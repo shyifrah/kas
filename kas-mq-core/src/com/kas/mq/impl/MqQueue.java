@@ -11,7 +11,7 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
-import com.kas.mq.types.MessageStore;
+import com.kas.mq.typedef.MessageQueue;
 
 /**
  * A {@link MqQueue} object is a locally-managed destination
@@ -34,12 +34,12 @@ public class MqQueue extends MqDestination
   private String mLastAccessMethod = "<init>";
   
   /**
-   * The actual message container. An array of {@link MessageStore} objects, one for each priority.<br>
+   * The actual message container. An array of {@link MessageQueue} objects, one for each priority.<br>
    * <br>
    * When a message with priority of 0 is received by this {@link MqQueue} object, it is stored in the 
-   * {@link MessageStore} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
+   * {@link MessageQueue} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
-  protected transient MessageStore [] mStoresArray;
+  protected transient MessageQueue [] mStoresArray;
   
   /**
    * The file backing up this {@link MqQueue} object.
@@ -56,9 +56,9 @@ public class MqQueue extends MqDestination
   public MqQueue(MqManager mgr, String name, int threshold)
   {
     super(mgr, name);
-    mStoresArray = new MessageStore[ IMqConstants.cMaximumPriority + 1 ];
+    mStoresArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
-      mStoresArray[i] = new MessageStore();
+      mStoresArray[i] = new MessageQueue();
   }
   
   /**
@@ -231,7 +231,7 @@ public class MqQueue extends MqDestination
         {
           for (int i = 0; i < mStoresArray.length; ++i)
           {
-            MessageStore store = mStoresArray[i];
+            MessageQueue store = mStoresArray[i];
             while (!store.isEmpty())
             {
               IMqMessage<?> message = store.poll();
@@ -347,9 +347,9 @@ public class MqQueue extends MqDestination
   /**
    * Get the {@link AMqMessage message} with the highest priority from this {@link MqQueue} object.<br>
    * <br>
-   * Since the actual message store is implemented by {@link MessageStore}, the actual "get" operations
-   * are translated to {@link MessageStore#poll()}.<br>
-   * Polling is done by calling the {@link MessageStore#poll()} method and then suspend the thread
+   * Since the actual message store is implemented by {@link MessageQueue}, the actual "get" operations
+   * are translated to {@link MessageQueue#poll()}.<br>
+   * Polling is done by calling the {@link MessageQueue#poll()} method and then suspend the thread
    * execution for {@code interval} milliseconds.<br>
    * <br>
    * If a message is not available, the method will poll for one until {@code timeout} expires.
@@ -386,7 +386,7 @@ public class MqQueue extends MqDestination
   }
   
   /**
-   * Find the first non-empty {@link MessageStore} object in the queue array.
+   * Find the first non-empty {@link MessageQueue} object in the queue array.
    * 
    * @return the index of the first non-empty queue, or -1 if all are empty.
    */
@@ -440,7 +440,7 @@ public class MqQueue extends MqDestination
     int total = 0;
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
-      MessageStore mdq = mStoresArray[prio];
+      MessageQueue mdq = mStoresArray[prio];
       for (IMqMessage<?> msg : mdq)
       {
         if (msg.isExpired())

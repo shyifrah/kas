@@ -15,12 +15,12 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.AMqMessage;
 import com.kas.mq.impl.EMqResponseCode;
+import com.kas.mq.impl.ERequestType;
 import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.IController;
-import com.kas.mq.types.ERequestType;
 
 /**
  * A {@link SessionHandler} is the object that handles the traffic in and from a remote client.

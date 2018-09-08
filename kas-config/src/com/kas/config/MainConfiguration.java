@@ -12,7 +12,7 @@ import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
 import com.kas.infra.config.IConfiguration;
 import com.kas.infra.config.IMainConfiguration;
-import com.kas.infra.types.StringList;
+import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**

@@ -1,7 +1,7 @@
 package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
-import com.kas.infra.types.TokenDeque;
+import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.client.IClient;
 
 /**

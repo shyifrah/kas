@@ -3,7 +3,6 @@ package com.kas.mq.impl;
 import com.kas.comm.IPacket;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.types.ERequestType;
 
 /**
  * The rules all {@link AMqMessage} driven classes must obey
