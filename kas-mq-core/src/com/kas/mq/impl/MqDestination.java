@@ -1,6 +1,7 @@
 package com.kas.mq.impl;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -9,7 +10,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class MqDestination extends AKasObject
+public abstract class MqDestination extends AKasObject
 {
   /**
    * Logger
@@ -19,7 +20,7 @@ public class MqDestination extends AKasObject
   /**
    * Name of the manager that owns this destination
    */
-  protected String mManager;
+  protected MqManager mManager;
   
   /**
    * Name of the destination
@@ -32,7 +33,7 @@ public class MqDestination extends AKasObject
    * @param mgr The name of the manager that owns this {@link MqQueue}
    * @param name The name of this {@link MqQueue} object.
    */
-  public MqDestination(String mgr, String name)
+  MqDestination(MqManager mgr, String name)
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mManager = mgr;
@@ -44,7 +45,7 @@ public class MqDestination extends AKasObject
    * 
    * @return the manager name
    */
-  public String getManager()
+  public MqManager getManager()
   {
     return mManager;
   }
@@ -59,6 +60,36 @@ public class MqDestination extends AKasObject
     return mName;
   }
   
+  /**
+   * Put a message into this {@link MqDestination} object.
+   * 
+   * @param message The message that should be stored
+   * @return {@code true} if message was stored, {@code false} otherwise.
+   */
+  public abstract boolean put(IMqMessage<?> message);
+  
+  /**
+   * Get a message and wait indefinitely for one to be available.
+   * 
+   * @return The {@link AMqMessage}
+   */
+  public abstract IMqMessage<?> get();
+  
+  /**
+   * Get a message and wait {@code timeout} milliseconds for one to be available.
+   * 
+   * @return The {@link AMqMessage} or {@code null} if one is unavailable
+   */
+  public abstract IMqMessage<?> get(long timeout);
+  
+  /**
+   * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
+   * <br>
+   * Execution is suspended for {@code interval} milliseconds between each polling operation.
+   * 
+   * @return The {@link AMqMessage} or {@code null} if one is unavailable
+   */
+  public abstract IMqMessage<?> get(long timeout, long interval);
   
   /**
    * Get the object's string representation
@@ -85,7 +116,7 @@ public class MqDestination extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Manager=").append(mManager).append("\n")
+      .append(pad).append("  Manager=").append(StringUtils.asPrintableString(mManager)).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append(")");
     return sb.toString();

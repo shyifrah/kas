@@ -53,7 +53,7 @@ public class MqQueue extends MqDestination
    * @param name The name of this {@link MqQueue} object.
    * @param threshold The maximum message capacity this {@link MqQueue} can hold
    */
-  public MqQueue(String mgr, String name, int threshold)
+  public MqQueue(MqManager mgr, String name, int threshold)
   {
     super(mgr, name);
     mStoresArray = new MessageStore[ IMqConstants.cMaximumPriority + 1 ];

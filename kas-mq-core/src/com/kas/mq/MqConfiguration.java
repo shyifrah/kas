@@ -5,10 +5,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
-import com.kas.infra.types.StringList;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.infra.utils.Validators;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -17,12 +17,18 @@ import com.kas.infra.utils.Validators;
  */
 public class MqConfiguration extends AConfiguration
 {
+  /**
+   * Configuration prefixes
+   */
   static private final String  cMqConfigPrefix  = "kas.mq.";
   static private final String  cMqUserConfigPrefix    = cMqConfigPrefix + "user.";
   static private final String  cMqConnConfigPrefix    = cMqConfigPrefix + "conn.";
   static private final String  cMqHskpConfigPrefix    = cMqConfigPrefix + "hskp.";
   static private final String  cMqRemoteConfigPrefix  = cMqConfigPrefix + "remoteManager.";
   
+  /**
+   * Default values
+   */
   static public final boolean cDefaultEnabled           = true;
   static public final int     cDefaultPort              = 14560;
   static public final String  cDefaultManagerName       = "qmgr";
@@ -32,6 +38,10 @@ public class MqConfiguration extends AConfiguration
   static public final boolean cDefaultHskpEnabled       = true;
   static public final long    cDefaultHskpInterval      = 300000;
   
+  /**
+   * Logger
+   */
+  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
    * Indicator whether KAS/MQ is enabled
@@ -74,20 +84,22 @@ public class MqConfiguration extends AConfiguration
   private long mHskpInterval = cDefaultHskpInterval; 
   
   /**
-   * A map of remote destination managers to associated network addresses
-   */
-  private Map<String, NetworkAddress> mRemoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
-  
-  /**
    * A map of users to passwords (base64 encrypted)
    */
   private Map<String, byte []> mUserMap = new ConcurrentHashMap<String, byte []>();
+  
+  /**
+   * A map of remote destination managers to associated network addresses
+   */
+  private Map<String, NetworkAddress> mRemoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
   
   /**
    * Refresh configuration - reload values of all properties
    */
   public void refresh()
   {
+    mLogger.debug("MqConfiguration::refresh() - IN");
+    
     mEnabled            = mMainConfig.getBoolProperty    ( cMqConfigPrefix + "enabled"           , mEnabled           );
     mPort               = mMainConfig.getIntProperty     ( cMqConfigPrefix + "port"              , mPort              );
     mManagerName        = mMainConfig.getStringProperty  ( cMqConfigPrefix + "managerName"       , mManagerName       );
@@ -99,6 +111,9 @@ public class MqConfiguration extends AConfiguration
     
     refreshUserMap();
     refreshRemoteManagersMap();
+    
+    mLogger.diag("MqConfiguration::refresh() - Configuration refreshed. New values: " + toPrintableString(0));
+    mLogger.debug("MqConfiguration::refresh() - OUT");
   }
   
   /**
@@ -106,6 +121,8 @@ public class MqConfiguration extends AConfiguration
    */
   private void refreshUserMap()
   {
+    mLogger.debug("MqConfiguration::refreshUserMap() - IN");
+    
     Map<String, byte[]> usermap = new ConcurrentHashMap<String, byte[]>();
     Properties props = mMainConfig.getSubset(cMqUserConfigPrefix);
     for (Map.Entry<Object, Object> entry : props.entrySet())
@@ -117,6 +134,8 @@ public class MqConfiguration extends AConfiguration
       usermap.put(user, encpass);
     }
     mUserMap = usermap;
+    
+    mLogger.debug("MqConfiguration::refreshUserMap() - OUT");
   }
   
   /**
@@ -124,21 +143,24 @@ public class MqConfiguration extends AConfiguration
    */
   private void refreshRemoteManagersMap()
   {
+    mLogger.debug("MqConfiguration::refreshRemoteManagersMap() - IN");
+    
     Map<String, NetworkAddress> remoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
     
-    Properties props = mMainConfig.getSubset(cMqRemoteConfigPrefix);
-    StringList listOfRemoteNames = (StringList)props.getObjectProperty(cMqRemoteConfigPrefix + "name", new StringList());
-    for (String name : listOfRemoteNames)
+    Properties props = mMainConfig.getSubset(cMqRemoteConfigPrefix, ".host");
+    for (Map.Entry<Object, Object> oentry : props.entrySet())
     {
-      String host = props.getStringProperty(cMqRemoteConfigPrefix + name + ".host", null);
-      if (Validators.isHostName(host) || Validators.isIpAddress(host))
-      {
-        int port = props.getIntProperty(cMqRemoteConfigPrefix + name + ".port", -1);
-        if (port == -1) port = 14560;
-        remoteManagersMap.put(name, new NetworkAddress(host, port));
-      }
+      String key = (String)oentry.getKey();
+      int beginindex = cMqRemoteConfigPrefix.length();
+      int endindex = key.lastIndexOf(".host");
+      String manager = key.substring(beginindex, endindex);
+      String host = (String)oentry.getValue();
+      int port = mMainConfig.getIntProperty(cMqRemoteConfigPrefix + manager + ".port" , cDefaultPort );
+      remoteManagersMap.put(manager, new NetworkAddress(host, port));
     }
     mRemoteManagersMap = remoteManagersMap;
+    
+    mLogger.debug("MqConfiguration::refreshRemoteManagersMap() - OUT");
   }
   
   /**
@@ -263,10 +285,10 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("    Interval=").append(mHskpInterval).append(" milliseconds\n")
       .append(pad).append("  )\n")
       .append(pad).append("  Users=(\n")
-      .append(pad).append(StringUtils.asPrintableString(mUserMap, level+2))
+      .append(pad).append(StringUtils.asPrintableString(mUserMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append("  RemoteManagers=(\n")
-      .append(pad).append(StringUtils.asPrintableString(mRemoteManagersMap, level+2))
+      .append(pad).append(StringUtils.asPrintableString(mRemoteManagersMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

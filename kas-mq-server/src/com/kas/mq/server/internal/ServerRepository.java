@@ -11,16 +11,17 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqConstants;
-import com.kas.mq.impl.MqDestination;
+import com.kas.mq.impl.MqManager;
 import com.kas.mq.impl.MqQueue;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.types.QueueMap;
 
 /**
  * The server repository is the class that manages queues
  * 
  * @author Pippo
  */
-public class QueueRepository extends AKasObject implements IRepository
+public class ServerRepository extends AKasObject implements IRepository
 {
   /**
    * Logger
@@ -33,37 +34,43 @@ public class QueueRepository extends AKasObject implements IRepository
   private MqConfiguration mConfig;
   
   /**
-   * The name of the local KAS/MQ manager
+   * The local KAS/MQ manager
    */
-  private String mManager;
+  private MqManager mManager;
   
   /**
-   * A map of all locally defined queues
-   */
-  private Map<String, MqQueue> mLocals;
-  
-  /**
-   * A map of remote managers to names to destinations of all remotely defined destinations
-   */
-  private Map<String, Map<String, MqDestination>> mRemotes;
-  
-  /**
-   * Dead queue name
+   * The dead queue
    */
   private MqQueue mDeadQueue;
+  
+  /**
+   * A map of names to locally defined queues
+   */
+  private QueueMap mLocalQueues;
+  
+  /**
+   * A map of names to remotely defined queues
+   */
+  private QueueMap mRemoteQueues;
+  
+  /**
+   * A map of names to remote managers
+   */
+  private Map<String, MqManager> mRemoteManagers;
   
   /**
    * Construct the server repository object.
    * 
    * @param config The {@link MqConfiguration}
    */
-  public QueueRepository(MqConfiguration config)
+  public ServerRepository(MqConfiguration config)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
-    mManager = mConfig.getManagerName();
-    mLocals = new ConcurrentHashMap<String, MqQueue>();
-    mDeadQueue = null;
+    mManager = new MqManager(mConfig.getManagerName(), "localhost", mConfig.getPort());
+    mLocalQueues  = new QueueMap();
+    mRemoteQueues = new QueueMap();
+    mRemoteManagers = new ConcurrentHashMap<String, MqManager>();
   }
   
   /**
@@ -80,7 +87,6 @@ public class QueueRepository extends AKasObject implements IRepository
     
     mLogger.trace("QueueRepository::init() - Initializing repository...");
     
-    // read repo directory contents and define a queue per backup file found there
     String repoDirPath = RunTimeUtils.getProductHomeDir() + File.separatorChar + "repo";
     File repoDir = new File(repoDirPath);
     if (!repoDir.exists())
@@ -88,8 +94,7 @@ public class QueueRepository extends AKasObject implements IRepository
       success = repoDir.mkdir();
       mLogger.info("QueueRepository::init() - Repository directory does not exist, try to create. result=" + success);
     }
-    else
-    if (!repoDir.isDirectory())
+    else if (!repoDir.isDirectory())
     {
       success = false;
       mLogger.fatal("QueueRepository::init() - Repository directory path points to a file. Terminating...");
@@ -108,12 +113,13 @@ public class QueueRepository extends AKasObject implements IRepository
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
           mLogger.trace("QueueRepository::init() - Restoring contents of queue [" + qName + ']');
-          MqQueue q = getOrCreateQueue(qName);
+          MqQueue q = createQueue(qName);
           q.restore();
         }
       }
       
-      mDeadQueue  = getOrCreateQueue(mConfig.getDeadQueueName());
+      if (mLocalQueues.get(mConfig.getDeadQueueName()) == null)
+        mDeadQueue = createQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold);
     }
     
     mLogger.debug("QueueRepository::init() - OUT, Returns=" + success);
@@ -132,7 +138,7 @@ public class QueueRepository extends AKasObject implements IRepository
     mLogger.debug("QueueRepository::term() - IN");
     boolean success = true;
     
-    for (MqQueue queue : mLocals.values())
+    for (MqQueue queue : mLocalQueues.values())
     {
       String qname = queue.getName();
       mLogger.debug("QueueRepository::term() - Writing queue contents. Queue=[" + qname + "]; Messages=[" + queue.size() + "]");
@@ -146,40 +152,14 @@ public class QueueRepository extends AKasObject implements IRepository
   }
 
   /**
-   * Synchronize repository contents with remote KAS/MQ manager
-   * 
-   * @param destinations A list of {@link MqDestination} objects that exist on a remote queue manager
-   * 
-   * @see com.kas.mq.server.IRepository#sync(Collection)
-   */
-  public void sync(Collection<MqDestination> destinations)
-  {
-    String mgr = null;
-    Map<String, MqDestination> map = null;
-    for (MqDestination mqdest : destinations)
-    {
-      if (map == null) // only for first element to retrieve the appropriate map
-      {
-        mgr = mqdest.getManager();
-        map = mRemotes.get(mgr);
-        if (map == null) // if this is a remote manager - create its map
-        {
-          map = new ConcurrentHashMap<String, MqDestination>();
-          mRemotes.put(mgr, map);
-        }
-      }
-      String name = mqdest.getName();
-      map.put(name, mqdest);
-    }
-  }
-  
-  /**
    * Create a {@link MqQueue} object with the specified {@code name} and default threshold.<br>
    * <br>
    * Note that this method does not verify if a queue with that name already exists
    * 
    * @param name The name of the queue
    * @return the {@link MqQueue} object created
+   * 
+   * @deprecated Use {@link #createQueue(String, int)}
    * 
    * @see com.kas.mq.server.IRepository#createQueue(String)
    */
@@ -201,44 +181,17 @@ public class QueueRepository extends AKasObject implements IRepository
    */
   public MqQueue createQueue(String name, int threshold)
   {
-    mLogger.debug("QueueRepository::createQueue() - IN");
+    mLogger.debug("QueueRepository::createQueue() - IN, Name=" + name + ", Threshold=" + threshold);
     MqQueue queue = null;
     
     if (name != null)
     {
       name = name.toUpperCase();
       queue = new MqQueue(mManager, name, threshold);
-      mLocals.put(name, queue);
+      mLocalQueues.put(name, queue);
     }
     
     mLogger.debug("QueueRepository::createQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
-    return queue;
-  }
-  
-  /**
-   * Get or Create a {@link MqQueue} object with the specified {@code name}.<br>
-   * <br>
-   * First we try retrieving the queue from the map. If it doesn't exist there, we create it.
-   * 
-   * @param name The name of the queue
-   * @return the {@link MqQueue} object created or retrieved
-   * 
-   * @see com.kas.mq.server.IRepository#getOrCreateQueue(String)
-   */
-  public MqQueue getOrCreateQueue(String name)
-  {
-    mLogger.debug("QueueRepository::getOrCreateQueue() - IN");
-    MqQueue queue = null;
-    
-    if (name != null)
-    {
-      name = name.toUpperCase();
-      queue = mLocals.get(name);
-      if (queue == null)
-        queue = createQueue(name);
-    }
-    
-    mLogger.debug("QueueRepository::getOrCreateQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
@@ -252,13 +205,13 @@ public class QueueRepository extends AKasObject implements IRepository
    */
   public MqQueue removeQueue(String name)
   {
-    mLogger.debug("QueueRepository::removeQueue() - IN");
+    mLogger.debug("QueueRepository::removeQueue() - IN, Name=" + name);
     MqQueue queue = null;
     
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = mLocals.remove(name);
+      queue = mLocalQueues.remove(name);
     }
     
     mLogger.debug("QueueRepository::removeQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
@@ -275,17 +228,39 @@ public class QueueRepository extends AKasObject implements IRepository
    */
   public MqQueue getQueue(String name)
   {
-    mLogger.debug("QueueRepository::getQueue() - IN");
+    mLogger.debug("QueueRepository::getQueue() - IN, Name=" + name);
     MqQueue queue = null;
     
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = mLocals.get(name);
+      queue = mLocalQueues.get(name);
+      if (queue == null)
+        queue = mRemoteQueues.get(name);
     }
     
     mLogger.debug("QueueRepository::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
+  }
+  
+  /**
+   * Is a queue exists
+   * 
+   * @param name The name of the queue to be tested
+   * @return {@code true} if a queue named {@code name} exists, {@code false} otherwise 
+   * 
+   * @see com.kas.mq.server.IRepository#isQueueExist(String)
+   */
+  public boolean isQueueExist(String name)
+  {
+    mLogger.debug("QueueRepository::isQueueExist() - IN, Name=" + name);
+    
+    boolean result = false;
+    if ((name != null) && (getQueue(name) != null))
+      result = true;
+    
+    mLogger.debug("QueueRepository::isQueueExist() - OUT, Returns=" + result);
+    return result;
   }
   
   /**
@@ -309,7 +284,7 @@ public class QueueRepository extends AKasObject implements IRepository
    */
   public Collection<MqQueue> getElements()
   {
-    return mLocals.values();
+    return mLocalQueues.values();
   }
   
   /**
@@ -324,8 +299,10 @@ public class QueueRepository extends AKasObject implements IRepository
   {
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
-    sb.append(name()).append("(\n")
-      .append(pad).append("  Queue Map=(").append(StringUtils.asPrintableString(mLocals, level+2)).append(")\n");
+    sb.append(name()).append("(\n");
+    ///
+    /// TODO: COMPLETE
+    ///
     sb.append(pad).append(")\n");
     return sb.toString();
   }

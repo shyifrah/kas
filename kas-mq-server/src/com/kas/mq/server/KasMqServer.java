@@ -13,7 +13,7 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionController;
-import com.kas.mq.server.internal.QueueRepository;
+import com.kas.mq.server.internal.ServerRepository;
 import com.kas.mq.server.internal.ServerHouseKeeper;
 
 /**
@@ -79,7 +79,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     else
     {
       mLogger.info("KAS/MQ base application initialized successfully");
-      mRepository = new QueueRepository(mConfig);
+      mRepository = new ServerRepository(mConfig);
       mController = new SessionController(this);
       
       try
@@ -236,9 +236,9 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   }
   
   /**
-   * Get the {@link QueueRepository} object
+   * Get the {@link ServerRepository} object
    * 
-   * @return the {@link QueueRepository} object
+   * @return the {@link ServerRepository} object
    * 
    * @see IMqServer#getRepository()
    */

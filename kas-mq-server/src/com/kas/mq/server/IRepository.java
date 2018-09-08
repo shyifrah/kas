@@ -3,7 +3,6 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
-import com.kas.mq.impl.MqDestination;
 import com.kas.mq.impl.MqQueue;
 
 /**
@@ -14,13 +13,6 @@ import com.kas.mq.impl.MqQueue;
 public interface IRepository extends IInitializable, IObject
 {
   /**
-   * Synchronize repository contents with remote KAS/MQ manager
-   * 
-   * @param destinations A list of {@link MqDestination} objects that exist on a remote queue manager
-   */
-  public abstract void sync(Collection<MqDestination> destinations);
-  
-  /**
    * Create a {@link MqQueue} object with the specified {@code name}
    * 
    * @param name The name of the queue
@@ -28,14 +20,6 @@ public interface IRepository extends IInitializable, IObject
    * @return the {@link MqQueue} object created
    */
   public abstract MqQueue createQueue(String name, int threshold);
-  
-  /**
-   * Get or Create a {@link MqQueue} object with the specified {@code name}.
-   * 
-   * @param name The name of the queue
-   * @return the {@link MqQueue} object created or retrieved
-   */
-  public abstract MqQueue getOrCreateQueue(String name);
   
   /**
    * Remove a {@link MqQueue} object with the specified {@code name}.
@@ -52,6 +36,14 @@ public interface IRepository extends IInitializable, IObject
    * @return the {@link MqQueue} object or {@code null}, if {@code name} is {@code null}, or there's no queue with this name.
    */
   public abstract MqQueue getQueue(String name);
+  
+  /**
+   * Is a queue exists
+   * 
+   * @param name The name of the queue to be tested
+   * @return {@code true} if a queue named {@code name} exists, {@code false} otherwise 
+   */
+  public abstract boolean isQueueExist(String name);
   
   /**
    * Get the {@link MqQueue} object representing the dead queue
