@@ -1,7 +1,6 @@
 package com.kas.mq.impl.internal;
 
 import com.kas.infra.base.AKasObject;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 
 /**

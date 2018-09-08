@@ -13,12 +13,12 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.internal.AMqMessage;
 import com.kas.mq.impl.internal.EMqResponseCode;
 import com.kas.mq.impl.internal.ERequestType;
+import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.server.IController;
 

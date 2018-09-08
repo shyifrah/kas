@@ -12,7 +12,6 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
 

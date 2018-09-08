@@ -11,7 +11,6 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.typedef.MessageQueue;
 

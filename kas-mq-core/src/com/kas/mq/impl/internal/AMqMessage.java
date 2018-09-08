@@ -9,7 +9,6 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 
 /**

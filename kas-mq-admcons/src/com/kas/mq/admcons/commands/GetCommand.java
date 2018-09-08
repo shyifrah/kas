@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.IMqConstants;
 
 /**
  * A GET command

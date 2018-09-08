@@ -7,9 +7,9 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.IMqConstants;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.server.IRepository;
 
