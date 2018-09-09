@@ -19,7 +19,7 @@ import com.kas.mq.impl.internal.AMqMessage;
 import com.kas.mq.impl.internal.EMqResponseCode;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqQueue;
+import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IController;
 
 /**
@@ -326,7 +326,7 @@ public class SessionHandler extends AKasObject implements Runnable
     
     IMqMessage<?> msg = mClient.get(qname, timeout, interval);
     
-    MqQueue mqq = mController.getRepository().getQueue(qname);
+    MqLocalQueue mqq = mController.getRepository().getLocalQueue(qname);
     if (mqq != null)
     {
       String user = request.getStringProperty(IMqConstants.cKasPropertyGetUserName, null);

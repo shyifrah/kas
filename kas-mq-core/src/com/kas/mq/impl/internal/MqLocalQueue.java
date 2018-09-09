@@ -8,48 +8,24 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.TimeStamp;
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.typedef.MessageQueue;
 
 /**
- * A {@link MqQueueOld} object is the simplest destination that is managed by the KAS/MQ system.
+ * A {@link MqLocalQueue} object is a locally-managed destination
  * 
  * @author Pippo
  */
-public class MqQueueOld extends AKasObject
+public class MqLocalQueue extends MqQueue
 {
-  /**
-   * Logger
-   */
-  private ILogger mLogger;
-  
-  /**
-   * Name of this message queue
-   */
-  private String mName;
-  
-  /**
-   * Name of the queue manager that owns this queue
-   */
-  private String mQmgrName;
-  
   /**
    * Maximum number of messages this queue can hold before
    * starting to fail {@link #put(IMqMessage) put} operations.
    */
   private int mThreshold;
-  
-  /**
-   * A UniqueId representing this message queue
-   */
-  private UniqueId mQueueId;
   
   /**
    * Last access
@@ -61,60 +37,40 @@ public class MqQueueOld extends AKasObject
   /**
    * The actual message container. An array of {@link MessageQueue} objects, one for each priority.<br>
    * <br>
-   * When a message with priority of 0 is received by this {@link MqQueueOld} object, it is stored in the 
+   * When a message with priority of 0 is received by this {@link MqLocalQueue} object, it is stored in the 
    * {@link MessageQueue} at index 0 of the array. A message with priority of 1 is stored at index 1 etc.
    */
   protected transient MessageQueue [] mQueueArray;
   
   /**
-   * The file backing up this {@link MqQueueOld} object.
+   * The file backing up this {@link MqLocalQueue} object.
    */
   protected transient File mBackupFile = null;
   
   /**
-   * Constructing a {@link MqQueueOld} object with the specified name.
+   * Constructing a {@link MqLocalQueue} object with the specified name.
    * 
-   * @param name The name of this {@link MqQueueOld} object.
+   * @param mgr The name of the manager that owns this {@link MqLocalQueue}
+   * @param name The name of this {@link MqLocalQueue} object.
+   * @param threshold The maximum message capacity this {@link MqLocalQueue} can hold
    */
-  public MqQueueOld(String name, int threshold)
+  public MqLocalQueue(MqManager mgr, String name, int threshold)
   {
-    mLogger     = LoggerFactory.getLogger(this.getClass());
-    mName       = name;
-    mThreshold  = threshold;
-    mQueueId    = UniqueId.generate();
+    super(mgr, name);
+    mThreshold = threshold;
     mQueueArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
       mQueueArray[i] = new MessageQueue();
   }
   
   /**
-   * Get the queue name
+   * Get the {@link MqLocalQueue} threshold
    * 
-   * @return the queue name
-   */
-  public String getName()
-  {
-    return mName;
-  }
-  
-  /**
-   * Get the queue threshold
-   * 
-   * @return the queue threshold
+   * @return the {@link MqLocalQueue} threshold
    */
   public int getThreshold()
   {
     return mThreshold;
-  }
-  
-  /**
-   * Get queue ID
-   * 
-   * @return queue ID
-   */
-  public UniqueId getId()
-  {
-    return mQueueId;
   }
   
   /**
@@ -133,23 +89,23 @@ public class MqQueueOld extends AKasObject
   }
   
   /**
-   * Restore the {@link MqQueueOld} contents from the file system
+   * Restore the {@link MqLocalQueue} contents from the file system
    * 
    * @return {@code true} if queue contents restored successfully, {@code false} otherwise
    */
   public synchronized boolean restore()
   {
-    mLogger.debug("MqQueue::restore() - IN");
+    mLogger.debug("MqLocalQueue::restore() - IN");
     boolean success = true;
     
     String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
     mBackupFile = new File(fullFileName);
-    mLogger.debug("MqQueue::restore() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
+    mLogger.debug("MqLocalQueue::restore() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
     
     if (!mBackupFile.exists())
     {
       success = FileUtils.createFile(fullFileName);
-      mLogger.debug("MqQueue::restore() - Backup file doesn't exist. Creating it... " + success);
+      mLogger.debug("MqLocalQueue::restore() - Backup file doesn't exist. Creating it... " + success);
     }
     else if (!mBackupFile.canRead())
     {
@@ -180,8 +136,8 @@ public class MqQueueOld extends AKasObject
             PacketHeader header = new PacketHeader(istream);
             IPacket packet = header.read(istream);
             IMqMessage<?> message = (IMqMessage<?>)packet;
-            mLogger.diag("MqQueue::restore() - Header="  + header.toPrintableString());
-            mLogger.diag("MqQueue::restore() - Message=" + message.toPrintableString(0));
+            mLogger.diag("MqLocalQueue::restore() - Header="  + header.toPrintableString());
+            mLogger.diag("MqLocalQueue::restore() - Message=" + message.toPrintableString(0));
             
             put(message);
           }
@@ -219,34 +175,34 @@ public class MqQueueOld extends AKasObject
       }
     }
     
-    mLogger.debug("MqQueue::restore() - OUT, Returns=" + Boolean.toString(success));
+    mLogger.debug("MqLocalQueue::restore() - OUT, Returns=" + Boolean.toString(success));
     return success;
   }
 
   /**
-   * Backup the {@link MqQueueOld} contents to file system
+   * Backup the {@link MqLocalQueue} contents to file system
    * 
    * @return {@code true} if completed writing all queue contents successfully, {@code false} otherwise
    */
   public synchronized boolean backup()
   {
-    mLogger.debug("MqQueue::backup() - IN, name=[" + mName + "]");
+    mLogger.debug("MqLocalQueue::backup() - IN, name=[" + mName + "]");
     boolean success = true;
     
     String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
     mBackupFile = new File(fullFileName);
-    mLogger.debug("MqQueue::backup() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
+    mLogger.debug("MqLocalQueue::backup() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
     
     if (mBackupFile.exists())
     {
       success = FileUtils.deleteFile(fullFileName);
-      mLogger.debug("MqQueue::restore() - Backup file already exists. Deleting it... " + Boolean.toString(success));
+      mLogger.debug("MqLocalQueue::backup() - Backup file already exists. Deleting it... " + Boolean.toString(success));
     }
     
     if (success && (!mBackupFile.exists()))
     {
       success = FileUtils.createFile(fullFileName);
-      mLogger.debug("MqQueue::restore() - Backup file doesn't exist. Creating it... " + Boolean.toString(success));
+      mLogger.debug("MqLocalQueue::backup() - Backup file doesn't exist. Creating it... " + Boolean.toString(success));
     }
     
     if (success && (!mBackupFile.canWrite()))
@@ -277,16 +233,16 @@ public class MqQueueOld extends AKasObject
         {
           for (int i = 0; i < mQueueArray.length; ++i)
           {
-            MessageQueue msgDeq = mQueueArray[i];
-            while (!msgDeq.isEmpty())
+            MessageQueue mq = mQueueArray[i];
+            while (!mq.isEmpty())
             {
-              IMqMessage<?> message = msgDeq.poll();
+              IMqMessage<?> message = mq.poll();
               
               PacketHeader header = message.createHeader();
               header.serialize(ostream);
               message.serialize(ostream);
-              mLogger.diag("MqQueue::backup() - Header="  + header.toPrintableString());
-              mLogger.diag("MqQueue::backup() - Message=" + message.toPrintableString(0));
+              mLogger.diag("MqLocalQueue::backup() - Header="  + header.toPrintableString());
+              mLogger.diag("MqLocalQueue::backup() - Message=" + message.toPrintableString(0));
               
               ++msgs;
             }
@@ -317,83 +273,63 @@ public class MqQueueOld extends AKasObject
       if (success) mLogger.info("Total messages saved to queue " + mName + " backup file: " + msgs);
     }
     
-    mLogger.debug("MqQueue::backup() - OUT, Returns=" + Boolean.toString(success));
+    mLogger.debug("MqLocalQueue::backup() - OUT, Returns=" + Boolean.toString(success));
     return success;
   }
   
   /**
-   * Put a message into this {@link MqQueueOld} object.
+   * Expire old messages
    * 
-   * @param message The message that should be stored at this {@link MqQueueOld} object.
+   * @return the total number of messages expired
+   */
+  public int expire()
+  {
+    mLogger.debug("MqLocalQueue::expire() - IN");
+    
+    int total = 0;
+    for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
+    {
+      MessageQueue mdq = mQueueArray[prio];
+      for (IMqMessage<?> msg : mdq)
+      {
+        if (msg.isExpired())
+        {
+          mdq.remove(msg);
+        }
+      }
+    }
+    
+    setLastAccess("SYSTEM", "expire");
+    
+    mLogger.debug("MqLocalQueue::expire() - OUT, Returns=" + total);
+    return total;
+  }
+  
+  /**
+   * Put a message into this {@link MqLocalQueue} object.
+   * 
+   * @param message The message that should be stored at this {@link MqLocalQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean put(IMqMessage<?> message)
+  public boolean internalPut(IMqMessage<?> message)
   {
-    if (message == null)
-      return false;
-    
-    if (size() >= mThreshold)
-      return false;
-    
-    int prio = message.getPriority();
+    mLogger.debug("MqLocalQueue::put() - IN");
     
     boolean success = false;
-    success = mQueueArray[prio].offer(message);
+    if ((mThreshold == 0) || (size() < mThreshold))
+    {
+      int prio = message.getPriority();
+      success = mQueueArray[prio].offer(message);
+    }
     
+    mLogger.debug("MqLocalQueue::put() - OUT, Returns=" + success);
     return success;
   }
   
   /**
-   * Get a message and wait indefinitely for one to be available.<br>
-   * 
-   * @return The {@link AMqMessage}
-   */
-  public IMqMessage<?> get()
-  {
-    return internalGet(0, IMqConstants.cDefaultPollingInterval);
-  }
-  
-  /**
-   * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
+   * Get the {@link AMqMessage message} with the highest priority from this {@link MqLocalQueue} object.<br>
    * <br>
-   * If {@code timeout} is 0, this method is equivalent to {@link #get()}.
-   * 
-   * @return The {@link AMqMessage} or {@code null} if one is unavailable
-   * 
-   * @throws IllegalArgumentException if {@code timeout} is lower than 0
-   */
-  public IMqMessage<?> get(long timeout)
-  {
-    if (timeout < 0)
-      throw new IllegalArgumentException("Invalid timeout: " + timeout);
-    
-    return internalGet(timeout, IMqConstants.cDefaultPollingInterval);
-  }
-  
-  /**
-   * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
-   * <br>
-   * Execution is suspended for {@code interval} milliseconds between each polling operation.
-   * 
-   * @return The {@link AMqMessage} or {@code null} if one is unavailable
-   * 
-   * @throws IllegalArgumentException if {@code timeout} or {@code interval} are lower than 0
-   */
-  public IMqMessage<?> get(long timeout, long interval)
-  {
-    if (timeout < 0)
-      throw new IllegalArgumentException("Invalid timeout: " + timeout);
-    
-    if (interval <= 0)
-      throw new IllegalArgumentException("Invalid polling interval: " + interval);
-    
-    return internalGet(timeout, interval);
-  }
-  
-  /**
-   * Get the {@link AMqMessage message} with the highest priority from this {@link MqQueueOld} object.<br>
-   * <br>
-   * Since the actual message store is implemented by {@link MessageQueue}, the actual "get" operations
+   * Since the actual message container is implemented by {@link MessageQueue}, the actual "get" operations
    * are translated to {@link MessageQueue#poll()}.<br>
    * Polling is done by calling the {@link MessageQueue#poll()} method and then suspend the thread
    * execution for {@code interval} milliseconds.<br>
@@ -405,8 +341,10 @@ public class MqQueueOld extends AKasObject
    * @param interval The gap length between polling operations
    * @return The {@link AMqMessage} or {@code null} if one is unavailable
    */
-  private IMqMessage<?> internalGet(long timeout, long interval)
+  protected IMqMessage<?> internalGet(long timeout, long interval)
   {
+    mLogger.debug("MqLocalQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
+    
     IMqMessage<?> result = null;
     
     long millisPassed = 0;
@@ -428,8 +366,7 @@ public class MqQueueOld extends AKasObject
       }
     }
     
-    setLastAccess("System", "expire");
-    
+    mLogger.debug("MqLocalQueue::get() - OUT");
     return result;
   }
   
@@ -452,8 +389,8 @@ public class MqQueueOld extends AKasObject
   /**
    * Set the last access to the queue
    * 
-   * @param user Last user to access this {@link MqQueueOld}
-   * @param method The last method that was used to access this {@link MqQueueOld}
+   * @param user Last user to access this {@link MqLocalQueue}
+   * @param method The last method that was used to access this {@link MqLocalQueue}
    */
   public synchronized void setLastAccess(String user, String method)
   {
@@ -477,49 +414,6 @@ public class MqQueueOld extends AKasObject
   }
   
   /**
-   * Expire old messages
-   * 
-   * @return the total number of messages expired
-   */
-  public int expire()
-  {
-    mLogger.debug("MqQueue::expire() - IN");
-    
-    int total = 0;
-    for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
-    {
-      MessageQueue mdq = mQueueArray[prio];
-      for (IMqMessage<?> msg : mdq)
-      {
-        if (msg.isExpired())
-        {
-          mdq.remove(msg);
-        }
-      }
-    }
-    
-    setLastAccess("System", "expire");
-    
-    mLogger.debug("MqQueue::expire() - OUT, Returns=" + total);
-    return total;
-  }
-  
-  /**
-   * Get the object's string representation
-   * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public String toString()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append(name()).append("Name=").append(mName).append(",Id=").append(mQueueId.toString());
-    return sb.toString();
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -532,19 +426,18 @@ public class MqQueueOld extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
+      .append(pad).append("  Manager=").append(mManager).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append("  Manager=").append(mQmgrName).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
-      .append(pad).append("  UniqueId=").append(mQueueId.toString()).append("\n")
       .append(pad).append("  LastAccess=(\n")
       .append(pad).append("    By=").append(mLastAccessUser).append("\n")
       .append(pad).append("    At=").append(mLastAccessTimeStamp.toString()).append("\n")
       .append(pad).append("    For=").append(mLastAccessMethod).append("\n")
       .append(pad).append("  )\n")
-      .append(pad).append("  PriorityStores=(\n");
+      .append(pad).append("  QueueArray=(\n");
     
     for (int i = 0; i < mQueueArray.length; ++i)
-      sb.append(pad).append("    P").append(String.format("%02d=(", i)).append(mQueueArray[i].toPrintableString(0)).append(")\n");
+      sb.append(pad).append("    P").append(String.format("%02d=(", i)).append(mQueueArray[i].toPrintableString(level+2)).append(")\n");
     
     sb.append(pad).append("  )\n")
       .append(pad).append(")");

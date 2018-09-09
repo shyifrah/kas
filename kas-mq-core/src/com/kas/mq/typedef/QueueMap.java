@@ -3,11 +3,13 @@ package com.kas.mq.typedef;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.internal.AMqMessage;
 import com.kas.mq.impl.internal.MqQueue;
 
 /**
- * {@link QueueMap} is the actual container for {@link AMqMessage}
+ * {@link QueueMap} is the actual container for {@link com.kas.mq.impl.IMqMessage}.<br>
+ * <br>
+ * It is actually an extension of {@link ConcurrentHashMap} that maps a name to the associated {@link MqQueue}.
+ * The {@link MqQueue} object can be either {@link com.kas.mq.impl.internal.MqLocalQueue local} or {@link com.kas.mq.impl.internal.MqRemoteQueue remote}.
  * 
  * @author Pippo
  */
@@ -45,9 +47,6 @@ public class QueueMap extends ConcurrentHashMap<String, MqQueue> implements IObj
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Size=").append(size()).append("\n")
-      .append(pad).append("  Queues=(\n")
-      .append(pad).append(StringUtils.asPrintableString(this, level+2)).append("\n")
-      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

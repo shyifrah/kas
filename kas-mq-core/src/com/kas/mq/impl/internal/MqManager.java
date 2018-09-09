@@ -15,7 +15,7 @@ public class MqManager extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger;
+  protected ILogger mLogger;
   
   /**
    * The name of this manager
@@ -25,17 +25,17 @@ public class MqManager extends AKasObject
   /**
    * The host (name or IP address) on which this manager is running
    */
-  private String mHost;
+  protected String mHost;
   
   /**
    * The port number to which the manager listens for new connections
    */
-  private int mPort;
+  protected int mPort;
   
   /**
    * Map of all managed queues
    */
-  private QueueMap mQueues;
+  protected QueueMap mQueues;
   
   /**
    * Construct a {@link MqManager} object specifying the name, host and port
@@ -64,11 +64,32 @@ public class MqManager extends AKasObject
   }
   
   /**
+   * Get the {@link MqManager} host name or IP address
+   * 
+   * @return the {@link MqManager} host name or IP address
+   */
+  public String getHost()
+  {
+    return mHost;
+  }
+  
+  /**
+   * Get the port on which the {@link MqManager} listens
+   * 
+   * @return the port on which the {@link MqManager} listens
+   */
+  public int getPort()
+  {
+    return mPort;
+  }
+  
+  /**
    * Add a queue to the local queues map
    * 
-   * @param queue The {@link MqQueue} to add
+   * @param queue The {@link MqLocalQueue} to add
+   * @return {@code true} if queue was added successfully to map, {@code false} otherwise
    */
-  public void createQueue(MqQueue queue)
+  public boolean createQueue(MqLocalQueue queue)
   {
     mLogger.debug("MqManager::createQueue() - IN, Name=" + queue.getName());
     
@@ -79,14 +100,16 @@ public class MqManager extends AKasObject
     
     mLogger.debug("MqManager::createQueue() - Queue with name " + name + (oldq == null ? " was successfully created" : " already exist"));
     mLogger.debug("MqManager::createQueue() - OUT");
+    return oldq == null;
   }
   
   /**
    * Remove a queue from the local queues map
    * 
-   * @param name The {@link MqQueue} name to remove
+   * @param name The {@link MqLocalQueue} name to remove
+   * @return {@code true} if queue was removed successfully from map, {@code false} otherwise
    */
-  public void removeQueue(String name)
+  public boolean removeQueue(String name)
   {
     mLogger.debug("MqManager::removeQueue() - IN, Name=" + name);
     
@@ -94,6 +117,7 @@ public class MqManager extends AKasObject
     
     mLogger.debug("MqManager::removeQueue() - Queue with name " + name + (oldq != null ? " was successfully removed" : " does not exist"));
     mLogger.debug("MqManager::removeQueue() - OUT");
+    return oldq != null;
   }
   
   /**

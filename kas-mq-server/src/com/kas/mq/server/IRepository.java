@@ -4,6 +4,7 @@ import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.internal.MqQueue;
+import com.kas.mq.impl.internal.MqLocalQueue;
 
 /**
  * A Repository of queues
@@ -13,49 +14,49 @@ import com.kas.mq.impl.internal.MqQueue;
 public interface IRepository extends IInitializable, IObject
 {
   /**
-   * Create a {@link MqQueue} object with the specified {@code name}
+   * Define a {@link MqLocalQueue} object with the specified {@code name}
    * 
    * @param name The name of the queue
    * @param threshold The queue threshold
-   * @return the {@link MqQueue} object created
+   * @return the {@link MqLocalQueue} object defined
    */
-  public abstract MqQueue createQueue(String name, int threshold);
+  public abstract MqLocalQueue defineLocalQueue(String name, int threshold);
   
   /**
-   * Remove a {@link MqQueue} object with the specified {@code name}.
+   * Delete a {@link MqLocalQueue} object with the specified {@code name}.
    * 
-   * @param name The name of the queue to be removed
-   * @return the {@link MqQueue} object removed
+   * @param name The name of the queue to be deleted
+   * @return the {@link MqLocalQueue} object deleted
    */
-  public abstract MqQueue removeQueue(String name);
+  public abstract MqLocalQueue deleteLocalQueue(String name);
   
   /**
-   * Get a {@link MqQueue} object with the specified {@code name}.
+   * Get a {@link MqLocalQueue} object with the specified {@code name}.
    * 
-   * @param name The name of the queue to be retrieved
-   * @return the {@link MqQueue} object or {@code null}, if {@code name} is {@code null}, or there's no queue with this name.
+   * @param name The name of the local queue to be retrieved
+   * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
    */
-  public abstract MqQueue getQueue(String name);
+  public abstract MqLocalQueue getLocalQueue(String name);
   
   /**
    * Is a queue exists
    * 
    * @param name The name of the queue to be tested
-   * @return {@code true} if a queue named {@code name} exists, {@code false} otherwise 
+   * @return {@code true} if a local queue named {@code name} exists, {@code false} otherwise 
    */
-  public abstract boolean isQueueExist(String name);
+  public abstract boolean isLocalQueueExist(String name);
   
   /**
-   * Get the {@link MqQueue} object representing the dead queue
+   * Get the {@link MqLocalQueue} object representing the dead queue
    * 
-   * @return the {@link MqQueue} object of the dead queue
+   * @return the {@link MqLocalQueue} object of the dead queue
    */
-  public abstract MqQueue getDeadQueue();
+  public abstract MqLocalQueue getDeadQueue();
   
   /**
-   * Get a collection of all queues
+   * Get a collection of all local queues
    * 
-   * @return collection of all queues
+   * @return collection of all local queues
    */
-  public abstract Collection<MqQueue> getElements();
+  public abstract Collection<MqQueue> getLocalQueues();
 }

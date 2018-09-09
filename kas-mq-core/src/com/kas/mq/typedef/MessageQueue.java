@@ -2,7 +2,6 @@ package com.kas.mq.typedef;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.kas.infra.base.IObject;
-import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.AMqMessage;
 
@@ -32,7 +31,19 @@ public class MessageQueue extends ConcurrentLinkedQueue<IMqMessage<?>> implement
   }
   
   /**
-   * Returns the {@link MessageQueue} string representation.
+   * Returns the object's string representation.
+   * 
+   * @return the object's string representation.
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(Size=").append(size()).append(")");
+    return sb.toString();
+  }
+  
+  /**
+   * Returns the object's detailed string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
@@ -41,11 +52,6 @@ public class MessageQueue extends ConcurrentLinkedQueue<IMqMessage<?>> implement
    */
   public String toPrintableString(int level)
   {
-    String pad = StringUtils.getPadding(level);
-    StringBuilder sb = new StringBuilder();
-    sb.append(name()).append("(\n")
-      .append(pad).append("  Size=").append(size()).append("\n")
-      .append(pad).append(")");
-    return sb.toString();
+    return toString();
   }
 }

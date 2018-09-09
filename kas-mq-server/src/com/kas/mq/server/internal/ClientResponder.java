@@ -10,6 +10,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IClient;
 import com.kas.mq.impl.internal.IMqConstants;
+import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.server.IRepository;
 
@@ -115,7 +116,7 @@ public class ClientResponder extends AKasObject implements IClient
     mLogger.debug("ResponderClient::defineQueue() - IN, Queue=" + queue + ", Threshold=" + threshold);
     
     boolean success = false;
-    MqQueue mqq = mRepository.getQueue(queue);
+    MqLocalQueue mqq = mRepository.getLocalQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))
     {
@@ -129,7 +130,7 @@ public class ClientResponder extends AKasObject implements IClient
     }
     else
     {
-      mqq = mRepository.createQueue(queue, threshold);
+      mqq = mRepository.defineLocalQueue(queue, threshold);
       mLogger.debug("ResponderClient::defineQueue() - Created queue " + StringUtils.asPrintableString(mqq));
       setResponse("");
       success = true;
@@ -153,7 +154,7 @@ public class ClientResponder extends AKasObject implements IClient
     mLogger.debug("ResponderClient::deleteQueue() - IN, Queue=" + queue + ", Force=" + force);
     
     boolean success = false;
-    MqQueue mqq = mRepository.getQueue(queue);
+    MqLocalQueue mqq = mRepository.getLocalQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))
     {
@@ -171,14 +172,14 @@ public class ClientResponder extends AKasObject implements IClient
       int size = mqq.size();
       if (size == 0)
       {
-        mRepository.removeQueue(queue);
+        mRepository.deleteLocalQueue(queue);
         mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted");
         setResponse("");
         success = true;
       }
       else if (force)
       {
-        mRepository.removeQueue(queue);
+        mRepository.deleteLocalQueue(queue);
         mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted (" + size + " messages discarded)");
         setResponse("");
         success = true;
@@ -211,27 +212,29 @@ public class ClientResponder extends AKasObject implements IClient
     if (name == null)
       name = "";
     
-    Collection<MqQueue> queues = mRepository.getElements();
+    Collection<MqQueue> queues = mRepository.getLocalQueues();
     StringBuilder sb = new StringBuilder();
     sb.append("Query ").append((all ? "all" : "basic")).append(" data on ").append(name).append((prefix ? "*" : "")).append(":\n").append("  \n");
     int total = 0;
-    for (MqQueue mqq : queues)
+    for (MqQueue queue : queues)
     {
+      MqLocalQueue mqlq = (MqLocalQueue)queue;
       boolean include = false;
       if (prefix)
-        include = mqq.getName().startsWith(name);
+        include = mqlq.getName().startsWith(name);
       else
-        include = mqq.getName().equals(name);
+        include = mqlq.getName().equals(name);
       
       if (include)
       {
         ++total;
-        sb.append("Queue....................: ").append(mqq.getName()).append('\n');
+        sb.append("Queue....................: ").append(mqlq.getName()).append('\n');
+        sb.append("    Type.............: LOCAL\n");
         if (all)
         {
-          sb.append("    Threshold........: ").append(mqq.getThreshold()).append('\n');
-          sb.append("    Size.............: ").append(mqq.size()).append('\n');
-          sb.append("    Last access......: ").append(mqq.getLastAccess()).append('\n');
+          sb.append("    Threshold........: ").append(mqlq.getThreshold()).append('\n');
+          sb.append("    Size.............: ").append(mqlq.size()).append('\n');
+          sb.append("    Last access......: ").append(mqlq.getLastAccess()).append('\n');
         }
         sb.append(" ").append('\n');
       }
@@ -262,7 +265,7 @@ public class ClientResponder extends AKasObject implements IClient
     mLogger.debug("ResponderClient::get() - IN, Queue=" + queue + ", Timeout=" + timeout + ", Interval=" + interval);
     
     IMqMessage<?> result = null;
-    MqQueue mqq = mRepository.getQueue(queue);
+    MqLocalQueue mqq = mRepository.getLocalQueue(queue);
     if ((queue == null) || (queue.length() == 0))
     {
       mLogger.debug("ResponderClient::get() - Invalid queue name: null or empty string");
@@ -306,8 +309,8 @@ public class ClientResponder extends AKasObject implements IClient
     
     mLogger.debug("ResponderClient::put() - Message to put: " + StringUtils.asPrintableString(message));
     
-    MqQueue mqq = mRepository.getQueue(queue);
-    MqQueue ddq = mRepository.getDeadQueue();
+    MqLocalQueue mqq = mRepository.getLocalQueue(queue);
+    MqLocalQueue ddq = mRepository.getDeadQueue();
     if ((queue == null) || (queue.length() == 0))
     {
       mLogger.debug("ResponderClient::put() - Invalid queue name: null or empty string");
