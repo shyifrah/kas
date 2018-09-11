@@ -1,7 +1,10 @@
 package com.kas.mq.impl.internal;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import com.kas.infra.base.AKasObject;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.infra.base.ISerializable;
 
 /**
  * A KAS/MQ response message.<br>
@@ -11,59 +14,119 @@ import com.kas.mq.impl.IMqMessage;
  * 
  * @author Pippo
  */
-public class MqResponse extends AKasObject
+public class MqResponse extends AKasObject implements ISerializable
 {
   /**
-   * The response code integer value
+   * The response code
    */
-  private int mIntResponseCode;
+  private EMqCode mCode;
+  
+  /**
+   * The response value
+   */
+  private int mValue;
   
   /**
    * The response description
    */
-  private String mResponseDesc;
+  private String mDesc;
   
   /**
-   * Construct a response object using the specified {@link EMqResponseCode} and description
+   * Construct a response object using the specified {@link EMqCode} and description
    * 
-   * @param code The {@link EMqResponseCode response code}
+   * @param code The {@link EMqCode response code}
+   * @param val Additional integer value
    * @param desc The description of the response code
    */
-  public MqResponse(int code, String desc)
+  public MqResponse(EMqCode code, int val, String desc)
   {
-    mIntResponseCode = code;
-    mResponseDesc = desc;
+    mCode = code;
+    mValue = val;
+    mDesc = desc;
   }
   
   /**
-   * Construct a response object using properties contained in {@link AMqMessage} properties
+   * Constructs a {@link MqResponse} object from {@link ObjectInputStream}
    * 
-   * @param message The {@link AMqMessage} containing the response code and description
+   * @param istream The {@link ObjectInputStream}
+   * 
+   * @throws IOException if I/O error occurs
    */
-  public MqResponse(IMqMessage<?> message)
+  public MqResponse(ObjectInputStream istream) throws IOException
   {
-    mIntResponseCode = message.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1);
-    mResponseDesc = message.getStringProperty(IMqConstants.cKasPropertyResponseDesc, null);
+    try
+    {
+      mCode = EMqCode.fromInt(istream.readInt());
+      mValue = istream.readInt();
+      mDesc = (String)istream.readObject();
+    }
+    catch (IOException e)
+    {
+      throw e;
+    }
+    catch (Throwable e)
+    {
+      throw new IOException(e);
+    }
   }
   
   /**
-   * Get the response code as integer value
+   * Serialize the {@link MqResponse} to the specified {@link ObjectOutputStream}
    * 
-   * @return the response code as integer value
+   * @param ostream The {@link ObjectOutputStream} to which the response will be serialized
+   * 
+   * @throws IOException if an I/O error occurs
+   * 
+   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
    */
-  public int getIntCode()
+  public synchronized void serialize(ObjectOutputStream ostream) throws IOException
   {
-    return mIntResponseCode;
+    ostream.writeInt(mCode.ordinal());
+    ostream.reset();
+    ostream.writeInt(mValue);
+    ostream.reset();
+    ostream.writeObject(mDesc);
+    ostream.reset();
   }
   
   /**
-   * Get the response code as Enum value
+   * Get the response code
    * 
-   * @return the response code as Enum value
+   * @return the response code
    */
-  public EMqResponseCode getCode()
+  public EMqCode getCode()
   {
-    return EMqResponseCode.fromInt(mIntResponseCode);
+    return mCode;
+  }
+  
+  /**
+   * Set the response code
+   * 
+   * @param code The response code
+   */
+  public void setCode(EMqCode code)
+  {
+    mCode = code;
+  }
+  
+  /**
+   * Get the response value
+   * 
+   * @return the response value
+   */
+  public int getValue()
+  {
+    return mValue;
+  }
+  
+  /**
+   * Set the response value
+   * 
+   * @param val The response value
+   */
+  public void setValue(int val)
+  {
+    mValue = val;
   }
   
   /**
@@ -73,7 +136,17 @@ public class MqResponse extends AKasObject
    */
   public String getDesc()
   {
-    return mResponseDesc;
+    return mDesc;
+  }
+    
+  /**
+   * Set the response description
+   * 
+   * @param desc The response description
+   */
+  public void setDesc(String desc)
+  {
+    mDesc = desc;
   }
     
   /**
@@ -89,8 +162,9 @@ public class MqResponse extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  ResponseCode=").append(mIntResponseCode).append("\n")
-      .append(pad).append("  ResponseDesc=").append(mResponseDesc).append("\n")
+      .append(pad).append("  Code=").append(mCode).append("\n")
+      .append(pad).append("  Value=").append(mValue).append("\n")
+      .append(pad).append("  Desc=").append(mDesc).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }
