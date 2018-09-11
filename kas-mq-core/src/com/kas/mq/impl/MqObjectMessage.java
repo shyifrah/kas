@@ -118,10 +118,7 @@ public final class MqObjectMessage extends AMqMessage<Object>
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
-      .append(pad).append("  Priority=").append(mPriority).append("\n")
-      .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
-      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
+      .append(super.toPrintableString(level))
       .append(pad).append("  Body=(").append(StringUtils.asString(mBody)).append(")\n")
       .append(pad).append(")");
     return sb.toString();

@@ -29,7 +29,7 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   /**
    * The response identifier
    */
-  protected UniqueId mResponseId;
+  protected UniqueId mReferenceId;
   
   /**
    * The message priority
@@ -52,6 +52,11 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   protected long mExpiration;
   
   /**
+   * A response
+   */
+  protected MqResponse mResponse;
+  
+  /**
    * Message properties
    */
   protected Properties mProperties;
@@ -62,10 +67,12 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   public AMqMessage()
   {
     mMessageId = UniqueId.generate();
+    mReferenceId = UniqueId.cNullUniqueId;
     mPriority  = IMqConstants.cDefaultPriority;
     mProperties = new Properties();
     mTimeStamp = System.currentTimeMillis();
     mExpiration = IMqConstants.cDefaultExpiration;
+    mResponse = new MqResponse(EMqCode.cUnknown, -1, "");
   }
   
   /**
@@ -83,6 +90,9 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
       istream.read(ba);
       mMessageId = UniqueId.fromByteArray(ba);
       
+      istream.read(ba);
+      mReferenceId = UniqueId.fromByteArray(ba);
+      
       mPriority = istream.readInt();
       
       int reqType = istream.readInt();
@@ -90,6 +100,8 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
       
       mTimeStamp = istream.readLong();
       mExpiration = istream.readLong();
+      
+      mResponse = new MqResponse(istream);
       
       mProperties = new Properties(istream);
     }
@@ -118,6 +130,10 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
     ostream.write(ba);
     ostream.reset();
     
+    ba = mReferenceId.toByteArray();
+    ostream.write(ba);
+    ostream.reset();
+    
     ostream.writeInt(mPriority);
     ostream.reset();
     
@@ -129,6 +145,8 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
     
     ostream.writeLong(mExpiration);
     ostream.reset();
+    
+    mResponse.serialize(ostream);
     
     mProperties.serialize(ostream);
   }
@@ -146,27 +164,27 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
-   * Set the response ID
+   * Set the reference ID
    * 
-   * @param id The response ID to set
+   * @param id The reference ID to set
    * 
-   * @see com.kas.mq.impl.IMqMessage#setResponseId(UniqueId)
+   * @see com.kas.mq.impl.IMqMessage#setReferenceId(UniqueId)
    */
-  public void setResponseId(UniqueId id)
+  public void setReferenceId(UniqueId id)
   {
-    mResponseId = id;
+    mReferenceId = id;
   }
   
   /**
-   * Get the response ID
+   * Get the reference ID
    * 
-   * @return the response id
+   * @return the reference id
    * 
-   * @see com.kas.mq.impl.IMqMessage#getResponseId()
+   * @see com.kas.mq.impl.IMqMessage#getReferenceId()
    */
-  public UniqueId getResponseId()
+  public UniqueId getReferenceId()
   {
-    return mResponseId;
+    return mReferenceId;
   }
   
   /**
@@ -271,6 +289,30 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   {
     long millisFromCreation = System.currentTimeMillis() - mTimeStamp;
     return millisFromCreation > mExpiration;
+  }
+  
+  /**
+   * Set the {@link MqResponse}
+   * 
+   * @param the {@link MqResponse} to set
+   * 
+   * @see com.kas.mq.impl.IMqMessage#setResponse(MqResponse)
+   */
+  public void setResponse(MqResponse resp)
+  {
+    mResponse = resp;
+  }
+  
+  /**
+   * Get the {@link MqResponse}
+   * 
+   * @return the {@link MqResponse}
+   * 
+   * @see com.kas.mq.impl.IMqMessage#getResponse()
+   */
+  public MqResponse getResponse()
+  {
+    return mResponse;
   }
   
   /**
@@ -535,6 +577,19 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
+   * Get a subset of the properties from the message's properties
+   * 
+   * @param prefix A string that all returned properties are prefixed with
+   * @return a subset of the properties collection
+   * 
+   * @see com.kas.mq.impl.IMqMessage#getSubset(String)
+   */
+  public Properties getSubset(String prefix)
+  {
+    return mProperties.getSubset(prefix);
+  }
+  
+  /**
    * Create the {@link PacketHeader} describing this {@link AMqMessage}
    * 
    * @return the packet header
@@ -555,14 +610,14 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   {
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
-    sb.append(name()).append("(\n")
-      .append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
+    sb.append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
+      .append(pad).append("  Reference Id=").append(StringUtils.asPrintableString(mReferenceId)).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
       .append(pad).append("  TimeStamp=").append(mTimeStamp).append("\n")
       .append(pad).append("  Expiration=").append(mExpiration).append("\n")
-      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
-      .append(pad).append(")");
+      .append(pad).append("  Response=").append(mResponse.toPrintableString(level+1)).append("\n")
+      .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n");
     return sb.toString();
   }
 }

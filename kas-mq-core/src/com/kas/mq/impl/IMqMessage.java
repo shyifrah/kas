@@ -2,9 +2,11 @@ package com.kas.mq.impl;
 
 import com.kas.comm.IPacket;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.internal.AMqMessage;
 import com.kas.mq.impl.internal.ERequestType;
+import com.kas.mq.impl.internal.MqResponse;
 
 /**
  * The rules all {@link AMqMessage} driven classes must obey
@@ -23,18 +25,18 @@ public interface IMqMessage<T> extends IObject, IPacket
   public abstract UniqueId getMessageId();
   
   /**
-   * Set the response ID
+   * Set the reference ID
    * 
-   * @param id The response ID to set
+   * @param id The reference ID to set
    */
-  public abstract void setResponseId(UniqueId id);
+  public abstract void setReferenceId(UniqueId id);
   
   /**
-   * Get the response ID
+   * Get the reference ID
    * 
-   * @return the response id
+   * @return the reference id
    */
-  public abstract UniqueId getResponseId();
+  public abstract UniqueId getReferenceId();
   
   /**
    * Set the message priority
@@ -95,6 +97,20 @@ public interface IMqMessage<T> extends IObject, IPacket
    * @return {@code true} if message expired, {@code false} otherwise
    */
   public abstract boolean isExpired();
+  
+  /**
+   * Set the {@link MqResponse}
+   * 
+   * @param the {@link MqResponse} to set
+   */
+  public abstract void setResponse(MqResponse resp);
+  
+  /**
+   * Get the {@link MqResponse}
+   * 
+   * @return the {@link MqResponse}
+   */
+  public abstract MqResponse getResponse();
   
   /**
    * Set the message's body
@@ -262,4 +278,12 @@ public interface IMqMessage<T> extends IObject, IPacket
    * @return the property value, or {@code defaultValue} if one is not present
    */
   public abstract double getDoubleProperty(String key, double defaultValue);
+  
+  /**
+   * Get a subset of the properties from the message's properties
+   * 
+   * @param prefix A string that all returned properties are prefixed with
+   * @return a subset of the properties collection
+   */
+  public abstract Properties getSubset(String prefix);
 }
