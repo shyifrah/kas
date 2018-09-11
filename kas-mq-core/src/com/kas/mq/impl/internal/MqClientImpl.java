@@ -3,11 +3,11 @@ package com.kas.mq.impl.internal;
 import java.io.IOException;
 import java.net.Socket;
 import com.kas.comm.IMessenger;
-import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -154,17 +154,16 @@ public class MqClientImpl extends AKasObject implements IClient
       mLogger.debug("MqClientImpl::defineQueue() - sending define request: " + request.toPrintableString(0));
       try
       {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::defineQueue() - received response: " + response.toPrintableString());
-        if ((response.getCode() == EMqResponseCode.cOkay) || (response.getCode() == EMqResponseCode.cWarn))
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::defineQueue() - received response: " + reply.getResponse().toPrintableString());
+        if ((reply.getResponse().getCode() == EMqCode.cOkay) || (reply.getResponse().getCode() == EMqCode.cWarn))
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully defined");
         }
         else
         {
-          logInfoAndSetResponse(response.getDesc());
+          logInfoAndSetResponse(reply.getResponse().getDesc());
         }
       }
       catch (IOException e)
@@ -204,17 +203,16 @@ public class MqClientImpl extends AKasObject implements IClient
       mLogger.debug("MqClientImpl::deleteQueue() - sending delete request: " + request.toPrintableString(0));
       try
       {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::deleteQueue() - received response: " + response.toPrintableString());
-        if ((response.getCode() == EMqResponseCode.cOkay) || (response.getCode() == EMqResponseCode.cWarn))
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::deleteQueue() - received response: " + reply.getResponse().toPrintableString());
+        if ((reply.getResponse().getCode() == EMqCode.cOkay) || (reply.getResponse().getCode() == EMqCode.cWarn))
         {
           success = true;
           logInfoAndSetResponse("Queue " + queue + " was successfully deleted");
         }
         else
         {
-          logInfoAndSetResponse(response.getDesc());
+          logInfoAndSetResponse(reply.getResponse().getDesc());
         }
       }
       catch (IOException e)
@@ -236,15 +234,15 @@ public class MqClientImpl extends AKasObject implements IClient
    * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all if {@code true}, display all information on all queues 
-   * @return the number of records returned that matched the query, or -1 if an error occurred
+   * @return the records returned that matched the query
    * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean)
+   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public int queryQueue(String name, boolean prefix, boolean all)
+  public Properties queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("MqClientImpl::queryQueue() - IN");
     
-    int result = -1;
+    Properties result = null;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
@@ -255,12 +253,11 @@ public class MqClientImpl extends AKasObject implements IClient
       mLogger.debug("MqClientImpl::queryQueue() - sending query queue request: " + request.toPrintableString(0));
       try
       {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::queryQueue() - received response: " + response.toPrintableString());
-        result = response.getIntCode();
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::queryQueue() - received response: " + reply.getResponse().toPrintableString());
+        result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
         
-        logInfoAndSetResponse(response.getDesc());
+        logInfoAndSetResponse(reply.getResponse().getDesc());
       }
       catch (IOException e)
       {
@@ -300,20 +297,18 @@ public class MqClientImpl extends AKasObject implements IClient
       {
         IMqMessage<?> request = MqMessageFactory.createGetRequest(queue, timeout, interval);
         mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
-        IPacket packet = mMessenger.sendAndReceive(request);
-        IMqMessage<?> responseMessage = (IMqMessage<?>)packet;
-        MqResponse response = new MqResponse(responseMessage);
-        mLogger.debug("MqClientImpl::get() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::get() - received response: " + reply.getResponse().toPrintableString());
+        if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
-          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
-          responseMessage.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
-          logInfoAndSetResponse("Successfully got a message from queue " + queue + ", Message: " + responseMessage.toPrintableString(0));
-          result = responseMessage;
+          reply.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
+          reply.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
+          logInfoAndSetResponse("Successfully got a message from queue " + queue + ", Message: " + reply.toPrintableString(0));
+          result = reply;
         }
         else
         {
-          logInfoAndSetResponse(response.getDesc());
+          logInfoAndSetResponse(reply.getResponse().getDesc());
         }
       }
       catch (IOException e)
@@ -389,10 +384,9 @@ public class MqClientImpl extends AKasObject implements IClient
       mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString(0));
       try
       {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::login() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::login() - received response: " + reply.getResponse().toPrintableString());
+        if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
           success = true;
           logInfoAndSetResponse("User " + user + " successfully authenticated");
@@ -400,7 +394,7 @@ public class MqClientImpl extends AKasObject implements IClient
         }
         else
         {
-          logInfoAndSetResponse(response.getDesc());
+          logInfoAndSetResponse(reply.getResponse().getDesc());
         }
       }
       catch (IOException e)
@@ -438,17 +432,16 @@ public class MqClientImpl extends AKasObject implements IClient
       mLogger.debug("MqClientImpl::shutdown() - sending shutdown request: " + request.toPrintableString(0));
       try
       {
-        IPacket packet = mMessenger.sendAndReceive(request);
-        MqResponse response = new MqResponse((IMqMessage<?>)packet);
-        mLogger.debug("MqClientImpl::shutdown() - received response: " + response.toPrintableString());
-        if (response.getCode() == EMqResponseCode.cOkay)
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::shutdown() - received response: " + reply.getResponse().toPrintableString());
+        if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
           success = true;
           logInfoAndSetResponse("Shutdown request was posted");
         }
         else
         {
-          logInfoAndSetResponse(response.getDesc());
+          logInfoAndSetResponse(reply.getResponse().getDesc());
         }
       }
       catch (IOException e)

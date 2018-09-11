@@ -2,6 +2,7 @@ package com.kas.mq.impl.internal;
 
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.mq.impl.IMqMessage;
 
 /**
@@ -71,7 +72,8 @@ public interface IClient extends IObject
    * @param all if {@code true}, display all information on all queues 
    * @return the number of records returned that matched the query, or -1 if an error occurred
    */
-  public abstract int queryQueue(String name, boolean prefix, boolean all);
+  // public abstract int queryQueue(String name, boolean prefix, boolean all);
+  public abstract Properties queryQueue(String name, boolean prefix, boolean all);
   
   /**
    * Get a message from queue.

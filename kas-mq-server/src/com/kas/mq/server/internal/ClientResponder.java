@@ -4,6 +4,7 @@ import java.util.Collection;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -205,16 +206,57 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean)
    */
-  public int queryQueue(String name, boolean prefix, boolean all)
+//  public int queryQueue(String name, boolean prefix, boolean all)
+//  {
+//    mLogger.debug("ResponderClient::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+//    
+//    if (name == null) name = "";
+//    
+//    Collection<MqQueue> queues = mRepository.getLocalQueues();
+//    StringBuilder sb = new StringBuilder();
+//    sb.append("Query ").append((all ? "all" : "basic")).append(" data on ").append(name).append((prefix ? "*" : "")).append(":\n").append("  \n");
+//    int total = 0;
+//    for (MqQueue queue : queues)
+//    {
+//      MqLocalQueue mqlq = (MqLocalQueue)queue;
+//      boolean include = false;
+//      if (prefix)
+//        include = mqlq.getName().startsWith(name);
+//      else
+//        include = mqlq.getName().equals(name);
+//      
+//      if (include)
+//      {
+//        ++total;
+//        sb.append("Queue....................: ").append(mqlq.getName()).append('\n');
+//        sb.append("    Type.............: LOCAL\n");
+//        if (all)
+//        {
+//          sb.append("    Threshold........: ").append(mqlq.getThreshold()).append('\n');
+//          sb.append("    Size.............: ").append(mqlq.size()).append('\n');
+//          sb.append("    Last access......: ").append(mqlq.getLastAccess()).append('\n');
+//        }
+//        sb.append(" ").append('\n');
+//      }
+//    }
+//    
+//    if (total == 0)
+//      sb.append(" ").append('\n').append("No queues matched specified criteria");
+//    else
+//      sb.append(" ").append('\n').append(total).append(" queues matched specified criteria");
+//    
+//    setResponse(sb.toString());
+//    mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + true);
+//    return total;
+//  }
+  public Properties queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ResponderClient::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
-    if (name == null)
-      name = "";
+    if (name == null) name = "";
     
+    Properties props = new Properties();
     Collection<MqQueue> queues = mRepository.getLocalQueues();
-    StringBuilder sb = new StringBuilder();
-    sb.append("Query ").append((all ? "all" : "basic")).append(" data on ").append(name).append((prefix ? "*" : "")).append(":\n").append("  \n");
     int total = 0;
     for (MqQueue queue : queues)
     {
@@ -228,26 +270,21 @@ public class ClientResponder extends AKasObject implements IClient
       if (include)
       {
         ++total;
-        sb.append("Queue....................: ").append(mqlq.getName()).append('\n');
-        sb.append("    Type.............: LOCAL\n");
+        String keyPref = IMqConstants.cKasPropertyQryqResultPrefix + "." + total;
+        props.setStringProperty(keyPref + ".name", mqlq.getName());
         if (all)
         {
-          sb.append("    Threshold........: ").append(mqlq.getThreshold()).append('\n');
-          sb.append("    Size.............: ").append(mqlq.size()).append('\n');
-          sb.append("    Last access......: ").append(mqlq.getLastAccess()).append('\n');
+          props.setStringProperty(keyPref + ".owner", "local");
+          props.setIntProperty(keyPref + ".threshold", mqlq.getThreshold());
+          props.setIntProperty(keyPref + ".size", mqlq.size());
+          props.setStringProperty(keyPref + ".access", mqlq.getLastAccess());
         }
-        sb.append(" ").append('\n');
       }
     }
     
-    if (total == 0)
-      sb.append(" ").append('\n').append("No queues matched specified criteria");
-    else
-      sb.append(" ").append('\n').append(total).append(" queues matched specified criteria");
-    
-    setResponse(sb.toString());
-    mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + true);
-    return total;
+    props.setIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", total);
+    mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + total + " queues");
+    return props;
   }
 
   /**
@@ -309,29 +346,29 @@ public class ClientResponder extends AKasObject implements IClient
     
     mLogger.debug("ResponderClient::put() - Message to put: " + StringUtils.asPrintableString(message));
     
-    MqLocalQueue mqq = mRepository.getLocalQueue(queue);
-    MqLocalQueue ddq = mRepository.getDeadQueue();
+    MqLocalQueue locq = mRepository.getLocalQueue(queue);
+    MqLocalQueue dead = mRepository.getDeadQueue();
     if ((queue == null) || (queue.length() == 0))
     {
       mLogger.debug("ResponderClient::put() - Invalid queue name: null or empty string");
       setResponse("Invalid queue name: null or empty string");
-      ddq.put(message);
+      dead.put(message);
     }
-    else if (mqq == null)
+    else if (locq == null)
     {
       mLogger.debug("ResponderClient::put() - Queue with name \"" + queue + "\" doesn't exist");
       setResponse("Queue with name \"" + queue + "\" doesn't exist");
-      ddq.put(message);
+      dead.put(message);
     }
     else
     {
-      boolean success = mqq.put(message);
-      if (!success)
-        ddq.put(message);
+      boolean success = locq.put(message);
+      if (!success) dead.put(message);
+      
       mLogger.debug("ResponderClient::put() - Message was put to queue " + queue);
       setResponse("");
       String user = message.getStringProperty(IMqConstants.cKasPropertyPutUserName, null);
-      mqq.setLastAccess(user, "put");
+      locq.setLastAccess(user, "put");
     }
     
     mLogger.debug("ResponderClient::put() - OUT");

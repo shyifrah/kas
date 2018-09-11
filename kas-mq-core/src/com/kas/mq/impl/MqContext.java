@@ -2,6 +2,7 @@ package com.kas.mq.impl;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
@@ -162,11 +163,11 @@ public final class MqContext extends AKasObject
    * 
    * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean)
    */
-  public int queryQueue(String name, boolean prefix, boolean all)
+  public Properties queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("MqContext::queryQueue() - IN, Queue=" + name);
     
-    int result = -1;
+    Properties result = null;
     if (Validators.isQueueName(name))
     {
       result = mDelegator.queryQueue(name, prefix, all);
