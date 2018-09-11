@@ -590,6 +590,19 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   }
   
   /**
+   * Include a subset of properties in the message's properties
+   * 
+   * @param props A subset of {@link Properties} to include
+   * @return the number of properties included
+   * 
+   * @see com.kas.mq.impl.IMqMessage#setSubset(Properties)
+   */
+  public void setSubset(Properties props)
+  {
+    mProperties.putAll(props);
+  }
+  
+  /**
    * Create the {@link PacketHeader} describing this {@link AMqMessage}
    * 
    * @return the packet header

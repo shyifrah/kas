@@ -206,49 +206,6 @@ public class ClientResponder extends AKasObject implements IClient
    * 
    * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-//  public int queryQueue(String name, boolean prefix, boolean all)
-//  {
-//    mLogger.debug("ResponderClient::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
-//    
-//    if (name == null) name = "";
-//    
-//    Collection<MqQueue> queues = mRepository.getLocalQueues();
-//    StringBuilder sb = new StringBuilder();
-//    sb.append("Query ").append((all ? "all" : "basic")).append(" data on ").append(name).append((prefix ? "*" : "")).append(":\n").append("  \n");
-//    int total = 0;
-//    for (MqQueue queue : queues)
-//    {
-//      MqLocalQueue mqlq = (MqLocalQueue)queue;
-//      boolean include = false;
-//      if (prefix)
-//        include = mqlq.getName().startsWith(name);
-//      else
-//        include = mqlq.getName().equals(name);
-//      
-//      if (include)
-//      {
-//        ++total;
-//        sb.append("Queue....................: ").append(mqlq.getName()).append('\n');
-//        sb.append("    Type.............: LOCAL\n");
-//        if (all)
-//        {
-//          sb.append("    Threshold........: ").append(mqlq.getThreshold()).append('\n');
-//          sb.append("    Size.............: ").append(mqlq.size()).append('\n');
-//          sb.append("    Last access......: ").append(mqlq.getLastAccess()).append('\n');
-//        }
-//        sb.append(" ").append('\n');
-//      }
-//    }
-//    
-//    if (total == 0)
-//      sb.append(" ").append('\n').append("No queues matched specified criteria");
-//    else
-//      sb.append(" ").append('\n').append(total).append(" queues matched specified criteria");
-//    
-//    setResponse(sb.toString());
-//    mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + true);
-//    return total;
-//  }
   public Properties queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ResponderClient::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
@@ -281,6 +238,8 @@ public class ClientResponder extends AKasObject implements IClient
         }
       }
     }
+    
+    setResponse(String.format("%s queues matched filtering criteria", (total == 0 ? "No" : total)));
     
     props.setIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", total);
     mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + total + " queues");

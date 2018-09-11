@@ -1,9 +1,12 @@
 package com.kas.mq.admcons.commands;
 
 import java.util.Scanner;
+import com.kas.infra.base.KasException;
+import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.IMqConstants;
 
 /**
  * A QUERY QUEUE command
@@ -78,9 +81,39 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    mClient.queryQueue(name, prefix, all);
+    Properties props = mClient.queryQueue(name, prefix, all);
+    output(props, all);
+    return false;
+  }
+  
+  /**
+   * Print the output of the query
+   * 
+   * @param props The properties object containing the response from the KAS/MQ server
+   * @param all When {@code true}, query included all data about queues, {@code false} otherwise
+   */
+  private void output(Properties props, boolean all)
+  {
+    try
+    {
+      int total = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total");
+      for (int i = 1; i <= total; ++i)
+      {
+        String qpref = IMqConstants.cKasPropertyQryqResultPrefix + "." + i;
+        writeln("Queue........................: " + props.getStringProperty(qpref + ".name"));
+        if (all)
+        {
+          writeln("    Owner.............: " + props.getStringProperty(qpref + ".owner"));
+          writeln("    Threshold.........: " + props.getIntProperty(qpref + ".threshold"));
+          writeln("    Size..............: " + props.getIntProperty(qpref + ".size"));
+          writeln("    Last access.......: " + props.getStringProperty(qpref + ".access"));
+        }
+        writeln(" ");
+      }
+    }
+    catch (KasException e) {}
+    
     writeln(mClient.getResponse());
     writeln(" ");
-    return false;
   }
 }

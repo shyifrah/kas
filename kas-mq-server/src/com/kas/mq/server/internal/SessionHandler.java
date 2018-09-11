@@ -312,17 +312,14 @@ public class SessionHandler extends AKasObject implements Runnable
     
     Properties props = mClient.queryQueue(name, prefix, all);
     
-    String desc = "";
-    EMqCode rc = EMqCode.cOkay;
     int val = props.size();
-    if (val == 0)
-    {
-      rc = EMqCode.cWarn;
-      desc = "No queues matched filtering criteria";
-    }
+    EMqCode rc = EMqCode.cOkay;
+    if (val == 0) rc = EMqCode.cWarn;
     
     mLogger.debug("SessionHandler::queryQueue() - OUT");
-    return generateResponse(rc,  val, desc);
+    IMqMessage<?> result = generateResponse(rc,  val, mClient.getResponse());
+    result.setSubset(props);
+    return result;
   }
   
   /**

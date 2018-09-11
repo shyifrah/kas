@@ -286,4 +286,12 @@ public interface IMqMessage<T> extends IObject, IPacket
    * @return a subset of the properties collection
    */
   public abstract Properties getSubset(String prefix);
+  
+  /**
+   * Include a subset of properties in the message's properties
+   * 
+   * @param props A subset of {@link Properties} to include
+   * @return the number of properties included
+   */
+  public abstract void setSubset(Properties props);
 }
