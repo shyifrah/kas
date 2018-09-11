@@ -139,7 +139,7 @@ public class SessionHandler extends AKasObject implements Runnable
     mLogger.debug("SessionHandler::process() - IN");
     
     boolean cont = true;
-    IMqMessage<?> response = null;
+    IMqMessage<?> reply = null;
     try
     {
       IMqMessage<?> request = (IMqMessage<?>)packet;
@@ -149,25 +149,25 @@ public class SessionHandler extends AKasObject implements Runnable
       if (!mController.getConfig().isEnabled())
       {
         mLogger.debug("SessionHandler::process() - KAS/MQ server is disabled and request will be rejected");
-        response = reject();
+        reply = reject();
       }
       else if (requestType == ERequestType.cAuthenticate)
       {
-        response = authenticate(request);
-        if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
+        reply = authenticate(request);
+        if (reply.getResponse().getCode() != EMqCode.cOkay)
           cont = false;
       }
       else if (requestType == ERequestType.cDefineQueue)
       {
-        response = defineQueue(request);
+        reply = defineQueue(request);
       }
       else if (requestType == ERequestType.cDeleteQueue)
       {
-        response = deleteQueue(request);
+        reply = deleteQueue(request);
       }
       else if (requestType == ERequestType.cQueryQueue)
       {
-        response = queryQueue(request);
+        reply = queryQueue(request);
       }
       else if (requestType == ERequestType.cPut)
       {
@@ -175,19 +175,19 @@ public class SessionHandler extends AKasObject implements Runnable
       }
       else if (requestType == ERequestType.cGet)
       {
-        response = get(request);
+        reply = get(request);
       }
       else if (requestType == ERequestType.cShutdown)
       {
-        response = shutdown(request);
-        if (response.getIntProperty(IMqConstants.cKasPropertyResponseCode, -1) != 0)
+        reply = shutdown(request);
+        if (reply.getResponse().getCode() != EMqCode.cOkay)
           cont = false;
       }
       
-      if (response != null)
+      if (reply != null)
       {
-        mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(response));
-        mMessenger.send(response);
+        mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(reply));
+        mMessenger.send(reply);
       }
     }
     catch (ClassCastException e)
@@ -197,7 +197,7 @@ public class SessionHandler extends AKasObject implements Runnable
     }
     catch (IOException e)
     {
-      mLogger.error("Failed to send response message to remote client. Message: " + StringUtils.asString(response));
+      mLogger.error("Failed to send response message to remote client. Message: " + StringUtils.asString(reply));
       cont = false;
     }
     
@@ -216,9 +216,9 @@ public class SessionHandler extends AKasObject implements Runnable
    */
   private IMqMessage<?> authenticate(IMqMessage<?> request)
   {
-    mLogger.debug("SessionHandler::authenticate() - OUT");
+    mLogger.debug("SessionHandler::authenticate() - IN");
     
-    String desc = "";
+    String desc;
     EMqCode erc = EMqCode.cFail;
     
     String user = request.getStringProperty(IMqConstants.cKasPropertyUserName, null);
@@ -234,6 +234,7 @@ public class SessionHandler extends AKasObject implements Runnable
       desc = "Incorrect password for " + user;
     else
     {
+      desc = "User " + user + " successfully authenticated";
       mActiveUserName = user;
       erc = EMqCode.cOkay;
     }
@@ -401,7 +402,7 @@ public class SessionHandler extends AKasObject implements Runnable
     if ("admin".equalsIgnoreCase(user))
     {
       erc = EMqCode.cOkay;
-      desc = "";
+      desc = "Shutdown request was successfully posted";
       mController.shutdown();
     }
     

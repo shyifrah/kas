@@ -133,7 +133,7 @@ public class ClientResponder extends AKasObject implements IClient
     {
       mqq = mRepository.defineLocalQueue(queue, threshold);
       mLogger.debug("ResponderClient::defineQueue() - Created queue " + StringUtils.asPrintableString(mqq));
-      setResponse("");
+      setResponse("Queue with name " + queue + " and threshold of " + threshold + " was successfully defined");
       success = true;
     }
     
@@ -175,14 +175,14 @@ public class ClientResponder extends AKasObject implements IClient
       {
         mRepository.deleteLocalQueue(queue);
         mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted");
-        setResponse("");
+        setResponse("Queue with name \"" + queue + "\" was successfully deleted");
         success = true;
       }
       else if (force)
       {
         mRepository.deleteLocalQueue(queue);
         mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted (" + size + " messages discarded)");
-        setResponse("");
+        setResponse("Queue with name \"" + queue + "\" was successfully deleted (" + size + " messages discarded)");
         success = true;
       }
       else
@@ -204,7 +204,7 @@ public class ClientResponder extends AKasObject implements IClient
    * @param all if {@code true}, display all information on all queues 
    * @return the number of records returned that matched the query, or -1 if an error occurred
    * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean)
+   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
 //  public int queryQueue(String name, boolean prefix, boolean all)
 //  {
