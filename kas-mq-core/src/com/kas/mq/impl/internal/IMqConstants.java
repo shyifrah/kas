@@ -48,9 +48,10 @@ public interface IMqConstants
   static public final String cKasPropertyDelqQueueName  = cKasPropertyPrefix + "delq.queue";
   static public final String cKasPropertyDelqForce      = cKasPropertyPrefix + "delq.force";
   
-  static public final String cKasPropertyQryqQueueName  = cKasPropertyPrefix + "qryq.queue";
-  static public final String cKasPropertyQryqPrefix     = cKasPropertyPrefix + "qryq.prefix";
-  static public final String cKasPropertyQryqAllData    = cKasPropertyPrefix + "qryq.alldata";
+  static public final String cKasPropertyQryqQueueName    = cKasPropertyPrefix + "qryq.queue";
+  static public final String cKasPropertyQryqPrefix       = cKasPropertyPrefix + "qryq.prefix";
+  static public final String cKasPropertyQryqAllData      = cKasPropertyPrefix + "qryq.alldata";
+  static public final String cKasPropertyQryqResultPrefix = cKasPropertyPrefix + "qryq.result";
   
   static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";

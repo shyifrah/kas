@@ -80,7 +80,7 @@ public class MdbSimulator extends AKasMqAppl
         MqTextMessage request = (MqTextMessage)message;
         String replyBody = "reply to: " + request.getBody();
         MqTextMessage reply = MqMessageFactory.createTextMessage(replyBody);
-        reply.setResponseId(request.getMessageId());
+        reply.setReferenceId(request.getMessageId());
         client.put(mParams.mRepliesQueue, reply);
             
         message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);

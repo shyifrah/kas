@@ -2,6 +2,8 @@ package com.kas.mq.server.internal;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -9,6 +11,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.IMqConstants;
+import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqLocalQueue;
@@ -48,6 +51,11 @@ public class ServerRepository extends AKasObject implements IRepository
   private QueueMap mLocalQueues;
   
   /**
+   * A map of names to remotely defined queues
+   */
+  private QueueMap mRemoteQueues;
+  
+  /**
    * Construct the server repository object.
    * 
    * @param config The {@link MqConfiguration}
@@ -58,6 +66,7 @@ public class ServerRepository extends AKasObject implements IRepository
     mConfig = config;
     mManager = new MqManager(mConfig.getManagerName(), "localhost", mConfig.getPort());
     mLocalQueues  = new QueueMap();
+    mRemoteQueues = new QueueMap();
   }
   
   /**
@@ -109,6 +118,11 @@ public class ServerRepository extends AKasObject implements IRepository
         mDeadQueue = defineLocalQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold);
     }
     
+    if (success)
+    {
+      success = synch();
+    }
+    
     mLogger.debug("ServerRepository::init() - OUT, Returns=" + success);
     return success;
   }
@@ -138,6 +152,20 @@ public class ServerRepository extends AKasObject implements IRepository
     
     mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
     return success;
+  }
+  
+  private boolean synch()
+  {
+    MqClientImpl client = new MqClientImpl();
+    for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
+    {
+      String mgrName = entry.getKey();
+      NetworkAddress mgrAddr = entry.getValue();
+      
+      client.connect(mgrAddr.getHost(), mgrAddr.getPort());
+      client.disconnect();
+    }
+    return true;
   }
 
   /**

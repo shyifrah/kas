@@ -2,6 +2,7 @@ package com.kas.mq.impl;
 
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.impl.internal.IMqConstants;
 
@@ -93,16 +94,17 @@ public class MqMessageFactory
   /**
    * Create a response message
    * 
-   * @param int An integer value representing how successful was the request.
-   * @param response The message sent by the server to the client which describes the response code.
+   * @param code A {@link EMqCode} representing how successful was the request.
+   * @param val An integer value that describes the {@code code}
+   * @param desc The message sent by the server to the client which describes the response code.
    * @return a {@link MqObjectMessage}
    */
-  static public MqObjectMessage createResponse(int code, String response)
+  static public IMqMessage<?> createResponse(EMqCode code, int val, String desc)
   {
     MqObjectMessage message = new MqObjectMessage();
-    message.setRequestType(ERequestType.cUnknown);
-    message.setIntProperty(IMqConstants.cKasPropertyResponseCode, code);
-    message.setStringProperty(IMqConstants.cKasPropertyResponseDesc, response);
+    message.getResponse().setCode(code);
+    message.getResponse().setValue(val);
+    message.getResponse().setDesc(desc);
     return message;
   }
 }
