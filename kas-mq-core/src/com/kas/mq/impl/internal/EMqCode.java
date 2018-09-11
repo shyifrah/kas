@@ -7,8 +7,13 @@ import com.kas.infra.base.IObject;
  * 
  * @author Pippo
  */
-public enum EMqResponseCode implements IObject
+public enum EMqCode implements IObject
 {
+  /**
+   * Unknown state
+   */
+  cUnknown,
+  
   /**
    * Operation ended okay
    */
@@ -31,7 +36,7 @@ public enum EMqResponseCode implements IObject
     
   ;
   
-  static final private EMqResponseCode [] cValues = EMqResponseCode.values();
+  static final private EMqCode [] cValues = EMqCode.values();
   
   /**
    * Get the enum value by its ordinal.
@@ -39,9 +44,15 @@ public enum EMqResponseCode implements IObject
    * @param id The ordinal of the enum
    * @return the enum value
    */
-  static public EMqResponseCode fromInt(int id)
+  static public EMqCode fromInt(int id)
   {
-    return cValues[id];
+    EMqCode code = cUnknown;
+    try
+    {
+      code = cValues[id];
+    }
+    catch (Throwable e) {}
+    return code;
   }
   
   /**
