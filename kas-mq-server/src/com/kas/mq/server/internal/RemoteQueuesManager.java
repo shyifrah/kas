@@ -1,83 +1,56 @@
 package com.kas.mq.server.internal;
 
 import java.util.Collection;
-import java.util.Map;
-import com.kas.comm.impl.NetworkAddress;
-import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
-import com.kas.mq.typedef.QueueMap;
 
 /**
  * The {@link RemoteQueuesManager} is the class that does the actual managing of remote queues for the {@link ServerRepository}
  * 
  * @author Pippo
  */
-public class RemoteQueuesManager extends AKasObject
+public class RemoteQueuesManager extends MqManager
 {
-  /**
-   * Logger
-   */
-  private ILogger mLogger;
-  
-  /**
-   * KAS/MQ configuration
-   */
-  private MqConfiguration mConfig;
-  
-  /**
-   * A map of names to remotely defined queues
-   */
-  private QueueMap mRemoteQueues;
-  
   /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
    */
-  RemoteQueuesManager(MqConfiguration config)
+  RemoteQueuesManager(String name, String host, int port)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
-    mConfig = config;
-    mRemoteQueues = new QueueMap();
+    super(name, host, port);
   }
   
   /**
    * Request from remote KAS/MQ servers their list of queues.
+   * 
+   * @return {@code true} if ended successfully, {@code false} otherwise
    */
-  void sync()
+  protected void init()
   {
-    mLogger.debug("RemoteQueuesManager::sync() - IN");
+    mLogger.debug("RemoteQueuesManager::init() - IN");
     
-    for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
+    boolean success = true;
+    
+    mLogger.debug("RemoteQueuesManager::init() - Requesting queue list from qmgr \"" + mName + "\" at " + mHost + ':' + mPort);
+    
+    MqClientImpl client = new MqClientImpl();
+    client.connect(mHost, mPort);
+    
+    if (client.isConnected())
     {
-      String name = entry.getKey();
-      NetworkAddress addr = entry.getValue();
-      
-      mLogger.debug("RemoteQueuesManager::sync() - Requesting queue list from qmgr \"" + name + "\" at " + addr.toString());
-      String host = addr.getHost();
-      int port = addr.getPort();
-      
-      MqClientImpl client = new MqClientImpl();
-      client.connect(host, port);
       Properties props = client.queryQueue("*", true, false);
       if (props == null)
-      {
         mLogger.warn(client.getResponse());
-        continue;
-      }
       
-      mLogger.debug("RemoteQueuesManager::sync() - Received list: " + props.toPrintableString(0));
+      mLogger.debug("RemoteQueuesManager::init() - Received list: " + props.toPrintableString(0));
       
-      MqManager mgr = new MqManager(name, host, port);
       int totalQueues = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", 0);
       for (int i = 0; i < totalQueues; ++i)
       {
@@ -85,16 +58,18 @@ public class RemoteQueuesManager extends AKasObject
         String qname = props.getStringProperty(key, "");
         if (qname.length() > 0)
         {
-          MqRemoteQueue queue = new MqRemoteQueue(mgr, name);
-          mLogger.debug("RemoteQueuesManager::sync() - Adding to remote queues list queue: " + queue.toString());
-          mRemoteQueues.put(qname, queue);
+          MqRemoteQueue queue = new MqRemoteQueue(this, qname);
+          mLogger.debug("RemoteQueuesManager::init() - Adding to remote queues list queue: " + queue.toString());
+          mQueues.put(qname, queue);
         }
       }
       
-      client.disconnect();
+      mInitialized = true;
     }
+
+    client.disconnect();
     
-    mLogger.debug("RemoteQueuesManager::sync() - OUT");
+    mLogger.debug("RemoteQueuesManager::init() - OUT, Returns=" + success);
   }
   
   /**
@@ -111,7 +86,7 @@ public class RemoteQueuesManager extends AKasObject
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = (MqRemoteQueue)mRemoteQueues.get(name);
+      queue = (MqRemoteQueue)mQueues.get(name);
     }
     
     mLogger.debug("RemoteQueuesManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
@@ -125,7 +100,7 @@ public class RemoteQueuesManager extends AKasObject
    */
   Collection<MqQueue> getAll()
   {
-    return mRemoteQueues.values();
+    return mQueues.values();
   }
   
   /**

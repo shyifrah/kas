@@ -1,6 +1,9 @@
 package com.kas.mq.server.internal;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
@@ -36,7 +39,7 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * The local queue manager
    */
-  private RemoteQueuesManager mRemoteManager;
+  private Map<String, RemoteQueuesManager> mRemoteManagersMap;
   
   /**
    * Construct the server repository object.
@@ -48,7 +51,7 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
     mLocalManager = new LocalQueuesManager(mConfig);
-    mRemoteManager = new RemoteQueuesManager(mConfig);
+    mRemoteManagersMap = new ConcurrentHashMap<String, RemoteQueuesManager>();
   }
   
   /**
@@ -61,12 +64,22 @@ public class ServerRepository extends AKasObject implements IRepository
   public boolean init()
   {
     mLogger.debug("ServerRepository::init() - IN");
-    boolean success = true;
+    boolean success = false;
     
     mLogger.trace("ServerRepository::init() - Initializing repository...");
-    success = mLocalManager.restore();
+    mLocalManager.init();
+    if (mLocalManager.isInitialized())
+      success = true;
     
-    mRemoteManager.sync();
+    for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
+    {
+      String name = entry.getKey();
+      NetworkAddress addr = entry.getValue();
+      RemoteQueuesManager mgr = new RemoteQueuesManager(name, addr.getHost(), addr.getPort());
+      mgr.init();
+      
+      mRemoteManagersMap.put(name, mgr);
+    }
     
     mLogger.debug("ServerRepository::init() - OUT, Returns=" + success);
     return success;
@@ -84,7 +97,7 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.debug("ServerRepository::term() - IN");
     boolean success = true;
     
-    success = mLocalManager.backup();
+    mLocalManager.term();
     
     mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
     return success;

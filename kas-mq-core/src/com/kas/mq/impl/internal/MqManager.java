@@ -20,7 +20,7 @@ public class MqManager extends AKasObject
   /**
    * The name of this manager
    */
-  private String mName;
+  protected String mName;
   
   /**
    * The host (name or IP address) on which this manager is running
@@ -31,6 +31,11 @@ public class MqManager extends AKasObject
    * The port number to which the manager listens for new connections
    */
   protected int mPort;
+  
+  /**
+   * Is {@link MqManager} initialized
+   */
+  protected boolean mInitialized;
   
   /**
    * Map of all managed queues
@@ -84,40 +89,26 @@ public class MqManager extends AKasObject
   }
   
   /**
-   * Add a queue to the local queues map
-   * 
-   * @param queue The {@link MqLocalQueue} to add
-   * @return {@code true} if queue was added successfully to map, {@code false} otherwise
+   * {@link MqManager} initialization
    */
-  public boolean createQueue(MqLocalQueue queue)
+  protected void init()
   {
-    mLogger.debug("MqManager::createQueue() - IN, Name=" + queue.getName());
-    
-    String name = queue.getName();
-    MqQueue oldq = mQueues.put(name, queue);
-    if (oldq != null)
-      mQueues.put(name, oldq);
-    
-    mLogger.debug("MqManager::createQueue() - Queue with name " + name + (oldq == null ? " was successfully created" : " already exist"));
-    mLogger.debug("MqManager::createQueue() - OUT");
-    return oldq == null;
+    mInitialized = true;
   }
   
   /**
-   * Remove a queue from the local queues map
-   * 
-   * @param name The {@link MqLocalQueue} name to remove
-   * @return {@code true} if queue was removed successfully from map, {@code false} otherwise
+   * {@link MqManager} termination
    */
-  public boolean removeQueue(String name)
+  protected void term()
   {
-    mLogger.debug("MqManager::removeQueue() - IN, Name=" + name);
-    
-    MqQueue oldq = mQueues.remove(name);
-    
-    mLogger.debug("MqManager::removeQueue() - Queue with name " + name + (oldq != null ? " was successfully removed" : " does not exist"));
-    mLogger.debug("MqManager::removeQueue() - OUT");
-    return oldq != null;
+  }
+  
+  /**
+   * {@link MqManager} termination
+   */
+  public boolean isInitialized()
+  {
+    return mInitialized;
   }
   
   /**
