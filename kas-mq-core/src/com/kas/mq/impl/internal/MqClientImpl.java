@@ -222,7 +222,7 @@ public class MqClientImpl extends AKasObject implements IClient
    * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all if {@code true}, display all information on all queues 
-   * @return the records returned that matched the query
+   * @return the queues that returned that matched the query
    * 
    * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
@@ -257,6 +257,48 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     
     mLogger.debug("MqClientImpl::queryQueue() - OUT, TotalProperties=" + (result == null ? 0 : result.size()));
+    return result;
+  }
+  
+  /**
+   * Synchronize queue list
+   * 
+   * @param qmgr The name of the local queue manager
+   * @return the queues that returned that matched the query
+   * 
+   * @see com.kas.mq.impl.internal.IClient#synch()
+   */
+  public Properties synch(String qmgr)
+  {
+    mLogger.debug("MqClientImpl::synch() - IN, Qmgr=" + qmgr);
+    
+    Properties result = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqMessageFactory.createSynchronizeRequest(qmgr);
+      mLogger.debug("MqClientImpl::synch() - sending query queue request: " + request.toPrintableString(0));
+      try
+      {
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::synch() - received response: " + reply.toPrintableString(0));
+        result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+        
+        logInfoAndSetResponse(reply.getResponse().getDesc());
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to query KAS/MQ server for all queues. Exception: ")
+          .append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::synch() - OUT, TotalProperties=" + (result == null ? 0 : result.size()));
     return result;
   }
   

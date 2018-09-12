@@ -46,6 +46,17 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqObjectMessage createSynchronizeRequest(String qmgr)
+  {
+    MqObjectMessage message = new MqObjectMessage();
+    message.setRequestType(ERequestType.cSynch);
+    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, "*");
+    message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
+    message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
+    message.setStringProperty(IMqConstants.cKasPropertySyncQmgrName, qmgr);
+    return message;
+  }
+  
   static public MqObjectMessage createGetRequest(String queue, long timeout, long interval)
   {
     MqObjectMessage message = new MqObjectMessage();
@@ -60,17 +71,6 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cShutdown);
-    return message;
-  }
-  
-  static public MqObjectMessage createSynchronizeRequest(String [] list)
-  {
-    MqObjectMessage message = new MqObjectMessage();
-    message.setRequestType(ERequestType.cSynch);
-    int listLength = (list == null ? 0 : list.length);
-    message.setIntProperty(IMqConstants.cKasPropertySyncListPrefix + ".total", listLength);
-    for (int i = 0; i < listLength; ++i)
-      message.setStringProperty(IMqConstants.cKasPropertySyncListPrefix + "." + (i+1) + ".name", list[i]);
     return message;
   }
   

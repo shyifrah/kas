@@ -21,6 +21,7 @@ import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
 
@@ -169,6 +170,10 @@ public class SessionHandler extends AKasObject implements Runnable
       {
         reply = queryQueue(request);
       }
+      else if (requestType == ERequestType.cSynch)
+      {
+        reply = queryQueue(request);
+      }
       else if (requestType == ERequestType.cPut)
       {
         put(request);
@@ -277,7 +282,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  public IMqMessage<?> deleteQueue(IMqMessage<?> request)
+  private IMqMessage<?> deleteQueue(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::deleteQueue() - IN");
     
@@ -297,12 +302,14 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Process query queue request.<br>
    * <br>
-   * Extract the queue name and the <b>alldata indicator</b> and pass them to the client responder.
+   * Extract the queue name and the <b>prefix & alldata indicators</b> and pass them to the client responder.<br>
+   * If this method was actually called for a {@code Synch} request, before returning the response,
+   * the session handler tries to re-initialize the remote manager, in case it was not initialized properly.
    * 
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  public IMqMessage<?> queryQueue(IMqMessage<?> request)
+  private IMqMessage<?> queryQueue(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::queryQueue() - IN");
     
@@ -316,9 +323,19 @@ public class SessionHandler extends AKasObject implements Runnable
     EMqCode rc = EMqCode.cOkay;
     if (val == 0) rc = EMqCode.cWarn;
     
-    mLogger.debug("SessionHandler::queryQueue() - OUT");
     IMqMessage<?> result = generateResponse(rc,  val, mClient.getResponse());
     result.setSubset(props);
+    
+    if (request.getRequestType() == ERequestType.cSynch)
+    {
+      mLogger.debug("SessionHandler::queryQueue() - Request is actually for Synch queue list");
+      String qmgrname = request.getStringProperty(IMqConstants.cKasPropertySyncQmgrName, null);
+      MqManager rqmgr = mController.getRepository().getRemoteManager(qmgrname);
+      if ((rqmgr != null) && (!rqmgr.isInitialized()))
+        rqmgr.init();
+    }
+    
+    mLogger.debug("SessionHandler::queryQueue() - OUT");
     return result;
   }
   
@@ -330,7 +347,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} retrieved from the queue or a response object
    */
-  public IMqMessage<?> get(IMqMessage<?> request)
+  private IMqMessage<?> get(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::get() - IN");
     
@@ -364,7 +381,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  public IMqMessage<?> put(IMqMessage<?> request)
+  private IMqMessage<?> put(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::put() - IN");
     

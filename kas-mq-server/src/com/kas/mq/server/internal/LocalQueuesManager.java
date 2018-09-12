@@ -46,7 +46,7 @@ public class LocalQueuesManager extends MqManager
    * If it exists but it's not a directory, end with an error.
    * Otherwise, read the directory contents and construct a {@link MqLocalQueue} per ".qbk" file.
    */
-  protected void init()
+  public void init()
   {
     mLogger.debug("LocalQueuesManager::init() - IN");
     
@@ -97,7 +97,7 @@ public class LocalQueuesManager extends MqManager
    * 
    * @return {@code true} if all queues were successfully backed up, {@code false} otherwise
    */
-  protected void term()
+  public void term()
   {
     mLogger.debug("LocalQueuesManager::term() - IN");
     boolean success = true;

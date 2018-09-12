@@ -172,6 +172,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public boolean run()
   {
     int errors = 0;
+    sStartupLogger.info("KAS/MQ server " + mConfig.getManagerName() + " ready for some action...");
     while (!isStopping())
     {
       if (!mConfig.isEnabled())

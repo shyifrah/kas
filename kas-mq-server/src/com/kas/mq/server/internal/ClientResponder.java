@@ -219,6 +219,21 @@ public class ClientResponder extends AKasObject implements IClient
   }
 
   /**
+   * Synchronize queue list
+   * 
+   * @param qmgr The name of the local queue manager
+   * @return the queues that returned that matched the query
+   * 
+   * @throws RuntimeException Always. This method cannot be invoked
+   * 
+   * @see com.kas.mq.impl.internal.IClient#synch()
+   */
+  public Properties synch(String qmgr)
+  {
+    throw new RuntimeException("Cannot call synch()");
+  }
+  
+  /**
    * Get a message from queue.
    * 
    * @param queue The target queue name

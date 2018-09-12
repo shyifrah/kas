@@ -63,5 +63,5 @@ public interface IMqConstants
   static public final String cKasPropertyPutQueueName = cKasPropertyPrefix + "put.queue";
   static public final String cKasPropertyPutTimeStamp = cKasPropertyPrefix + "put.timestamp";
   
-  static public final String cKasPropertySyncListPrefix = cKasPropertyPrefix + "sync.list";
+  static public final String cKasPropertySyncQmgrName = cKasPropertyPrefix + "sync.qmgr";
 }

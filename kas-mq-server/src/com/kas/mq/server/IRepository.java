@@ -6,6 +6,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.impl.internal.MqManager;
 
 /**
  * A Repository of queues
@@ -56,6 +57,14 @@ public interface IRepository extends IInitializable, IObject
    * @return {@code true} if a local queue named {@code name} exists, {@code false} otherwise 
    */
   public abstract boolean isLocalQueueExist(String name);
+  
+  /**
+   * Get {@link MqManager} by its name 
+   * 
+   * @param name The name of the {@link MqManager}
+   * @return the {@link MqManager}
+   */
+  public abstract MqManager getRemoteManager(String name);
   
   /**
    * Get the {@link MqLocalQueue} object representing the dead queue

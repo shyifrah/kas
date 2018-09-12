@@ -70,9 +70,17 @@ public interface IClient extends IObject
    * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all if {@code true}, display all information on all queues 
-   * @return the number of records returned that matched the query, or -1 if an error occurred
+   * @return the queues that matched the query
    */
   public abstract Properties queryQueue(String name, boolean prefix, boolean all);
+  
+  /**
+   * Synchronize queue list 
+   * 
+   * @param qmgr The name of the local queue manger
+   * @return the queues that matched the query
+   */
+  public abstract Properties synch(String qmgr);
   
   /**
    * Get a message from queue.

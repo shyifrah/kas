@@ -72,7 +72,7 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
       return false;
     
     mLogger = LoggerFactory.getLogger(this.getClass());
-    sStartupLogger.info("KAS/MQ logging services are now active, switching to log file...");
+    sStartupLogger.info("Logging services are now active, switching to log file...");
     mLogger.info("Loaded configuration: " + mConfig.toPrintableString());
     
     mShutdownHook = new KasMqShutdownHook(this);

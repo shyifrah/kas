@@ -12,6 +12,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.server.IRepository;
 
 /**
@@ -74,8 +75,7 @@ public class ServerRepository extends AKasObject implements IRepository
     for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
     {
       String name = entry.getKey();
-      NetworkAddress addr = entry.getValue();
-      RemoteQueuesManager mgr = new RemoteQueuesManager(name, addr.getHost(), addr.getPort());
+      RemoteQueuesManager mgr = new RemoteQueuesManager(mConfig, name);
       mgr.init();
       
       mRemoteManagersMap.put(name, mgr);
@@ -188,6 +188,19 @@ public class ServerRepository extends AKasObject implements IRepository
     
     mLogger.debug("ServerRepository::isQueueExist() - OUT, Returns=" + result);
     return result;
+  }
+  
+  /**
+   * Get {@link MqManager} by its name 
+   * 
+   * @param name The name of the {@link MqManager}
+   * @return the {@link MqManager}
+   * 
+   * @see com.kas.mq.server.IRepository#getRemoteManager(String)
+   */
+  public MqManager getRemoteManager(String name)
+  {
+    return mRemoteManagersMap.get(name);
   }
   
   /**

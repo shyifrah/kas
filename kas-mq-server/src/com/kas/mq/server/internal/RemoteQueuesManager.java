@@ -11,20 +11,27 @@ import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
 
 /**
- * The {@link RemoteQueuesManager} is the class that does the actual managing of remote queues for the {@link ServerRepository}
+ * The {@link RemoteQueuesManager} is the class that does the actual managing of remote queues
+ * owned by a specific KAS/MQ server
  * 
  * @author Pippo
  */
 public class RemoteQueuesManager extends MqManager
 {
   /**
+   * KAS/MQ configuration
+   */
+  private MqConfiguration mConfig;
+  
+  /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
    */
-  RemoteQueuesManager(String name, String host, int port)
+  RemoteQueuesManager(MqConfiguration config, String name)
   {
-    super(name, host, port);
+    super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
+    mConfig = config;
   }
   
   /**
@@ -32,11 +39,9 @@ public class RemoteQueuesManager extends MqManager
    * 
    * @return {@code true} if ended successfully, {@code false} otherwise
    */
-  protected void init()
+  public void init()
   {
     mLogger.debug("RemoteQueuesManager::init() - IN");
-    
-    boolean success = true;
     
     mLogger.debug("RemoteQueuesManager::init() - Requesting queue list from qmgr \"" + mName + "\" at " + mHost + ':' + mPort);
     
@@ -45,7 +50,7 @@ public class RemoteQueuesManager extends MqManager
     
     if (client.isConnected())
     {
-      Properties props = client.queryQueue("*", true, false);
+      Properties props = client.synch(mConfig.getManagerName());
       if (props == null)
         mLogger.warn(client.getResponse());
       
@@ -69,7 +74,7 @@ public class RemoteQueuesManager extends MqManager
 
     client.disconnect();
     
-    mLogger.debug("RemoteQueuesManager::init() - OUT, Returns=" + success);
+    mLogger.debug("RemoteQueuesManager::init() - OUT");
   }
   
   /**

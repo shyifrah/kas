@@ -35,7 +35,7 @@ public class MqManager extends AKasObject
   /**
    * Is {@link MqManager} initialized
    */
-  protected boolean mInitialized;
+  protected boolean mInitialized = false;
   
   /**
    * Map of all managed queues
@@ -91,7 +91,7 @@ public class MqManager extends AKasObject
   /**
    * {@link MqManager} initialization
    */
-  protected void init()
+  public void init()
   {
     mInitialized = true;
   }
@@ -99,7 +99,7 @@ public class MqManager extends AKasObject
   /**
    * {@link MqManager} termination
    */
-  protected void term()
+  public void term()
   {
   }
   
