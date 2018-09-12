@@ -34,32 +34,34 @@ public interface IMqConstants
    */
   static public final String cKasPropertyPrefix = "kas.";
   
-  static public final String cKasPropertyResponseCode   = cKasPropertyPrefix + "response.code";
-  static public final String cKasPropertyResponseDesc   = cKasPropertyPrefix + "response.desc";
+  static public final String cKasPropertyResponseCode = cKasPropertyPrefix + "response.code";
+  static public final String cKasPropertyResponseDesc = cKasPropertyPrefix + "response.desc";
   
   static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
   static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
   static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
   static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
   
-  static public final String cKasPropertyDefqQueueName  = cKasPropertyPrefix + "defq.queue";
-  static public final String cKasPropertyDefqThreshold  = cKasPropertyPrefix + "defq.threshold";
+  static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";
+  static public final String cKasPropertyDefqThreshold = cKasPropertyPrefix + "defq.threshold";
   
-  static public final String cKasPropertyDelqQueueName  = cKasPropertyPrefix + "delq.queue";
-  static public final String cKasPropertyDelqForce      = cKasPropertyPrefix + "delq.force";
+  static public final String cKasPropertyDelqQueueName = cKasPropertyPrefix + "delq.queue";
+  static public final String cKasPropertyDelqForce     = cKasPropertyPrefix + "delq.force";
   
   static public final String cKasPropertyQryqQueueName    = cKasPropertyPrefix + "qryq.queue";
   static public final String cKasPropertyQryqPrefix       = cKasPropertyPrefix + "qryq.prefix";
   static public final String cKasPropertyQryqAllData      = cKasPropertyPrefix + "qryq.alldata";
   static public final String cKasPropertyQryqResultPrefix = cKasPropertyPrefix + "qryq.result";
   
-  static public final String cKasPropertyGetTimeout     = cKasPropertyPrefix + "get.timeout";
-  static public final String cKasPropertyGetInterval    = cKasPropertyPrefix + "get.interval";
-  static public final String cKasPropertyGetUserName    = cKasPropertyPrefix + "get.username";
-  static public final String cKasPropertyGetTimeStamp   = cKasPropertyPrefix + "get.timestamp";
-  static public final String cKasPropertyGetQueueName   = cKasPropertyPrefix + "get.queue";
+  static public final String cKasPropertyGetTimeout   = cKasPropertyPrefix + "get.timeout";
+  static public final String cKasPropertyGetInterval  = cKasPropertyPrefix + "get.interval";
+  static public final String cKasPropertyGetUserName  = cKasPropertyPrefix + "get.username";
+  static public final String cKasPropertyGetTimeStamp = cKasPropertyPrefix + "get.timestamp";
+  static public final String cKasPropertyGetQueueName = cKasPropertyPrefix + "get.queue";
   
-  static public final String cKasPropertyPutUserName    = cKasPropertyPrefix + "put.username";
-  static public final String cKasPropertyPutQueueName   = cKasPropertyPrefix + "put.queue";
-  static public final String cKasPropertyPutTimeStamp   = cKasPropertyPrefix + "put.timestamp";
+  static public final String cKasPropertyPutUserName  = cKasPropertyPrefix + "put.username";
+  static public final String cKasPropertyPutQueueName = cKasPropertyPrefix + "put.queue";
+  static public final String cKasPropertyPutTimeStamp = cKasPropertyPrefix + "put.timestamp";
+  
+  static public final String cKasPropertySyncListPrefix = cKasPropertyPrefix + "sync.list";
 }

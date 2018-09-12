@@ -2,6 +2,7 @@ package com.kas.mq.server.internal;
 
 import java.util.Collection;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -28,9 +29,14 @@ public class ServerRepository extends AKasObject implements IRepository
   private MqConfiguration mConfig;
   
   /**
-   * The queue regulator
+   * The local queue manager
    */
-  private QueueRegulator mQueueRegulator;
+  private LocalQueuesManager mLocalManager;
+  
+  /**
+   * The local queue manager
+   */
+  private RemoteQueuesManager mRemoteManager;
   
   /**
    * Construct the server repository object.
@@ -41,7 +47,8 @@ public class ServerRepository extends AKasObject implements IRepository
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
-    mQueueRegulator = new QueueRegulator(mConfig);
+    mLocalManager = new LocalQueuesManager(mConfig);
+    mRemoteManager = new RemoteQueuesManager(mConfig);
   }
   
   /**
@@ -57,13 +64,10 @@ public class ServerRepository extends AKasObject implements IRepository
     boolean success = true;
     
     mLogger.trace("ServerRepository::init() - Initializing repository...");
-    success = mQueueRegulator.restore();
-//    
-//    if (success)
-//    {
-//      success = synch();
-//    }
-//    
+    success = mLocalManager.restore();
+    
+    mRemoteManager.sync();
+    
     mLogger.debug("ServerRepository::init() - OUT, Returns=" + success);
     return success;
   }
@@ -80,26 +84,12 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.debug("ServerRepository::term() - IN");
     boolean success = true;
     
-    success = mQueueRegulator.backup();
+    success = mLocalManager.backup();
     
     mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
     return success;
   }
   
-//  private boolean synch()
-//  {
-//    MqClientImpl client = new MqClientImpl();
-//    for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
-//    {
-//      String mgrName = entry.getKey();
-//      NetworkAddress mgrAddr = entry.getValue();
-//      
-//      client.connect(mgrAddr.getHost(), mgrAddr.getPort());
-//      client.disconnect();
-//    }
-//    return true;
-//  }
-//
   /**
    * Create a {@link MqLocalQueue} object with the specified {@code name} and {@code threshold}.
    * 
@@ -112,7 +102,7 @@ public class ServerRepository extends AKasObject implements IRepository
   public MqLocalQueue defineLocalQueue(String name, int threshold)
   {
     mLogger.debug("ServerRepository::defineLocalQueue() - IN, Name=" + name + ", Threshold=" + threshold);
-    MqLocalQueue queue = mQueueRegulator.defineQueue(name, threshold);
+    MqLocalQueue queue = mLocalManager.defineQueue(name, threshold);
     mLogger.debug("ServerRepository::defineLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
@@ -128,9 +118,27 @@ public class ServerRepository extends AKasObject implements IRepository
   public MqLocalQueue deleteLocalQueue(String name)
   {
     mLogger.debug("ServerRepository::deleteLocalQueue() - IN, Name=" + name);
-    MqLocalQueue queue = mQueueRegulator.deleteQueue(name);
+    MqLocalQueue queue = mLocalManager.deleteQueue(name);
     mLogger.debug("ServerRepository::deleteLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
+  }
+  
+  /**
+   * Get information regarding all queues whose name begins with the specified prefix.
+   * 
+   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   * 
+   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
+   */
+  public Properties queryQueue(String name, boolean prefix, boolean all)
+  {
+    mLogger.debug("ServerRepository::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    Properties props = mLocalManager.queryQueue(name, prefix, all);
+    mLogger.debug("ServerRepository::queryQueue() - OUT, Returns=" + props.size() + " records");
+    return props;
   }
   
   /**
@@ -144,7 +152,7 @@ public class ServerRepository extends AKasObject implements IRepository
   public MqLocalQueue getLocalQueue(String name)
   {
     mLogger.debug("ServerRepository::getLocalQueue() - IN, Name=" + name);
-    MqLocalQueue queue = mQueueRegulator.getQueue(name);
+    MqLocalQueue queue = mLocalManager.getQueue(name);
     mLogger.debug("ServerRepository::getLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
@@ -178,7 +186,7 @@ public class ServerRepository extends AKasObject implements IRepository
    */
   public MqLocalQueue getDeadQueue()
   {
-    return mQueueRegulator.getDeadQueue();
+    return mLocalManager.getDeadQueue();
   }
   
   /**
@@ -190,7 +198,7 @@ public class ServerRepository extends AKasObject implements IRepository
    */
   public Collection<MqQueue> getLocalQueues()
   {
-    return mQueueRegulator.getAll();
+    return mLocalManager.getAll();
   }
   
   /**

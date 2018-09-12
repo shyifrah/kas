@@ -63,6 +63,17 @@ public class MqMessageFactory
     return message;
   }
   
+  static public MqObjectMessage createSynchronizeRequest(String [] list)
+  {
+    MqObjectMessage message = new MqObjectMessage();
+    message.setRequestType(ERequestType.cSynch);
+    int listLength = (list == null ? 0 : list.length);
+    message.setIntProperty(IMqConstants.cKasPropertySyncListPrefix + ".total", listLength);
+    for (int i = 0; i < listLength; ++i)
+      message.setStringProperty(IMqConstants.cKasPropertySyncListPrefix + "." + (i+1) + ".name", list[i]);
+    return message;
+  }
+  
   /**
    * Create a text message, with a body containing {@code text}
    * 

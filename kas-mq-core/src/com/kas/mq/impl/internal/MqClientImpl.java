@@ -256,7 +256,7 @@ public class MqClientImpl extends AKasObject implements IClient
       }
     }
     
-    mLogger.debug("MqClientImpl::queryQueue() - OUT, TotalProperties=" + result.size());
+    mLogger.debug("MqClientImpl::queryQueue() - OUT, TotalProperties=" + (result == null ? 0 : result.size()));
     return result;
   }
   

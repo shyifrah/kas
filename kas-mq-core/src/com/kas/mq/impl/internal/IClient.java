@@ -72,7 +72,6 @@ public interface IClient extends IObject
    * @param all if {@code true}, display all information on all queues 
    * @return the number of records returned that matched the query, or -1 if an error occurred
    */
-  // public abstract int queryQueue(String name, boolean prefix, boolean all);
   public abstract Properties queryQueue(String name, boolean prefix, boolean all);
   
   /**
@@ -100,6 +99,14 @@ public interface IClient extends IObject
    */
   public abstract boolean shutdown();
   
+//  /**
+//   * Send remote KAS/MQ managers the local queue list and receive theirs queue list
+//   * 
+//   * @param list An array which holds the list of locally-managed queues
+//   * @return an array which holds the list of all remotely-managed queues
+//   */
+//  public abstract MqQueue [] synchronize(MqQueue [] list);
+//  
   /**
    * Get last response from last {@link IClient} call.
    * 

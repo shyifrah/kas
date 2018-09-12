@@ -1,6 +1,5 @@
 package com.kas.mq.server.internal;
 
-import java.util.Collection;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
@@ -12,7 +11,6 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IClient;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqLocalQueue;
-import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.server.IRepository;
 
 /**
@@ -212,36 +210,10 @@ public class ClientResponder extends AKasObject implements IClient
     
     if (name == null) name = "";
     
-    Properties props = new Properties();
-    Collection<MqQueue> queues = mRepository.getLocalQueues();
-    int total = 0;
-    for (MqQueue queue : queues)
-    {
-      MqLocalQueue mqlq = (MqLocalQueue)queue;
-      boolean include = false;
-      if (prefix)
-        include = mqlq.getName().startsWith(name);
-      else
-        include = mqlq.getName().equals(name);
-      
-      if (include)
-      {
-        ++total;
-        String keyPref = IMqConstants.cKasPropertyQryqResultPrefix + "." + total;
-        props.setStringProperty(keyPref + ".name", mqlq.getName());
-        if (all)
-        {
-          props.setStringProperty(keyPref + ".owner", "local");
-          props.setIntProperty(keyPref + ".threshold", mqlq.getThreshold());
-          props.setIntProperty(keyPref + ".size", mqlq.size());
-          props.setStringProperty(keyPref + ".access", mqlq.getLastAccess());
-        }
-      }
-    }
+    Properties props = mRepository.queryQueue(name, prefix, all);
+    int total = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", 0);
     
     setResponse(String.format("%s queues matched filtering criteria", (total == 0 ? "No" : total)));
-    
-    props.setIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", total);
     mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + total + " queues");
     return props;
   }

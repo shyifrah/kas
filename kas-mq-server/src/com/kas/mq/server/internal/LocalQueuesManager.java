@@ -3,9 +3,11 @@ package com.kas.mq.server.internal;
 import java.io.File;
 import java.util.Collection;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqManager;
@@ -14,11 +16,11 @@ import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.typedef.QueueMap;
 
 /**
- * The queue regulator is the class that does the actual managing of queues inside the repository.
+ * The {@link LocalQueuesManager} is the class that does the actual managing of local queues for the {@link ServerRepository}
  * 
  * @author Pippo
  */
-public class QueueRegulator extends AKasObject
+public class LocalQueuesManager extends AKasObject
 {
   /**
    * Logger
@@ -46,11 +48,13 @@ public class QueueRegulator extends AKasObject
   private QueueMap mLocalQueues;
   
   /**
-   * Construct the regulator
-   * @param config
+   * Construct the {@link LocalQueuesManager}
+   * 
+   * @param config The {@link MqConfiguration configuration} object
    */
-  QueueRegulator(MqConfiguration config)
+  LocalQueuesManager(MqConfiguration config)
   {
+    mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
     mManager = new MqManager(mConfig.getManagerName(), "localhost", mConfig.getPort());
     mLocalQueues  = new QueueMap();
@@ -65,22 +69,22 @@ public class QueueRegulator extends AKasObject
    * 
    * @return {@code true} if restoration ended successfully, {@code false} otherwise
    */
-  public boolean restore()
+  boolean restore()
   {
-    mLogger.debug("QueueRegulator::restore() - IN");
+    mLogger.debug("LocalQueuesManager::restore() - IN");
     
-    boolean success = false;
+    boolean success = true;
     String repoDirPath = RunTimeUtils.getProductHomeDir() + File.separatorChar + "repo";
     File repoDir = new File(repoDirPath);
     if (!repoDir.exists())
     {
       success = repoDir.mkdir();
-      mLogger.info("QueueRegulator::restore() - Repository directory does not exist, try to create. result=" + success);
+      mLogger.info("LocalQueuesManager::restore() - Repository directory does not exist, try to create. result=" + success);
     }
     else if (!repoDir.isDirectory())
     {
       success = false;
-      mLogger.fatal("QueueRegulator::restore() - Repository directory path points to a file. Terminating...");
+      mLogger.fatal("LocalQueuesManager::restore() - Repository directory path points to a file. Terminating...");
     }
     else
     {
@@ -94,16 +98,18 @@ public class QueueRegulator extends AKasObject
         if (qFile.isFile())
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
-          mLogger.trace("QueueRegulator::restore() - Restoring contents of queue [" + qName + ']');
+          mLogger.trace("LocalQueuesManager::restore() - Restoring contents of queue [" + qName + ']');
           MqLocalQueue q = defineQueue(qName, IMqConstants.cDefaultQueueThreshold);
-          q.restore();
+          boolean restored = q.restore();
+          mLogger.trace("LocalQueuesManager::restore() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
+          success = success && restored;
         }
       }
       
       mDeadQueue = defineQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold, false);
     }
     
-    mLogger.debug("QueueRegulator::restore() - OUT, Returns=" + success);
+    mLogger.debug("LocalQueuesManager::restore() - OUT, Returns=" + success);
     return success;
   }
   
@@ -114,23 +120,23 @@ public class QueueRegulator extends AKasObject
    * 
    * @return {@code true} if all queues were successfully backed up, {@code false} otherwise
    */
-  public boolean backup()
+  boolean backup()
   {
-    mLogger.debug("QueueRegulator::backup() - IN");
+    mLogger.debug("LocalQueuesManager::backup() - IN");
     boolean success = true;
     
     for (MqQueue queue : mLocalQueues.values())
     {
       boolean backed = true;
       String name = queue.getName();
-      mLogger.debug("QueueRegulator::backup() - Writing queue contents. Queue=[" + name + "]; Messages=[" + queue.size() + "]");
+      mLogger.debug("LocalQueuesManager::backup() - Writing queue contents. Queue=[" + name + "]; Messages=[" + queue.size() + "]");
       backed = queue.backup();  
       
-      mLogger.debug("QueueRegulator::backup() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
+      mLogger.debug("LocalQueuesManager::backup() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
       success = success && backed;
     }
     
-    mLogger.debug("QueueRegulator::backup() - OUT, Returns=" + success);
+    mLogger.debug("LocalQueuesManager::backup() - OUT, Returns=" + success);
     return success;
   }
   
@@ -156,7 +162,7 @@ public class QueueRegulator extends AKasObject
    */
   MqLocalQueue defineQueue(String name, int threshold, boolean mapped)
   {
-    mLogger.debug("QueueRegulator::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold);
+    mLogger.debug("LocalQueuesManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -167,7 +173,7 @@ public class QueueRegulator extends AKasObject
         mLocalQueues.put(name, queue);
     }
     
-    mLogger.debug("QueueRegulator::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));
+    mLogger.debug("LocalQueuesManager::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));
     return queue;
   }
   
@@ -179,7 +185,7 @@ public class QueueRegulator extends AKasObject
    */
   MqLocalQueue deleteQueue(String name)
   {
-    mLogger.debug("QueueRegulator::deleteQueue() - IN, Name=" + name);
+    mLogger.debug("LocalQueuesManager::deleteQueue() - IN, Name=" + name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -188,8 +194,51 @@ public class QueueRegulator extends AKasObject
       queue = (MqLocalQueue)mLocalQueues.remove(name);
     }
     
-    mLogger.debug("QueueRegulator::deleteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("LocalQueuesManager::deleteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
+  }
+  
+  /**
+   * Query local queues
+   * 
+   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   */
+  Properties queryQueue(String name, boolean prefix, boolean all)
+  {
+    mLogger.debug("LocalQueuesManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
+    Properties props = new Properties();
+    int total = 0;
+    for (MqQueue queue : mLocalQueues.values())
+    {
+      MqLocalQueue mqlq = (MqLocalQueue)queue;
+      boolean include = false;
+      if (prefix)
+        include = mqlq.getName().startsWith(name);
+      else
+        include = mqlq.getName().equals(name);
+      
+      if (include)
+      {
+        ++total;
+        String keyPref = IMqConstants.cKasPropertyQryqResultPrefix + "." + total;
+        props.setStringProperty(keyPref + ".name", mqlq.getName());
+        if (all)
+        {
+          props.setStringProperty(keyPref + ".owner", "local");
+          props.setIntProperty(keyPref + ".threshold", mqlq.getThreshold());
+          props.setIntProperty(keyPref + ".size", mqlq.size());
+          props.setStringProperty(keyPref + ".access", mqlq.getLastAccess());
+        }
+      }
+    }
+    
+    props.setIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", total);
+    mLogger.debug("LocalQueuesManager::queryQueue() - OUT, Returns=" + total + " queues");
+    return props;
   }
   
   /**
@@ -200,7 +249,7 @@ public class QueueRegulator extends AKasObject
    */
   MqLocalQueue getQueue(String name)
   {
-    mLogger.debug("QueueRegulator::getQueue() - IN, Name=" + name);
+    mLogger.debug("LocalQueuesManager::getQueue() - IN, Name=" + name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -209,7 +258,7 @@ public class QueueRegulator extends AKasObject
       queue = (MqLocalQueue)mLocalQueues.get(name);
     }
     
-    mLogger.debug("QueueRegulator::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("LocalQueuesManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   

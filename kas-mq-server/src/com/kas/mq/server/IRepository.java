@@ -3,6 +3,7 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.Properties;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqLocalQueue;
 
@@ -29,6 +30,16 @@ public interface IRepository extends IInitializable, IObject
    * @return the {@link MqLocalQueue} object deleted
    */
   public abstract MqLocalQueue deleteLocalQueue(String name);
+  
+  /**
+   * Get information regarding all queues whose name begins with the specified prefix.
+   * 
+   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   */
+  public abstract Properties queryQueue(String name, boolean prefix, boolean all);
   
   /**
    * Get a {@link MqLocalQueue} object with the specified {@code name}.
