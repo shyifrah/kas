@@ -1,6 +1,7 @@
 package com.kas.mq.impl.internal;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
@@ -13,7 +14,6 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessageFactory;
 
 /**
  * A client implementation that actually carries out the requests made by the facade client.
@@ -22,6 +22,8 @@ import com.kas.mq.impl.MqMessageFactory;
  */
 public class MqClientImpl extends AKasObject implements IClient
 {
+  static private final String cDefaultUserName = "SYSTEM";
+  
   /**
    * Messenger
    */
@@ -35,7 +37,7 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Active user
    */
-  private String mUser;
+  private String mUser = cDefaultUserName;
   
   /**
    * The response from last call
@@ -67,15 +69,21 @@ public class MqClientImpl extends AKasObject implements IClient
     
     if (isConnected()) disconnect();
     
+    NetworkAddress addr = new NetworkAddress(host, port);
+    
     try
     {
       mMessenger = MessengerFactory.create(host, port);
+    }
+    catch (ConnectException e)
+    {
+      logErrorAndSetResponse("Connection to [" + addr + "] refused");
     }
     catch (IOException e)
     {
       StringBuilder sb = new StringBuilder();
       sb.append("Exception occurred while trying to connect to [")
-        .append(new NetworkAddress(host, port)).append("]. Exception: ").append(StringUtils.format(e));
+        .append(addr).append("]. Exception: ").append(StringUtils.format(e));
       logErrorAndSetResponse(sb.toString());
     }
     
@@ -109,7 +117,7 @@ public class MqClientImpl extends AKasObject implements IClient
       logInfoAndSetResponse("Connection terminated with " + addr.toString());
       
       mMessenger = null;
-      mUser = null;
+      mUser = cDefaultUserName;
     }
     
     mLogger.debug("MqClientImpl::disconnect() - OUT");
@@ -150,7 +158,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createDefineQueueRequest(queue, threshold);
+      IMqMessage<?> request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
       mLogger.debug("MqClientImpl::defineQueue() - sending define request: " + request.toPrintableString(0));
       try
       {
@@ -193,7 +201,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createDeleteQueueRequest(queue, force);
+      IMqMessage<?> request = MqRequestFactory.createDeleteQueueRequest(queue, force);
       mLogger.debug("MqClientImpl::deleteQueue() - sending delete request: " + request.toPrintableString(0));
       try
       {
@@ -237,7 +245,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createQueryQueueRequest(name, prefix, all);
+      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all);
       mLogger.debug("MqClientImpl::queryQueue() - sending query queue request: " + request.toPrintableString(0));
       try
       {
@@ -260,48 +268,48 @@ public class MqClientImpl extends AKasObject implements IClient
     return result;
   }
   
-  /**
-   * Synchronize queue list
-   * 
-   * @param qmgr The name of the local queue manager
-   * @return the queues that returned that matched the query
-   * 
-   * @see com.kas.mq.impl.internal.IClient#synch()
-   */
-  public Properties synch(String qmgr)
-  {
-    mLogger.debug("MqClientImpl::synch() - IN, Qmgr=" + qmgr);
-    
-    Properties result = null;
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
-    else
-    {
-      IMqMessage<?> request = MqMessageFactory.createSynchronizeRequest(qmgr);
-      mLogger.debug("MqClientImpl::synch() - sending query queue request: " + request.toPrintableString(0));
-      try
-      {
-        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqClientImpl::synch() - received response: " + reply.toPrintableString(0));
-        result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
-        
-        logInfoAndSetResponse(reply.getResponse().getDesc());
-      }
-      catch (IOException e)
-      {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to query KAS/MQ server for all queues. Exception: ")
-          .append(StringUtils.format(e));
-        logErrorAndSetResponse(sb.toString());
-      }
-    }
-    
-    mLogger.debug("MqClientImpl::synch() - OUT, TotalProperties=" + (result == null ? 0 : result.size()));
-    return result;
-  }
-  
+//  /**
+//   * Synchronize queue list
+//   * 
+//   * @param qmgr The name of the local queue manager
+//   * @return the queues that returned that matched the query
+//   * 
+//   * @see com.kas.mq.impl.internal.IClient#synch()
+//   */
+//  public Properties synch(String qmgr)
+//  {
+//    mLogger.debug("MqClientImpl::synch() - IN, Qmgr=" + qmgr);
+//    
+//    Properties result = null;
+//    if (!isConnected())
+//    {
+//      logErrorAndSetResponse("Not connected to host");
+//    }
+//    else
+//    {
+//      IMqMessage<?> request = MqMessageFactory.createSynchronizeRequest(qmgr);
+//      mLogger.debug("MqClientImpl::synch() - sending query queue request: " + request.toPrintableString(0));
+//      try
+//      {
+//        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+//        mLogger.debug("MqClientImpl::synch() - received response: " + reply.toPrintableString(0));
+//        result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+//        
+//        logInfoAndSetResponse(reply.getResponse().getDesc());
+//      }
+//      catch (IOException e)
+//      {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("Exception occurred while trying to query KAS/MQ server for all queues. Exception: ")
+//          .append(StringUtils.format(e));
+//        logErrorAndSetResponse(sb.toString());
+//      }
+//    }
+//    
+//    mLogger.debug("MqClientImpl::synch() - OUT, TotalProperties=" + (result == null ? 0 : result.size()));
+//    return result;
+//  }
+//  
   /**
    * Get a message from queue.
    * 
@@ -325,7 +333,7 @@ public class MqClientImpl extends AKasObject implements IClient
     {
       try
       {
-        IMqMessage<?> request = MqMessageFactory.createGetRequest(queue, timeout, interval);
+        IMqMessage<?> request = MqRequestFactory.createGetRequest(queue, timeout, interval);
         mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
         IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
         mLogger.debug("MqClientImpl::get() - received response: " + reply.toPrintableString(0));
@@ -411,7 +419,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createAuthenticationRequest(user, pwd);
+      IMqMessage<?> request = MqRequestFactory.createAuthenticationRequest(user, pwd);
       mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString(0));
       try
       {
@@ -455,7 +463,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqMessageFactory.createShutdownRequest();
+      IMqMessage<?> request = MqRequestFactory.createShutdownRequest();
       mLogger.debug("MqClientImpl::shutdown() - sending shutdown request: " + request.toPrintableString(0));
       try
       {

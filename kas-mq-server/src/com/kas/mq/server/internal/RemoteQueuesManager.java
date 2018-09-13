@@ -19,11 +19,6 @@ import com.kas.mq.impl.internal.MqRemoteQueue;
 public class RemoteQueuesManager extends MqManager
 {
   /**
-   * KAS/MQ configuration
-   */
-  private MqConfiguration mConfig;
-  
-  /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
@@ -31,15 +26,12 @@ public class RemoteQueuesManager extends MqManager
   RemoteQueuesManager(MqConfiguration config, String name)
   {
     super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
-    mConfig = config;
   }
   
   /**
-   * Request from remote KAS/MQ servers their list of queues.
-   * 
-   * @return {@code true} if ended successfully, {@code false} otherwise
+   * Activate the {@link RemoteQueuesManager}: request from the corresponding remote KAS/MQ server its list of queues.
    */
-  public void init()
+  public void activate()
   {
     mLogger.debug("RemoteQueuesManager::init() - IN");
     
@@ -50,7 +42,7 @@ public class RemoteQueuesManager extends MqManager
     
     if (client.isConnected())
     {
-      Properties props = client.synch(mConfig.getManagerName());
+      Properties props = client.queryQueue("", true, false);
       if (props == null)
         mLogger.warn(client.getResponse());
       
@@ -69,7 +61,7 @@ public class RemoteQueuesManager extends MqManager
         }
       }
       
-      mInitialized = true;
+      mActive = true;
     }
 
     client.disconnect();
@@ -88,10 +80,13 @@ public class RemoteQueuesManager extends MqManager
     mLogger.debug("RemoteQueuesManager::getQueue() - IN, Name=" + name);
     MqRemoteQueue queue = null;
     
-    if (name != null)
+    if (isActive())
     {
-      name = name.toUpperCase();
-      queue = (MqRemoteQueue)mQueues.get(name);
+      if (name != null)
+      {
+        name = name.toUpperCase();
+        queue = (MqRemoteQueue)mQueues.get(name);
+      }
     }
     
     mLogger.debug("RemoteQueuesManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
@@ -105,7 +100,16 @@ public class RemoteQueuesManager extends MqManager
    */
   Collection<MqQueue> getAll()
   {
-    return mQueues.values();
+    mLogger.debug("RemoteQueuesManager::getAll() - IN");
+    
+    Collection<MqQueue> result = null;
+    if (isActive())
+    {
+      result = mQueues.values();
+    }
+    
+    mLogger.debug("RemoteQueuesManager::getAll() - IN");
+    return result;
   }
   
   /**
@@ -118,13 +122,6 @@ public class RemoteQueuesManager extends MqManager
    */
   public String toPrintableString(int level)
   {
-    String pad = pad(level);
-    StringBuilder sb = new StringBuilder();
-    sb.append(name()).append("(\n");
-    ///
-    /// TODO: COMPLETE
-    ///
-    sb.append(pad).append(")\n");
-    return sb.toString();
+    return super.toPrintableString(level);
   }
 }

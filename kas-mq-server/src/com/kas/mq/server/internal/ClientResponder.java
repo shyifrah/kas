@@ -2,7 +2,6 @@ package com.kas.mq.server.internal;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IObject;
-import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -18,7 +17,7 @@ import com.kas.mq.server.IRepository;
  * 
  * @author Pippo
  */
-public class ClientResponder extends AKasObject implements IClient
+public class ClientResponder extends AKasObject
 {
   /**
    * Logger
@@ -44,61 +43,6 @@ public class ClientResponder extends AKasObject implements IClient
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mRepository = repository;
-  }
-  
-  /**
-   * Connect client to the KAS/MQ server.
-   * 
-   * @param host The host name or IP address
-   * @param port The port number
-   * 
-   * @throws RuntimeException Always. This method cannot be invoked
-   * 
-   * @see com.kas.mq.impl.internal.IClient#connect(String, int)
-   */
-  public void connect(String host, int port) throws KasException
-  {
-    throw new RuntimeException("Cannot call connect()");
-  }
-
-  /**
-   * Disconnecting from the remote KAS/MQ server.
-   * 
-   * @throws RuntimeException Always. This method cannot be invoked
-   * 
-   * @see com.kas.mq.impl.internal.IClient#disconnect()
-   */
-  public void disconnect() throws KasException
-  {
-    throw new RuntimeException("Cannot call disconnect()");
-  }
-
-  /**
-   * Get the connection status.
-   * 
-   * @return {@code true} if client is connected, {@code false} otherwise
-   * @throws RuntimeException Always. This method cannot be invoked
-   * 
-   * @see com.kas.mq.impl.internal.IClient#isConnected()
-   */
-  public boolean isConnected()
-  {
-    throw new RuntimeException("Cannot call isConnected()");
-  }
-
-  /**
-   * Authenticate client against the KAS/MQ server.
-   * 
-   * @param user The user's name
-   * @param pwd The user's password
-   * 
-   * @throws RuntimeException Always. This method cannot be invoked
-   * 
-   * @return {@code true} if user successfully authenticated, {@code false} otherwise
-   */
-  public boolean login(String user, String pwd)
-  {
-    throw new RuntimeException("Cannot call login()");
   }
   
   /**
@@ -219,21 +163,6 @@ public class ClientResponder extends AKasObject implements IClient
   }
 
   /**
-   * Synchronize queue list
-   * 
-   * @param qmgr The name of the local queue manager
-   * @return the queues that returned that matched the query
-   * 
-   * @throws RuntimeException Always. This method cannot be invoked
-   * 
-   * @see com.kas.mq.impl.internal.IClient#synch()
-   */
-  public Properties synch(String qmgr)
-  {
-    throw new RuntimeException("Cannot call synch()");
-  }
-  
-  /**
    * Get a message from queue.
    * 
    * @param queue The target queue name
@@ -318,19 +247,6 @@ public class ClientResponder extends AKasObject implements IClient
     }
     
     mLogger.debug("ResponderClient::put() - OUT");
-  }
-
-  /**
-   * Mark the KAS/MQ server it should shutdown
-   * 
-   * @return {@code true} if the server accepted the request, {@code false} otherwise
-   * @throws RuntimeException Always. This method cannot be invoked
-   * 
-   * @see com.kas.mq.impl.internal.IClient#shutdown()
-   */
-  public boolean shutdown()
-  {
-    throw new RuntimeException("Cannot call shutdown()");
   }
 
   /**

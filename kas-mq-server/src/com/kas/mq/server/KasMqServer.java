@@ -15,6 +15,7 @@ import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.internal.ServerRepository;
 import com.kas.mq.server.internal.ServerHouseKeeper;
+import com.kas.mq.server.internal.ServerNotifier;
 
 /**
  * MQ server.<br>
@@ -42,6 +43,11 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * Housekeeper task
    */
   private ServerHouseKeeper mHousekeeper = null;
+  
+  /**
+   * Server notifier
+   */
+  private ServerNotifier mNotifier = null;
   
   /**
    * Stop indicator
@@ -79,6 +85,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     }
     
     mLogger.info("KAS/MQ base application initialized successfully");
+    mNotifier = new ServerNotifier(mConfig);
     mRepository = new ServerRepository(mConfig);
     mController = new SessionController(this);
     
@@ -104,7 +111,9 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     mHousekeeper = new ServerHouseKeeper(mController, mRepository);
     ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
     
-    String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    mNotifier.notifyServerActivated();
+    
+    String message = "KAS/MQ server V" + mVersion.toString() + " started successfully";
     sStartupLogger.info(message);
     mLogger.info(message);
     return true;
@@ -126,6 +135,9 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public synchronized boolean term()
   {
     mLogger.info("KAS/MQ server termination in progress");
+    
+    mNotifier.notifyServerDeactivated();
+    
     boolean term = mRepository.term();
     if (!term)
     {

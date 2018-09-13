@@ -16,7 +16,6 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.internal.AMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.impl.internal.IMqConstants;
@@ -24,6 +23,7 @@ import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * A {@link SessionHandler} is the object that handles the traffic in and from a remote client.
@@ -150,7 +150,7 @@ public class SessionHandler extends AKasObject implements Runnable
       if (!mController.getConfig().isEnabled())
       {
         mLogger.debug("SessionHandler::process() - KAS/MQ server is disabled and request will be rejected");
-        reply = reject();
+        reply = reject(request);
       }
       else if (requestType == ERequestType.cAuthenticate)
       {
@@ -170,13 +170,9 @@ public class SessionHandler extends AKasObject implements Runnable
       {
         reply = queryQueue(request);
       }
-      else if (requestType == ERequestType.cSynch)
+      else if (requestType == ERequestType.cSysState)
       {
-        reply = queryQueue(request);
-      }
-      else if (requestType == ERequestType.cPut)
-      {
-        put(request);
+        stateChange(request);
       }
       else if (requestType == ERequestType.cGet)
       {
@@ -188,14 +184,16 @@ public class SessionHandler extends AKasObject implements Runnable
         if (reply.getResponse().getCode() != EMqCode.cOkay)
           cont = false;
       }
+      else
+      {
+        put(request);
+      }
       
       if (reply != null)
       {
         mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(reply));
         mMessenger.send(reply);
       }
-      
-      postProcessing(request);
     }
     catch (ClassCastException e)
     {
@@ -246,7 +244,7 @@ public class SessionHandler extends AKasObject implements Runnable
       erc = EMqCode.cOkay;
     }
     
-    IMqMessage<?> result = generateResponse(erc, desc);
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), desc);
     mLogger.debug("SessionHandler::authenticate() - OUT");
     return result;
   }
@@ -271,7 +269,7 @@ public class SessionHandler extends AKasObject implements Runnable
     if (!success)
       erc = EMqCode.cFail;
     
-    IMqMessage<?> result = generateResponse(erc, mClient.getResponse());
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), mClient.getResponse());
     mLogger.debug("SessionHandler::defineQueue() - OUT");
     return result;
   }
@@ -296,7 +294,7 @@ public class SessionHandler extends AKasObject implements Runnable
     if (!success)
       erc = EMqCode.cFail;
     
-    IMqMessage<?> result = generateResponse(erc, mClient.getResponse());
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), mClient.getResponse());
     mLogger.debug("SessionHandler::deleteQueue() - OUT");
     return result;
   }
@@ -325,11 +323,38 @@ public class SessionHandler extends AKasObject implements Runnable
     EMqCode rc = EMqCode.cOkay;
     if (val == 0) rc = EMqCode.cWarn;
     
-    IMqMessage<?> result = generateResponse(rc,  val, mClient.getResponse());
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, rc, val, mClient.getResponse());
     result.setSubset(props);
     
     mLogger.debug("SessionHandler::queryQueue() - OUT");
     return result;
+  }
+  
+  /**
+   * Process query queue request.<br>
+   * <br>
+   * Extract the queue name and the <b>prefix & alldata indicators</b> and pass them to the client responder.<br>
+   * If this method was actually called for a {@code Synch} request, before returning the response,
+   * the session handler tries to re-initialize the remote manager, in case it was not initialized properly.
+   * 
+   * @param request The request message
+   * @return The {@link IMqMessage} response object
+   */
+  private void stateChange(IMqMessage<?> request)
+  {
+    mLogger.debug("SessionHandler::stateChange() - IN");
+    
+    String sender = request.getStringProperty(IMqConstants.cKasPropertySyssQmgrName, null);
+    boolean activated = request.getBoolProperty(IMqConstants.cKasPropertySyssActive, false);
+    
+    IRepository repo = mController.getRepository();
+    MqManager manager = repo.getRemoteManager(sender);
+    if (activated)
+      manager.activate();
+    else
+      manager.deactivate();
+    
+    mLogger.debug("SessionHandler::stateChange() - OUT");
   }
   
   /**
@@ -358,7 +383,7 @@ public class SessionHandler extends AKasObject implements Runnable
     }
     
     if (msg == null)
-      msg = generateResponse(EMqCode.cFail, mClient.getResponse());
+      msg = MqMessageFactory.createResponse(request, EMqCode.cFail, EMqCode.cFail.ordinal(), mClient.getResponse());
     else
       msg.setResponse(new MqResponse(EMqCode.cOkay, 0, ""));
     
@@ -372,9 +397,8 @@ public class SessionHandler extends AKasObject implements Runnable
    * Extract the queue name and pass it along with the request message to the client responder.
    * 
    * @param request The request message
-   * @return The {@link IMqMessage} response object
    */
-  private IMqMessage<?> put(IMqMessage<?> request)
+  private void put(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::put() - IN");
     
@@ -382,13 +406,7 @@ public class SessionHandler extends AKasObject implements Runnable
     
     mClient.put(qname, request);
     
-    EMqCode erc = EMqCode.cOkay;
-    if (mClient.getResponse().length() > 0)
-      erc = EMqCode.cFail;
-    
-    IMqMessage<?> result = generateResponse(erc, mClient.getResponse());
     mLogger.debug("SessionHandler::put() - OUT");
-    return result;
   }
   
   /**
@@ -413,70 +431,20 @@ public class SessionHandler extends AKasObject implements Runnable
       mController.shutdown();
     }
     
-    IMqMessage<?> result = generateResponse(erc, desc);
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), desc);
     mLogger.debug("SessionHandler::shutdown() - OUT");
     return result;
   }
   
   /**
-   * Post processing of a request.<br>
-   * <br>
-   * This method can be used to perform some processing that could not be done
-   * prior to sending the reply to the remote client.
+   * Generate a {@link IMqMessage} which will be sent back to remote client, rejecting the request
    * 
-   * @param request The request that was processed
-   */
-  private void postProcessing(IMqMessage<?> request)
-  {
-    mLogger.debug("SessionHandler::postProcessing() - IN");
-    
-    if (request.getRequestType() == ERequestType.cSynch)
-    {
-      mLogger.debug("SessionHandler::postProcessing() - Request for Synch queue list");
-      String qmgrname = request.getStringProperty(IMqConstants.cKasPropertySyncQmgrName, null);
-      MqManager rqmgr = mController.getRepository().getRemoteManager(qmgrname);
-      if ((rqmgr != null) && (!rqmgr.isInitialized()))
-        rqmgr.init();
-    }
-    
-    mLogger.debug("SessionHandler::postProcessing() - OUT");
-  }
-  
-  /**
-   * Generate a {@link AMqMessage} which will be sent back to remote client
-   * 
-   * @param success A boolean indicating whether last operation was successful or not
-   * @param desc The response text
-   * @return the {@link AMqMessage} response object
-   */
-  private IMqMessage<?> reject()
-  {
-    return generateResponse(EMqCode.cError, "KAS/MQ server is disabled, operation rejected");
-  }
-  
-  /**
-   * Generate a {@link AMqMessage} which will be sent back to remote client
-   * 
-   * @param rc {@link EMqCode} return code
-   * @param desc The response text
+   * @param request The request {@link IMqMessage}
    * @return the {@link IMqMessage} response object
    */
-  private IMqMessage<?> generateResponse(EMqCode rc, String desc)
+  private IMqMessage<?> reject(IMqMessage<?> request)
   {
-    return MqMessageFactory.createResponse(rc, rc.ordinal(), desc);
-  }
-  
-  /**
-   * Generate a {@link AMqMessage} which will be sent back to remote client
-   * 
-   * @param rc {@link EMqCode} return code
-   * @param val Integer value describing the code
-   * @param desc The response text
-   * @return the {@link IMqMessage} response object
-   */
-  private IMqMessage<?> generateResponse(EMqCode rc, int val, String desc)
-  {
-    return MqMessageFactory.createResponse(rc, val, desc);
+    return MqMessageFactory.createResponse(request, EMqCode.cError, EMqCode.cError.ordinal(), "KAS/MQ server is disabled, operation rejected");
   }
   
   /**

@@ -9,7 +9,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.internal.MqRequestFactory;
 
 /**
  * MQ server stopper.<br>
@@ -103,7 +103,7 @@ public class KasMqStopper extends AKasMqAppl
     
     if (shouldContinue)
     {
-      IMqMessage<?> request = MqMessageFactory.createShutdownRequest();
+      IMqMessage<?> request = MqRequestFactory.createShutdownRequest();
       try
       {
         sStartupLogger.info("Putting shutdown request...");

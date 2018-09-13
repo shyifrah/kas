@@ -40,13 +40,13 @@ public class LocalQueuesManager extends MqManager
   }
   
   /**
-   * Restore local queues from file system.<br>
+   * Activate {@link LocalQueuesManager}: restore local queues from file system.<br>
    * <br>
    * If the {@code repo} directory does not exist, create it
    * If it exists but it's not a directory, end with an error.
    * Otherwise, read the directory contents and construct a {@link MqLocalQueue} per ".qbk" file.
    */
-  public void init()
+  public void activate()
   {
     mLogger.debug("LocalQueuesManager::init() - IN");
     
@@ -86,18 +86,16 @@ public class LocalQueuesManager extends MqManager
       mDeadQueue = defineQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold, false);
     }
     
-    mLogger.debug("LocalQueuesManager::init() - OUT, Returns=" + success);
-    mInitialized = success;
+    mActive = success;
+    mLogger.debug("LocalQueuesManager::init() - OUT");
   }
   
   /**
-   * Backup queues to the file system.<br>
+   * Deactivate {@link LocalQueuesManager}: Backup queues to the file system.<br>
    * <br>
    * For each queue in the map, save its contents as a file in the {@code repo} directory.
-   * 
-   * @return {@code true} if all queues were successfully backed up, {@code false} otherwise
    */
-  public void term()
+  public void deactivate()
   {
     mLogger.debug("LocalQueuesManager::term() - IN");
     boolean success = true;
@@ -113,8 +111,8 @@ public class LocalQueuesManager extends MqManager
       success = success && backed;
     }
     
-    mLogger.debug("LocalQueuesManager::term() - OUT, Returns=" + success);
-    mInitialized = false;
+    mActive = false;
+    mLogger.debug("LocalQueuesManager::term() - OUT");
   }
   
   /**

@@ -20,11 +20,6 @@ public enum ERequestType implements IObject
   cAuthenticate,
   
   /**
-   * Put message
-   */
-  cPut,
-  
-  /**
    * Get message
    */
   cGet,
@@ -50,10 +45,9 @@ public enum ERequestType implements IObject
   cShutdown,
   
   /**
-   * Synchronize queue definitions
+   * Notify system state changed
    */
-  cSynch,
-  
+  cSysState,
   ;
   
   static final private ERequestType [] cValues = ERequestType.values();

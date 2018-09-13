@@ -33,9 +33,9 @@ public class MqManager extends AKasObject
   protected int mPort;
   
   /**
-   * Is {@link MqManager} initialized
+   * Is {@link MqManager} active
    */
-  protected boolean mInitialized = false;
+  protected boolean mActive = false;
   
   /**
    * Map of all managed queues
@@ -89,26 +89,29 @@ public class MqManager extends AKasObject
   }
   
   /**
-   * {@link MqManager} initialization
+   * {@link MqManager} activation
    */
-  public void init()
+  public void activate()
   {
-    mInitialized = true;
+    mActive = true;
   }
   
   /**
-   * {@link MqManager} termination
+   * {@link MqManager} deactivation
    */
-  public void term()
+  public void deactivate()
   {
+    mActive = false;
   }
   
   /**
-   * {@link MqManager} termination
+   * Get an indication if {@link MqManager} is active
+   * 
+   * @return {@code true} if {@link MqManager} is active, {@code false} otherwise
    */
-  public boolean isInitialized()
+  public boolean isActive()
   {
-    return mInitialized;
+    return mActive;
   }
   
   /**
@@ -137,6 +140,7 @@ public class MqManager extends AKasObject
       .append(pad).append("  Name=").append(mName).append('\n')
       .append(pad).append("  Host=").append(mHost).append('\n')
       .append(pad).append("  Port=").append(mPort).append('\n')
+      .append(pad).append("  Active=").append(mActive).append('\n')
       .append(pad).append("  Queues=(").append('\n')
       .append(mQueues.toPrintableString(level+2))
       .append(pad).append("  )").append('\n')

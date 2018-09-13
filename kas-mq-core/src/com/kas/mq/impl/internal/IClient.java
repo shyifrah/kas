@@ -75,14 +75,6 @@ public interface IClient extends IObject
   public abstract Properties queryQueue(String name, boolean prefix, boolean all);
   
   /**
-   * Synchronize queue list 
-   * 
-   * @param qmgr The name of the local queue manger
-   * @return the queues that matched the query
-   */
-  public abstract Properties synch(String qmgr);
-  
-  /**
    * Get a message from queue.
    * 
    * @param queue The target queue name
@@ -107,14 +99,6 @@ public interface IClient extends IObject
    */
   public abstract boolean shutdown();
   
-//  /**
-//   * Send remote KAS/MQ managers the local queue list and receive theirs queue list
-//   * 
-//   * @param list An array which holds the list of locally-managed queues
-//   * @return an array which holds the list of all remotely-managed queues
-//   */
-//  public abstract MqQueue [] synchronize(MqQueue [] list);
-//  
   /**
    * Get last response from last {@link IClient} call.
    * 

@@ -47,7 +47,7 @@ public class KasMqShutdownHook extends AKasThread
    * <br>
    * The procedure is actually quite simple - invoking the application's {@link AKasMqAppl#term()} method.
    * 
-   * @see com.kas.mq.server.AKasMqAppl#term()
+   * @see com.kas.mq.server.AKasMqAppl#deactivate()
    * @see com.kas.infra.base.IInitializable#term()
    */
   public void run()

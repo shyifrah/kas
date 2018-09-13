@@ -68,15 +68,14 @@ public class ServerRepository extends AKasObject implements IRepository
     boolean success = false;
     
     mLogger.trace("ServerRepository::init() - Initializing repository...");
-    mLocalManager.init();
-    if (mLocalManager.isInitialized())
+    mLocalManager.activate();
+    if (mLocalManager.isActive())
       success = true;
     
     for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
     {
       String name = entry.getKey();
       RemoteQueuesManager mgr = new RemoteQueuesManager(mConfig, name);
-      mgr.init();
       
       mRemoteManagersMap.put(name, mgr);
     }
@@ -97,7 +96,7 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.debug("ServerRepository::term() - IN");
     boolean success = true;
     
-    mLocalManager.term();
+    mLocalManager.deactivate();
     
     mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
     return success;
