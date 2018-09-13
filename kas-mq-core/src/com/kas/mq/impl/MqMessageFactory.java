@@ -50,7 +50,7 @@ public class MqMessageFactory
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setRequestType(ERequestType.cSynch);
-    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, "*");
+    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
     message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
     message.setStringProperty(IMqConstants.cKasPropertySyncQmgrName, qmgr);

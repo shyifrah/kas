@@ -194,6 +194,8 @@ public class SessionHandler extends AKasObject implements Runnable
         mLogger.debug("SessionHandler::process() - Responding with the message: " + StringUtils.asPrintableString(reply));
         mMessenger.send(reply);
       }
+      
+      postProcessing(request);
     }
     catch (ClassCastException e)
     {
@@ -326,15 +328,6 @@ public class SessionHandler extends AKasObject implements Runnable
     IMqMessage<?> result = generateResponse(rc,  val, mClient.getResponse());
     result.setSubset(props);
     
-    if (request.getRequestType() == ERequestType.cSynch)
-    {
-      mLogger.debug("SessionHandler::queryQueue() - Request is actually for Synch queue list");
-      String qmgrname = request.getStringProperty(IMqConstants.cKasPropertySyncQmgrName, null);
-      MqManager rqmgr = mController.getRepository().getRemoteManager(qmgrname);
-      if ((rqmgr != null) && (!rqmgr.isInitialized()))
-        rqmgr.init();
-    }
-    
     mLogger.debug("SessionHandler::queryQueue() - OUT");
     return result;
   }
@@ -423,6 +416,30 @@ public class SessionHandler extends AKasObject implements Runnable
     IMqMessage<?> result = generateResponse(erc, desc);
     mLogger.debug("SessionHandler::shutdown() - OUT");
     return result;
+  }
+  
+  /**
+   * Post processing of a request.<br>
+   * <br>
+   * This method can be used to perform some processing that could not be done
+   * prior to sending the reply to the remote client.
+   * 
+   * @param request The request that was processed
+   */
+  private void postProcessing(IMqMessage<?> request)
+  {
+    mLogger.debug("SessionHandler::postProcessing() - IN");
+    
+    if (request.getRequestType() == ERequestType.cSynch)
+    {
+      mLogger.debug("SessionHandler::postProcessing() - Request for Synch queue list");
+      String qmgrname = request.getStringProperty(IMqConstants.cKasPropertySyncQmgrName, null);
+      MqManager rqmgr = mController.getRepository().getRemoteManager(qmgrname);
+      if ((rqmgr != null) && (!rqmgr.isInitialized()))
+        rqmgr.init();
+    }
+    
+    mLogger.debug("SessionHandler::postProcessing() - OUT");
   }
   
   /**
