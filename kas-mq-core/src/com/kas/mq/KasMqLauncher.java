@@ -134,7 +134,6 @@ public class KasMqLauncher
   {
     AKasMqAppl app = null;
     boolean init = false;
-    boolean term = true;
     try
     {
       Class<?> cls = Class.forName(className);
@@ -152,8 +151,10 @@ public class KasMqLauncher
         {
           sLogger.error("KAS/MQ application failed initialization. See previous error messages. Terminating...");
         }
-        
-        term = app.run();
+        else
+        {
+          app.run();
+        }
       }
     }
     catch (ClassNotFoundException e)
@@ -170,7 +171,11 @@ public class KasMqLauncher
     }
     finally
     {
-      if ((init) && (term)) app.term();
+      try
+      {
+        app.term();
+      }
+      catch (Throwable e) {}
     }
   }
 }

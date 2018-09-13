@@ -74,47 +74,40 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     boolean init = super.init();
     if (!init)
     {
-      mLogger.error("KAS/MQ base application failed to initialize");
+      sStartupLogger.error("KAS/MQ base application failed to initialize");
+      return false;
     }
-    else
+    
+    mLogger.info("KAS/MQ base application initialized successfully");
+    mRepository = new ServerRepository(mConfig);
+    mController = new SessionController(this);
+    
+    try
     {
-      mLogger.info("KAS/MQ base application initialized successfully");
-      mRepository = new ServerRepository(mConfig);
-      mController = new SessionController(this);
-      
-      try
-      {
-        mListenSocket = new ServerSocket(mConfig.getPort());
-        mListenSocket.setSoTimeout(mConfig.getConnSocketTimeout());
-      }
-      catch (IOException e)
-      {
-        init = false;
-        mLogger.error("An error occurred while trying to bind server socket with port: " + mConfig.getPort());
-        mLogger.fatal("Exception caught: ", e);
-        super.term();
-      }
-      
-      init = mRepository.init();
-      if (!init)
-      {
-        mLogger.fatal("Server repository failed initialization");
-        try
-        {
-          mListenSocket.close();
-        }
-        catch (IOException e) {}
-        super.term();
-      }
-      
-      mHousekeeper = new ServerHouseKeeper(mController, mRepository);
-      ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
+      mListenSocket = new ServerSocket(mConfig.getPort());
+      mListenSocket.setSoTimeout(mConfig.getConnSocketTimeout());
     }
+    catch (IOException e)
+    {
+      mLogger.error("An error occurred while trying to bind server socket with port: " + mConfig.getPort());
+      mLogger.fatal("Exception caught: ", e);
+      return false;
+    }
+    
+    init = mRepository.init();
+    if (!init)
+    {
+      mLogger.fatal("Server repository failed initialization");
+      return false;
+    }
+    
+    mHousekeeper = new ServerHouseKeeper(mController, mRepository);
+    ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
     
     String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
     sStartupLogger.info(message);
     mLogger.info(message);
-    return init;
+    return true;
   }
   
   /**
@@ -133,9 +126,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public synchronized boolean term()
   {
     mLogger.info("KAS/MQ server termination in progress");
-    boolean success = false;
-    success = mRepository.term();
-    if (!success)
+    boolean term = mRepository.term();
+    if (!term)
     {
       mLogger.warn("An error occurred while shutting the server's repository");
     }
@@ -149,14 +141,14 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       mLogger.warn("An error occurred while trying to close server socket", e);
     }
     
-    success = super.term();
-    if (!success)
+    term = super.term();
+    if (!term)
     {
       sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
     }
     
     sStartupLogger.info("KAS/MQ server shutdown complete");
-    return success;
+    return true;
   }
   
   /**
