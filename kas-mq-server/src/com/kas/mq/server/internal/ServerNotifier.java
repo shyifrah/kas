@@ -7,6 +7,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqRequestFactory;
 
@@ -87,8 +88,11 @@ public class ServerNotifier extends AKasObject
       
       MqClientImpl client = new MqClientImpl();
       client.connect(address.getHost(), address.getPort());
-      client.put("XXX", message);
-      client.disconnect();
+      if (client.isConnected())
+      {
+        client.put(IMqConstants.cAdminQueueName, message);
+        client.disconnect();
+      }
     }
     
     mLogger.debug("ServerNotifier::notify() - OUT");

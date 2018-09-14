@@ -30,17 +30,24 @@ public interface IMqConstants
   static public final long cDefaultTimeout = 0L;
   
   /**
+   * Admin queue name<br>
+   * This queue does not actually exist
+   */
+  static public final String cAdminQueueName = "LOCAL.ADMIN";
+  
+  /**
+   * System user name<br>
+   * This user does not actually exist
+   */
+  static public final String cSystemUserName = "SYSTEM";
+  
+  /**
    * Property names
    */
   static public final String cKasPropertyPrefix = "kas.";
   
-  static public final String cKasPropertyResponseCode = cKasPropertyPrefix + "response.code";
-  static public final String cKasPropertyResponseDesc = cKasPropertyPrefix + "response.desc";
-  
   static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
   static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
-  static public final String cKasPropertyNetworkAddress = cKasPropertyPrefix + "network.address";
-  static public final String cKasPropertySessionId      = cKasPropertyPrefix + "session";
   
   static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";
   static public final String cKasPropertyDefqThreshold = cKasPropertyPrefix + "defq.threshold";
@@ -48,6 +55,7 @@ public interface IMqConstants
   static public final String cKasPropertyDelqQueueName = cKasPropertyPrefix + "delq.queue";
   static public final String cKasPropertyDelqForce     = cKasPropertyPrefix + "delq.force";
   
+  static public final String cKasPropertyQryqQmgrName     = cKasPropertyPrefix + "qryq.qmgr";
   static public final String cKasPropertyQryqQueueName    = cKasPropertyPrefix + "qryq.queue";
   static public final String cKasPropertyQryqPrefix       = cKasPropertyPrefix + "qryq.prefix";
   static public final String cKasPropertyQryqAllData      = cKasPropertyPrefix + "qryq.alldata";

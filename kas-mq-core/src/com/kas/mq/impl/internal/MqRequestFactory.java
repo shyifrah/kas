@@ -36,10 +36,11 @@ public class MqRequestFactory
     return message;
   }
   
-  static public IMqMessage<?> createQueryQueueRequest(String name, boolean prefix, boolean all)
+  static public IMqMessage<?> createQueryQueueRequest(String origin, String name, boolean prefix, boolean all)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
     message.setRequestType(ERequestType.cQueryQueue);
+    if (origin != null) message.setStringProperty(IMqConstants.cKasPropertyQryqQmgrName, origin);
     message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, prefix);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);

@@ -48,7 +48,7 @@ public class LocalQueuesManager extends MqManager
    */
   public void activate()
   {
-    mLogger.debug("LocalQueuesManager::init() - IN");
+    mLogger.debug("LocalQueuesManager::activate() - IN");
     
     boolean success = true;
     String repoDirPath = RunTimeUtils.getProductHomeDir() + File.separatorChar + "repo";
@@ -56,12 +56,12 @@ public class LocalQueuesManager extends MqManager
     if (!repoDir.exists())
     {
       success = repoDir.mkdir();
-      mLogger.info("LocalQueuesManager::init() - Repository directory does not exist, try to create. result=" + success);
+      mLogger.info("LocalQueuesManager::activate() - Repository directory does not exist, try to create. result=" + success);
     }
     else if (!repoDir.isDirectory())
     {
       success = false;
-      mLogger.fatal("LocalQueuesManager::init() - Repository directory path points to a file. Terminating...");
+      mLogger.fatal("LocalQueuesManager::activate() - Repository directory path points to a file. Terminating...");
     }
     else
     {
@@ -75,10 +75,10 @@ public class LocalQueuesManager extends MqManager
         if (qFile.isFile())
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
-          mLogger.trace("LocalQueuesManager::init() - Restoring contents of queue [" + qName + ']');
+          mLogger.trace("LocalQueuesManager::activate() - Restoring contents of queue [" + qName + ']');
           MqLocalQueue q = defineQueue(qName, IMqConstants.cDefaultQueueThreshold);
           boolean restored = q.restore();
-          mLogger.trace("LocalQueuesManager::init() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
+          mLogger.trace("LocalQueuesManager::activate() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
           success = success && restored;
         }
       }
@@ -87,7 +87,7 @@ public class LocalQueuesManager extends MqManager
     }
     
     mActive = success;
-    mLogger.debug("LocalQueuesManager::init() - OUT");
+    mLogger.debug("LocalQueuesManager::activate() - OUT");
   }
   
   /**
@@ -97,22 +97,22 @@ public class LocalQueuesManager extends MqManager
    */
   public void deactivate()
   {
-    mLogger.debug("LocalQueuesManager::term() - IN");
+    mLogger.debug("LocalQueuesManager::deactivate() - IN");
     boolean success = true;
     
     for (MqQueue queue : mQueues.values())
     {
       boolean backed = true;
       String name = queue.getName();
-      mLogger.debug("LocalQueuesManager::term() - Writing queue contents. Queue=[" + name + "]; Messages=[" + queue.size() + "]");
+      mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents. Queue=[" + name + "]; Messages=[" + queue.size() + "]");
       backed = queue.backup();  
       
-      mLogger.debug("LocalQueuesManager::term() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
+      mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
       success = success && backed;
     }
     
     mActive = false;
-    mLogger.debug("LocalQueuesManager::term() - OUT");
+    mLogger.debug("LocalQueuesManager::deactivate() - OUT");
   }
   
   /**

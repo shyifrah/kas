@@ -21,6 +21,7 @@ import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.impl.internal.MqManager;
+import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
@@ -313,6 +314,7 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mLogger.debug("SessionHandler::queryQueue() - IN");
     
+    String queryQmgr = request.getStringProperty(IMqConstants.cKasPropertyQryqQmgrName, null);
     boolean all = request.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
     boolean prefix = request.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
     String name = request.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
@@ -325,6 +327,15 @@ public class SessionHandler extends AKasObject implements Runnable
     
     IMqMessage<?> result = MqMessageFactory.createResponse(request, rc, val, mClient.getResponse());
     result.setSubset(props);
+    
+    // since queryQmgr is able to query this manager's queues
+    // it is just like this manager received a SysState request from queryQmgr
+    MqManager manager = mController.getRepository().getRemoteManager(queryQmgr);
+    if (!manager.isActive())
+    {
+      IMqMessage<?> sysRequest = MqRequestFactory.createSystemStateMessage(queryQmgr, true);
+      stateChange(sysRequest);
+    }
     
     mLogger.debug("SessionHandler::queryQueue() - OUT");
     return result;
@@ -347,11 +358,13 @@ public class SessionHandler extends AKasObject implements Runnable
     String sender = request.getStringProperty(IMqConstants.cKasPropertySyssQmgrName, null);
     boolean activated = request.getBoolProperty(IMqConstants.cKasPropertySyssActive, false);
     
+    mLogger.debug("SessionHandler::stateChange() - Manager at " + sender + " changed it state to " + (activated ? "active" : "inactive"));
+    
     IRepository repo = mController.getRepository();
     MqManager manager = repo.getRemoteManager(sender);
-    if (activated)
+    if (activated && !manager.isActive())       // if manager is inactive and we got notification for its activation --> activate it
       manager.activate();
-    else
+    else if (!activated && manager.isActive())  // if manager is active and we got notification for its inactivation --> deactivate it
       manager.deactivate();
     
     mLogger.debug("SessionHandler::stateChange() - OUT");

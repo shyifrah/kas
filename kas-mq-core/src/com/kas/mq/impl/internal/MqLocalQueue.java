@@ -30,7 +30,7 @@ public class MqLocalQueue extends MqQueue
   /**
    * Last access
    */
-  private String mLastAccessUser = "SYSTEM";
+  private String mLastAccessUser = IMqConstants.cSystemUserName;
   private TimeStamp mLastAccessTimeStamp = TimeStamp.now();
   private String mLastAccessMethod = "<init>";
   
@@ -299,7 +299,7 @@ public class MqLocalQueue extends MqQueue
       }
     }
     
-    setLastAccess("SYSTEM", "expire");
+    setLastAccess(IMqConstants.cSystemUserName, "expire");
     
     mLogger.debug("MqLocalQueue::expire() - OUT, Returns=" + total);
     return total;
@@ -327,7 +327,7 @@ public class MqLocalQueue extends MqQueue
   }
   
   /**
-   * Get the {@link AMqMessage message} with the highest priority from this {@link MqLocalQueue} object.<br>
+   * Get the {@link IMqMessage message} with the highest priority from this {@link MqLocalQueue} object.<br>
    * <br>
    * Since the actual message container is implemented by {@link MessageQueue}, the actual "get" operations
    * are translated to {@link MessageQueue#poll()}.<br>
@@ -339,7 +339,7 @@ public class MqLocalQueue extends MqQueue
    * 
    * @param timeout The timeout until which the method will give up
    * @param interval The gap length between polling operations
-   * @return The {@link AMqMessage} or {@code null} if one is unavailable
+   * @return The {@link IMqMessage} or {@code null} if one is unavailable
    */
   protected IMqMessage<?> internalGet(long timeout, long interval)
   {

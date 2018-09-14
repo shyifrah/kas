@@ -170,7 +170,7 @@ public final class MqContext extends AKasObject
     Properties result = null;
     if (Validators.isQueueName(name))
     {
-      result = mDelegator.queryQueue(name, prefix, all);
+      result = mDelegator.queryQueue(null, name, prefix, all);
     }
     else
     {

@@ -19,6 +19,11 @@ import com.kas.mq.impl.internal.MqRemoteQueue;
 public class RemoteQueuesManager extends MqManager
 {
   /**
+   * KAS/MQ server's configuration object
+   */
+  private MqConfiguration mConfig;
+  
+  /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
@@ -26,6 +31,7 @@ public class RemoteQueuesManager extends MqManager
   RemoteQueuesManager(MqConfiguration config, String name)
   {
     super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
+    mConfig = config;
   }
   
   /**
@@ -33,40 +39,40 @@ public class RemoteQueuesManager extends MqManager
    */
   public void activate()
   {
-    mLogger.debug("RemoteQueuesManager::init() - IN");
+    mLogger.debug("RemoteQueuesManager::activate() - IN");
     
-    mLogger.debug("RemoteQueuesManager::init() - Requesting queue list from qmgr \"" + mName + "\" at " + mHost + ':' + mPort);
+    mLogger.debug("RemoteQueuesManager::activate() - Requesting queue list from qmgr \"" + mName + "\" at " + mHost + ':' + mPort);
     
     MqClientImpl client = new MqClientImpl();
     client.connect(mHost, mPort);
     
     if (client.isConnected())
     {
-      Properties props = client.queryQueue("", true, false);
+      mActive = true;
+      
+      Properties props = client.queryQueue(mConfig.getManagerName(), "", true, false);
       if (props == null)
         mLogger.warn(client.getResponse());
       
-      mLogger.debug("RemoteQueuesManager::init() - Received list: " + props.toPrintableString(0));
+      mLogger.debug("RemoteQueuesManager::activate() - Received list: " + props.toPrintableString(0));
       
       int totalQueues = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", 0);
       for (int i = 0; i < totalQueues; ++i)
       {
-        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + i + ".name";
+        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + (i+1) + ".name";
         String qname = props.getStringProperty(key, "");
         if (qname.length() > 0)
         {
           MqRemoteQueue queue = new MqRemoteQueue(this, qname);
-          mLogger.debug("RemoteQueuesManager::init() - Adding to remote queues list queue: " + queue.toString());
+          mLogger.debug("RemoteQueuesManager::activate() - Adding to remote queues list queue: " + queue.toString());
           mQueues.put(qname, queue);
         }
       }
-      
-      mActive = true;
     }
 
     client.disconnect();
     
-    mLogger.debug("RemoteQueuesManager::init() - OUT");
+    mLogger.debug("RemoteQueuesManager::activate() - OUT");
   }
   
   /**
