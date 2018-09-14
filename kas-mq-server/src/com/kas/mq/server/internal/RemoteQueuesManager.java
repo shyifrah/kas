@@ -76,6 +76,39 @@ public class RemoteQueuesManager extends MqManager
   }
   
   /**
+   * Query local queues
+   * 
+   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   */
+  Properties queryQueue(String name, boolean prefix, boolean all)
+  {
+    mLogger.debug("RemoteQueuesManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
+    Properties props = new Properties();
+    for (MqQueue queue : mQueues.values())
+    {
+      MqRemoteQueue mqrq = (MqRemoteQueue)queue;
+      boolean include = false;
+      if (prefix)
+        include = mqrq.getName().startsWith(name);
+      else
+        include = mqrq.getName().equals(name);
+      
+      if (include)
+      {
+        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqrq.name();
+        props.setStringProperty(key, mqrq.queryResponse(all));
+      }
+    }
+    
+    mLogger.debug("RemoteQueuesManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
+    return props;
+  }
+  
+  /**
    * Get a remote queue object.
    * 
    * @param name The name of the queue to be retrieved

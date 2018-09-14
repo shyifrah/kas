@@ -1,7 +1,6 @@
 package com.kas.mq.impl.internal;
 
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
@@ -19,7 +18,7 @@ public abstract class MqQueue extends AKasObject
   protected transient ILogger mLogger;
   
   /**
-   * Name of the manager that owns this queue
+   * The manager that owns this queue
    */
   protected MqManager mManager;
   
@@ -59,19 +58,6 @@ public abstract class MqQueue extends AKasObject
   public String getName()
   {
     return mName;
-  }
-  
-  /**
-   * Get the number of messages held at the moment by this {@link MqQueue object}.<br>
-   * <br>
-   * The default implementation is empty and return 0. Driven classes should decide
-   * whether to implement it or not.
-   * 
-   * @return the number of messages held at the moment by this {@link MqQueue object}
-   */
-  public int size()
-  {
-    return 0;
   }
   
   /**
@@ -215,6 +201,20 @@ public abstract class MqQueue extends AKasObject
   protected abstract IMqMessage<?> internalGet(long timeout, long interval);
   
   /**
+   * Response to Query request
+   * 
+   * @param all Whether to include all data in the response
+   * @return a string that describes the queue 
+   */
+  public String queryResponse(boolean all)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Queue.............: ").append(mName).append('\n');
+    sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
+    return sb.toString();
+  }
+  
+  /**
    * Get the object's string representation
    * 
    * @return the string representation
@@ -236,12 +236,6 @@ public abstract class MqQueue extends AKasObject
    */
   public String toPrintableString(int level)
   {
-    String pad = pad(level);
-    StringBuilder sb = new StringBuilder();
-    sb.append(name()).append("(\n")
-      .append(pad).append("  Manager=").append(StringUtils.asPrintableString(mManager)).append("\n")
-      .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append(")");
-    return sb.toString();
+    return toString();
   }
 }

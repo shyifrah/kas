@@ -102,9 +102,10 @@ public class LocalQueuesManager extends MqManager
     
     for (MqQueue queue : mQueues.values())
     {
+      MqLocalQueue lq = (MqLocalQueue)queue;
       boolean backed = true;
       String name = queue.getName();
-      mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents. Queue=[" + name + "]; Messages=[" + queue.size() + "]");
+      mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents. Queue=[" + name + "]; Messages=[" + lq.size() + "]");
       backed = queue.backup();  
       
       mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
@@ -186,7 +187,6 @@ public class LocalQueuesManager extends MqManager
     mLogger.debug("LocalQueuesManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     Properties props = new Properties();
-    int total = 0;
     for (MqQueue queue : mQueues.values())
     {
       MqLocalQueue mqlq = (MqLocalQueue)queue;
@@ -198,21 +198,11 @@ public class LocalQueuesManager extends MqManager
       
       if (include)
       {
-        ++total;
-        String keyPref = IMqConstants.cKasPropertyQryqResultPrefix + "." + total;
-        props.setStringProperty(keyPref + ".name", mqlq.getName());
-        if (all)
-        {
-          props.setStringProperty(keyPref + ".owner", "local");
-          props.setIntProperty(keyPref + ".threshold", mqlq.getThreshold());
-          props.setIntProperty(keyPref + ".size", mqlq.size());
-          props.setStringProperty(keyPref + ".access", mqlq.getLastAccess());
-        }
+        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqlq.getName();
+        props.setStringProperty(key, mqlq.queryResponse(all));
       }
     }
-    
-    props.setIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", total);
-    mLogger.debug("LocalQueuesManager::queryQueue() - OUT, Returns=" + total + " queues");
+    mLogger.debug("LocalQueuesManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
     return props;
   }
   

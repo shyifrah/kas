@@ -56,7 +56,7 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * A responder's client
    */
-  private ClientResponder mClient;
+  private ClientResponder mResponder;
   
   /**
    * Active user name
@@ -83,7 +83,7 @@ public class SessionHandler extends AKasObject implements Runnable
     socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
     mMessenger = MessengerFactory.create(socket);
     
-    mClient = new ClientResponder(mController.getRepository());
+    mResponder = new ClientResponder(mController.getRepository());
     mSessionId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
     
@@ -265,12 +265,12 @@ public class SessionHandler extends AKasObject implements Runnable
     String queue = request.getStringProperty(IMqConstants.cKasPropertyDefqQueueName, null);
     int threshold = request.getIntProperty(IMqConstants.cKasPropertyDefqThreshold, IMqConstants.cDefaultQueueThreshold);
     
-    boolean success = mClient.defineQueue(queue, threshold);
+    boolean success = mResponder.defineQueue(queue, threshold);
     EMqCode erc = EMqCode.cOkay;
     if (!success)
       erc = EMqCode.cFail;
     
-    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), mClient.getResponse());
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), mResponder.getResponse());
     mLogger.debug("SessionHandler::defineQueue() - OUT");
     return result;
   }
@@ -290,12 +290,12 @@ public class SessionHandler extends AKasObject implements Runnable
     String queue = request.getStringProperty(IMqConstants.cKasPropertyDelqQueueName, null);
     boolean force = request.getBoolProperty(IMqConstants.cKasPropertyDelqForce, false);
     
-    boolean success = mClient.deleteQueue(queue, force);
+    boolean success = mResponder.deleteQueue(queue, force);
     EMqCode erc = EMqCode.cOkay;
     if (!success)
       erc = EMqCode.cFail;
     
-    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), mClient.getResponse());
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, erc, erc.ordinal(), mResponder.getResponse());
     mLogger.debug("SessionHandler::deleteQueue() - OUT");
     return result;
   }
@@ -314,27 +314,31 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mLogger.debug("SessionHandler::queryQueue() - IN");
     
-    String queryQmgr = request.getStringProperty(IMqConstants.cKasPropertyQryqQmgrName, null);
+    String origin = request.getStringProperty(IMqConstants.cKasPropertyQryqQmgrName, null);
     boolean all = request.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
     boolean prefix = request.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
     String name = request.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
     
-    Properties props = mClient.queryQueue(name, prefix, all);
+    Properties props = mResponder.queryQueue(name, prefix, all);
     
     int val = props.size();
     EMqCode rc = EMqCode.cOkay;
     if (val == 0) rc = EMqCode.cWarn;
     
-    IMqMessage<?> result = MqMessageFactory.createResponse(request, rc, val, mClient.getResponse());
+    IMqMessage<?> result = MqMessageFactory.createResponse(request, rc, val, mResponder.getResponse());
     result.setSubset(props);
     
-    // since queryQmgr is able to query this manager's queues
-    // it is just like this manager received a SysState request from queryQmgr
-    MqManager manager = mController.getRepository().getRemoteManager(queryQmgr);
-    if (!manager.isActive())
+    // is this request originated from a remote qmgr?
+    if (origin != null)
     {
-      IMqMessage<?> sysRequest = MqRequestFactory.createSystemStateMessage(queryQmgr, true);
-      stateChange(sysRequest);
+      // since queryQmgr is able to query this manager's queues
+      // it is just like this manager received a SysState request from queryQmgr
+      MqManager manager = mController.getRepository().getRemoteManager(origin);
+      if (!manager.isActive())
+      {
+        IMqMessage<?> sysRequest = MqRequestFactory.createSystemStateMessage(origin, true);
+        stateChange(sysRequest);
+      }
     }
     
     mLogger.debug("SessionHandler::queryQueue() - OUT");
@@ -358,7 +362,7 @@ public class SessionHandler extends AKasObject implements Runnable
     String sender = request.getStringProperty(IMqConstants.cKasPropertySyssQmgrName, null);
     boolean activated = request.getBoolProperty(IMqConstants.cKasPropertySyssActive, false);
     
-    mLogger.debug("SessionHandler::stateChange() - Manager at " + sender + " changed it state to " + (activated ? "active" : "inactive"));
+    mLogger.debug("SessionHandler::stateChange() - Manager at " + sender + " changed its state to " + (activated ? "active" : "inactive"));
     
     IRepository repo = mController.getRepository();
     MqManager manager = repo.getRemoteManager(sender);
@@ -386,7 +390,7 @@ public class SessionHandler extends AKasObject implements Runnable
     long interval = request.getLongProperty(IMqConstants.cKasPropertyGetInterval, IMqConstants.cDefaultPollingInterval);
     String qname  = request.getStringProperty(IMqConstants.cKasPropertyGetQueueName, null);
     
-    IMqMessage<?> msg = mClient.get(qname, timeout, interval);
+    IMqMessage<?> msg = mResponder.get(qname, timeout, interval);
     
     MqLocalQueue mqq = mController.getRepository().getLocalQueue(qname);
     if (mqq != null)
@@ -396,7 +400,7 @@ public class SessionHandler extends AKasObject implements Runnable
     }
     
     if (msg == null)
-      msg = MqMessageFactory.createResponse(request, EMqCode.cFail, EMqCode.cFail.ordinal(), mClient.getResponse());
+      msg = MqMessageFactory.createResponse(request, EMqCode.cFail, EMqCode.cFail.ordinal(), mResponder.getResponse());
     else
       msg.setResponse(new MqResponse(EMqCode.cOkay, 0, ""));
     
@@ -417,7 +421,7 @@ public class SessionHandler extends AKasObject implements Runnable
     
     String qname = request.getStringProperty(IMqConstants.cKasPropertyPutQueueName, null);
     
-    mClient.put(qname, request);
+    mResponder.put(qname, request);
     
     mLogger.debug("SessionHandler::put() - OUT");
   }

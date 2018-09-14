@@ -81,7 +81,7 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    Properties props = mClient.queryQueue(name, prefix, all);
+    Properties props = mClient.queryQueue(null, name, prefix, all);
     output(props, all);
     return false;
   }

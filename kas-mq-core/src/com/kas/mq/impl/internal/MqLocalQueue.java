@@ -400,6 +400,26 @@ public class MqLocalQueue extends MqQueue
   }
   
   /**
+   * Response to Query request
+   * 
+   * @param all Whether to include all data in the response
+   * @return a string that describes the queue 
+   */
+  public String queryResponse(boolean all)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Queue.............: ").append(mName).append('\n');
+    sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
+    if (all)
+    {
+      sb.append("  Accessed...: ").append(getLastAccess()).append('\n');
+      sb.append("  Threshold..: ").append(mThreshold).append('\n');
+      sb.append("  Messages...: ").append(size()).append('\n');
+    }
+    return sb.toString();
+  }
+  
+  /**
    * Get the last access to the queue
    * 
    * @return A string describing the last access info

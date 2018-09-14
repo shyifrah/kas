@@ -138,7 +138,7 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Get information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param name The queue name/prefix.
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
@@ -148,9 +148,18 @@ public class ServerRepository extends AKasObject implements IRepository
   public Properties queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
-    Properties props = mLocalManager.queryQueue(name, prefix, all);
-    mLogger.debug("ServerRepository::queryQueue() - OUT, Returns=" + props.size() + " records");
-    return props;
+    Properties result = mLocalManager.queryQueue(name, prefix, all);
+    for (Map.Entry<String, RemoteQueuesManager> entry : mRemoteManagersMap.entrySet())
+    {
+      RemoteQueuesManager mgr = entry.getValue();
+      if (mgr.isActive())
+      {
+        Properties props = mgr.queryQueue(name, prefix, all);
+        result.putAll(props);
+      }
+    }
+    mLogger.debug("ServerRepository::queryQueue() - OUT, Returns=" + result.size() + " records");
+    return result;
   }
   
   /**

@@ -56,30 +56,30 @@ public class ClientResponder extends AKasObject
    */
   public boolean defineQueue(String queue, int threshold)
   {
-    mLogger.debug("ResponderClient::defineQueue() - IN, Queue=" + queue + ", Threshold=" + threshold);
+    mLogger.debug("ClientResponder::defineQueue() - IN, Queue=" + queue + ", Threshold=" + threshold);
     
     boolean success = false;
     MqLocalQueue mqq = mRepository.getLocalQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))
     {
-      mLogger.debug("ResponderClient::defineQueue() - Invalid queue name: null or empty string");
+      mLogger.debug("ClientResponder::defineQueue() - Invalid queue name: null or empty string");
       setResponse("Invalid queue name: null or empty string");
     }
     else if (mqq != null)
     {
-      mLogger.debug("ResponderClient::defineQueue() - Queue with name \"" + queue + "\" already exists");
+      mLogger.debug("ClientResponder::defineQueue() - Queue with name \"" + queue + "\" already exists");
       setResponse("Queue with name \"" + queue + "\" already exists");
     }
     else
     {
       mqq = mRepository.defineLocalQueue(queue, threshold);
-      mLogger.debug("ResponderClient::defineQueue() - Created queue " + StringUtils.asPrintableString(mqq));
+      mLogger.debug("ClientResponder::defineQueue() - Created queue " + StringUtils.asPrintableString(mqq));
       setResponse("Queue with name " + queue + " and threshold of " + threshold + " was successfully defined");
       success = true;
     }
     
-    mLogger.debug("ResponderClient::defineQueue() - OUT, Returns=" + success);
+    mLogger.debug("ClientResponder::defineQueue() - OUT, Returns=" + success);
     return success;
   }
 
@@ -94,19 +94,19 @@ public class ClientResponder extends AKasObject
    */
   public boolean deleteQueue(String queue, boolean force)
   {
-    mLogger.debug("ResponderClient::deleteQueue() - IN, Queue=" + queue + ", Force=" + force);
+    mLogger.debug("ClientResponder::deleteQueue() - IN, Queue=" + queue + ", Force=" + force);
     
     boolean success = false;
     MqLocalQueue mqq = mRepository.getLocalQueue(queue);
     
     if ((queue == null) || (queue.length() == 0))
     {
-      mLogger.debug("ResponderClient::deleteQueue() - Invalid queue name: null or empty string");
+      mLogger.debug("ClientResponder::deleteQueue() - Invalid queue name: null or empty string");
       setResponse("Invalid queue name: null or empty string");
     }
     else if (mqq == null)
     {
-      mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" doesn't exist");
+      mLogger.debug("ClientResponder::deleteQueue() - Queue with name \"" + queue + "\" doesn't exist");
       setResponse("Queue with name \"" + queue + "\" doesn't exist");
       success = true;
     }
@@ -116,25 +116,25 @@ public class ClientResponder extends AKasObject
       if (size == 0)
       {
         mRepository.deleteLocalQueue(queue);
-        mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted");
+        mLogger.debug("ClientResponder::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted");
         setResponse("Queue with name \"" + queue + "\" was successfully deleted");
         success = true;
       }
       else if (force)
       {
         mRepository.deleteLocalQueue(queue);
-        mLogger.debug("ResponderClient::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted (" + size + " messages discarded)");
+        mLogger.debug("ClientResponder::deleteQueue() - Queue with name \"" + queue + "\" was successfully deleted (" + size + " messages discarded)");
         setResponse("Queue with name \"" + queue + "\" was successfully deleted (" + size + " messages discarded)");
         success = true;
       }
       else
       {
-        mLogger.debug("ResponderClient::deleteQueue() - Queue is not empty (" + size + " messages) and FORCE was not specified");
+        mLogger.debug("ClientResponder::deleteQueue() - Queue is not empty (" + size + " messages) and FORCE was not specified");
         setResponse("Queue is not empty (" + size + " messages) and FORCE was not specified");
       }
     }
     
-    mLogger.debug("ResponderClient::deleteQueue() - OUT, Returns=" + success);
+    mLogger.debug("ClientResponder::deleteQueue() - OUT, Returns=" + success);
     return success;
   }
 
@@ -150,15 +150,15 @@ public class ClientResponder extends AKasObject
    */
   public Properties queryQueue(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("ResponderClient::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.debug("ClientResponder::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     if (name == null) name = "";
     
     Properties props = mRepository.queryQueue(name, prefix, all);
-    int total = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", 0);
+    int total = props.size();
     
     setResponse(String.format("%s queues matched filtering criteria", (total == 0 ? "No" : total)));
-    mLogger.debug("ResponderClient::queryQueue() - OUT, Returns=" + total + " queues");
+    mLogger.debug("ClientResponder::queryQueue() - OUT, Returns=" + total + " queues");
     return props;
   }
 
@@ -174,18 +174,18 @@ public class ClientResponder extends AKasObject
    */
   public IMqMessage<?> get(String queue, long timeout, long interval)
   {
-    mLogger.debug("ResponderClient::get() - IN, Queue=" + queue + ", Timeout=" + timeout + ", Interval=" + interval);
+    mLogger.debug("ClientResponder::get() - IN, Queue=" + queue + ", Timeout=" + timeout + ", Interval=" + interval);
     
     IMqMessage<?> result = null;
     MqLocalQueue mqq = mRepository.getLocalQueue(queue);
     if ((queue == null) || (queue.length() == 0))
     {
-      mLogger.debug("ResponderClient::get() - Invalid queue name: null or empty string");
+      mLogger.debug("ClientResponder::get() - Invalid queue name: null or empty string");
       setResponse("Invalid queue name: null or empty string");
     }
     else if (mqq == null)
     {
-      mLogger.debug("ResponderClient::get() - Queue with name \"" + queue + "\" doesn't exist");
+      mLogger.debug("ClientResponder::get() - Queue with name \"" + queue + "\" doesn't exist");
       setResponse("Queue with name \"" + queue + "\" doesn't exist");
     }
     else
@@ -193,17 +193,17 @@ public class ClientResponder extends AKasObject
       result = mqq.get(timeout, interval);
       if (result == null)
       {
-        mLogger.debug("ResponderClient::get() - No message found in queue " + queue);
+        mLogger.debug("ClientResponder::get() - No message found in queue " + queue);
         setResponse("No message found in queue " + queue);
       }
       else
       {
-        mLogger.debug("ResponderClient::get() - Picked up message from " + queue + ". Message: " + StringUtils.asPrintableString(result));
+        mLogger.debug("ClientResponder::get() - Picked up message from " + queue + ". Message: " + StringUtils.asPrintableString(result));
         setResponse("");
       }
     }
     
-    mLogger.debug("ResponderClient::get() - OUT");
+    mLogger.debug("ClientResponder::get() - OUT");
     return result;
   }
 
@@ -217,21 +217,21 @@ public class ClientResponder extends AKasObject
    */
   public void put(String queue, IMqMessage<?> message)
   {
-    mLogger.debug("ResponderClient::put() - IN, Queue=" + queue);
+    mLogger.debug("ClientResponder::put() - IN, Queue=" + queue);
     
-    mLogger.debug("ResponderClient::put() - Message to put: " + StringUtils.asPrintableString(message));
+    mLogger.debug("ClientResponder::put() - Message to put: " + StringUtils.asPrintableString(message));
     
     MqLocalQueue locq = mRepository.getLocalQueue(queue);
     MqLocalQueue dead = mRepository.getDeadQueue();
     if ((queue == null) || (queue.length() == 0))
     {
-      mLogger.debug("ResponderClient::put() - Invalid queue name: null or empty string");
+      mLogger.debug("ClientResponder::put() - Invalid queue name: null or empty string");
       setResponse("Invalid queue name: null or empty string");
       dead.put(message);
     }
     else if (locq == null)
     {
-      mLogger.debug("ResponderClient::put() - Queue with name \"" + queue + "\" doesn't exist");
+      mLogger.debug("ClientResponder::put() - Queue with name \"" + queue + "\" doesn't exist");
       setResponse("Queue with name \"" + queue + "\" doesn't exist");
       dead.put(message);
     }
@@ -240,13 +240,13 @@ public class ClientResponder extends AKasObject
       boolean success = locq.put(message);
       if (!success) dead.put(message);
       
-      mLogger.debug("ResponderClient::put() - Message was put to queue " + queue);
+      mLogger.debug("ClientResponder::put() - Message was put to queue " + queue);
       setResponse("");
       String user = message.getStringProperty(IMqConstants.cKasPropertyPutUserName, null);
       locq.setLastAccess(user, "put");
     }
     
-    mLogger.debug("ResponderClient::put() - OUT");
+    mLogger.debug("ClientResponder::put() - OUT");
   }
 
   /**

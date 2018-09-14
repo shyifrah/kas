@@ -104,9 +104,7 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
       for (MqQueue dest : destinations)
       {
         mLogger.debug("ServerHouseKeeper::run() - Expiring messages in destination " + dest.getName() + ":");
-        mLogger.diag("ServerHouseKeeper::run() - Total messages in destination: " + dest.size());
         int exp = dest.expire();
-        mLogger.diag("ServerHouseKeeper::run() - Total messages in destination: " + dest.size());
         mLogger.debug("ServerHouseKeeper::run() - Total messages expired: " + exp);
       }
     }
