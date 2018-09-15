@@ -427,9 +427,10 @@ public class MqClientImpl extends AKasObject
    * 
    * @param request The system-state change request. The message contains the new state
    * of the sender KAS/MQ server.
+   * @param waitResponse When {@code true}, caller expects a response message, {@code false} otherwise
    * @return the reply message from the receiver
    */
-  public IMqMessage<?> notifySysState(IMqMessage<?> request)
+  public IMqMessage<?> notifySysState(IMqMessage<?> request, boolean waitResponse)
   {
     mLogger.debug("MqClientImpl::notifySysState() - IN");
     
@@ -440,12 +441,21 @@ public class MqClientImpl extends AKasObject
     }
     else
     {
-      mLogger.debug("MqClientImpl::notifySysState() - sending notify request: " + request.toPrintableString(0));
+      mLogger.debug("MqClientImpl::notifySysState() - sending notify request: " + StringUtils.asPrintableString(request));
       try
       {
-        reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqClientImpl::notifySysState() - received response: " + reply.toPrintableString(0));
-        logInfoAndSetResponse(reply.getResponse().getDesc());
+        String desc = "";
+        if (!waitResponse)
+        {
+          mMessenger.send(request);
+        } 
+        else
+        {
+          reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+          mLogger.debug("MqClientImpl::notifySysState() - received response: " + StringUtils.asPrintableString(reply));
+          desc = reply.getResponse().getDesc();
+        }
+        logInfoAndSetResponse(desc);
       }
       catch (IOException e)
       {

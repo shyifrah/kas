@@ -55,7 +55,7 @@ public class ServerNotifier extends AKasObject
     Properties props = mRepository.queryLocalQueues("", true, false);
     message.setSubset(props);
     
-    notify(message);
+    notify(message, true);
     
     mLogger.debug("ServerNotifier::notifyServerActivated() - OUT");
   }
@@ -70,7 +70,7 @@ public class ServerNotifier extends AKasObject
     String qmgr = mConfig.getManagerName();
     IMqMessage<?> message = MqRequestFactory.createSystemStateMessage(qmgr, false);
     
-    notify(message);
+    notify(message, false);
     
     mLogger.debug("ServerNotifier::notifyServerDeactivated() - OUT");
   }
@@ -84,7 +84,7 @@ public class ServerNotifier extends AKasObject
    * 
    * @param message The {@link IMqMessage} that will be sent to each and every remote address
    */
-  private void notify(IMqMessage<?> message)
+  private void notify(IMqMessage<?> message, boolean activate)
   {
     mLogger.debug("ServerNotifier::notify() - IN");
     
@@ -95,19 +95,22 @@ public class ServerNotifier extends AKasObject
       String remoteQmgrName  = entry.getKey();
       NetworkAddress address = entry.getValue();
       
-      mLogger.debug("ServerNotifier::notifyServerActivated() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on server state change");
+      mLogger.debug("ServerNotifier::notify() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on server state change");
       
       MqClientImpl client = new MqClientImpl();
       client.connect(address.getHost(), address.getPort());
       if (client.isConnected())
       {
-        IMqMessage<?> reply = client.notifySysState(message);
-        Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
-        RemoteQueuesManager rqmgr = (RemoteQueuesManager)mRepository.getRemoteManager(remoteQmgrName);
-        if (!rqmgr.isActive())
+        IMqMessage<?> reply = client.notifySysState(message, activate);
+        if (reply != null)
         {
-          rqmgr.activate();
-          rqmgr.setQueues(remoteQueues);
+          Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+          RemoteQueuesManager rqmgr = (RemoteQueuesManager)mRepository.getRemoteManager(remoteQmgrName);
+          if (!rqmgr.isActive())
+          {
+            rqmgr.activate();
+            rqmgr.setQueues(remoteQueues);
+          }
         }
         client.disconnect();
       }
