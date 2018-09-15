@@ -25,6 +25,7 @@ import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.repo.RemoteQueuesManager;
 
 /**
  * A {@link SessionHandler} is the object that handles the traffic in and from a remote client.

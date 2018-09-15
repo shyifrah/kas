@@ -1,4 +1,4 @@
-package com.kas.mq.server.internal;
+package com.kas.mq.server.repo;
 
 import java.io.File;
 import java.util.Collection;

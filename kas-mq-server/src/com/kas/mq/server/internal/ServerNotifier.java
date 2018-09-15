@@ -12,6 +12,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.repo.RemoteQueuesManager;
 
 public class ServerNotifier extends AKasObject
 {

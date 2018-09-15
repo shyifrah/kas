@@ -274,15 +274,15 @@ public class MqClientImpl extends AKasObject
       try
       {
         IMqMessage<?> request = MqRequestFactory.createGetRequest(queue, timeout, interval);
-        mLogger.debug("MqClientImpl::get() - sending get request: " + request.toPrintableString(0));
+        mLogger.debug("MqClientImpl::get() - sending get request: " + StringUtils.asPrintableString(request));
         IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqClientImpl::get() - received response: " + reply.toPrintableString(0));
+        mLogger.debug("MqClientImpl::get() - received response: " + StringUtils.asPrintableString(reply));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
           reply.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
           reply.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
           result = reply;
-          logInfoAndSetResponse("Successfully got a message from queue " + queue + ", Message: " + reply.toPrintableString(0));
+          setResponse("Successfully got a message from queue " + queue + ", Message: " + StringUtils.asPrintableString(reply));
           
         }
         else

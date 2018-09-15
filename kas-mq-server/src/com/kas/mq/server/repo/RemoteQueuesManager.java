@@ -1,4 +1,4 @@
-package com.kas.mq.server.internal;
+package com.kas.mq.server.repo;
 
 import java.util.Collection;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class RemoteQueuesManager extends MqManager
    * 
    * @param props The {@link Properties} object that contains the queues definitions
    */
-  void setQueues(Properties props)
+  public void setQueues(Properties props)
   {
     mLogger.debug("RemoteQueuesManager::setQueues() - IN");
     

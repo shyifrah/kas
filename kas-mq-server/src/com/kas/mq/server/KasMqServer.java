@@ -13,7 +13,7 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionController;
-import com.kas.mq.server.internal.ServerRepository;
+import com.kas.mq.server.repo.ServerRepository;
 import com.kas.mq.server.internal.ServerHouseKeeper;
 import com.kas.mq.server.internal.ServerNotifier;
 
