@@ -15,9 +15,9 @@ public enum ERequestType implements IObject
   cUnknown,
   
   /**
-   * Authentication
+   * Login
    */
-  cAuthenticate,
+  cLogin,
   
   /**
    * Get message

@@ -11,7 +11,6 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.admcons.commands.CliCommandFactory;
 import com.kas.mq.admcons.commands.ICliCommand;
-import com.kas.mq.impl.internal.IClient;
 import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
@@ -26,7 +25,7 @@ public class KasMqAdmin extends AKasMqAppl
   /**
    * A {@link MqClientImpl} which will act as the client
    */
-  private IClient mClientImpl = new MqClientImpl();
+  private MqClientImpl mClientImpl = new MqClientImpl();
   
   /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments

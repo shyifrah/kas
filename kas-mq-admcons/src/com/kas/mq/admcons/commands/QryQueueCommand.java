@@ -1,12 +1,11 @@
 package com.kas.mq.admcons.commands;
 
+import java.util.Map;
 import java.util.Scanner;
-import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
-import com.kas.mq.impl.internal.IClient;
-import com.kas.mq.impl.internal.IMqConstants;
+import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
  * A QUERY QUEUE command
@@ -23,7 +22,7 @@ public class QryQueueCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QryQueueCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected QryQueueCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
   {
     super(scanner, args, client);
   }
@@ -81,7 +80,7 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    Properties props = mClient.queryQueue(null, name, prefix, all);
+    Properties props = mClient.queryQueue(name, prefix, all);
     output(props, all);
     return false;
   }
@@ -94,24 +93,12 @@ public class QryQueueCommand extends ACliCommand
    */
   private void output(Properties props, boolean all)
   {
-    try
+    for (Map.Entry<Object, Object> entry : props.entrySet())
     {
-      int total = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total");
-      for (int i = 1; i <= total; ++i)
-      {
-        String qpref = IMqConstants.cKasPropertyQryqResultPrefix + "." + i;
-        writeln("Queue........................: " + props.getStringProperty(qpref + ".name"));
-        if (all)
-        {
-          writeln("    Owner.............: " + props.getStringProperty(qpref + ".owner"));
-          writeln("    Threshold.........: " + props.getIntProperty(qpref + ".threshold"));
-          writeln("    Size..............: " + props.getIntProperty(qpref + ".size"));
-          writeln("    Last access.......: " + props.getStringProperty(qpref + ".access"));
-        }
-        writeln(" ");
-      }
+      String val = (String)entry.getValue();
+      writeln(val);
+      writeln(" ");
     }
-    catch (KasException e) {}
     
     writeln(mClient.getResponse());
     writeln(" ");

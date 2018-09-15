@@ -136,7 +136,7 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Get information regarding all queues whose name begins with the specified prefix.
+   * Get information regarding local queues whose name begins with the specified prefix.
    * 
    * @param name The queue name/prefix.
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
@@ -145,20 +145,66 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public Properties queryQueue(String name, boolean prefix, boolean all)
+  public Properties queryLocalQueues(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("ServerRepository::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.debug("ServerRepository::queryLocalQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
+    mLogger.debug("ServerRepository::queryLocalQueues() - Checking if LocalQueuesManager " + mLocalManager.getName() + " has results for this query...");
     Properties result = mLocalManager.queryQueue(name, prefix, all);
+    
+    mLogger.debug("ServerRepository::queryLocalQueues() - OUT, Returns=" + result.size() + " records");
+    return result;
+  }
+  
+  /**
+   * Get information regarding remote queues whose name begins with the specified prefix.
+   * 
+   * @param name The queue name/prefix.
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   * 
+   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
+   */
+  public Properties queryRemoteQueues(String name, boolean prefix, boolean all)
+  {
+    mLogger.debug("ServerRepository::queryRemoteQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
+    Properties result = new Properties();
     for (Map.Entry<String, RemoteQueuesManager> entry : mRemoteManagersMap.entrySet())
     {
       RemoteQueuesManager mgr = entry.getValue();
+      mLogger.debug("ServerRepository::queryRemoteQueues() - Checking if RemoteQueuesManager " + mgr.getName() + " has results for this query...");
       if (mgr.isActive())
       {
         Properties props = mgr.queryQueue(name, prefix, all);
         result.putAll(props);
       }
     }
-    mLogger.debug("ServerRepository::queryQueue() - OUT, Returns=" + result.size() + " records");
+    
+    mLogger.debug("ServerRepository::queryRemoteQueues() - OUT, Returns=" + result.size() + " records");
+    return result;
+  }
+  
+  /**
+   * Get information regarding all queues whose name begins with the specified prefix.
+   * 
+   * @param locals When {@code true}, result of query will include only local queues
+   * @param name The queue name/prefix.
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   * 
+   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
+   */
+  public Properties queryQueues(String name, boolean prefix, boolean all)
+  {
+    mLogger.debug("ServerRepository::queryQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    Properties result = queryLocalQueues(name, prefix, all);
+    Properties remotes = queryRemoteQueues(name, prefix, all);
+    result.putAll(remotes);
+    
+    mLogger.debug("ServerRepository::queryQueues() - OUT, Returns=" + result.size() + " records");
     return result;
   }
   
@@ -206,7 +252,7 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @see com.kas.mq.server.IRepository#getRemoteManager(String)
    */
-  public MqManager getRemoteManager(String name)
+  public RemoteQueuesManager getRemoteManager(String name)
   {
     return mRemoteManagersMap.get(name);
   }

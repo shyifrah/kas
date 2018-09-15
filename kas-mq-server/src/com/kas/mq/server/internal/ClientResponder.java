@@ -7,7 +7,6 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.internal.IClient;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IRepository;
@@ -154,7 +153,7 @@ public class ClientResponder extends AKasObject
     
     if (name == null) name = "";
     
-    Properties props = mRepository.queryQueue(name, prefix, all);
+    Properties props = mRepository.queryQueues(name, prefix, all);
     int total = props.size();
     
     setResponse(String.format("%s queues matched filtering criteria", (total == 0 ? "No" : total)));

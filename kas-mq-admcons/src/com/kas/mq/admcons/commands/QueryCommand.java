@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
  * A QUERY command
@@ -28,7 +28,7 @@ public class QueryCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QueryCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected QueryCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
   {
     super(scanner, args, client);
   }

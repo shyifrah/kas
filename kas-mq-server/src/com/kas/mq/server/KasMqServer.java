@@ -85,8 +85,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     }
     
     mLogger.info("KAS/MQ base application initialized successfully");
-    mNotifier = new ServerNotifier(mConfig);
     mRepository = new ServerRepository(mConfig);
+    mNotifier = new ServerNotifier(mConfig, mRepository);
     mController = new SessionController(this);
     
     try

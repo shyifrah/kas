@@ -9,7 +9,6 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.AMqMessage;
-import com.kas.mq.impl.internal.IClient;
 import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
@@ -27,7 +26,7 @@ public final class MqContext extends AKasObject
   /**
    * The actual client
    */
-  private IClient mDelegator = new MqClientImpl();
+  private MqClientImpl mDelegator = new MqClientImpl();
   
   /**
    * Connect client to the KAS/MQ server.
@@ -170,7 +169,7 @@ public final class MqContext extends AKasObject
     Properties result = null;
     if (Validators.isQueueName(name))
     {
-      result = mDelegator.queryQueue(null, name, prefix, all);
+      result = mDelegator.queryQueue(name, prefix, all);
     }
     else
     {

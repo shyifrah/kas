@@ -7,7 +7,6 @@ import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.StringUtils;
@@ -20,7 +19,7 @@ import com.kas.mq.impl.IMqMessage;
  * 
  * @author Pippo
  */
-public class MqClientImpl extends AKasObject implements IClient
+public class MqClientImpl extends AKasObject
 {
   /**
    * Messenger
@@ -58,8 +57,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * 
    * @param host The host name or IP address (uppercased)
    * @param port The port number
-   * 
-   * @see com.kas.mq.impl.internal.IClient#connect(String, int)
    */
   public void connect(String host, int port)
   {
@@ -94,10 +91,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * First we verify the client is actually connected, otherwise there's no point in disconnecting.<br>
    * Note we allocate a new {@link Socket} following the call to {@link Socket#close() close()} because
    * a closed socket cannot be reused.
-   * 
-   * @throws KasException if client failed to disconnect from KAS/MQ server
-   * 
-   * @see com.kas.mq.impl.internal.IClient#disconnect()
    */
   public void disconnect()
   {
@@ -129,7 +122,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * @return {@code true} if socket is connected and not closed, {@code false} otherwise
    * 
    * @see java.net.Socket#isConnected()
-   * @see com.kas.mq.impl.internal.IClient#isConnected()
    */
   public boolean isConnected()
   {
@@ -142,8 +134,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * @param queue The queue name to define.
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.internal.IClient#defineQueue(String,int)
    */
   public boolean defineQueue(String queue, int threshold)
   {
@@ -185,8 +175,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * @param queue The queue name to delete.
    * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.internal.IClient#delete(String)
    */
   public boolean deleteQueue(String queue, boolean force)
   {
@@ -225,15 +213,12 @@ public class MqClientImpl extends AKasObject implements IClient
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param origin The originator of this query request
    * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all if {@code true}, display all information on all queues 
    * @return the queues that returned that matched the query
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public Properties queryQueue(String origin, String name, boolean prefix, boolean all)
+  public Properties queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("MqClientImpl::queryQueue() - IN");
     
@@ -244,7 +229,7 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(origin, name, prefix, all);
+      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all);
       mLogger.debug("MqClientImpl::queryQueue() - sending query queue request: " + request.toPrintableString(0));
       try
       {
@@ -274,8 +259,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * @param timeout The number of milliseconds to wait until a message available
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
-   * 
-   * @see com.kas.mq.impl.internal.IClient#get(String, long, long)
    */
   public IMqMessage<?> get(String queue, long timeout, long interval)
   {
@@ -321,12 +304,10 @@ public class MqClientImpl extends AKasObject implements IClient
   }
   
   /**
-   * Put a message into the opened queue.
+   * Put a message into the specified queue.
    * 
    * @param queue The target queue name
    * @param message The message to be put
-   * 
-   * @see com.kas.mq.impl.internal.IClient#put(String, IMqMessage)
    */
   public void put(String queue, IMqMessage<?> message)
   {
@@ -376,8 +357,8 @@ public class MqClientImpl extends AKasObject implements IClient
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createAuthenticationRequest(user, pwd);
-      mLogger.debug("MqClientImpl::login() - sending authentication request: " + request.toPrintableString(0));
+      IMqMessage<?> request = MqRequestFactory.createLoginRequest(user, pwd);
+      mLogger.debug("MqClientImpl::login() - sending login request: " + request.toPrintableString(0));
       try
       {
         IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
@@ -392,7 +373,7 @@ public class MqClientImpl extends AKasObject implements IClient
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred during authentication of user [")
+        sb.append("Exception occurred during login of user [")
           .append(user).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
@@ -406,8 +387,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * Mark the KAS/MQ server it should shutdown
    * 
    * @return {@code true} if the server accepted the request, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.internal.IClient#shutdown()
    */
   public boolean shutdown()
   {
@@ -444,11 +423,47 @@ public class MqClientImpl extends AKasObject implements IClient
   }
   
   /**
+   * Notify KAS/MQ server that the sender wishes to update it state
+   * 
+   * @param request The system-state change request. The message contains the new state
+   * of the sender KAS/MQ server.
+   * @return the reply message from the receiver
+   */
+  public IMqMessage<?> notifySysState(IMqMessage<?> request)
+  {
+    mLogger.debug("MqClientImpl::notifySysState() - IN");
+    
+    IMqMessage<?> reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      mLogger.debug("MqClientImpl::notifySysState() - sending notify request: " + request.toPrintableString(0));
+      try
+      {
+        reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::notifySysState() - received response: " + reply.toPrintableString(0));
+        logInfoAndSetResponse(reply.getResponse().getDesc());
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to signal KAS/MQ server to shutdown. Exception: ")
+          .append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::notifySysState() - OUT");
+    return reply;
+  }
+  
+  /**
    * Get last response from last {@link IClient} call.
    * 
    * @return the last message the {@link IClient} issued for a call.
-   * 
-   * @see com.kas.mq.impl.internal.IClient#getResponse()
    */
   public String getResponse()
   {
@@ -459,8 +474,6 @@ public class MqClientImpl extends AKasObject implements IClient
    * Set response from last {@link IClient} call.
    * 
    * @param response The response from last {@link IClient} call
-   * 
-   * @see com.kas.mq.impl.internal.IClient#getResponse()
    */
   public void setResponse(String response)
   {

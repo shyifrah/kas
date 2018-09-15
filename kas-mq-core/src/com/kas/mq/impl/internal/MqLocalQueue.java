@@ -408,10 +408,11 @@ public class MqLocalQueue extends MqQueue
   public String queryResponse(boolean all)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("Queue.............: ").append(mName).append('\n');
-    sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
+    sb.append("Queue.............: ").append(mName);
     if (all)
     {
+      sb.append('\n');
+      sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
       sb.append("  Accessed...: ").append(getLastAccess()).append('\n');
       sb.append("  Threshold..: ").append(mThreshold).append('\n');
       sb.append("  Messages...: ").append(size()).append('\n');

@@ -196,6 +196,7 @@ public class LocalQueuesManager extends MqManager
       else
         include = mqlq.getName().equals(name);
       
+      mLogger.debug("LocalQueuesManager::queryQueue() - Checking if current queue [" + mqlq.getName() + "] matches query: " + include);
       if (include)
       {
         String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqlq.getName();

@@ -7,7 +7,7 @@ import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqTextMessage;
-import com.kas.mq.impl.internal.IClient;
+import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
  * A PUT command
@@ -30,7 +30,7 @@ public class PutCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected PutCommand(Scanner scanner, TokenDeque args, IClient client)
+  protected PutCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
   {
     super(scanner, args, client);
   }

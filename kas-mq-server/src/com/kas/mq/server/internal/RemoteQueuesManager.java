@@ -1,11 +1,12 @@
 package com.kas.mq.server.internal;
 
 import java.util.Collection;
+import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqClientImpl;
+//import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
@@ -19,11 +20,6 @@ import com.kas.mq.impl.internal.MqRemoteQueue;
 public class RemoteQueuesManager extends MqManager
 {
   /**
-   * KAS/MQ server's configuration object
-   */
-  private MqConfiguration mConfig;
-  
-  /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
@@ -31,7 +27,6 @@ public class RemoteQueuesManager extends MqManager
   RemoteQueuesManager(MqConfiguration config, String name)
   {
     super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
-    mConfig = config;
   }
   
   /**
@@ -40,45 +35,40 @@ public class RemoteQueuesManager extends MqManager
   public void activate()
   {
     mLogger.debug("RemoteQueuesManager::activate() - IN");
-    
-    mLogger.debug("RemoteQueuesManager::activate() - Requesting queue list from qmgr \"" + mName + "\" at " + mHost + ':' + mPort);
-    
-    MqClientImpl client = new MqClientImpl();
-    client.connect(mHost, mPort);
-    
-    if (client.isConnected())
-    {
-      mActive = true;
-      
-      Properties props = client.queryQueue(mConfig.getManagerName(), "", true, false);
-      if (props == null)
-        mLogger.warn(client.getResponse());
-      
-      mLogger.debug("RemoteQueuesManager::activate() - Received list: " + props.toPrintableString(0));
-      
-      int totalQueues = props.getIntProperty(IMqConstants.cKasPropertyQryqResultPrefix + ".total", 0);
-      for (int i = 0; i < totalQueues; ++i)
-      {
-        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + (i+1) + ".name";
-        String qname = props.getStringProperty(key, "");
-        if (qname.length() > 0)
-        {
-          MqRemoteQueue queue = new MqRemoteQueue(this, qname);
-          mLogger.debug("RemoteQueuesManager::activate() - Adding to remote queues list queue: " + queue.toString());
-          mQueues.put(qname, queue);
-        }
-      }
-    }
 
-    client.disconnect();
-    
+    mActive = true;
+
     mLogger.debug("RemoteQueuesManager::activate() - OUT");
   }
   
   /**
-   * Query local queues
+   * Construct the queues map from the passed {@link Properties} object
    * 
-   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
+   * @param props The {@link Properties} object that contains the queues definitions
+   */
+  void setQueues(Properties props)
+  {
+    mLogger.debug("RemoteQueuesManager::setQueues() - IN");
+    
+    for (Map.Entry<Object, Object> entry : props.entrySet())
+    {
+      String key = (String)entry.getKey();
+      String qname = key.substring(IMqConstants.cKasPropertyQryqResultPrefix.length()+1);
+      if (qname.length() > 0)
+      {
+        MqRemoteQueue queue = new MqRemoteQueue(this, qname);
+        mLogger.debug("RemoteQueuesManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
+        mQueues.put(qname, queue);
+      }
+    }
+    
+    mLogger.debug("RemoteQueuesManager::setQueues() - OUT");
+  }
+  
+  /**
+   * Query queues
+   * 
+   * @param name The queue name/prefix.
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
@@ -97,9 +87,10 @@ public class RemoteQueuesManager extends MqManager
       else
         include = mqrq.getName().equals(name);
       
+      mLogger.debug("RemoteQueuesManager::queryQueue() - Checking if current queue [" + mqrq.getName() + "] matches query: " + include);
       if (include)
       {
-        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqrq.name();
+        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqrq.getName();
         props.setStringProperty(key, mqrq.queryResponse(all));
       }
     }

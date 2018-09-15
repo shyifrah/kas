@@ -1,6 +1,5 @@
 package com.kas.mq.impl.internal;
 
-import com.kas.infra.base.KasException;
 import com.kas.mq.impl.IMqMessage;
 
 /**
@@ -13,7 +12,7 @@ public class MqRemoteQueue extends MqQueue
   /**
    * The client that will execute the actual commands for getting/putting messages
    */
-  private IClient mClient;
+  private MqClientImpl mClient;
   
   /**
    * Construct a {@link MqRemoteQueue} object
@@ -42,24 +41,13 @@ public class MqRemoteQueue extends MqQueue
     boolean success = false;
     if (message != null)
     {
-      try
+      mClient.connect(mManager.getHost(), mManager.getPort());
+      if (mClient.isConnected())
       {
-        mClient.connect(mManager.getHost(), mManager.getPort());
         mClient.put(mName, message);
         success = true;
       }
-      catch (KasException e)
-      {
-        mClient.setResponse("Failed to connect to remote host at " + mManager.getHost() + ':' + mManager.getPort());
-      }
-      finally
-      {
-        try
-        {
-          mClient.disconnect();
-        }
-        catch (KasException e) {}
-      }
+      mClient.disconnect();
     }
     
     mLogger.debug("MqRemoteQueue::put() - OUT, Returns=" + success);
@@ -80,23 +68,12 @@ public class MqRemoteQueue extends MqQueue
     
     IMqMessage<?> result = null;
     
-    try
+    mClient.connect(mManager.getHost(), mManager.getPort());
+    if (mClient.isConnected())
     {
-      mClient.connect(mManager.getHost(), mManager.getPort());
       result = mClient.get(mName, timeout, interval);
     }
-    catch (KasException e)
-    {
-      mClient.setResponse("Failed to connect to remote host at " + mManager.getHost() + ':' + mManager.getPort());
-    }
-    finally
-    {
-      try
-      {
-        mClient.disconnect();
-      }
-      catch (KasException e) {}
-    }
+    mClient.disconnect();
     
     mLogger.debug("MqRemoteQueue::get() - OUT");
     return result;

@@ -8,13 +8,13 @@ import com.kas.mq.impl.MqObjectMessage;
 
 public class MqRequestFactory
 {
-  static public IMqMessage<?> createAuthenticationRequest(String user, String pass)
+  static public IMqMessage<?> createLoginRequest(String user, String pass)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
     message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
     byte [] b64pass = Base64Utils.encode(pass.getBytes());
     message.setStringProperty(IMqConstants.cKasPropertyPassword, StringUtils.asHexString(b64pass));
-    message.setRequestType(ERequestType.cAuthenticate);
+    message.setRequestType(ERequestType.cLogin);
     return message;
   }
   
@@ -36,11 +36,10 @@ public class MqRequestFactory
     return message;
   }
   
-  static public IMqMessage<?> createQueryQueueRequest(String origin, String name, boolean prefix, boolean all)
+  static public IMqMessage<?> createQueryQueueRequest(String name, boolean prefix, boolean all)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
     message.setRequestType(ERequestType.cQueryQueue);
-    if (origin != null) message.setStringProperty(IMqConstants.cKasPropertyQryqQmgrName, origin);
     message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, prefix);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);

@@ -153,41 +153,41 @@ public class SessionHandler extends AKasObject implements Runnable
         mLogger.debug("SessionHandler::process() - KAS/MQ server is disabled and request will be rejected");
         reply = reject(request);
       }
-      else if (requestType == ERequestType.cAuthenticate)
+      else if (requestType == ERequestType.cLogin)
       {
-        reply = authenticate(request);
+        reply = propcessAuthenticate(request);
         if (reply.getResponse().getCode() != EMqCode.cOkay)
           cont = false;
       }
       else if (requestType == ERequestType.cDefineQueue)
       {
-        reply = defineQueue(request);
+        reply = processDefineQueue(request);
       }
       else if (requestType == ERequestType.cDeleteQueue)
       {
-        reply = deleteQueue(request);
+        reply = processDeleteQueue(request);
       }
       else if (requestType == ERequestType.cQueryQueue)
       {
-        reply = queryQueue(request);
+        reply = processQueryQueue(request);
       }
       else if (requestType == ERequestType.cSysState)
       {
-        stateChange(request);
+        reply = processStateChange(request);
       }
       else if (requestType == ERequestType.cGet)
       {
-        reply = get(request);
+        reply = processGet(request);
       }
       else if (requestType == ERequestType.cShutdown)
       {
-        reply = shutdown(request);
+        reply = processShutdown(request);
         if (reply.getResponse().getCode() != EMqCode.cOkay)
           cont = false;
       }
       else
       {
-        put(request);
+        processPut(request);
       }
       
       if (reply != null)
@@ -220,7 +220,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  private IMqMessage<?> authenticate(IMqMessage<?> request)
+  private IMqMessage<?> propcessAuthenticate(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::authenticate() - IN");
     
@@ -258,7 +258,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response message
    */
-  private IMqMessage<?> defineQueue(IMqMessage<?> request)
+  private IMqMessage<?> processDefineQueue(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::defineQueue() - IN");
     
@@ -283,7 +283,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  private IMqMessage<?> deleteQueue(IMqMessage<?> request)
+  private IMqMessage<?> processDeleteQueue(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::deleteQueue() - IN");
     
@@ -310,7 +310,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  private IMqMessage<?> queryQueue(IMqMessage<?> request)
+  private IMqMessage<?> processQueryQueue(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::queryQueue() - IN");
     
@@ -337,7 +337,7 @@ public class SessionHandler extends AKasObject implements Runnable
       if (!manager.isActive())
       {
         IMqMessage<?> sysRequest = MqRequestFactory.createSystemStateMessage(origin, true);
-        stateChange(sysRequest);
+        processStateChange(sysRequest);
       }
     }
     
@@ -346,16 +346,19 @@ public class SessionHandler extends AKasObject implements Runnable
   }
   
   /**
-   * Process query queue request.<br>
+   * Process system state change request.<br>
    * <br>
-   * Extract the queue name and the <b>prefix & alldata indicators</b> and pass them to the client responder.<br>
-   * If this method was actually called for a {@code Synch} request, before returning the response,
-   * the session handler tries to re-initialize the remote manager, in case it was not initialized properly.
+   * Change the corresponding remote queues manager state from active to inactive or vice versa.
+   * In addition, for {@code activate} request, the request will also hold the list of queues
+   * defined in the queues manager that originated the request, so we need to update the corresponding
+   * {@link RemoteQueuesManager} with its queue list.<br>
+   * In addition to that, the response message (for {@code activate} requests, will include the list
+   * of queues defined in the local queue manager.
    * 
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  private void stateChange(IMqMessage<?> request)
+  private IMqMessage<?> processStateChange(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::stateChange() - IN");
     
@@ -364,14 +367,27 @@ public class SessionHandler extends AKasObject implements Runnable
     
     mLogger.debug("SessionHandler::stateChange() - Manager at " + sender + " changed its state to " + (activated ? "active" : "inactive"));
     
+    IMqMessage<?> result = null;
+    
     IRepository repo = mController.getRepository();
     MqManager manager = repo.getRemoteManager(sender);
-    if (activated && !manager.isActive())       // if manager is inactive and we got notification for its activation --> activate it
-      manager.activate();
-    else if (!activated && manager.isActive())  // if manager is active and we got notification for its inactivation --> deactivate it
+    if (!activated && manager.isActive())
+    {
       manager.deactivate();
+    }
+    else if (activated && !manager.isActive())
+    {
+      manager.activate();
+      Properties remoteQueues = request.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+      ((RemoteQueuesManager)manager).setQueues(remoteQueues);
+      
+      Properties localQueues = repo.queryLocalQueues("", true, false);
+      result = MqMessageFactory.createResponse(request, EMqCode.cOkay, 0, "");
+      result.setSubset(localQueues);
+    }
     
     mLogger.debug("SessionHandler::stateChange() - OUT");
+    return result;
   }
   
   /**
@@ -382,7 +398,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} retrieved from the queue or a response object
    */
-  private IMqMessage<?> get(IMqMessage<?> request)
+  private IMqMessage<?> processGet(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::get() - IN");
     
@@ -415,7 +431,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * 
    * @param request The request message
    */
-  private void put(IMqMessage<?> request)
+  private void processPut(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::put() - IN");
     
@@ -434,7 +450,7 @@ public class SessionHandler extends AKasObject implements Runnable
    * @param request The request message
    * @return The {@link IMqMessage} response object
    */
-  private IMqMessage<?> shutdown(IMqMessage<?> request)
+  private IMqMessage<?> processShutdown(IMqMessage<?> request)
   {
     mLogger.debug("SessionHandler::shutdown() - IN");
     
