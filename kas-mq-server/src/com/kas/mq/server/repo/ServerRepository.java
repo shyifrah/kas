@@ -11,6 +11,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.MqQueue;
+import com.kas.mq.impl.internal.MqRemoteQueue;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.server.IRepository;
@@ -106,7 +107,7 @@ public class ServerRepository extends AKasObject implements IRepository
    * Create a {@link MqLocalQueue} object with the specified {@code name} and {@code threshold}.
    * 
    * @param name The name of the queue
-   * @param queue The queue threshold
+   * @param thoreshold The queue threshold
    * @return the {@link MqLocalQueue} object created
    * 
    * @see com.kas.mq.server.IRepository#defineLocalQueue(String, int)
@@ -120,7 +121,29 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Remove a {@link MqLocalQueue} object with the specified {@code name}.
+   * Add a {@link MqRemoteQueue} object to a specific {@link RemoteQueuesManager}
+   * 
+   * @param qmgr The name of the KAS/MQ server
+   * @param queue The name of queue
+   * @return the {@link MqRemoteQueue} object created
+   * 
+   * @see com.kas.mq.server.IRepository#defineRemoteQueue(String, String)
+   */
+  public MqRemoteQueue defineRemoteQueue(String qmgr, String queue)
+  {
+    mLogger.debug("ServerRepository::defineRemoteQueue() - IN, Qmgr=" + qmgr + ", Queue=" + queue);
+    
+    MqRemoteQueue mqrq = null;
+    RemoteQueuesManager rqmgr = getRemoteManager(qmgr);
+    if (rqmgr != null)
+      mqrq = rqmgr.addQueue(queue);
+      
+    mLogger.debug("ServerRepository::defineRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    return mqrq;
+  }
+  
+  /**
+   * Delete a {@link MqRemoteQueue} object from a specific {@link RemoteQueuesManager}.
    * 
    * @param name The name of the queue to be removed
    * @return the {@link MqLocalQueue} object removed
@@ -132,6 +155,68 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.debug("ServerRepository::deleteLocalQueue() - IN, Name=" + name);
     MqLocalQueue queue = mLocalManager.deleteQueue(name);
     mLogger.debug("ServerRepository::deleteLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    return queue;
+  }
+  
+  /**
+   * Delete a {@link MqRemoteQueue} object from a specific {@link RemoteQueuesManager}.
+   * 
+   * @param qmgr The name of the KAS/MQ server
+   * @param queue The name of queue
+   * @return the {@link MqRemoteQueue} object deleted
+   * 
+   * @see com.kas.mq.server.IRepository#deleteRemoteQueue(String, String)
+   */
+  public MqRemoteQueue deleteRemoteQueue(String qmgr, String queue)
+  {
+    mLogger.debug("ServerRepository::deleteRemoteQueue() - IN, Qmgr=" + qmgr + ", Queue=" + queue);
+    MqRemoteQueue mqrq = null;
+    RemoteQueuesManager rqmgr = getRemoteManager(qmgr);
+    if (rqmgr != null)
+      mqrq = rqmgr.removeQueue(queue);
+    
+    mLogger.debug("ServerRepository::deleteRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    return mqrq;
+  }
+  
+  /**
+   * Get a {@link MqLocalQueue} object with the specified {@code name}.
+   * 
+   * @param name The name of the destination to be retrieved
+   * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   * 
+   * @see IRepository#getLocalQueue(String)
+   */
+  public MqLocalQueue getLocalQueue(String name)
+  {
+    mLogger.debug("ServerRepository::getLocalQueue() - IN, Name=" + name);
+    MqLocalQueue queue = mLocalManager.getQueue(name);
+    mLogger.debug("ServerRepository::getLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    return queue;
+  }
+  
+  /**
+   * Get a {@link MqRemoteQueue} object with the specified {@code name}.
+   * 
+   * @param name The name of the remote queue to be retrieved
+   * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   * 
+   * @see IRepository#getRemoteQueue(String)
+   */
+  public MqRemoteQueue getRemoteQueue(String name)
+  {
+    mLogger.debug("ServerRepository::getRemoteQueue() - IN, Name=" + name);
+    MqRemoteQueue queue = null;
+    for (Map.Entry<String, RemoteQueuesManager> entry : mRemoteManagersMap.entrySet())
+    {
+      String qmgrName = entry.getKey();
+      RemoteQueuesManager qmgr = entry.getValue();
+      
+      mLogger.debug("ServerRepository::getRemoteQueue() - Check if remote KAS/MQ server " + qmgrName + " has a queue named " + name);
+      queue = qmgr.getQueue(name);
+      if (queue != null) break;
+    }
+    mLogger.debug("ServerRepository::getRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
@@ -206,22 +291,6 @@ public class ServerRepository extends AKasObject implements IRepository
     
     mLogger.debug("ServerRepository::queryQueues() - OUT, Returns=" + result.size() + " records");
     return result;
-  }
-  
-  /**
-   * Get a {@link MqLocalQueue} object with the specified {@code name}.
-   * 
-   * @param name The name of the destination to be retrieved
-   * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
-   * 
-   * @see IRepository#getLocalQueue(String)
-   */
-  public MqLocalQueue getLocalQueue(String name)
-  {
-    mLogger.debug("ServerRepository::getLocalQueue() - IN, Name=" + name);
-    MqLocalQueue queue = mLocalManager.getQueue(name);
-    mLogger.debug("ServerRepository::getLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
-    return queue;
   }
   
   /**

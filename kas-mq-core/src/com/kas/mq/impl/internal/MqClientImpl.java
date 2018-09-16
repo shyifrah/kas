@@ -9,6 +9,7 @@ import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -30,6 +31,11 @@ public class MqClientImpl extends AKasObject
    * A logger
    */
   private ILogger mLogger;
+  
+  /**
+   * The session ID
+   */
+  private UniqueId mSessionId;
   
   /**
    * Active user
@@ -367,6 +373,8 @@ public class MqClientImpl extends AKasObject
         {
           success = true;
           mUser = user;
+          String sid = reply.getStringProperty(IMqConstants.cKasPropertySessionId, UniqueId.cNullUniqueIdAsString);
+          mSessionId = UniqueId.fromString(sid);
         }
         logInfoAndSetResponse(reply.getResponse().getDesc());
       }
@@ -460,7 +468,7 @@ public class MqClientImpl extends AKasObject
       catch (IOException e)
       {
         StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred while trying to signal KAS/MQ server to shutdown. Exception: ")
+        sb.append("Exception occurred while trying to notify KAS/MQ server about its system state. Exception: ")
           .append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
       }
@@ -468,6 +476,48 @@ public class MqClientImpl extends AKasObject
     
     mLogger.debug("MqClientImpl::notifySysState() - OUT");
     return reply;
+  }
+  
+  /**
+   * Notify remote KAS/MQ server that the sender updated its repository
+   * 
+   * @param qmgr The name of the KAS/MQ server whose repository was updated
+   * @param queue The name of the queue that was subject to update
+   * @param added If {@code true}, the queue was added, else it was removed
+   * @return {@code true} if remote KAS/MQ server was successfully notified, otherwise {@code false}
+   */
+  public boolean notifyRepoUpdate(String qmgr, String queue, boolean added)
+  {
+    mLogger.debug("MqClientImpl::notifyRepoUpdate() - IN");
+    
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createRepositoryUpdateMessage(qmgr, queue, added);
+      mLogger.debug("MqClientImpl::notifyRepoUpdate() - sending notify request: " + StringUtils.asPrintableString(request));
+      try
+      {
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::notifyRepoUpdate() - received response: " + reply.toPrintableString(0));
+        if (reply.getResponse().getCode() == EMqCode.cOkay)
+          success = true;
+        logInfoAndSetResponse(reply.getResponse().getDesc());
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred while trying to signal KAS/MQ server that repository was updated. Exception: ")
+          .append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::notifyRepoUpdate() - OUT");
+    return success;
   }
   
   /**

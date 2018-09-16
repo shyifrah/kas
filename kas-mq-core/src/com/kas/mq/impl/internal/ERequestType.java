@@ -48,6 +48,11 @@ public enum ERequestType implements IObject
    * Notify system state changed
    */
   cSysState,
+  
+  /**
+   * Notify repository changed
+   */
+  cRepoUpdate,
   ;
   
   static final private ERequestType [] cValues = ERequestType.values();

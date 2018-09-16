@@ -5,6 +5,8 @@ import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.internal.MqQueue;
+import com.kas.mq.impl.internal.MqRemoteQueue;
+import com.kas.mq.server.repo.RemoteQueuesManager;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.impl.internal.MqManager;
 
@@ -25,12 +27,50 @@ public interface IRepository extends IInitializable, IObject
   public abstract MqLocalQueue defineLocalQueue(String name, int threshold);
   
   /**
+   * Add a {@link MqRemoteQueue} object to a specific {@link RemoteQueuesManager}
+   * 
+   * @param qmgr The name of the KAS/MQ server
+   * @param queue The name of queue
+   * @return the {@link MqRemoteQueue} object created
+   * 
+   * @see com.kas.mq.server.IRepository#defineRemoteQueue(String, String)
+   */
+  public abstract MqRemoteQueue defineRemoteQueue(String qmgr, String queue);
+  
+  /**
    * Delete a {@link MqLocalQueue} object with the specified {@code name}.
    * 
    * @param name The name of the queue to be deleted
    * @return the {@link MqLocalQueue} object deleted
    */
   public abstract MqLocalQueue deleteLocalQueue(String name);
+  
+  /**
+   * Delete a {@link MqRemoteQueue} object from a specific {@link RemoteQueuesManager}.
+   * 
+   * @param qmgr The name of the KAS/MQ server
+   * @param queue The name of queue
+   * @return the {@link MqRemoteQueue} object deleted
+   * 
+   * @see com.kas.mq.server.IRepository#deleteRemoteQueue(String, String)
+   */
+  public abstract MqRemoteQueue deleteRemoteQueue(String qmgr, String queue);
+  
+  /**
+   * Get a {@link MqLocalQueue} object with the specified {@code name}.
+   * 
+   * @param name The name of the local queue to be retrieved
+   * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   */
+  public abstract MqLocalQueue getLocalQueue(String name);
+  
+  /**
+   * Get a {@link MqRemoteQueue} object with the specified {@code name}.
+   * 
+   * @param name The name of the remote queue to be retrieved
+   * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   */
+  public abstract MqRemoteQueue getRemoteQueue(String name);
   
   /**
    * Get information regarding local queues whose name begins with the specified prefix.
@@ -67,22 +107,6 @@ public interface IRepository extends IInitializable, IObject
    * @return A properties object that holds the queried data
    */
   public abstract Properties queryQueues(String name, boolean prefix, boolean all);
-  
-  /**
-   * Get a {@link MqLocalQueue} object with the specified {@code name}.
-   * 
-   * @param name The name of the local queue to be retrieved
-   * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
-   */
-  public abstract MqLocalQueue getLocalQueue(String name);
-  
-  /**
-   * Is a queue exists
-   * 
-   * @param name The name of the queue to be tested
-   * @return {@code true} if a local queue named {@code name} exists, {@code false} otherwise 
-   */
-  public abstract boolean isLocalQueueExist(String name);
   
   /**
    * Get {@link MqManager} by its name 

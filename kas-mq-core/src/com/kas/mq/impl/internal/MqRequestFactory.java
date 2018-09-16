@@ -18,6 +18,15 @@ public class MqRequestFactory
     return message;
   }
   
+  static public IMqMessage<?> createGetRequest(String queue, long timeout, long interval)
+  {
+    MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
+    message.setRequestType(ERequestType.cGet);
+    message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
+    message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
+    return message;
+  }
+  
   static public IMqMessage<?> createDefineQueueRequest(String queue, int threshold)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
@@ -55,13 +64,13 @@ public class MqRequestFactory
     return message;
   }
   
-  static public IMqMessage<?> createGetRequest(String queue, long timeout, long interval)
+  static public IMqMessage<?> createRepositoryUpdateMessage(String qmgr, String queue, boolean added)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
-    message.setRequestType(ERequestType.cGet);
-    message.setStringProperty(IMqConstants.cKasPropertyGetQueueName, queue);
-    message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
-    message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
+    message.setRequestType(ERequestType.cRepoUpdate);
+    message.setStringProperty(IMqConstants.cKasPropertyRepoQmgrName, qmgr);
+    message.setStringProperty(IMqConstants.cKasPropertyRepoQueueName, queue);
+    message.setBoolProperty(IMqConstants.cKasPropertyRepoOperation, added);
     return message;
   }
   

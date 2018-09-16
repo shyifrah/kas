@@ -48,6 +48,7 @@ public interface IMqConstants
   
   static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
   static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
+  static public final String cKasPropertySessionId      = cKasPropertyPrefix + "sessionid";
   
   static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";
   static public final String cKasPropertyDefqThreshold = cKasPropertyPrefix + "defq.threshold";
@@ -63,8 +64,8 @@ public interface IMqConstants
   
   static public final String cKasPropertyGetTimeout   = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval  = cKasPropertyPrefix + "get.interval";
-  static public final String cKasPropertyGetUserName  = cKasPropertyPrefix + "get.username";
   static public final String cKasPropertyGetTimeStamp = cKasPropertyPrefix + "get.timestamp";
+  static public final String cKasPropertyGetUserName  = cKasPropertyPrefix + "get.username";
   static public final String cKasPropertyGetQueueName = cKasPropertyPrefix + "get.queue";
   
   static public final String cKasPropertyPutUserName  = cKasPropertyPrefix + "put.username";
@@ -73,4 +74,8 @@ public interface IMqConstants
 
   static public final String cKasPropertySyssQmgrName = cKasPropertyPrefix + "sysstate.qmgr";
   static public final String cKasPropertySyssActive   = cKasPropertyPrefix + "sysstate.active";
+  
+  static public final String cKasPropertyRepoQmgrName  = cKasPropertyPrefix + "repo.qmgr";
+  static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";
+  static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
 }
