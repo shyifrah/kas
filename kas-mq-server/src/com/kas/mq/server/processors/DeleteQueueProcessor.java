@@ -64,6 +64,7 @@ public class DeleteQueueProcessor extends AProcessor
       else if (mqlq.size() == 0)
       {
         mRepository.deleteLocalQueue(mQueue);
+        mCode = EMqCode.cOkay;
         mDesc = "Queue with name \"" + mQueue + "\" was successfully deleted";
         mLogger.debug("DeleteQueueProcessor::process() - " + mDesc);
       }
@@ -71,6 +72,7 @@ public class DeleteQueueProcessor extends AProcessor
       {
         int size = mqlq.size();
         mRepository.deleteLocalQueue(mQueue);
+        mCode = EMqCode.cOkay;
         mDesc = "Queue with name \"" + mQueue + "\" was successfully deleted (" + size + " messages discarded)";
         mLogger.debug("DeleteQueueProcessor::process() - " + mDesc);
       }

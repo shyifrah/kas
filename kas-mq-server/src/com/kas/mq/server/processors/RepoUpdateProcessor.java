@@ -62,7 +62,7 @@ public class RepoUpdateProcessor extends AProcessor
       if (mqrq != null)
       {
         mCode = EMqCode.cOkay;
-        mDesc = "Queue " + mQueue + " was successfully " + (mAdded ? " defined in " : " deleted from ") + " remote KAS/MQ manager " + mManager;
+        mDesc = "Queue " + mQueue + " was successfully " + (mAdded ? "defined in" : " deleted from ") + " remote KAS/MQ manager " + mManager;
       }
       else
       {
