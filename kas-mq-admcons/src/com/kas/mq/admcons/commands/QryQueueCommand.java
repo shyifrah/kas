@@ -86,18 +86,21 @@ public class QryQueueCommand extends ACliCommand
   }
   
   /**
-   * Print the output of the query
+   * Print the output of the query followed by the client's response
    * 
    * @param props The properties object containing the response from the KAS/MQ server
    * @param all When {@code true}, query included all data about queues, {@code false} otherwise
    */
   private void output(Properties props, boolean all)
   {
-    for (Map.Entry<Object, Object> entry : props.entrySet())
+    if (props != null)
     {
-      String val = (String)entry.getValue();
-      writeln(val);
-      writeln(" ");
+      for (Map.Entry<Object, Object> entry : props.entrySet())
+      {
+        String val = (String)entry.getValue();
+        writeln(val);
+        writeln(" ");
+      }
     }
     
     writeln(mClient.getResponse());
