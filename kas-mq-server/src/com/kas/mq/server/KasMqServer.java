@@ -138,6 +138,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     
     mNotifier.notifyServerDeactivated();
     
+    mController.term();
+    
     boolean term = mRepository.term();
     if (!term)
     {

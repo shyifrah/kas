@@ -96,6 +96,7 @@ public class SessionController extends AKasObject implements IController
   {
     mLogger.debug("SessionController::onHandlerStart() - IN");
     UniqueId id = handler.getSessionId();
+    mLogger.trace("Started handler for session ID: " + id);
     mHandlers.put(id, handler);
     mLogger.debug("SessionController::onHandlerStart() - OUT");
   }
@@ -110,6 +111,7 @@ public class SessionController extends AKasObject implements IController
   {
     mLogger.debug("SessionController::onHandlerEnd() - IN");
     UniqueId id = handler.getSessionId();
+    mLogger.trace("Ending handler for session ID: " + id);
     mHandlers.remove(id);
     mLogger.debug("SessionController::onHandlerEnd() - OUT");
   }
@@ -173,6 +175,27 @@ public class SessionController extends AKasObject implements IController
     mServer.stop();
     
     mLogger.debug("SessionController::shutdown() - OUT");
+  }
+
+  /**
+   * Terminate forcefully all still-running handlers
+   */
+  public void term()
+  {
+    mLogger.debug("SessionController::term() - IN");
+    
+    mConsole.info("Checking if there are hanged handlers and terminate them forcefully...");
+    
+    for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
+    {
+      UniqueId uid = entry.getKey();
+      SessionHandler handler = entry.getValue();
+      
+      ThreadPool.removeTask(handler);
+      mLogger.trace("Handler " + uid.toString() + " was forcefully terminated");
+    }
+        
+    mLogger.debug("SessionController::term() - OUT");
   }
 
   /**

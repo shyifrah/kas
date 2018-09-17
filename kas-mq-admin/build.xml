@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-mq-admcons" default="Main" basedir=".">
+<project name="kas-mq-admin" default="Main" basedir=".">
   
   <property name="src"  location="src"/>
   <property name="res"  location="res"/>
@@ -78,7 +78,7 @@
   <target name="Jar" depends="Compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar"
        basedir="${bin}"
-       includes="com/kas/mq/admcons/**/*.class"
+       includes="com/kas/mq/admin/**/*.class"
        excludes="**/Test*.class">
       <manifest>
         <attribute name="Kas-Version" value="${build.major}-${build.minor}-${build.mod}-${build.number}"/>
