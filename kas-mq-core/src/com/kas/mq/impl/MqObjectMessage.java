@@ -102,7 +102,7 @@ public final class MqObjectMessage extends AMqMessage<Object>
    */
   public PacketHeader createHeader()
   {
-    return new PacketHeader(EClassId.cClassMqTextMessage);
+    return new PacketHeader(EClassId.cClassMqObjectMessage);
   }
   
   /**

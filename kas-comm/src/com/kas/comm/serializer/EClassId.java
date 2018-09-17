@@ -26,7 +26,8 @@ public enum EClassId implements IObject
   cPlaceHolder10,
   
   /**
-   * {@link MqTextMessage}, {@link MqObjectMessage}
+   * {@link MqTextMessage},
+   * {@link MqObjectMessage}
    */
   cClassMqTextMessage,
   cClassMqObjectMessage,
