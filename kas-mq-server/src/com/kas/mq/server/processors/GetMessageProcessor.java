@@ -1,10 +1,10 @@
 package com.kas.mq.server.processors;
 
-import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.internal.SessionHandler;
 
@@ -89,9 +89,9 @@ public class GetMessageProcessor extends AProcessor
         }
         else
         {
-          mDesc = "Picked up message from " + mQueue + ". Message: " + StringUtils.asPrintableString(result);
           mLogger.debug("GetMessageProcessor::process() - " + mDesc);
           mCode = EMqCode.cOkay;
+          result.setResponse(new MqResponse(mCode, mValue, mDesc));
         }
         mqlq.setLastAccess(mHandler.getActiveUserName(), "get");
       }
