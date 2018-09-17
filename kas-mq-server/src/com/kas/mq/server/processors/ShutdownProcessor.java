@@ -49,7 +49,6 @@ public class ShutdownProcessor extends AProcessor
       mDesc = "Cannot shutdown KAS/MQ server with non-admin user";
       if ("admin".equalsIgnoreCase(mHandler.getActiveUserName()))
       {
-        mController.shutdown();
         mCode = EMqCode.cOkay;
         mDesc = "Shutdown request was successfully posted";
         mLogger.debug("ShutdownProcessor::process() - " + mDesc);
@@ -73,7 +72,10 @@ public class ShutdownProcessor extends AProcessor
   public boolean postprocess(IMqMessage<?> reply)
   {
     if (mCode == EMqCode.cOkay)
+    {
+      mController.shutdown();
       return false;
+    }
     return true;
   }
 }
