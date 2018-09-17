@@ -289,7 +289,6 @@ public class MqClientImpl extends AKasObject
           reply.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
           result = reply;
           setResponse("Successfully got a message from queue " + queue + ", Message: " + StringUtils.asPrintableString(reply));
-          
         }
         else
         {
