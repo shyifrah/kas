@@ -93,9 +93,8 @@ public class GetMessageProcessor extends AProcessor
           mLogger.debug("GetMessageProcessor::process() - " + mDesc);
           mCode = EMqCode.cOkay;
         }
+        mqlq.setLastAccess(mHandler.getActiveUserName(), "get");
       }
-      
-      mqlq.setLastAccess(mHandler.getActiveUserName(), "get");
     }
     
     mLogger.debug("GetMessageProcessor::process() - OUT");

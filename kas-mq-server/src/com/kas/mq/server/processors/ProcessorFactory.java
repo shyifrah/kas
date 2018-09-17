@@ -53,9 +53,9 @@ public class ProcessorFactory
       case cGet:
         processor = new GetMessageProcessor(request, controller, handler);
         break;
-//      case cUnknown:
-//        processor = new PutMessageProcessor();
+      case cUnknown:
       default:
+        processor = new PutMessageProcessor(request, controller, handler);
         break;
     }
     

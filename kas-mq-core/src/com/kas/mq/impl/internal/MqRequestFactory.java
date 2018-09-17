@@ -22,6 +22,7 @@ public class MqRequestFactory
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
     message.setRequestType(ERequestType.cGet);
+    message.setStringProperty(IMqConstants.cKasPropertyGetQueueName, queue);
     message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
     message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
     return message;

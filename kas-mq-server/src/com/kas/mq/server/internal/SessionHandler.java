@@ -91,11 +91,14 @@ public class SessionHandler extends AKasObject implements Runnable
       try
       {
         IPacket packet = mMessenger.receive();
+        mLogger.debug("SessionHandler::run() - Received packet: " + StringUtils.asPrintableString(packet));
         if (packet != null)
         {
           IMqMessage<?> request = (IMqMessage<?>)packet;
           ERequestType requestType = request.getRequestType();
           mLogger.debug("SessionHandler::run() - Received request of type: " + StringUtils.asPrintableString(requestType));
+          
+          boolean success = false;
           
           IProcessor processor = ProcessorFactory.newProcessor(mController, this, request);
           IMqMessage<?> reply = processor.process();
@@ -106,7 +109,7 @@ public class SessionHandler extends AKasObject implements Runnable
             mMessenger.send(reply);
           }
           
-          boolean success = processor.postprocess(reply);
+          success = processor.postprocess(reply);
           setRunningState(success);
         }
       }
@@ -122,6 +125,11 @@ public class SessionHandler extends AKasObject implements Runnable
       catch (IOException e)
       {
         mLogger.error("An I/O error occurred while trying to receive packet from remote client. Exception: ", e);
+        stop();
+      }
+      catch (Throwable e)
+      {
+        mLogger.error("An unknown exception caught while processing client requests. Exception: ", e);
         stop();
       }
     }
