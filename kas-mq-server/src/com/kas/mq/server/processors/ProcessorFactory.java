@@ -48,14 +48,14 @@ public class ProcessorFactory
         processor = new SysStateProcessor(request, controller);
         break;
       case cShutdown:
-        processor = new ShutdownProcessor(request, controller, handler);
+        processor = new ShutdownProcessor(request, controller);
         break;
       case cGet:
-        processor = new GetMessageProcessor(request, controller, handler);
+        processor = new GetMessageProcessor(request, controller);
         break;
       case cUnknown:
       default:
-        processor = new PutMessageProcessor(request, controller, handler);
+        processor = new PutMessageProcessor(request, controller);
         break;
     }
     

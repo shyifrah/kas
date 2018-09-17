@@ -34,7 +34,23 @@ public interface IController extends IObject
   public abstract Map<UniqueId, SessionHandler> getHandlers();
   
   /**
-   * Shutdown KAS/MQ server
+   * Shutdown all handlers and mark the main server's thread it should terminate
    */
   public abstract void shutdown();
+  
+  /**
+   * A callback that is invoked under the handler's thread right before
+   * the handler starts its run() method.
+   * 
+   * @param handler The handler that invoked the callback
+   */
+  public abstract void onHandlerStart(SessionHandler handler);
+  
+  /**
+   * A callback that is invoked under the handler's thread right before
+   * the handler ends its run() method.
+   * 
+   * @param handler The handler that invoked the callback
+   */
+  public abstract void onHandlerEnd(SessionHandler handler);
 }

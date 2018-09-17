@@ -3,10 +3,9 @@ package com.kas.mq.server.processors;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
-import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * Processor for getting a message from a queue
@@ -15,11 +14,6 @@ import com.kas.mq.server.internal.SessionHandler;
  */
 public class GetMessageProcessor extends AProcessor
 {
-  /**
-   * The session's handler
-   */
-  private SessionHandler mHandler;
-  
   /**
    * Extracted input from the request:
    * Timeout for get operation, polling interval length and queue name from which to get the message 
@@ -33,12 +27,10 @@ public class GetMessageProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
-   * @param handler The session handler
    */
-  GetMessageProcessor(IMqMessage<?> request, IController controller, SessionHandler handler)
+  GetMessageProcessor(IMqMessage<?> request, IController controller)
   {
     super(request, controller);
-    mHandler = handler;
   }
   
   /**
@@ -64,14 +56,14 @@ public class GetMessageProcessor extends AProcessor
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyGetQueueName, null);
       mLogger.debug("GetMessageProcessor::process() - Queue=" + mQueue + "; Timeout=" + mTimeout+ "; Interval=" + mInterval);
       
-      MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);
+      MqQueue queue = mRepository.getQueue(mQueue);
       if ((mQueue == null) || (mQueue.length() == 0))
       {
         mDesc = "Invalid queue name: null or empty string";
         mLogger.debug("GetMessageProcessor::process() - " + mDesc);
         result = respond();
       }
-      else if (mqlq == null)
+      else if (queue == null)
       {
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("GetMessageProcessor::process() - " + mDesc);
@@ -79,7 +71,7 @@ public class GetMessageProcessor extends AProcessor
       }
       else
       {
-        result = mqlq.get(mTimeout, mInterval);
+        result = queue.get(mTimeout, mInterval);
         if (result == null)
         {
           mDesc = "No message found in queue " + mQueue;
@@ -89,11 +81,11 @@ public class GetMessageProcessor extends AProcessor
         }
         else
         {
+          mDesc = "Successfully retrieved message from queue " + mQueue;
           mLogger.debug("GetMessageProcessor::process() - " + mDesc);
           mCode = EMqCode.cOkay;
           result.setResponse(new MqResponse(mCode, mValue, mDesc));
         }
-        mqlq.setLastAccess(mHandler.getActiveUserName(), "get");
       }
     }
     

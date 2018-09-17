@@ -320,6 +320,9 @@ public class MqLocalQueue extends MqQueue
     {
       int prio = message.getPriority();
       success = mQueueArray[prio].offer(message);
+      
+      String user = message.getStringProperty(IMqConstants.cKasPropertyPutUserName, IMqConstants.cSystemUserName);
+      setLastAccess(user, "put");
     }
     
     mLogger.debug("MqLocalQueue::put() - OUT, Returns=" + success);

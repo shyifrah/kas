@@ -73,6 +73,16 @@ public interface IRepository extends IInitializable, IObject
   public abstract MqRemoteQueue getRemoteQueue(String name);
   
   /**
+   * Get a {@link MqQueue} object with the specified {@code name}.<br>
+   * <br>
+   * We search for a local queue with the specified name, and if we don't find, we look for a remote one.
+   * 
+   * @param name The name of the queue to be retrieved
+   * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   */
+  public abstract MqQueue getQueue(String name);
+  
+  /**
    * Get information regarding local queues whose name begins with the specified prefix.
    * 
    * @param name The queue name/prefix.

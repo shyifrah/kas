@@ -1,9 +1,9 @@
-package com.kas.mq.admcons.commands;
+package com.kas.mq.admin.commands;
 
 import com.kas.infra.base.IObject;
 
 /**
- * A general purpose command processed by the {@link com.kas.mq.admcons.KasMqAdmin KasMqAdmin}
+ * A general purpose command processed by the {@link com.kas.mq.admin.KasMqAdmin KasMqAdmin}
  * 
  * @author Pippo
  */
@@ -17,7 +17,7 @@ public interface ICliCommand extends IObject
   /**
    * Running the command.
    * 
-   * @return {@code true} if {@link com.kas.mq.admcons.KasMqAdmin KasMqAdmin} should stop further processing following
+   * @return {@code true} if {@link com.kas.mq.admin.KasMqAdmin KasMqAdmin} should stop further processing following
    * the processing of this command, {@code false} otherwise
    */
   public abstract boolean run();

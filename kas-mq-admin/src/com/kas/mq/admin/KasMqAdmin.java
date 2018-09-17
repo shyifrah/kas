@@ -1,4 +1,4 @@
-package com.kas.mq.admcons;
+package com.kas.mq.admin;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -9,8 +9,8 @@ import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
-import com.kas.mq.admcons.commands.CliCommandFactory;
-import com.kas.mq.admcons.commands.ICliCommand;
+import com.kas.mq.admin.commands.CliCommandFactory;
+import com.kas.mq.admin.commands.ICliCommand;
 import com.kas.mq.impl.internal.MqClientImpl;
 
 /**

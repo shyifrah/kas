@@ -80,13 +80,38 @@ public class SessionController extends AKasObject implements IController
     mLogger.trace("About to spawn a new SessionHandler for socket: " + socket.getRemoteSocketAddress().toString());
     
     SessionHandler handler = new SessionHandler(socket, this);
-    UniqueId id = handler.getSessionId();
-    mHandlers.put(id, handler);
     
     String remoteAddress = new NetworkAddress(socket).toString();
     mConsole.info("New connection accepted from " + remoteAddress);
-    mLogger.trace("Client at " + remoteAddress + " (ID=" + id + ") was sent for execution");
     ThreadPool.execute(handler);
+  }
+  
+  /**
+   * A callback that is invoked under the handler's thread right before
+   * the handler starts its run() method.
+   * 
+   * @param handler The handler that invoked the callback
+   */
+  public void onHandlerStart(SessionHandler handler)
+  {
+    mLogger.debug("SessionController::onHandlerStart() - IN");
+    UniqueId id = handler.getSessionId();
+    mHandlers.put(id, handler);
+    mLogger.debug("SessionController::onHandlerStart() - OUT");
+  }
+  
+  /**
+   * A callback that is invoked under the handler's thread right before
+   * the handler ends its run() method.
+   * 
+   * @param handler The handler that invoked the callback
+   */
+  public void onHandlerEnd(SessionHandler handler)
+  {
+    mLogger.debug("SessionController::onHandlerEnd() - IN");
+    UniqueId id = handler.getSessionId();
+    mHandlers.remove(id);
+    mLogger.debug("SessionController::onHandlerEnd() - OUT");
   }
   
   /**
@@ -126,7 +151,7 @@ public class SessionController extends AKasObject implements IController
   }
   
   /**
-   * Shutdown KAS/MQ server
+   * Shutdown all handlers and mark the main server's thread it should terminate
    */
   public void shutdown()
   {

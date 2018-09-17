@@ -2,8 +2,8 @@ package com.kas.mq.server.processors;
 
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
+import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.server.IController;
-import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * Processor for shutting down the KAS/MQ server
@@ -13,21 +13,15 @@ import com.kas.mq.server.internal.SessionHandler;
 public class ShutdownProcessor extends AProcessor
 {
   /**
-   * The session handler
-   */
-  private SessionHandler mHandler;
-  
-  /**
    * Construct a {@link ShutdownProcessor}
    * 
    * @param request The request message
    * @param controller The session controller
    * @param handler The session handler
    */
-  ShutdownProcessor(IMqMessage<?> request, IController controller, SessionHandler handler)
+  ShutdownProcessor(IMqMessage<?> request, IController controller)
   {
     super(request, controller);
-    mHandler = handler;
   }
   
   /**
@@ -46,8 +40,9 @@ public class ShutdownProcessor extends AProcessor
     }
     else
     {
+      String user = mRequest.getStringProperty(IMqConstants.cKasPropertyShutUserName, IMqConstants.cSystemUserName);
       mDesc = "Cannot shutdown KAS/MQ server with non-admin user";
-      if ("admin".equalsIgnoreCase(mHandler.getActiveUserName()))
+      if ("admin".equalsIgnoreCase(user))
       {
         mCode = EMqCode.cOkay;
         mDesc = "Shutdown request was successfully posted";

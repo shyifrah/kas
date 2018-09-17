@@ -75,10 +75,11 @@ public class MqRequestFactory
     return message;
   }
   
-  static public IMqMessage<?> createShutdownRequest()
+  static public IMqMessage<?> createShutdownRequest(String user)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
     message.setRequestType(ERequestType.cShutdown);
+    message.setStringProperty(IMqConstants.cKasPropertyShutUserName, user);
     return message;
   }
 }

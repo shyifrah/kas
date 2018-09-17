@@ -84,6 +84,7 @@ public class SessionHandler extends AKasObject implements Runnable
   public void run()
   {
     mLogger.debug("SessionHandler::run() - IN");
+    mController.onHandlerStart(this);
     
     while (isRunning())
     {
@@ -134,6 +135,7 @@ public class SessionHandler extends AKasObject implements Runnable
       }
     }
     
+    mController.onHandlerEnd(this);
     mLogger.debug("SessionHandler::run() - OUT");
   }
   

@@ -221,6 +221,27 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
+   * Get a {@link MqQueue} object with the specified {@code name}.<br>
+   * <br>
+   * We search for a local queue with the specified name, and if we don't find, we look for a remote one.
+   * 
+   * @param name The name of the queue to be retrieved
+   * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   */
+  public MqQueue getQueue(String name)
+  {
+    mLogger.debug("ServerRepository::getQueue() - IN, Name=" + name);
+    MqQueue queue = getLocalQueue(name);
+    if (queue == null)
+    {
+      queue = getRemoteQueue(name);
+    }
+    
+    mLogger.debug("ServerRepository::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    return queue;
+  }
+  
+  /**
    * Get information regarding local queues whose name begins with the specified prefix.
    * 
    * @param name The queue name/prefix.

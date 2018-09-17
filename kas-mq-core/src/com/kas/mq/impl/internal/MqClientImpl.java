@@ -38,7 +38,8 @@ public class MqClientImpl extends AKasObject
   private UniqueId mSessionId;
   
   /**
-   * Active user
+   * Active user.<br>
+   * This data member is set after each successful {@link #login(String, String) login}.
    */
   private String mUser = IMqConstants.cSystemUserName;
   
@@ -132,6 +133,52 @@ public class MqClientImpl extends AKasObject
   public boolean isConnected()
   {
     return mMessenger == null ? false : mMessenger.isConnected();
+  }
+  
+  /**
+   * login to KAS/MQ server.
+   * 
+   * @param user The user's name
+   * @param pwd The user's password
+   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration}, {@code false} otherwise
+   */
+  public boolean login(String user, String pwd)
+  {
+    mLogger.debug("MqClientImpl::login() - IN");
+    
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createLoginRequest(user, pwd);
+      mLogger.debug("MqClientImpl::login() - sending login request: " + request.toPrintableString(0));
+      try
+      {
+        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        mLogger.debug("MqClientImpl::login() - received response: " + reply.toPrintableString(0));
+        if (reply.getResponse().getCode() == EMqCode.cOkay)
+        {
+          success = true;
+          mUser = user;
+          String sid = reply.getStringProperty(IMqConstants.cKasPropertySessionId, UniqueId.cNullUniqueIdAsString);
+          mSessionId = UniqueId.fromString(sid);
+        }
+        logInfoAndSetResponse(reply.getResponse().getDesc());
+      }
+      catch (IOException e)
+      {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exception occurred during login of user [")
+          .append(user).append("]. Exception: ").append(StringUtils.format(e));
+        logErrorAndSetResponse(sb.toString());
+      }
+    }
+    
+    mLogger.debug("MqClientImpl::login() - OUT, Returns=" + success);
+    return success;
   }
   
   /**
@@ -345,52 +392,6 @@ public class MqClientImpl extends AKasObject
   }
   
   /**
-   * login to KAS/MQ server.
-   * 
-   * @param user The user's name
-   * @param pwd The user's password
-   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration}, {@code false} otherwise
-   */
-  public boolean login(String user, String pwd)
-  {
-    mLogger.debug("MqClientImpl::login() - IN");
-    
-    boolean success = false;
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
-    else
-    {
-      IMqMessage<?> request = MqRequestFactory.createLoginRequest(user, pwd);
-      mLogger.debug("MqClientImpl::login() - sending login request: " + request.toPrintableString(0));
-      try
-      {
-        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqClientImpl::login() - received response: " + reply.toPrintableString(0));
-        if (reply.getResponse().getCode() == EMqCode.cOkay)
-        {
-          success = true;
-          mUser = user;
-          String sid = reply.getStringProperty(IMqConstants.cKasPropertySessionId, UniqueId.cNullUniqueIdAsString);
-          mSessionId = UniqueId.fromString(sid);
-        }
-        logInfoAndSetResponse(reply.getResponse().getDesc());
-      }
-      catch (IOException e)
-      {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exception occurred during login of user [")
-          .append(user).append("]. Exception: ").append(StringUtils.format(e));
-        logErrorAndSetResponse(sb.toString());
-      }
-    }
-    
-    mLogger.debug("MqClientImpl::login() - OUT, Returns=" + success);
-    return success;
-  }
-  
-  /**
    * Mark the KAS/MQ server it should shutdown
    * 
    * @return {@code true} if the server accepted the request, {@code false} otherwise
@@ -406,7 +407,7 @@ public class MqClientImpl extends AKasObject
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createShutdownRequest();
+      IMqMessage<?> request = MqRequestFactory.createShutdownRequest(mUser);
       mLogger.debug("MqClientImpl::shutdown() - sending shutdown request: " + request.toPrintableString(0));
       try
       {

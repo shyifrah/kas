@@ -1,10 +1,11 @@
 package com.kas.mq.server.processors;
 
 import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.server.IController;
-import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * Processor for putting a message into a queue
@@ -13,11 +14,6 @@ import com.kas.mq.server.internal.SessionHandler;
  */
 public class PutMessageProcessor extends AProcessor
 {
-  /**
-   * The session's handler
-   */
-  private SessionHandler mHandler;
-  
   /**
    * Extracted input from the request:
    * Queue name to which message should be put 
@@ -31,10 +27,9 @@ public class PutMessageProcessor extends AProcessor
    * @param controller The session controller
    * @param handler The session handler
    */
-  PutMessageProcessor(IMqMessage<?> request, IController controller, SessionHandler handler)
+  PutMessageProcessor(IMqMessage<?> request, IController controller)
   {
     super(request, controller);
-    mHandler = handler;
   }
   
   /**
@@ -55,25 +50,37 @@ public class PutMessageProcessor extends AProcessor
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyPutQueueName, null);
       mLogger.debug("PutMessageProcessor::process() - Queue=" + mQueue);
       
-      MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);
+      
+      MqQueue queue = mRepository.getQueue(mQueue);
       MqLocalQueue dead = mRepository.getDeadQueue();
       if ((mQueue == null) || (mQueue.length() == 0))
       {
-        mLogger.debug("PutMessageProcessor::process() - Invalid queue name: null or empty string");
+        mDesc = "Invalid queue name: null or empty string";
+        mLogger.debug("PutMessageProcessor::process() - " + mDesc);
         dead.put(mRequest);
       }
-      else if (mqlq == null)
+      else if (queue == null)
       {
-        mLogger.debug("PutMessageProcessor::process() - Queue with name \"" + mQueue + "\" doesn't exist");
+        mDesc = "Queue with name \"" + mQueue + "\" doesn't exist, message is sent to dead queue";
+        mLogger.debug("PutMessageProcessor::process() - " + mDesc);
         dead.put(mRequest);
       }
       else
       {
-        boolean success = mqlq.put(mRequest);
-        if (!success) dead.put(mRequest);
+        boolean success = queue.put(mRequest);
         
-        mLogger.debug("PutMessageProcessor::process() - Message was put to queue " + mQueue);
-        mqlq.setLastAccess(mHandler.getActiveUserName(), "put");
+        if (!success)
+        {
+          mDesc = "Failed to put message to queue " + mQueue + ", message is sent to dead queue";
+          mLogger.debug("PutMessageProcessor::process() - " + mDesc);
+          dead.put(mRequest);
+        }
+        else
+        {
+          mDesc = "Message was put to queue " + mQueue;
+          mCode = EMqCode.cOkay;
+          mLogger.debug("PutMessageProcessor::process() - " + mDesc);
+        }
       }
     }
     
