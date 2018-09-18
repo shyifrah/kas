@@ -178,6 +178,16 @@ public class TimeStamp extends AKasObject
   }
   
   /**
+   * Get the timestamp as long value
+   * 
+   * @return the timestamp as long value
+   */
+  public long getAsLong()
+  {
+    return mTimeInMilliSeconds;
+  }
+  
+  /**
    * Return the difference, in milliseconds, between this TimeStamp object and other one
    * 
    * @param other A second timestamp represented by milliseconds

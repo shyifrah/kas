@@ -11,6 +11,7 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.typedef.MessageQueue;
 
@@ -22,8 +23,8 @@ import com.kas.mq.typedef.MessageQueue;
 public class MqLocalQueue extends MqQueue
 {
   /**
-   * Maximum number of messages this queue can hold before
-   * starting to fail {@link #put(IMqMessage) put} operations.
+   * Maximum number of messages this queue can hold before put operations
+   * will start to fail.
    */
   private int mThreshold;
   
@@ -129,6 +130,17 @@ public class MqLocalQueue extends MqQueue
         fis = new FileInputStream(mBackupFile);
         istream = new ObjectInputStream(fis);
         
+        // read queue details
+        try
+        {
+          mThreshold = istream.readInt();
+          mLastAccessUser = (String)istream.readObject();
+          mLastAccessTimeStamp = new TimeStamp(istream.readLong());
+          mLastAccessMethod = (String)istream.readObject();
+          mLogger.debug("MqLocalQueue::restore() - Threshold=" + mThreshold + "; LastAccess=(" + getLastAccess() + ")");
+        }
+        catch (Throwable e) {}
+        
         while ((!eof) && (!err))
         {
           try
@@ -136,10 +148,10 @@ public class MqLocalQueue extends MqQueue
             PacketHeader header = new PacketHeader(istream);
             IPacket packet = header.read(istream);
             IMqMessage<?> message = (IMqMessage<?>)packet;
-            mLogger.diag("MqLocalQueue::restore() - Header="  + header.toPrintableString());
-            mLogger.diag("MqLocalQueue::restore() - Message=" + message.toPrintableString(0));
+            mLogger.diag("MqLocalQueue::restore() - Header="  + StringUtils.asPrintableString(header));
+            mLogger.diag("MqLocalQueue::restore() - Message=" + StringUtils.asPrintableString(message));
             
-            put(message);
+            internalPut(message, false);
           }
           catch (IOException e)
           {
@@ -231,6 +243,13 @@ public class MqLocalQueue extends MqQueue
         
         try
         {
+          // write queue details
+          mLogger.debug("MqLocalQueue::backup() - Threshold=" + mThreshold + "; LastAccess=(" + getLastAccess() + ")");
+          ostream.writeInt(mThreshold);
+          ostream.writeObject(mLastAccessUser);
+          ostream.writeLong(mLastAccessTimeStamp.getAsLong());
+          ostream.writeObject(mLastAccessMethod);
+          
           for (int i = 0; i < mQueueArray.length; ++i)
           {
             MessageQueue mq = mQueueArray[i];
@@ -241,8 +260,8 @@ public class MqLocalQueue extends MqQueue
               PacketHeader header = message.createHeader();
               header.serialize(ostream);
               message.serialize(ostream);
-              mLogger.diag("MqLocalQueue::backup() - Header="  + header.toPrintableString());
-              mLogger.diag("MqLocalQueue::backup() - Message=" + message.toPrintableString(0));
+              mLogger.diag("MqLocalQueue::backup() - Header="  + StringUtils.asPrintableString(header));
+              mLogger.diag("MqLocalQueue::backup() - Message=" + StringUtils.asPrintableString(message));
               
               ++msgs;
             }
@@ -309,11 +328,12 @@ public class MqLocalQueue extends MqQueue
    * Put a message into this {@link MqLocalQueue} object.
    * 
    * @param message The message that should be stored at this {@link MqLocalQueue} object.
+   * @param updateLastAccess whether to update the last access fields for this operation
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean internalPut(IMqMessage<?> message)
+  public boolean internalPut(IMqMessage<?> message, boolean updateLastAccess)
   {
-    mLogger.debug("MqLocalQueue::put() - IN");
+    mLogger.debug("MqLocalQueue::internalPut() - IN");
     
     boolean success = false;
     if ((mThreshold == 0) || (size() < mThreshold))
@@ -322,11 +342,22 @@ public class MqLocalQueue extends MqQueue
       success = mQueueArray[prio].offer(message);
       
       String user = message.getStringProperty(IMqConstants.cKasPropertyPutUserName, IMqConstants.cSystemUserName);
-      setLastAccess(user, "put");
+      if (updateLastAccess) setLastAccess(user, "put");
     }
     
-    mLogger.debug("MqLocalQueue::put() - OUT, Returns=" + success);
+    mLogger.debug("MqLocalQueue::internalPut() - OUT, Returns=" + success);
     return success;
+  }
+  
+  /**
+   * Put a message into this {@link MqLocalQueue} object.
+   * 
+   * @param message The message that should be stored at this {@link MqLocalQueue} object.
+   * @return {@code true} if message was added, {@code false} otherwise.
+   */
+  public boolean internalPut(IMqMessage<?> message)
+  {
+    return internalPut(message, true);
   }
   
   /**

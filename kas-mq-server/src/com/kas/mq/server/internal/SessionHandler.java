@@ -180,11 +180,20 @@ public class SessionHandler extends AKasObject implements Runnable
   }
   
   /**
-   * Stop the handler
+   * Signal the handler to stop after fulfilling last request
    */
   public void stop()
   {
     setRunningState(false);
+  }
+
+  /**
+   * Forcefully killing the session.<br>
+   * This method is called by the {@link IController} in circumstances where the session seems hung 
+   */
+  void killSession()
+  {
+    mMessenger.cleanup();
   }
 
   /**
@@ -211,9 +220,9 @@ public class SessionHandler extends AKasObject implements Runnable
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  IsRunning=").append(mIsRunning).append("\n")
-      .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(0)).append("\n")
       .append(pad).append("  SessionId=").append(mSessionId.toString()).append("\n")
       .append(pad).append("  ActiveUser=").append(mActiveUserName).append("\n")
+      .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(0)).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

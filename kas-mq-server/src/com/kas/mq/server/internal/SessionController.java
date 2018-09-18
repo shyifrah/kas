@@ -192,9 +192,15 @@ public class SessionController extends AKasObject implements IController
       SessionHandler handler = entry.getValue();
       
       boolean removed = ThreadPool.removeTask(handler);
-      mLogger.debug("SessionController::term() - ThreadPool handler " + uid + " removal: " + removed);
+      mLogger.debug("SessionController::term() - Handler for session ID " + uid + " removal: " + (removed ? "succeeded" : "failed"));
+      if (!removed)
+      {
+        handler.killSession();
+        removed = ThreadPool.removeTask(handler);
+        mLogger.debug("SessionController::term() - Session ID " + uid + " forcefully removad: " + (removed ? "succeeded" : "failed"));
+      }
     }
-        
+    
     mLogger.debug("SessionController::term() - OUT");
   }
 
