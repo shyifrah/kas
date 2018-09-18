@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-mq-admin" default="Main" basedir=".">
+<project name="kas-mq-admin" default="main" basedir=".">
   
   <property name="src"  location="src"/>
   <property name="res"  location="res"/>
@@ -30,23 +30,23 @@
   <property name="build.mod"   value="0"/>
 
   <!-- targets -->
-  <target name="Main" depends="CopyRes" description="main target (default)">
+  <target name="main" depends="copy-res" description="main target (default)">
     <echo>Done building</echo>
   </target>
   
-  <target name="Clean" description="clean up old outputs">
+  <target name="clean" description="clean up old outputs">
     <delete dir="${bin}"/>
     <delete dir="${lib}"/>
     <delete dir="${conf}"/>
     <delete dir="${logs}"/>
   </target>
   
-  <target name="Prepare" depends="Clean" description="prepare output directories">
+  <target name="prepare" depends="clean" description="prepare output directories">
     <mkdir dir="${bin}"/>
     <mkdir dir="${lib}"/>
   	<mkdir dir="${logs}"/>
     <buildnumber file="${res}/buildnumber.txt"/>
-    <subant target="Main">
+    <subant target="main">
       <fileset dir="${infra}"      includes="build.xml"/>
       <fileset dir="${config}"     includes="build.xml"/>
       <fileset dir="${logging}"    includes="build.xml"/>
@@ -62,7 +62,7 @@
     </copy>
   </target>
   
-  <target name="Compile" depends="Clean, Prepare" description="compile sources">
+  <target name="compile" depends="clean, prepare" description="compile sources">
   	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
       <exclude name="module-info.java"/>
       <classpath id="${ant.project.name}-ClassPath">
@@ -75,7 +75,7 @@
     </javac>
   </target>
   
-  <target name="Jar" depends="Compile" description="generate jar file">
+  <target name="jar" depends="compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar"
        basedir="${bin}"
        includes="com/kas/mq/admin/**/*.class"
@@ -86,7 +86,7 @@
     </jar>
   </target>
 	
-  <target name="CopyRes" depends="Jar" description="copy outputs">
+  <target name="copy-res" depends="jar" description="copy outputs">
     <copy todir=".">
       <fileset dir="${res}" excludes="*buildnumber*" />
       <fileset dir="../kas-data/res"/>

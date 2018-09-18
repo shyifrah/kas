@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-infra" default="Main" basedir=".">
+<project name="kas-infra" default="main" basedir=".">
   
   <!-- directories -->
   <property name="src"     location="src"/>
@@ -11,27 +11,27 @@
   <property name="debuglevel" value="lines,vars,source" />
 
   <!-- targets -->
-  <target name="Main" depends="Jar" description="main target (default)">
+  <target name="main" depends="jar" description="main target (default)">
     <echo>Done building</echo>
   </target>
   
-  <target name="Clean" description="clean up old outputs">
+  <target name="clean" description="clean up old outputs">
     <delete dir="${bin}"/>
     <delete dir="${lib}"/>
   </target>
   
-  <target name="Prepare" depends="Clean" description="prepare output directories">
+  <target name="prepare" depends="clean" description="prepare output directories">
     <mkdir dir="${bin}"/>
     <mkdir dir="${lib}"/>
   </target>
   
-  <target name="Compile" depends="Clean, Prepare" description="compile sources">
+  <target name="compile" depends="clean, prepare" description="compile sources">
   	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
       <exclude name="module-info.java"/>
     </javac>
   </target>
   
-  <target name="Jar" depends="Compile" description="generate jar file">
+  <target name="jar" depends="compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar"
        basedir="${bin}" />
   </target>
