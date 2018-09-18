@@ -32,13 +32,20 @@ class PropertyResolver extends AKasObject
   private boolean mResolved = false;
   
   /**
+   * A set of properties which will be used to resolve raw values in case
+   * resolving them using {@link RunTimeUtils} didn't work.
+   */
+  private Properties mProperties = null;
+  
+  /**
    * Construct a {@link PropertyResolver} object with the specified raw value.
    * 
    * @param rawValue The raw value of this {@link PropertyResolver}.
    */
-  public PropertyResolver(String rawValue)
+  public PropertyResolver(String rawValue, Properties props)
   {
     mRawValue = rawValue;
+    mProperties = props;
   }
   
   /**
@@ -76,6 +83,10 @@ class PropertyResolver extends AKasObject
     
     String var = rawValue.substring(startIdx+2, endIdx);
     String val = RunTimeUtils.getProperty(var);
+    if ((val == null) && (mProperties != null))
+      val = mProperties.getStringProperty(var, var);
+    else if (val == null)
+      val = var;
     
     StringBuilder sb = new StringBuilder();
     sb.append(rawValue.substring(0, startIdx));
