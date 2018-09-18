@@ -112,7 +112,6 @@ public class MqConfiguration extends AConfiguration
     refreshUserMap();
     refreshRemoteManagersMap();
     
-    mLogger.diag("MqConfiguration::refresh() - Configuration refreshed. New values: " + toPrintableString(0));
     mLogger.debug("MqConfiguration::refresh() - OUT");
   }
   

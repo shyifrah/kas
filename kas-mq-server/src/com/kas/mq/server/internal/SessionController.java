@@ -191,8 +191,8 @@ public class SessionController extends AKasObject implements IController
       UniqueId uid = entry.getKey();
       SessionHandler handler = entry.getValue();
       
-      ThreadPool.removeTask(handler);
-      mLogger.trace("Handler " + uid.toString() + " was forcefully terminated");
+      boolean removed = ThreadPool.removeTask(handler);
+      mLogger.debug("SessionController::term() - ThreadPool handler " + uid + " removal: " + removed);
     }
         
     mLogger.debug("SessionController::term() - OUT");

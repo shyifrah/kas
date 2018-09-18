@@ -196,7 +196,7 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mIsRunning = isRunning;
   }
-
+  
   /**
    * Get the object's detailed string representation
    * 
