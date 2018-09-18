@@ -11,7 +11,7 @@ import com.kas.infra.utils.StringUtils;
  */
 public abstract class AAppender extends AKasObject implements IAppender
 {
-  static protected final String cAppenderMessageFormat = "%s %d:%d %-5s (%s) %s%n";
+  static protected final String cAppenderMessageFormat = "%s %5d:%-2d %-5s (%s) %s%n";
   
   /**
    * Write a message
