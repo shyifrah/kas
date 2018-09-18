@@ -205,7 +205,6 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   public synchronized void register(IBaseListener listener)
   {
     mListeners.add(listener);
-    listener.refresh();
   }
   
   /**
