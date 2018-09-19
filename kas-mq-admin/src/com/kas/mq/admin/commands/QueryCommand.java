@@ -53,17 +53,22 @@ public class QueryCommand extends ACliCommand
     writeln(" ");
     writeln("                                                             +--- BASIC ---+");
     writeln("                                                             |             |");
-    writeln("     >>--- QUERY|Q ---+--- QUEUE|Q ---+---+--- prefix ---+---+-------------+---><");
-    writeln("                                                             |             |");
-    writeln("                                                             +--- ALL -----+");
+    writeln("     >>--- QUERY|Q ---+--- QUEUE|Q ---+---+--- prefix ---+---+-------------+---+---><");
+    writeln("                      |                                      |             |   |");
+    writeln("                      |                                      +--- ALL -----+   |");
+    writeln("                      |                                                        |");
+    writeln("                      +--- SESSION|SESS ---------------------------------------+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
     writeln("     Query entity.");
     writeln(" ");
     writeln("     -- For QUEUE --");
-    writeln("     Provide basic information about all queues matching the prefix (the default).");
-    writeln("     If the keyword ALL is used following the prefix, all messages in that queue are displayed as well.");
+    writeln("     Provide information about all queues matching the prefix (the default).");
+    writeln("     If the keyword ALL is used, a more extensive information is shown.");
+    writeln(" ");
+    writeln("     -- For SESSION --");
+    writeln("     Provide information about the current session.");
     writeln(" ");
     writeln("Examples:");
     writeln(" ");
@@ -73,13 +78,16 @@ public class QueryCommand extends ACliCommand
     writeln("     Query all information about the contents of queue QUEUE1");
     writeln("          KAS/MQ Admin> Q Q QUEUE1 ALL");
     writeln(" ");
+    writeln("     Query information about the current session");
+    writeln("          KAS/MQ Admin> Q SESS");
+    writeln(" ");
   }
   
   /**
-   * A Define command.<br>
+   * A Query command.<br>
    * <br>
-   * For only the "DEFINE" verb, the command will fail with a missing queue name message.
-   * For more than a single argument, the command will fail with excessive arguments message.
+   * For only the "QUERY" verb, the command will fail with a missing entity type message.
+   * The rest of the arguments are passed to the sub-commands.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -98,6 +106,10 @@ public class QueryCommand extends ACliCommand
       return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
     if (type.equals("Q"))
       return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("SESSION"))
+      return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("SESS"))
+      return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

@@ -243,12 +243,9 @@ public class Messenger extends AKasObject implements IMessenger
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append(name())
-      .append("(Address=[")
-      .append(mHost)
+    sb.append(mHost)
       .append(':')
-      .append(mPort)
-      .append("])");
+      .append(mPort);
     return sb.toString();
   }
   

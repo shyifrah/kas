@@ -37,10 +37,11 @@ public class QryQueueCommand extends ACliCommand
   }
   
   /**
-   * A Define command.<br>
+   * A query queue command.<br>
    * <br>
-   * For only the "DEFINE" verb, the command will fail with a missing queue name message.
-   * For more than a single argument, the command will fail with excessive arguments message.
+   * For only the "QUERY QUEUE" verb, the command will fail with a missing queue name message.
+   * The next token is the query option (possibly a "ALL").
+   * For more than that, the command will fail with an excessive arguments message.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -48,7 +49,7 @@ public class QryQueueCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Missing regular expression");
+      writeln("Missing queue name/prefix");
       writeln(" ");
       return false;
     }

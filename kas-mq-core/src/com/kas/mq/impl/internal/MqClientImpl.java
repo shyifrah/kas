@@ -579,7 +579,21 @@ public class MqClientImpl extends AKasObject
     mLogger.error(message);
     setResponse(message);
   }
-
+  
+  /**
+   * Get string representation of the object
+   * 
+   * @return string representation of the object
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Session...........: ").append(StringUtils.asString(mSessionId)).append('\n');
+    sb.append("  User.......: ").append(StringUtils.asString(mUser)).append('\n');
+    sb.append("  Connection.: ").append(StringUtils.asString(mMessenger)).append('\n');
+    return sb.toString();
+  }
+  
   /**
    * Get the object's detailed string representation
    * 
