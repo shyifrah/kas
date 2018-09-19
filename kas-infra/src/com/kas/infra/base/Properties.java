@@ -761,7 +761,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
         {
           String key = parsedLine[0].trim();
           String val = parsedLine[1].trim();
-          String actualVal = new PropertyResolver(val, this).getActual();
+          String actualVal = PropertyResolver.resolve(val, this);
 
           if (key.equalsIgnoreCase(cIncludeKey))           // if we encounter an "include" statement - load the new file
           {

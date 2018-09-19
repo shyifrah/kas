@@ -3,130 +3,99 @@ package com.kas.infra.base;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
- * A {@link PropertyResolver} is an object that holds a string value, but if this string has the following format
- * "...${....}...", then the value between the opening "${" and closing "}" can actually represent a variable -
- * a system property. In that case, the value of this system property will take place in the value
- * of the PropertyValue.<br>
+ * A {@link PropertyResolver} is an object that resolves string values, in the case these values
+ * has the following format:
+ *    "...${....}..."
+ * The value between the opening "${" and closing "}" can actually represent a variable.
+ * A variable is a name that is associated with a value - a system property, environment variable
+ * or other property inside a set of {@link Properties} object.
+ * In that case, the variable will be substituted with its value.<br>
  * <br>
  * <b>Example:</b><br>
- *   If the system property "user.name" has the value of "shy1", and a PropertyValue has the raw value of "I_am_${user.name}2345"
- *   a call to {@link #getActual()} will return the value of "I_am_shy12345".
+ *   If the system property "user.name" has the value of "shy1", and the {@link PropertyResolver}
+ *   got the raw value of "I_am_${user.name}2345", a call to {@link #resolve(String, Properties)}
+ *   will generate the return value of "I_am_shy12345".
  * 
  * @author Pippo
  */
-class PropertyResolver extends AKasObject
+class PropertyResolver
 {
   /**
-   * The raw value of this {@link PropertyResolver}
-   */
-  private String  mRawValue;
-  
-  /**
-   * The actual value of this {@link PropertyResolver}
-   */
-  private String  mActualValue = null;
-  
-  /**
-   * An indicator whether this {@link PropertyResolver} has already been resolved
-   */
-  private boolean mResolved = false;
-  
-  /**
-   * A set of properties which will be used to resolve raw values in case
-   * resolving them using {@link RunTimeUtils} didn't work.
-   */
-  private Properties mProperties = null;
-  
-  /**
-   * Construct a {@link PropertyResolver} object with the specified raw value.
+   * Resolve the value of {@code rawValue}. 
    * 
-   * @param rawValue The raw value of this {@link PropertyResolver}.
+   * @param rawValue The value that needs resolving
+   * @return the resolved value
+   * 
+   * @see #resolve(String, Properties)
    */
-  public PropertyResolver(String rawValue, Properties props)
+  static public String resolve(String rawValue)
   {
-    mRawValue = rawValue;
-    mProperties = props;
+    return resolve(rawValue, null);
   }
   
   /**
-   * Resolve the raw value of this object.
+   * Resolve the value of {@code rawValue}.<br>
+   * Resolving means to look for variables inside {@code rawValue}, and substitute these
+   * occurrences with their associated values. To get a variable's value this method
+   * calls {@link #getVarValue(String)} method. 
    * 
-   * @return the actual value.
-   */
-  private String resolve()
-  {
-    return resolve(mRawValue);
-  }
-  
-  /**
-   * Resolve a raw value.<br>
-   * <br>
-   * A raw value is the string value as-is. The resolved value is one that replaces all occurrences of
-   * "${var}" to their actual value.
+   * @param rawValue The value that needs resolving
+   * @param props A set of {@link Properties} that is used to determine a variable's value
+   * @return the resolved value
    * 
-   * @param rawValue The raw value
-   * @return the actual value.
+   * @see #getVarValue(String)
    */
-  private String resolve(String rawValue)
+  static public String resolve(String rawValue, Properties props)
   {
-    String result = rawValue;
-    
-    if (mResolved) return mActualValue;
-
-    int startIdx = rawValue.indexOf("${");
-    int endIdx   = rawValue.indexOf('}');
-    if ((startIdx == -1) || (endIdx == -1) || (startIdx >= endIdx))
+    StringBuilder sb = new StringBuilder();
+    int startIndex = rawValue.indexOf("${");
+    int endIndex = rawValue.indexOf("}");
+    if (startIndex == -1 || endIndex == -1 || endIndex < startIndex)
     {
-      mResolved = true;
       return rawValue;
     }
-    
-    String var = rawValue.substring(startIdx+2, endIdx);
-    String val = RunTimeUtils.getProperty(var);
-    if ((val == null) && (mProperties != null))
-      val = mProperties.getStringProperty(var, var);
-    else if (val == null)
-      val = var;
-    
-    StringBuilder sb = new StringBuilder();
-    sb.append(rawValue.substring(0, startIdx));
-    sb.append(val);
-    sb.append(rawValue.substring(endIdx+1));
-    result = sb.toString();
-    
-    return resolve(result);
+    else
+    {
+      String prefix = rawValue.substring(0, startIndex);         // part of val before variable
+      String suffix = rawValue.substring(endIndex+1);            // part of val after variable
+      String var = rawValue.substring(startIndex, endIndex+1);   // the variable (including the enclosing ${...}
+      sb.append(prefix);
+      sb.append(getVarValue(var, props));
+      sb.append(suffix);
+      return resolve(sb.toString(), props);
+    }
   }
   
   /**
-   * Get the actual property's value.<br>
-   * <br>
-   * If the property's value hasn't been resolved yet, resolve it and then return the actual value.
+   * Remove the enclosing "${" and "}"
    * 
-   * @return the actual value.
+   * @param var
+   * @return
    */
-  public String getActual()
+  static private String strip(String var)
   {
-    if (!mResolved)
-      mActualValue = resolve();
-    
-    return mActualValue;
+    return var.substring(2, var.length()-1);
   }
   
   /**
-   * Get the object's detailed string representation.
+   * Get a value of a variable.<br>
+   * The variable is treated as if it has enclosing ${...} so we first strip it.
+   * First we try getting the value from system properties and environment variables.
+   * If it's still {@code null}, the resolver got a set of properties upon construction,
+   * we try getting its value from there.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param var The variable. e.g. ${kas.user.name}
+   * @param props A set of {@link Properties} which will be used in resolving
+   * @return the value associated with the variable.
    */
-  public String toPrintableString(int level)
+  static private String getVarValue(String var, Properties props)
   {
-    StringBuilder sb = new StringBuilder(); // [Raw=(...)] = [Actual=(..)]
-    sb.append(name()).append("(")
-      .append("[Raw=(").append(mRawValue).append(")]")
-      .append(" = [Actual=(").append(getActual()).append(")]")
-      .append(")");
-    return sb.toString();
+    String strippedvar = strip(var);
+    String val = RunTimeUtils.getProperty(strippedvar);
+    if ((val == null) && (props != null))
+      val = props.getStringProperty(strippedvar, null);
+    
+    if (val == null) val = "";
+    return val;
   }
 }
