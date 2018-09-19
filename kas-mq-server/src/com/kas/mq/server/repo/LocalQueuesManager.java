@@ -2,6 +2,7 @@ package com.kas.mq.server.repo;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -83,11 +84,20 @@ public class LocalQueuesManager extends MqManager
         }
       }
       
+      // define the deadq
       MqLocalQueue deadq = getQueue(mConfig.getDeadQueueName());
       if (deadq != null)
         mDeadQueue = deadq;
       else
         mDeadQueue = defineQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold);
+      
+      // predefined queues
+      for (Map.Entry<String, Integer> entry : mConfig.getQueueDefinitions().entrySet())
+      {
+        String queue = entry.getKey();
+        int threshold = entry.getValue();
+        defineQueue(queue, threshold);
+      }
     }
     
     mActive = success;

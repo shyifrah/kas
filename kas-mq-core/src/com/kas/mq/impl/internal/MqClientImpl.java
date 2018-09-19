@@ -116,6 +116,7 @@ public class MqClientImpl extends AKasObject
       
       mMessenger = null;
       mUser = IMqConstants.cSystemUserName;
+      mSessionId = null;
     }
     
     mLogger.debug("MqClientImpl::disconnect() - OUT");

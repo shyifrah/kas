@@ -9,6 +9,7 @@ import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.internal.IMqConstants;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -21,10 +22,11 @@ public class MqConfiguration extends AConfiguration
    * Configuration prefixes
    */
   static private final String  cMqConfigPrefix  = "kas.mq.";
-  static private final String  cMqUserConfigPrefix    = cMqConfigPrefix + "user.";
-  static private final String  cMqConnConfigPrefix    = cMqConfigPrefix + "conn.";
-  static private final String  cMqHskpConfigPrefix    = cMqConfigPrefix + "hskp.";
-  static private final String  cMqRemoteConfigPrefix  = cMqConfigPrefix + "remoteManager.";
+  static private final String  cMqUserConfigPrefix     = cMqConfigPrefix + "user.";
+  static private final String  cMqConnConfigPrefix     = cMqConfigPrefix + "conn.";
+  static private final String  cMqHskpConfigPrefix     = cMqConfigPrefix + "hskp.";
+  static private final String  cMqRemoteConfigPrefix   = cMqConfigPrefix + "remoteManager.";
+  static private final String  cMqDefQueueConfigPrefix = cMqConfigPrefix + "defq.";
   
   /**
    * Default values
@@ -94,6 +96,11 @@ public class MqConfiguration extends AConfiguration
   private Map<String, NetworkAddress> mRemoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
   
   /**
+   * A map of predefined queues
+   */
+  private Map<String, Integer> mQueueDefinitionsMap = new ConcurrentHashMap<String, Integer>();
+  
+  /**
    * Refresh configuration - reload values of all properties
    */
   public void refresh()
@@ -111,6 +118,7 @@ public class MqConfiguration extends AConfiguration
     
     refreshUserMap();
     refreshRemoteManagersMap();
+    refreshQueueDefinitionsMap();
     
     mLogger.debug("MqConfiguration::refresh() - OUT");
   }
@@ -160,6 +168,30 @@ public class MqConfiguration extends AConfiguration
     mRemoteManagersMap = remoteManagersMap;
     
     mLogger.debug("MqConfiguration::refreshRemoteManagersMap() - OUT");
+  }
+  
+  /**
+   * Refresh queue definitions map
+   */
+  private void refreshQueueDefinitionsMap()
+  {
+    mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - IN");
+    
+    Map<String, Integer> queueDefinitionsMap = new ConcurrentHashMap<String, Integer>();
+    
+    Properties props = mMainConfig.getSubset(cMqDefQueueConfigPrefix, ".threshold");
+    for (Map.Entry<Object, Object> oentry : props.entrySet())
+    {
+      String key = (String)oentry.getKey();
+      int beginindex = cMqDefQueueConfigPrefix.length();
+      int endindex = key.lastIndexOf(".threshold");
+      String queue = key.substring(beginindex, endindex);
+      int threshold = props.getIntProperty(cMqDefQueueConfigPrefix + queue + ".threshold" , IMqConstants.cDefaultQueueThreshold);
+      queueDefinitionsMap.put(queue, threshold);
+    }
+    mQueueDefinitionsMap = queueDefinitionsMap;
+    
+    mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - OUT");
   }
   
   /**
@@ -266,6 +298,16 @@ public class MqConfiguration extends AConfiguration
   public Map<String, NetworkAddress> getRemoteManagers()
   {
     return mRemoteManagersMap;
+  }
+  
+  /**
+   * Get the predefined queues map
+   * 
+   * @return the predefined queues map
+   */
+  public Map<String, Integer> getQueueDefinitions()
+  {
+    return mQueueDefinitionsMap;
   }
   
   /**
