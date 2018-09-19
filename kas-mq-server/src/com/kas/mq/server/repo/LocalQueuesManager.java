@@ -83,7 +83,11 @@ public class LocalQueuesManager extends MqManager
         }
       }
       
-      mDeadQueue = defineQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold, false);
+      MqLocalQueue deadq = getQueue(mConfig.getDeadQueueName());
+      if (deadq != null)
+        mDeadQueue = deadq;
+      else
+        mDeadQueue = defineQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold);
     }
     
     mActive = success;
@@ -125,19 +129,6 @@ public class LocalQueuesManager extends MqManager
    */
   MqLocalQueue defineQueue(String name, int threshold)
   {
-    return defineQueue(name, threshold, true);
-  }
-  
-  /**
-   * Define a local queue object
-   * 
-   * @param name The name of the queue to define
-   * @param threshold The threshold of the queue
-   * @param mapped If {@code false}, do not insert the defined queue to the map
-   * @return the created {@link MqLocalQueue}
-   */
-  MqLocalQueue defineQueue(String name, int threshold, boolean mapped)
-  {
     mLogger.debug("LocalQueuesManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold);
     MqLocalQueue queue = null;
     
@@ -145,8 +136,7 @@ public class LocalQueuesManager extends MqManager
     {
       name = name.toUpperCase();
       queue = new MqLocalQueue(this, name, threshold);
-      if (mapped)
-        mQueues.put(name, queue);
+      mQueues.put(name, queue);
     }
     
     mLogger.debug("LocalQueuesManager::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));

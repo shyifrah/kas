@@ -210,7 +210,7 @@ public abstract class MqQueue extends AKasObject
   {
     StringBuilder sb = new StringBuilder();
     sb.append("Queue.............: ").append(mName).append('\n');
-    sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
+    sb.append("  Owned by...: ").append(mManager.getName()).append(' ').append(mManager.isActive() ? "" : "(N/A)").append('\n');
     return sb.toString();
   }
   

@@ -281,11 +281,8 @@ public class ServerRepository extends AKasObject implements IRepository
     {
       RemoteQueuesManager mgr = entry.getValue();
       mLogger.debug("ServerRepository::queryRemoteQueues() - Checking if RemoteQueuesManager " + mgr.getName() + " has results for this query...");
-      if (mgr.isActive())
-      {
-        Properties props = mgr.queryQueue(name, prefix, all);
-        result.putAll(props);
-      }
+      Properties props = mgr.queryQueue(name, prefix, all);
+      result.putAll(props);
     }
     
     mLogger.debug("ServerRepository::queryRemoteQueues() - OUT, Returns=" + result.size() + " records");
@@ -293,7 +290,10 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Get information regarding all queues whose name begins with the specified prefix.
+   * Get information regarding all queues whose name begins with the specified prefix.<br>
+   * <br>
+   * Note we add the local queues to the result so local queues will override the remote ones
+   * if there are any duplicates.
    * 
    * @param locals When {@code true}, result of query will include only local queues
    * @param name The queue name/prefix.
@@ -306,9 +306,9 @@ public class ServerRepository extends AKasObject implements IRepository
   public Properties queryQueues(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
-    Properties result = queryLocalQueues(name, prefix, all);
-    Properties remotes = queryRemoteQueues(name, prefix, all);
-    result.putAll(remotes);
+    Properties result = queryRemoteQueues(name, prefix, all);
+    Properties locals = queryLocalQueues(name, prefix, all);
+    result.putAll(locals);
     
     mLogger.debug("ServerRepository::queryQueues() - OUT, Returns=" + result.size() + " records");
     return result;
