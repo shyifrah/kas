@@ -51,11 +51,11 @@ public class ProcessorFactory
         processor = new ShutdownProcessor(request, controller);
         break;
       case cGet:
-        processor = new GetMessageProcessor(request, controller);
+        processor = new MessageGetProcessor(request, controller);
         break;
       case cUnknown:
       default:
-        processor = new PutMessageProcessor(request, controller);
+        processor = new MessagePutProcessor(request, controller);
         break;
     }
     

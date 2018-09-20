@@ -12,7 +12,7 @@ import com.kas.mq.server.IController;
  * 
  * @author Pippo
  */
-public class GetMessageProcessor extends AProcessor
+public class MessageGetProcessor extends AProcessor
 {
   /**
    * Extracted input from the request:
@@ -23,12 +23,12 @@ public class GetMessageProcessor extends AProcessor
   private String mQueue;
   
   /**
-   * Construct a {@link GetMessageProcessor}
+   * Construct a {@link MessageGetProcessor}
    * 
    * @param request The request message
    * @param controller The session controller
    */
-  GetMessageProcessor(IMqMessage<?> request, IController controller)
+  MessageGetProcessor(IMqMessage<?> request, IController controller)
   {
     super(request, controller);
   }
