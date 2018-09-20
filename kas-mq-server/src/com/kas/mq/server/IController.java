@@ -20,13 +20,6 @@ public interface IController extends IObject
   public abstract MqConfiguration getConfig();
   
   /**
-   * Get the server's repository
-   * 
-   * @return the server's repository
-   */
-  public abstract IRepository getRepository();
-  
-  /**
    * Get handlers map
    * 
    * @return the handlers map
@@ -37,6 +30,14 @@ public interface IController extends IObject
    * Shutdown all handlers and mark the main server's thread it should terminate
    */
   public abstract void shutdown();
+  
+  /**
+   * Terminate handler that servers session {@code sessId}.
+   * 
+   * @param sessId The ID assigned to the session to be terminated
+   * @return {@code true} if session was found and was terminated, {@code false} otherwise
+   */
+  public abstract boolean termHandler(UniqueId sessId);
   
   /**
    * A callback that is invoked under the handler's thread right before

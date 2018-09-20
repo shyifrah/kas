@@ -16,6 +16,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 import com.kas.mq.server.processors.IProcessor;
 import com.kas.mq.server.processors.ProcessorFactory;
 
@@ -37,6 +38,11 @@ public class SessionHandler extends AKasObject implements Runnable
   private IController mController;
   
   /**
+   * The server's repository
+   */
+  private IRepository mRepository;
+  
+  /**
    * Messenger
    */
   private IMessenger mMessenger;
@@ -44,7 +50,7 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * The session ID for this session
    */
-  private UniqueId mSessionId;
+  private UniqueId mSessionId = null;
   
   /**
    * Active user name
@@ -65,13 +71,13 @@ public class SessionHandler extends AKasObject implements Runnable
    * 
    * @throws IOException if {@link Socket#setSoTimeout()} throws
    */
-  SessionHandler(Socket socket, IController controller) throws IOException
+  SessionHandler(Socket socket, IController controller, IRepository repository) throws IOException
   {
     mController = controller;
+    mRepository = repository;
     socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
     mMessenger = MessengerFactory.create(socket);
     
-    mSessionId = UniqueId.generate();
     mLogger = LoggerFactory.getLogger(this.getClass());
     
     mActiveUserName = null;
@@ -101,9 +107,10 @@ public class SessionHandler extends AKasObject implements Runnable
           
           boolean success = false;
           
-          IProcessor processor = ProcessorFactory.newProcessor(mController, this, request);
+          IProcessor processor = ProcessorFactory.newProcessor(mController, mRepository, this, request);
           IMqMessage<?> reply = processor.process();
           
+          // not all processors generates a reply, but if there is one - send it back
           if (reply != null)
           {
             mLogger.debug("SessionHandler::run() - Responding with the message: " + StringUtils.asPrintableString(reply));
@@ -160,6 +167,16 @@ public class SessionHandler extends AKasObject implements Runnable
   }
   
   /**
+   * Set the session's unique ID
+   * 
+   * @param sessId The session's unique ID to set
+   */
+  public void setSessionId(UniqueId sessId)
+  {
+    mSessionId = sessId;
+  }
+  
+  /**
    * Get the session's unique ID
    * 
    * @return the session's unique ID
@@ -194,6 +211,7 @@ public class SessionHandler extends AKasObject implements Runnable
   void killSession()
   {
     mMessenger.cleanup();
+    mMessenger = null;
   }
 
   /**

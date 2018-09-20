@@ -1,5 +1,6 @@
 package com.kas.mq.impl.internal;
 
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
@@ -8,13 +9,14 @@ import com.kas.mq.impl.MqObjectMessage;
 
 public class MqRequestFactory
 {
-  static public IMqMessage<?> createLoginRequest(String user, String pass)
+  static public IMqMessage<?> createLoginRequest(String user, String pass, UniqueId sessionId)
   {
     MqObjectMessage message = MqMessageFactory.createObjectMessage(null);
-    message.setStringProperty(IMqConstants.cKasPropertyUserName, user);
-    byte [] b64pass = Base64Utils.encode(pass.getBytes());
-    message.setStringProperty(IMqConstants.cKasPropertyPassword, StringUtils.asHexString(b64pass));
     message.setRequestType(ERequestType.cLogin);
+    message.setStringProperty(IMqConstants.cKasPropertyLoginUserName, user);
+    byte [] b64pass = Base64Utils.encode(pass.getBytes());
+    message.setStringProperty(IMqConstants.cKasPropertyLoginPassword, StringUtils.asHexString(b64pass));
+    message.setStringProperty(IMqConstants.cKasPropertyLoginSession, sessionId.toString());
     return message;
   }
   

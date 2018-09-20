@@ -86,8 +86,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     
     mLogger.info("KAS/MQ base application initialized successfully");
     mRepository = new ServerRepository(mConfig);
-    mNotifier = new ServerNotifier(mConfig, mRepository);
     mController = new SessionController(this);
+    mNotifier = new ServerNotifier(mConfig, mController, mRepository);
     
     try
     {
@@ -138,7 +138,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     
     mNotifier.notifyServerDeactivated();
     
-    mController.term();
+    mController.forceShutdown();
     
     boolean term = mRepository.term();
     if (!term)

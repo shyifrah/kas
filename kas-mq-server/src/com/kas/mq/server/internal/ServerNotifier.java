@@ -4,6 +4,7 @@ import java.util.Map;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
+import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
@@ -11,6 +12,7 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqRequestFactory;
+import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.RemoteQueuesManager;
 
@@ -32,19 +34,28 @@ public class ServerNotifier extends AKasObject
   private IRepository mRepository;
   
   /**
+   * The session controller
+   */
+  private IController mController;
+  
+  /**
    * Construct a {@link ServerNotifier server notifier}, specifying the associated {@link MqConfiguration}
    * 
    * @param config The associated {@link MqConfiguration}
+   * @param controller The session controller
    */
-  public ServerNotifier(MqConfiguration config, IRepository repository)
+  public ServerNotifier(MqConfiguration config, IController controller, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
+    mController = controller;
     mRepository = repository;
   }
   
   /**
-   * Notify remote KAS/MQ servers that this KAS/MQ server was activated
+   * Notify remote KAS/MQ servers that this KAS/MQ server was activated.<br>
+   * We include in the notification message the list of local queues so the receiver
+   * of the message can add and make them available for its clients.
    */
   public void notifyServerActivated()
   {
@@ -62,7 +73,10 @@ public class ServerNotifier extends AKasObject
   }
   
   /**
-   * Notify remote KAS/MQ servers that this KAS/MQ server was deactivated
+   * Notify remote KAS/MQ servers that this KAS/MQ server was deactivated.<br>
+   * We include in the notification message the list of session IDs so the receiver
+   * of the message can terminate these sessions from its side, thus making it easier
+   * on this server to terminate gracefully.
    */
   public void notifyServerDeactivated()
   {
@@ -70,6 +84,15 @@ public class ServerNotifier extends AKasObject
     
     String qmgr = mConfig.getManagerName();
     IMqMessage<?> message = MqRequestFactory.createSystemStateMessage(qmgr, false);
+    
+    Properties props = new Properties();
+    for (Map.Entry<UniqueId, SessionHandler> entry : mController.getHandlers().entrySet())
+    {
+      UniqueId uid = entry.getKey();
+      String key = IMqConstants.cKasPropertySyssSessionPrefix + "." + uid.toString();
+      props.setStringProperty(key, uid.toString());
+    }
+    message.setSubset(props);
     
     notify(message, false);
     

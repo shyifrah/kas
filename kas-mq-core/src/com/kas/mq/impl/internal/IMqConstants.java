@@ -40,15 +40,16 @@ public interface IMqConstants
    * This user does not actually exist
    */
   static public final String cSystemUserName = "SYSTEM";
+  static public final String cSystemPassWord = "K4S/MQ";
   
   /**
    * Property names
    */
   static public final String cKasPropertyPrefix = "kas.";
   
-  static public final String cKasPropertyUserName       = cKasPropertyPrefix + "username";
-  static public final String cKasPropertyPassword       = cKasPropertyPrefix + "password";
-  static public final String cKasPropertySessionId      = cKasPropertyPrefix + "sessionid";
+  static public final String cKasPropertyLoginUserName = cKasPropertyPrefix + "login.username";
+  static public final String cKasPropertyLoginPassword = cKasPropertyPrefix + "login.password";
+  static public final String cKasPropertyLoginSession  = cKasPropertyPrefix + "login.sessionid";
   
   static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";
   static public final String cKasPropertyDefqThreshold = cKasPropertyPrefix + "defq.threshold";
@@ -74,8 +75,9 @@ public interface IMqConstants
   
   static public final String cKasPropertyShutUserName = cKasPropertyPrefix + "shut.username";
   
-  static public final String cKasPropertySyssQmgrName = cKasPropertyPrefix + "sysstate.qmgr";
-  static public final String cKasPropertySyssActive   = cKasPropertyPrefix + "sysstate.active";
+  static public final String cKasPropertySyssQmgrName      = cKasPropertyPrefix + "sysstate.qmgr";
+  static public final String cKasPropertySyssActive        = cKasPropertyPrefix + "sysstate.active";
+  static public final String cKasPropertySyssSessionPrefix = cKasPropertyPrefix + "sysstate.sessionid";
   
   static public final String cKasPropertyRepoQmgrName  = cKasPropertyPrefix + "repo.qmgr";
   static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";

@@ -218,21 +218,45 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public void cleanup()
   {
-    if (isConnected())
+    sLogger.debug("Messenger::cleanup() - IN");
+    
+    if (!isConnected())
     {
+      sLogger.debug("Messenger::cleanup() - Messenger not connected, nothing to cleanup");
+    }
+    else
+    {
+      sLogger.debug("Messenger::cleanup() - Flushing and closing streams, closing the socket...");
       try
       {
         mOutputStream.flush();
-        mOutputStream.close();
-        mInputStream.close();
-        mSocket.close();
-        
-        mOutputStream = null;
-        mInputStream = null;
-        mSocket = null;
       }
       catch (IOException e) {}
+      
+      try
+      {
+        mOutputStream.close();
+      }
+      catch (IOException e) {}
+      
+      try
+      {
+        mInputStream.close();
+      }
+      catch (IOException e) {}
+      
+      try
+      {
+        mSocket.close();
+      }
+      catch (IOException e) {}
+      
+      mOutputStream = null;
+      mInputStream = null;
+      mSocket = null;
     }
+    
+    sLogger.debug("Messenger::cleanup() - OUT");
   }
   
   /**

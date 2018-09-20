@@ -22,11 +22,11 @@ public class MqConfiguration extends AConfiguration
    * Configuration prefixes
    */
   static private final String  cMqConfigPrefix  = "kas.mq.";
-  static private final String  cMqUserConfigPrefix     = cMqConfigPrefix + "user.";
-  static private final String  cMqConnConfigPrefix     = cMqConfigPrefix + "conn.";
-  static private final String  cMqHskpConfigPrefix     = cMqConfigPrefix + "hskp.";
-  static private final String  cMqRemoteConfigPrefix   = cMqConfigPrefix + "remoteManager.";
-  static private final String  cMqDefQueueConfigPrefix = cMqConfigPrefix + "defq.";
+  static private final String  cMqUserConfigPrefix        = cMqConfigPrefix + "user.";
+  static private final String  cMqConnConfigPrefix        = cMqConfigPrefix + "conn.";
+  static private final String  cMqHskpConfigPrefix        = cMqConfigPrefix + "hskp.";
+  static private final String  cMqRemoteConfigPrefix      = cMqConfigPrefix + "remoteManager.";
+  static private final String  cMqPreDefQueueConfigPrefix = cMqConfigPrefix + "defq.";
   
   /**
    * Default values
@@ -98,7 +98,7 @@ public class MqConfiguration extends AConfiguration
   /**
    * A map of predefined queues
    */
-  private Map<String, Integer> mQueueDefinitionsMap = new ConcurrentHashMap<String, Integer>();
+  private Map<String, Integer> mPredefQueuesMap = new ConcurrentHashMap<String, Integer>();
   
   /**
    * Refresh configuration - reload values of all properties
@@ -118,7 +118,7 @@ public class MqConfiguration extends AConfiguration
     
     refreshUserMap();
     refreshRemoteManagersMap();
-    refreshQueueDefinitionsMap();
+    refreshPredefQueuesMap();
     
     mLogger.debug("MqConfiguration::refresh() - OUT");
   }
@@ -140,6 +140,9 @@ public class MqConfiguration extends AConfiguration
       byte [] encpass = Base64Utils.encode(pass.getBytes());
       usermap.put(user, encpass);
     }
+    
+    // add system user
+    usermap.put(IMqConstants.cSystemUserName, Base64Utils.encode(IMqConstants.cSystemPassWord.getBytes()));
     mUserMap = usermap;
     
     mLogger.debug("MqConfiguration::refreshUserMap() - OUT");
@@ -171,25 +174,25 @@ public class MqConfiguration extends AConfiguration
   }
   
   /**
-   * Refresh queue definitions map
+   * Refresh predefined queues map
    */
-  private void refreshQueueDefinitionsMap()
+  private void refreshPredefQueuesMap()
   {
     mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - IN");
     
-    Map<String, Integer> queueDefinitionsMap = new ConcurrentHashMap<String, Integer>();
+    Map<String, Integer> queueDefsMap = new ConcurrentHashMap<String, Integer>();
     
-    Properties props = mMainConfig.getSubset(cMqDefQueueConfigPrefix, ".threshold");
+    Properties props = mMainConfig.getSubset(cMqPreDefQueueConfigPrefix, ".threshold");
     for (Map.Entry<Object, Object> oentry : props.entrySet())
     {
       String key = (String)oentry.getKey();
-      int beginindex = cMqDefQueueConfigPrefix.length();
+      int beginindex = cMqPreDefQueueConfigPrefix.length();
       int endindex = key.lastIndexOf(".threshold");
       String queue = key.substring(beginindex, endindex);
-      int threshold = props.getIntProperty(cMqDefQueueConfigPrefix + queue + ".threshold" , IMqConstants.cDefaultQueueThreshold);
-      queueDefinitionsMap.put(queue, threshold);
+      int threshold = props.getIntProperty(cMqPreDefQueueConfigPrefix + queue + ".threshold" , IMqConstants.cDefaultQueueThreshold);
+      queueDefsMap.put(queue, threshold);
     }
-    mQueueDefinitionsMap = queueDefinitionsMap;
+    mPredefQueuesMap = queueDefsMap;
     
     mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - OUT");
   }
@@ -307,7 +310,7 @@ public class MqConfiguration extends AConfiguration
    */
   public Map<String, Integer> getQueueDefinitions()
   {
-    return mQueueDefinitionsMap;
+    return mPredefQueuesMap;
   }
   
   /**
@@ -341,6 +344,9 @@ public class MqConfiguration extends AConfiguration
     sb.append(pad).append("  )\n")
       .append(pad).append("  RemoteManagers=(\n")
       .append(pad).append(StringUtils.asPrintableString(mRemoteManagersMap, level+2)).append("\n")
+      .append(pad).append("  )\n")
+      .append(pad).append("  PredefinedQueues=(\n")
+      .append(pad).append(StringUtils.asPrintableString(mPredefQueuesMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

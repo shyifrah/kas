@@ -44,6 +44,7 @@ public class MqRemoteQueue extends MqQueue
       mClient.connect(mManager.getHost(), mManager.getPort());
       if (mClient.isConnected())
       {
+        mClient.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
         mClient.put(mName, message);
         success = true;
       }
@@ -71,6 +72,7 @@ public class MqRemoteQueue extends MqQueue
     mClient.connect(mManager.getHost(), mManager.getPort());
     if (mClient.isConnected())
     {
+      mClient.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
       result = mClient.get(mName, timeout, interval);
     }
     mClient.disconnect();

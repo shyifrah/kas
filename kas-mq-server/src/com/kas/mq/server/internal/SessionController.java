@@ -79,7 +79,7 @@ public class SessionController extends AKasObject implements IController
   {
     mLogger.trace("About to spawn a new SessionHandler for socket: " + socket.getRemoteSocketAddress().toString());
     
-    SessionHandler handler = new SessionHandler(socket, this);
+    SessionHandler handler = new SessionHandler(socket, this, mRepository);
     
     String remoteAddress = new NetworkAddress(socket).toString();
     mConsole.info("New connection accepted from " + remoteAddress);
@@ -153,7 +153,8 @@ public class SessionController extends AKasObject implements IController
   }
   
   /**
-   * Shutdown all handlers and mark the main server's thread it should terminate
+   * Graceful shutdown.<br>
+   * Signal all handlers to shutdown and signal the main server's thread it should stop
    */
   public void shutdown()
   {
@@ -178,11 +179,12 @@ public class SessionController extends AKasObject implements IController
   }
 
   /**
+   * Brutal shutdown.<br>
    * Terminate forcefully all still-running handlers
    */
-  public void term()
+  public void forceShutdown()
   {
-    mLogger.debug("SessionController::term() - IN");
+    mLogger.debug("SessionController::forceShutdown() - IN");
     
     mConsole.info("Checking if there are hanged handlers and terminate them forcefully...");
     
@@ -191,17 +193,33 @@ public class SessionController extends AKasObject implements IController
       UniqueId uid = entry.getKey();
       SessionHandler handler = entry.getValue();
       
-      boolean removed = ThreadPool.removeTask(handler);
-      mLogger.debug("SessionController::term() - Handler for session ID " + uid + " removal: " + (removed ? "succeeded" : "failed"));
-      if (!removed)
-      {
-        handler.killSession();
-        removed = ThreadPool.removeTask(handler);
-        mLogger.debug("SessionController::term() - Session ID " + uid + " forcefully removad: " + (removed ? "succeeded" : "failed"));
-      }
+      mLogger.debug("SessionController::forceShutdown() - Killing Handler for session ID " + uid);
+      handler.killSession();
     }
     
-    mLogger.debug("SessionController::term() - OUT");
+    mLogger.debug("SessionController::forceShutdown() - OUT");
+  }
+  
+  /**
+   * Terminate handler that servers session {@code sessId}.
+   * 
+   * @param sessId The ID assigned to the session to be terminated
+   * @return {@code true} if session was found and was terminated, {@code false} otherwise
+   */
+  public boolean termHandler(UniqueId sessId)
+  {
+    mLogger.debug("SessionController::termHandler() - IN, SessionID=" + sessId);
+    
+    boolean result = false;
+    SessionHandler handler = mHandlers.get(sessId);
+    if (handler != null)
+    {
+      handler.killSession();
+      result = true;
+    }
+    
+    mLogger.debug("SessionController::termHandler() - Returns=" + result);
+    return result;
   }
 
   /**
