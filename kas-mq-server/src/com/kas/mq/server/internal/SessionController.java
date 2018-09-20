@@ -60,9 +60,9 @@ public class SessionController extends AKasObject implements IController
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getStdout(this.getClass());
     mHandlers = new HashMap<UniqueId, SessionHandler>();
-    mConfig = server.getConfig();
-    mRepository = server.getRepository();
     mServer = server;
+    mConfig = mServer.getConfig();
+    mRepository = mServer.getRepository();
   }
   
   /**
@@ -141,18 +141,6 @@ public class SessionController extends AKasObject implements IController
   }
   
   /**
-   * Get handlers map
-   * 
-   * @return the handlers map
-   * 
-   * @see com.kas.mq.server.IController#getHandlers()
-   */
-  public Map<UniqueId, SessionHandler> getHandlers()
-  {
-    return mHandlers;
-  }
-  
-  /**
    * Graceful shutdown.<br>
    * Signal all handlers to shutdown and signal the main server's thread it should stop
    */
@@ -198,28 +186,6 @@ public class SessionController extends AKasObject implements IController
     }
     
     mLogger.debug("SessionController::forceShutdown() - OUT");
-  }
-  
-  /**
-   * Terminate handler that servers session {@code sessId}.
-   * 
-   * @param sessId The ID assigned to the session to be terminated
-   * @return {@code true} if session was found and was terminated, {@code false} otherwise
-   */
-  public boolean termHandler(UniqueId sessId)
-  {
-    mLogger.debug("SessionController::termHandler() - IN, SessionID=" + sessId);
-    
-    boolean result = false;
-    SessionHandler handler = mHandlers.get(sessId);
-    if (handler != null)
-    {
-      handler.killSession();
-      result = true;
-    }
-    
-    mLogger.debug("SessionController::termHandler() - Returns=" + result);
-    return result;
   }
 
   /**

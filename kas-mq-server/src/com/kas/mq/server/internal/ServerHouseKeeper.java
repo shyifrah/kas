@@ -1,10 +1,7 @@
 package com.kas.mq.server.internal;
 
 import java.util.Collection;
-import java.util.Map;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
-import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -28,11 +25,6 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
   private ILogger mLogger;
   
   /**
-   * Session controller
-   */
-  private IController mController;
-  
-  /**
    * Queue repository
    */
   private IRepository mRepository;
@@ -45,15 +37,14 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
   /**
    * Construct the {@link ServerHouseKeeper}, passing it the {@link IController} and the {@link ServerRepository}
    * 
-   * @param controller The client controller object
+   * @param config The KAS/MQ server's configuration
    * @param repository The server's queue repository
    */
-  public ServerHouseKeeper(IController controller, IRepository repository)
+  public ServerHouseKeeper(MqConfiguration config, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mController = controller;
+    mConfig = config;
     mRepository = repository;
-    mConfig = controller.getConfig();
   }
   
   /**
@@ -80,26 +71,6 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
     }
     else
     {
-      mLogger.debug("ServerHouseKeeper::run() - Perform handlers cleanup...");
-      Map<UniqueId, SessionHandler> handlers = mController.getHandlers();
-      for (Map.Entry<UniqueId, SessionHandler> entry : handlers.entrySet())
-      {
-        UniqueId uid = entry.getKey();
-        SessionHandler handler = entry.getValue();
-        
-        mLogger.diag("ServerHouseKeeper::run() - Checking handler ID: " + uid);
-        if (handler.isRunning())
-        {
-          mLogger.diag("ServerHouseKeeper::run() - Handler is still running, skip it");
-        }
-        else
-        {
-          mLogger.debug("ServerHouseKeeper::run() - Handler " + uid + " finished working. Remove from the map");
-          handlers.remove(uid);
-          ThreadPool.removeTask(handler);
-        }
-      }
-      
       mLogger.debug("ServerHouseKeeper::run() - Expiring messages...");
       Collection<MqQueue> destinations = mRepository.getLocalQueues();
       for (MqQueue dest : destinations)
@@ -126,7 +97,6 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Controller=(").append(StringUtils.asPrintableString(mController)).append(")\n")
       .append(pad).append("  Repository=(").append(StringUtils.asPrintableString(mRepository)).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();

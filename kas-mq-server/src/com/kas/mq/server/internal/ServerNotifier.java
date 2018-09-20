@@ -4,7 +4,6 @@ import java.util.Map;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
-import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
@@ -12,7 +11,6 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqRequestFactory;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.RemoteQueuesManager;
 
@@ -34,21 +32,15 @@ public class ServerNotifier extends AKasObject
   private IRepository mRepository;
   
   /**
-   * The session controller
-   */
-  private IController mController;
-  
-  /**
    * Construct a {@link ServerNotifier server notifier}, specifying the associated {@link MqConfiguration}
    * 
    * @param config The associated {@link MqConfiguration}
    * @param controller The session controller
    */
-  public ServerNotifier(MqConfiguration config, IController controller, IRepository repository)
+  public ServerNotifier(MqConfiguration config, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
-    mController = controller;
     mRepository = repository;
   }
   
@@ -85,15 +77,15 @@ public class ServerNotifier extends AKasObject
     String qmgr = mConfig.getManagerName();
     IMqMessage<?> message = MqRequestFactory.createSystemStateMessage(qmgr, false);
     
-    Properties props = new Properties();
-    for (Map.Entry<UniqueId, SessionHandler> entry : mController.getHandlers().entrySet())
-    {
-      UniqueId uid = entry.getKey();
-      String key = IMqConstants.cKasPropertySyssSessionPrefix + "." + uid.toString();
-      props.setStringProperty(key, uid.toString());
-    }
-    message.setSubset(props);
-    
+//    Properties props = new Properties();
+//    for (Map.Entry<UniqueId, SessionHandler> entry : mController.getHandlers().entrySet())
+//    {
+//      UniqueId uid = entry.getKey();
+//      String key = IMqConstants.cKasPropertySyssSessionPrefix + "." + uid.toString();
+//      props.setStringProperty(key, uid.toString());
+//    }
+//    message.setSubset(props);
+//    
     notify(message, false);
     
     mLogger.debug("ServerNotifier::notifyServerDeactivated() - OUT");

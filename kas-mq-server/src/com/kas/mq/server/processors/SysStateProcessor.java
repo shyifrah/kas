@@ -1,8 +1,6 @@
 package com.kas.mq.server.processors;
 
-import java.util.Map;
 import com.kas.infra.base.Properties;
-import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
@@ -66,13 +64,13 @@ public class SysStateProcessor extends AProcessor
       if (!mActivated && manager.isActive())
       {
         manager.deactivate();
-        Properties sessions = mRequest.getSubset(IMqConstants.cKasPropertySyssSessionPrefix);
-        for (Map.Entry<Object, Object> entry : sessions.entrySet())
-        {
-          String sessId = (String)entry.getValue();
-          UniqueId uid = UniqueId.fromString(sessId);
-          mController.termHandler(uid);
-        }
+//        Properties sessions = mRequest.getSubset(IMqConstants.cKasPropertySyssSessionPrefix);
+//        for (Map.Entry<Object, Object> entry : sessions.entrySet())
+//        {
+//          String sessId = (String)entry.getValue();
+//          UniqueId uid = UniqueId.fromString(sessId);
+//          mController.termHandler(uid);
+//        }
       }
       else if (mActivated && !manager.isActive())
       {

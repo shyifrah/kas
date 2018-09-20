@@ -87,7 +87,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     mLogger.info("KAS/MQ base application initialized successfully");
     mRepository = new ServerRepository(mConfig);
     mController = new SessionController(this);
-    mNotifier = new ServerNotifier(mConfig, mController, mRepository);
+    mNotifier = new ServerNotifier(mConfig, mRepository);
     
     try
     {
@@ -108,7 +108,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       return false;
     }
     
-    mHousekeeper = new ServerHouseKeeper(mController, mRepository);
+    mHousekeeper = new ServerHouseKeeper(mConfig, mRepository);
     ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
     
     mNotifier.notifyServerActivated();
