@@ -40,13 +40,13 @@ public class MessageGetProcessor extends AProcessor
    */
   public IMqMessage<?> process()
   {
-    mLogger.debug("GetMessageProcessor::process() - IN");
+    mLogger.debug("MessageGetProcessor::process() - IN");
     
     IMqMessage<?> result = null;
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
-      mLogger.debug("GetMessageProcessor::process() - " + mDesc);
+      mLogger.debug("MessageGetProcessor::process() - " + mDesc);
       result = respond();
     }
     else
@@ -54,19 +54,19 @@ public class MessageGetProcessor extends AProcessor
       mTimeout  = mRequest.getLongProperty(IMqConstants.cKasPropertyGetTimeout, IMqConstants.cDefaultTimeout);
       mInterval = mRequest.getLongProperty(IMqConstants.cKasPropertyGetInterval, IMqConstants.cDefaultPollingInterval);
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyGetQueueName, null);
-      mLogger.debug("GetMessageProcessor::process() - Queue=" + mQueue + "; Timeout=" + mTimeout+ "; Interval=" + mInterval);
+      mLogger.debug("MessageGetProcessor::process() - Queue=" + mQueue + "; Timeout=" + mTimeout+ "; Interval=" + mInterval);
       
       MqQueue queue = mRepository.getQueue(mQueue);
       if ((mQueue == null) || (mQueue.length() == 0))
       {
         mDesc = "Invalid queue name: null or empty string";
-        mLogger.debug("GetMessageProcessor::process() - " + mDesc);
+        mLogger.debug("MessageGetProcessor::process() - " + mDesc);
         result = respond();
       }
       else if (queue == null)
       {
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
-        mLogger.debug("GetMessageProcessor::process() - " + mDesc);
+        mLogger.debug("MessageGetProcessor::process() - " + mDesc);
         result = respond();
       }
       else
@@ -76,20 +76,20 @@ public class MessageGetProcessor extends AProcessor
         {
           mDesc = "No message found in queue " + mQueue;
           mCode = EMqCode.cWarn;
-          mLogger.debug("GetMessageProcessor::process() - " + mDesc);
+          mLogger.debug("MessageGetProcessor::process() - " + mDesc);
           result = respond();
         }
         else
         {
           mDesc = "Successfully retrieved message from queue " + mQueue;
-          mLogger.debug("GetMessageProcessor::process() - " + mDesc);
+          mLogger.debug("MessageGetProcessor::process() - " + mDesc);
           mCode = EMqCode.cOkay;
           result.setResponse(new MqResponse(mCode, mValue, mDesc));
         }
       }
     }
     
-    mLogger.debug("GetMessageProcessor::process() - OUT");
+    mLogger.debug("MessageGetProcessor::process() - OUT");
     return result;
   }
 }

@@ -39,16 +39,16 @@ public class MessagePutProcessor extends AProcessor
    */
   public IMqMessage<?> process()
   {
-    mLogger.debug("PutMessageProcessor::process() - IN");
+    mLogger.debug("MessagePutProcessor::process() - IN");
     
     if (!mConfig.isEnabled())
     {
-      mLogger.debug("GetMessageProcessor::process() - KAS/MQ server is disabled");
+      mLogger.debug("MessagePutProcessor::process() - KAS/MQ server is disabled");
     }
     else
     {
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyPutQueueName, null);
-      mLogger.debug("PutMessageProcessor::process() - Queue=" + mQueue);
+      mLogger.debug("MessagePutProcessor::process() - Queue=" + mQueue);
       
       
       MqQueue queue = mRepository.getQueue(mQueue);
@@ -56,13 +56,13 @@ public class MessagePutProcessor extends AProcessor
       if ((mQueue == null) || (mQueue.length() == 0))
       {
         mDesc = "Invalid queue name: null or empty string";
-        mLogger.debug("PutMessageProcessor::process() - " + mDesc);
+        mLogger.debug("MessagePutProcessor::process() - " + mDesc);
         dead.put(mRequest);
       }
       else if (queue == null)
       {
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist, message is sent to dead queue";
-        mLogger.debug("PutMessageProcessor::process() - " + mDesc);
+        mLogger.debug("MessagePutProcessor::process() - " + mDesc);
         dead.put(mRequest);
       }
       else
@@ -72,19 +72,19 @@ public class MessagePutProcessor extends AProcessor
         if (!success)
         {
           mDesc = "Failed to put message to queue " + mQueue + ", message is sent to dead queue";
-          mLogger.debug("PutMessageProcessor::process() - " + mDesc);
+          mLogger.debug("MessagePutProcessor::process() - " + mDesc);
           dead.put(mRequest);
         }
         else
         {
           mDesc = "Message was put to queue " + mQueue;
           mCode = EMqCode.cOkay;
-          mLogger.debug("PutMessageProcessor::process() - " + mDesc);
+          mLogger.debug("MessagePutProcessor::process() - " + mDesc);
         }
       }
     }
     
-    mLogger.debug("PutMessageProcessor::process() - OUT");
+    mLogger.debug("MessagePutProcessor::process() - OUT");
     return null;
   }
 }
