@@ -1,11 +1,14 @@
 package com.kas.mq.server.processors;
 
+import java.util.Map;
 import com.kas.infra.base.Properties;
+import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.RemoteQueuesManager;
 
 /**
@@ -27,10 +30,11 @@ public class SysStateProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
+   * @param repository The server's repository
    */
-  SysStateProcessor(IMqMessage<?> request, IController controller)
+  SysStateProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
-    super(request, controller);
+    super(request, controller, repository);
   }
   
   /**
@@ -62,6 +66,13 @@ public class SysStateProcessor extends AProcessor
       if (!mActivated && manager.isActive())
       {
         manager.deactivate();
+        Properties sessions = mRequest.getSubset(IMqConstants.cKasPropertySyssSessionPrefix);
+        for (Map.Entry<Object, Object> entry : sessions.entrySet())
+        {
+          String sessId = (String)entry.getValue();
+          UniqueId uid = UniqueId.fromString(sessId);
+          mController.termHandler(uid);
+        }
       }
       else if (mActivated && !manager.isActive())
       {

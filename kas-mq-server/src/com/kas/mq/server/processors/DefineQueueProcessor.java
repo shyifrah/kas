@@ -9,6 +9,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * Processor for defining queues
@@ -29,10 +30,11 @@ public class DefineQueueProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
+   * @param repository The server's repository
    */
-  DefineQueueProcessor(IMqMessage<?> request, IController controller)
+  DefineQueueProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
-    super(request, controller);
+    super(request, controller, repository);
   }
   
   /**

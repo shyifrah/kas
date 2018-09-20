@@ -5,6 +5,7 @@ import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqRemoteQueue;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * Processor for handling repository updates (define/delete queues)
@@ -26,10 +27,11 @@ public class RepoUpdateProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
+   * @param repository The server's repository
    */
-  RepoUpdateProcessor(IMqMessage<?> request, IController controller)
+  RepoUpdateProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
-    super(request, controller);
+    super(request, controller, repository);
   }
   
   /**

@@ -8,6 +8,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * Processor for querying information about queues
@@ -30,10 +31,11 @@ public class QueryQueueProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
+   * @param repository The server's repository
    */
-  QueryQueueProcessor(IMqMessage<?> request, IController controller)
+  QueryQueueProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
-    super(request, controller);
+    super(request, controller, repository);
   }
   
   /**
@@ -80,7 +82,7 @@ public class QueryQueueProcessor extends AProcessor
         if (!manager.isActive())
         {
           IMqMessage<?> sysStateRequest = MqRequestFactory.createSystemStateMessage(mOrigin, true);
-          IProcessor processor = new SysStateProcessor(sysStateRequest, mController);
+          IProcessor processor = new SysStateProcessor(sysStateRequest, mController, mRepository);
           processor.process();
         }
       }

@@ -6,6 +6,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * Processor for getting a message from a queue
@@ -27,10 +28,11 @@ public class MessageGetProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
+   * @param repository The server's repository
    */
-  MessageGetProcessor(IMqMessage<?> request, IController controller)
+  MessageGetProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
-    super(request, controller);
+    super(request, controller, repository);
   }
   
   /**

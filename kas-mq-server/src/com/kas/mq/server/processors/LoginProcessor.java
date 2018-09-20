@@ -5,6 +5,7 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 
 /**
@@ -29,12 +30,14 @@ public class LoginProcessor extends AProcessor
   /**
    * Construct a {@link LoginProcessor}
    * 
+   * @param request The request message
    * @param controller The session controller
+   * @param repository The server's repository
    * @param handler The session handler
    */
-  LoginProcessor(IMqMessage<?> request, IController controller, SessionHandler handler)
+  LoginProcessor(IMqMessage<?> request, IController controller, IRepository repository, SessionHandler handler)
   {
-    super(request, controller);
+    super(request, controller, repository);
     mHandler = handler;
   }
   

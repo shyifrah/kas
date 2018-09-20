@@ -4,6 +4,7 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 
 /**
  * Processor for shutting down the KAS/MQ server
@@ -17,11 +18,11 @@ public class ShutdownProcessor extends AProcessor
    * 
    * @param request The request message
    * @param controller The session controller
-   * @param handler The session handler
+   * @param repository The server's repository
    */
-  ShutdownProcessor(IMqMessage<?> request, IController controller)
+  ShutdownProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
-    super(request, controller);
+    super(request, controller, repository);
   }
   
   /**

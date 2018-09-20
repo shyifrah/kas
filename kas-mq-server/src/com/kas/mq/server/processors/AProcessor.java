@@ -50,13 +50,13 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * @param request The request message to be processed
    * @param controller The session conrtoller
    */
-  AProcessor(IMqMessage<?> request, IController controller)
+  AProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mRequest = request;
     mController = controller;
     mConfig = controller.getConfig();
-    mRepository = controller.getRepository();
+    mRepository = repository;
   }
   
   /**

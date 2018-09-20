@@ -6,6 +6,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.server.IController;
+import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 
 /**
@@ -19,7 +20,7 @@ public class ProcessorFactory
 {
   static private ILogger sLogger = LoggerFactory.getLogger(ProcessorFactory.class);
   
-  static public IProcessor newProcessor(IController controller, SessionHandler handler, IMqMessage<?> request)
+  static public IProcessor newProcessor(IController controller, IRepository repository, SessionHandler handler, IMqMessage<?> request)
   {
     sLogger.debug("ProcessorFactory::newProcessor() - IN");
     
@@ -30,32 +31,32 @@ public class ProcessorFactory
     switch (type)
     {
       case cLogin:
-        processor = new LoginProcessor(request, controller, handler);
+        processor = new LoginProcessor(request, controller, repository, handler);
         break;
       case cDefineQueue:
-        processor = new DefineQueueProcessor(request, controller);
+        processor = new DefineQueueProcessor(request, controller, repository);
         break;
       case cDeleteQueue:
-        processor = new DeleteQueueProcessor(request, controller);
+        processor = new DeleteQueueProcessor(request, controller, repository);
         break;
       case cQueryQueue:
-        processor = new QueryQueueProcessor(request, controller);
+        processor = new QueryQueueProcessor(request, controller, repository);
         break;
       case cRepoUpdate:
-        processor = new RepoUpdateProcessor(request, controller);
+        processor = new RepoUpdateProcessor(request, controller, repository);
         break;
       case cSysState:
-        processor = new SysStateProcessor(request, controller);
+        processor = new SysStateProcessor(request, controller, repository);
         break;
       case cShutdown:
-        processor = new ShutdownProcessor(request, controller);
+        processor = new ShutdownProcessor(request, controller, repository);
         break;
       case cGet:
-        processor = new MessageGetProcessor(request, controller);
+        processor = new MessageGetProcessor(request, controller, repository);
         break;
       case cUnknown:
       default:
-        processor = new MessagePutProcessor(request, controller);
+        processor = new MessagePutProcessor(request, controller, repository);
         break;
     }
     
