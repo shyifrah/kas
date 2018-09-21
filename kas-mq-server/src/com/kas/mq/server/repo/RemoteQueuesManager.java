@@ -180,27 +180,6 @@ public class RemoteQueuesManager extends MqManager
   }
   
   /**
-   * Notify remote KAS/MQ server that the local repository was updated
-   * 
-   * @param name The name of the queue that was subject to the update
-   * @param added If {@code true}, then queue {@code name} was added, otherwise, it was removed
-   */
-  void notifyRepositoryUpdated(String name, boolean added)
-  {
-    mLogger.debug("RemoteQueuesManager::notifyLocalQueueAdded() - IN, Name=" + name);
-    
-    MqClientImpl client = new MqClientImpl();
-    client.connect(mHost, mPort);
-    if (client.isConnected())
-    {
-      client.notifyRepoUpdate(mConfig.getManagerName(), name, added);
-    }
-    client.disconnect();
-    
-    mLogger.debug("RemoteQueuesManager::notifyLocalQueueAdded() - OUT");
-  }
-  
-  /**
    * Get a collection of all local queues
    * 
    * @return a collection of all local queues
