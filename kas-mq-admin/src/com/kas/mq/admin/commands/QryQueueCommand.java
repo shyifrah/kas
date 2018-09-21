@@ -5,7 +5,7 @@ import java.util.Scanner;
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 
 /**
  * A QUERY QUEUE command
@@ -22,7 +22,7 @@ public class QryQueueCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QryQueueCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  protected QryQueueCommand(Scanner scanner, TokenDeque args, MqConnection client)
   {
     super(scanner, args, client);
   }

@@ -6,7 +6,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
@@ -106,7 +106,7 @@ public class DefineQueueProcessor extends AProcessor
         
         mLogger.debug("DefineQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqClientImpl client = new MqClientImpl();
+        MqConnection client = new MqConnection();
         client.connect(address.getHost(), address.getPort());
         if (client.isConnected())
         {

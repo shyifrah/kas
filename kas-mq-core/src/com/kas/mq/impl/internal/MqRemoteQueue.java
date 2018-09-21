@@ -12,7 +12,7 @@ public class MqRemoteQueue extends MqQueue
   /**
    * The client that will execute the actual commands for getting/putting messages
    */
-  private MqClientImpl mClient;
+  private MqConnection mClient;
   
   /**
    * Construct a {@link MqRemoteQueue} object
@@ -23,7 +23,7 @@ public class MqRemoteQueue extends MqQueue
   public MqRemoteQueue(MqManager mgr, String name)
   {
     super(mgr, name);
-    mClient = new MqClientImpl();
+    mClient = new MqConnection();
   }
   
   /**

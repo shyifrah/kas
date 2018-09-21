@@ -9,7 +9,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.AMqMessage;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 
 /**
  * A KAS/MQ client
@@ -26,7 +26,7 @@ public final class MqContext extends AKasObject
   /**
    * The actual client
    */
-  private MqClientImpl mDelegator = new MqClientImpl();
+  private MqConnection mDelegator = new MqConnection();
   
   /**
    * Connect client to the KAS/MQ server.

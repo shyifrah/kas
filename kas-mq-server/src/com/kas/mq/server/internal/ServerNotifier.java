@@ -9,7 +9,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.RemoteQueuesManager;
@@ -113,7 +113,7 @@ public class ServerNotifier extends AKasObject
       
       mLogger.debug("ServerNotifier::notify() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on server state change");
       
-      MqClientImpl client = new MqClientImpl();
+      MqConnection client = new MqConnection();
       client.connect(address.getHost(), address.getPort());
       if (client.isConnected())
       {

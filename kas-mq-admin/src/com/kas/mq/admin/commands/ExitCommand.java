@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 
 /**
  * An EXIT command
@@ -29,7 +29,7 @@ public class ExitCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual disconnection
    */
-  protected ExitCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  protected ExitCommand(Scanner scanner, TokenDeque args, MqConnection client)
   {
     super(scanner, args, client);
   }

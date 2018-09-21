@@ -11,7 +11,7 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.admin.commands.CliCommandFactory;
 import com.kas.mq.admin.commands.ICliCommand;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 
 /**
  * MQ administration CLI.
@@ -23,9 +23,9 @@ public class KasMqAdmin extends AKasMqAppl
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
   
   /**
-   * A {@link MqClientImpl} which will act as the client
+   * A {@link MqConnection} which will act as the client
    */
-  private MqClientImpl mClientImpl = new MqClientImpl();
+  private MqConnection mClientImpl = new MqConnection();
   
   /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments

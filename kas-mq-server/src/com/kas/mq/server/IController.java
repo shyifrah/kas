@@ -2,6 +2,7 @@ package com.kas.mq.server;
 
 import com.kas.infra.base.IObject;
 import com.kas.mq.MqConfiguration;
+import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.server.internal.SessionHandler;
 
 /**
@@ -30,6 +31,20 @@ public interface IController extends IObject
    * @return the controller's MQ configuration
    */
   public abstract MqConfiguration getConfig();
+  
+  /**
+   * Allocate new connection
+   * 
+   * @return return new {@link MqConnection}
+   */
+  public abstract MqConnection allocateConnection();
+  
+  /**
+   * Release a connection
+   * 
+   * @param conn The {@link MqConnection} to release
+   */
+  public abstract void releaseConnection(MqConnection conn);
   
   /**
    * Shutdown all handlers and mark the main server's thread it should terminate

@@ -1,6 +1,5 @@
 package com.kas.mq.server.repo;
 
-import java.util.Collection;
 import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
@@ -169,25 +168,6 @@ public class RemoteQueuesManager extends MqManager
     
     mLogger.debug("RemoteQueuesManager::removeQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return (MqRemoteQueue)queue;
-  }
-  
-  /**
-   * Get a collection of all local queues
-   * 
-   * @return a collection of all local queues
-   */
-  Collection<MqQueue> getAll()
-  {
-    mLogger.debug("RemoteQueuesManager::getAll() - IN");
-    
-    Collection<MqQueue> result = null;
-    if (isActive())
-    {
-      result = mQueues.values();
-    }
-    
-    mLogger.debug("RemoteQueuesManager::getAll() - IN");
-    return result;
   }
   
   /**

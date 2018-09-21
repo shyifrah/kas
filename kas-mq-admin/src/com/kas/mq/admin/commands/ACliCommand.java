@@ -4,7 +4,7 @@ import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.internal.MqConnection;
 
 /**
  * A basic command
@@ -21,7 +21,7 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   /**
    * The client program that will actually execute the commands
    */
-  protected MqClientImpl mClient;
+  protected MqConnection mClient;
   
   /**
    * A scanner in order to read user's input
@@ -34,7 +34,7 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
    * @param cmdWords The command arguments
    * @param client The client
    */
-  ACliCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  ACliCommand(Scanner scanner, TokenDeque args, MqConnection client)
   {
     mScanner = scanner;
     mCommandArgs = args;
