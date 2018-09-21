@@ -6,8 +6,6 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqClientImpl;
-//import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
@@ -21,11 +19,6 @@ import com.kas.mq.impl.internal.MqRemoteQueue;
 public class RemoteQueuesManager extends MqManager
 {
   /**
-   * KAS/MQ server configuration
-   */
-  private MqConfiguration mConfig;
-  
-  /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
@@ -33,7 +26,6 @@ public class RemoteQueuesManager extends MqManager
   RemoteQueuesManager(MqConfiguration config, String name)
   {
     super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
-    mConfig = config;
   }
   
   /**
