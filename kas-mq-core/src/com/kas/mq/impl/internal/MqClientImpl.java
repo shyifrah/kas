@@ -154,8 +154,7 @@ public class MqClientImpl extends AKasObject
     }
     else
     {
-      UniqueId uid = mSessionId == null ? UniqueId.generate() : mSessionId;
-      IMqMessage<?> request = MqRequestFactory.createLoginRequest(user, pwd, uid);
+      IMqMessage<?> request = MqRequestFactory.createLoginRequest(user, pwd);
       mLogger.debug("MqClientImpl::login() - sending login request: " + request.toPrintableString(0));
       try
       {
@@ -163,6 +162,8 @@ public class MqClientImpl extends AKasObject
         mLogger.debug("MqClientImpl::login() - received response: " + reply.toPrintableString(0));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
+          String sid = reply.getStringProperty(IMqConstants.cKasPropertyLoginSession, UniqueId.cNullUniqueIdAsString);
+          UniqueId uid = UniqueId.fromString(sid);
           success = true;
           mUser = user;
           mSessionId = uid;

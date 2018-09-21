@@ -1,6 +1,5 @@
 package com.kas.mq.server.processors;
 
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
@@ -23,11 +22,10 @@ public class LoginProcessor extends AProcessor
   
   /**
    * Extracted input from the request:
-   * user's name and the BASE-64 encoded password (in string format) and the session Id in string format
+   * user's name and the BASE-64 encoded password (in string format)
    */
   private String mUser;
   private String mSb64Pass;
-  private String mSessionIdStr;
   
   /**
    * Construct a {@link LoginProcessor}
@@ -61,7 +59,6 @@ public class LoginProcessor extends AProcessor
     {
       mUser = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginUserName, null);
       mSb64Pass = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginPassword, null);
-      mSessionIdStr = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginSession, null);
       mLogger.debug("LoginProcessor::process() - User=" + mUser + "; Pass=" + mSb64Pass);
       
       byte [] confPwd = mController.getConfig().getUserPassword(mUser);
@@ -78,8 +75,6 @@ public class LoginProcessor extends AProcessor
         mDesc = "User " + mUser + " successfully authenticated";
         mCode = EMqCode.cOkay;
         mHandler.setActiveUserName(mUser);
-        UniqueId uid = UniqueId.fromString(mSessionIdStr);
-        mHandler.setSessionId(uid);
       }
     }
     

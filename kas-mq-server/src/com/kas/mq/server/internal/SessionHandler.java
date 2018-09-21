@@ -50,7 +50,7 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * The session ID for this session
    */
-  private UniqueId mSessionId = null;
+  private UniqueId mSessionId;
   
   /**
    * Active user name
@@ -79,7 +79,7 @@ public class SessionHandler extends AKasObject implements Runnable
     mMessenger = MessengerFactory.create(socket);
     
     mLogger = LoggerFactory.getLogger(this.getClass());
-    
+    mSessionId = UniqueId.generate();
     mActiveUserName = null;
   }
   
