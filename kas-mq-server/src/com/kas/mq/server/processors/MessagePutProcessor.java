@@ -86,6 +86,6 @@ public class MessagePutProcessor extends AProcessor
     }
     
     mLogger.debug("MessagePutProcessor::process() - OUT");
-    return null;
+    return respond();
   }
 }

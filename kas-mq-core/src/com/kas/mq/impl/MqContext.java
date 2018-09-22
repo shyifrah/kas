@@ -171,6 +171,10 @@ public final class MqContext extends AKasObject
     {
       result = mConnection.queryQueue(name, prefix, all);
     }
+    else if ((name != null) && (name.length() == 0) && (prefix))
+    {
+      result = mConnection.queryQueue(name, prefix, all);
+    }
     else
     {
       setResponse("Query failed, invalid queue name" + (prefix ? " prefix: " : ": ") + ":" + name);
