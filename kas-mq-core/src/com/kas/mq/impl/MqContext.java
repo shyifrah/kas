@@ -9,10 +9,10 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.AMqMessage;
-import com.kas.mq.impl.internal.MqConnection;
 
 /**
- * A KAS/MQ client
+ * A KAS/MQ context is basically a KAS/MQ client, providing all basic
+ * functionality a client will need in order to exploit KAS/MQ services.
  * 
  * @author Pippo
  */
@@ -26,7 +26,7 @@ public final class MqContext extends AKasObject
   /**
    * The actual client
    */
-  private MqConnection mDelegator = new MqConnection();
+  private MqContextConnection mConnection = new MqContextConnection();
   
   /**
    * Connect client to the KAS/MQ server.
@@ -52,13 +52,13 @@ public final class MqContext extends AKasObject
       throw new KasException("Validation failed. \"" + user + "\" is not a valid user name");
     
     
-    mDelegator.connect(host, port);
+    mConnection.connect(host, port);
     if (!isConnected())
-      throw new KasException("Error - connect() failed. Client response: " + mDelegator.getResponse());
+      throw new KasException("Error - connect() failed. Client response: " + mConnection.getResponse());
     
-    boolean authenticated = mDelegator.login(user, pwd);
+    boolean authenticated = mConnection.login(user, pwd);
     if (!authenticated)
-      throw new KasException("Error - login() failed. Client response: " + mDelegator.getResponse());
+      throw new KasException("Error - login() failed. Client response: " + mConnection.getResponse());
     
     mLogger.debug("MqContext::connect() - OUT");
   }
@@ -76,9 +76,9 @@ public final class MqContext extends AKasObject
   {
     mLogger.debug("MqContext::disconnect() - IN");
     
-    mDelegator.disconnect();
+    mConnection.disconnect();
     if (isConnected())
-      throw new KasException("Error - disconnect() failed. Client response: " + mDelegator.getResponse());
+      throw new KasException("Error - disconnect() failed. Client response: " + mConnection.getResponse());
     
     mLogger.debug("MqContext::disconnect() - OUT");
   }
@@ -92,7 +92,7 @@ public final class MqContext extends AKasObject
    */
   public boolean isConnected()
   {
-    return mDelegator.isConnected();
+    return mConnection.isConnected();
   }
   
   /**
@@ -119,7 +119,7 @@ public final class MqContext extends AKasObject
     }
     else
     {
-      success = mDelegator.defineQueue(queue, threshold);
+      success = mConnection.defineQueue(queue, threshold);
     }
     
     mLogger.debug("MqContext::defineQueue() - OUT, Returns=" + success);
@@ -142,7 +142,7 @@ public final class MqContext extends AKasObject
     boolean success = false;
     if (Validators.isQueueName(queue))
     {
-      success = mDelegator.deleteQueue(queue, force);
+      success = mConnection.deleteQueue(queue, force);
     }
     else
     {
@@ -169,7 +169,7 @@ public final class MqContext extends AKasObject
     Properties result = null;
     if (Validators.isQueueName(name))
     {
-      result = mDelegator.queryQueue(name, prefix, all);
+      result = mConnection.queryQueue(name, prefix, all);
     }
     else
     {
@@ -197,7 +197,7 @@ public final class MqContext extends AKasObject
     IMqMessage<?> result = null;
     if (Validators.isQueueName(queue))
     {
-      result = mDelegator.get(queue, timeout, interval);
+      result = mConnection.get(queue, timeout, interval);
     }
     else
     {
@@ -222,7 +222,7 @@ public final class MqContext extends AKasObject
     
     if (Validators.isQueueName(queue))
     {
-      mDelegator.put(queue, message);
+      mConnection.put(queue, message);
     }
     else
     {
@@ -241,7 +241,7 @@ public final class MqContext extends AKasObject
   {
     mLogger.debug("MqContext::put() - IN");
     
-    boolean success = mDelegator.shutdown();
+    boolean success = mConnection.shutdown();
     
     mLogger.debug("MqContext::put() - OUT, Returns=" + success);
     return success;
@@ -254,7 +254,7 @@ public final class MqContext extends AKasObject
    */
   public String getResponse()
   {
-    return mDelegator.getResponse();
+    return mConnection.getResponse();
   }
 
   /**
@@ -264,7 +264,17 @@ public final class MqContext extends AKasObject
    */
   public void setResponse(String response)
   {
-    mDelegator.setResponse(response);
+    mConnection.setResponse(response);
+  }
+  
+  /**
+   * Get string representation of the object
+   * 
+   * @return string representation of the object
+   */
+  public String toString()
+  {
+    return mConnection.toString();
   }
   
   /**
@@ -280,7 +290,7 @@ public final class MqContext extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  ClientImpl=(").append(mDelegator.toPrintableString(0)).append(")\n");
+      .append(pad).append("  Connection=(").append(mConnection.toPrintableString(0)).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();
   }

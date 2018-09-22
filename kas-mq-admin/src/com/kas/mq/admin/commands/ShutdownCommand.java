@@ -3,8 +3,9 @@ package com.kas.mq.admin.commands;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.MqConnection;
+import com.kas.mq.impl.MqContext;
 
 /**
  * A SHUTDOWN command
@@ -27,7 +28,7 @@ public class ShutdownCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected ShutdownCommand(Scanner scanner, TokenDeque args, MqConnection client)
+  protected ShutdownCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }
@@ -85,13 +86,16 @@ public class ShutdownCommand extends ACliCommand
     }
     
     boolean shutdown = mClient.shutdown();
-    StringBuilder sb = new StringBuilder(mClient.getResponse());
     if (shutdown)
     {
-      mClient.disconnect();
+      try
+      {
+        mClient.disconnect();
+      }
+      catch (KasException e) {}
     }
     
-    writeln(sb.toString());
+    writeln(mClient.getResponse());
     writeln(" ");
     return false;
   }

@@ -3,9 +3,10 @@ package com.kas.mq.admin.commands;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
-import com.kas.mq.impl.internal.MqConnection;
+import com.kas.mq.impl.MqContext;
 
 /**
  * A CONNECT command
@@ -29,7 +30,7 @@ public class ConnectCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected ConnectCommand(Scanner scanner, TokenDeque args, MqConnection client)
+  protected ConnectCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }
@@ -126,14 +127,6 @@ public class ConnectCommand extends ACliCommand
       return false;
     }
     
-    mClient.connect(host, port);
-    if (!mClient.isConnected())
-    {
-      writeln(mClient.getResponse());
-      writeln(" ");
-      return false;
-    }
-    
     TokenDeque input = read("Enter user name: ");
     String username = input.poll();
     String extra = input.poll();
@@ -161,7 +154,11 @@ public class ConnectCommand extends ACliCommand
     input = read("Enter password: ");
     String password = input.getOriginalString();
     
-    mClient.login(username, password);
+    try
+    {
+      mClient.connect(host, port, username, password);
+    }
+    catch (KasException e) {} 
     
     writeln(mClient.getResponse());
     writeln(" ");

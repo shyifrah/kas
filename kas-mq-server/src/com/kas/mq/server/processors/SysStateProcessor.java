@@ -64,13 +64,7 @@ public class SysStateProcessor extends AProcessor
       if (!mActivated && manager.isActive())
       {
         manager.deactivate();
-//        Properties sessions = mRequest.getSubset(IMqConstants.cKasPropertySyssSessionPrefix);
-//        for (Map.Entry<Object, Object> entry : sessions.entrySet())
-//        {
-//          String sessId = (String)entry.getValue();
-//          UniqueId uid = UniqueId.fromString(sessId);
-//          mController.termHandler(uid);
-//        }
+        result = respond();
       }
       else if (mActivated && !manager.isActive())
       {
@@ -82,8 +76,6 @@ public class SysStateProcessor extends AProcessor
         result = respond();
         result.setSubset(localQueues);
       }
-      
-      if (result == null) result = respond();
     }
     
     mLogger.debug("SysStateProcessor::process() - OUT");

@@ -1,0 +1,77 @@
+package com.kas.mq.server.internal;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import com.kas.infra.base.UniqueId;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
+
+/**
+ * Not really a pool, just a class that keeps track of all allocated connections
+ * 
+ * @author Pippo
+ */
+public class ServerConnPool
+{
+  /**
+   * Singleton instance
+   */
+  private static ServerConnPool sInstance = new ServerConnPool();
+  
+  /**
+   * Get the singleton instance
+   * 
+   * @return the singleton instance
+   */
+  public static ServerConnPool getInstance()
+  {
+    return sInstance;
+  }
+  
+  /**
+   * Private constructor
+   */
+  private ServerConnPool()
+  {
+    mLogger = LoggerFactory.getLogger(this.getClass());
+  }
+  
+  /**
+   * Logger
+   */
+  private ILogger mLogger;
+  
+  /**
+   * Map of all allocated connections
+   */
+  private Map<UniqueId, MqServerConnection> mConnections = new ConcurrentHashMap<UniqueId, MqServerConnection>();
+  
+  /**
+   * Allocate a new {@link MqServerConnection}
+   * 
+   * @return the newly allocated connection
+   */
+  public MqServerConnection allocate()
+  {
+    mLogger.debug("ServerConnectionPool::allocate() - IN");
+    MqServerConnection conn = new MqServerConnection();
+    UniqueId uid = conn.getConnectionId();
+    mConnections.put(uid, conn);
+    mLogger.debug("ServerConnectionPool::allocate() - OUT");
+    return conn;
+  }
+  
+  /**
+   * Release the specified connection
+   * 
+   * @param conn {@link MqServerConnection} to be released
+   */
+  public void release(MqServerConnection conn)
+  {
+    mLogger.debug("ServerConnectionPool::release() - IN");
+    mConnections.remove(conn.getConnectionId());
+    conn.disconnect();
+    conn = null;
+    mLogger.debug("ServerConnectionPool::release() - OUT");
+  }
+}

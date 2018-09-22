@@ -12,7 +12,6 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IMqServer;
 import com.kas.mq.server.IRepository;
@@ -34,11 +33,6 @@ public class SessionController extends AKasObject implements IController
    * A map of session id to session handler
    */
   private Map<UniqueId, SessionHandler> mHandlers;
-  
-  /**
-   * A map of allocated connections
-   */
-  private Map<UniqueId, MqConnection> mConnections;
   
   /**
    * KAS/MQ configuration
@@ -90,33 +84,6 @@ public class SessionController extends AKasObject implements IController
     String remoteAddress = new NetworkAddress(socket).toString();
     mConsole.info("New connection accepted from " + remoteAddress);
     ThreadPool.execute(handler);
-  }
-  
-  /**
-   * Allocate new connection
-   * 
-   * @return return new {@link MqConnection}
-   */
-  public MqConnection allocateConnection()
-  {
-    mLogger.debug("SessionController::allocateConnection() - IN");
-    MqConnection conn = new MqConnection();
-    mConnections.put(conn.getConnectionId(), conn);
-    mLogger.debug("SessionController::allocateConnection() - OUT");
-    return conn;
-  }
-  
-  /**
-   * Release a connection
-   * 
-   * @param conn The {@link MqConnection} to release
-   */
-  public void releaseConnection(MqConnection conn)
-  {
-    mLogger.debug("SessionController::releaseConnection() - IN");
-    UniqueId id = conn.getConnectionId();
-    mConnections.remove(id);
-    mLogger.debug("SessionController::releaseConnection() - OUT");
   }
   
   /**

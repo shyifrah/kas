@@ -2,7 +2,7 @@ package com.kas.mq.admin.commands;
 
 import java.util.Scanner;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.MqConnection;
+import com.kas.mq.impl.MqContext;
 
 /**
  * A Factory for creating {@link ICliCommand} objects based on the command verb (the first argument)
@@ -18,7 +18,7 @@ public class CliCommandFactory
    * @param cmdWords The command arguments
    * @return A {@link ICliCommand} object or {@code null} if the command verb is unknown
    */
-  static public ICliCommand newCommand(Scanner scanner, TokenDeque cmdWords, MqConnection client)
+  static public ICliCommand newCommand(Scanner scanner, TokenDeque cmdWords, MqContext client)
   {
     String verb = cmdWords.poll().toUpperCase();
     

@@ -3,8 +3,9 @@ package com.kas.mq.admin.commands;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.MqConnection;
+import com.kas.mq.impl.MqContext;
 
 /**
  * A DISCONNECT command
@@ -28,7 +29,7 @@ public class DisconnectCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual disconnection
    */
-  protected DisconnectCommand(Scanner scanner, TokenDeque args, MqConnection client)
+  protected DisconnectCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }
@@ -81,7 +82,11 @@ public class DisconnectCommand extends ACliCommand
       return false;
     }
     
-    mClient.disconnect();
+    try
+    {
+      mClient.disconnect();
+    }
+    catch (KasException e) {}
     
     writeln(mClient.getResponse());
     writeln(" ");

@@ -5,10 +5,11 @@ import com.kas.comm.impl.NetworkAddress;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.internal.MqServerConnection;
+import com.kas.mq.server.internal.ServerConnPool;
 
 /**
  * Processor for deleting queues
@@ -119,15 +120,16 @@ public class DeleteQueueProcessor extends AProcessor
         
         mLogger.debug("DeleteQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqConnection client = new MqConnection();
-        client.connect(address.getHost(), address.getPort());
-        if (client.isConnected())
+        MqServerConnection conn = ServerConnPool.getInstance().allocate();
+        conn.connect(address.getHost(), address.getPort());
+        if (conn.isConnected())
         {
-          boolean success = client.notifyRepoUpdate(localQmgr, mQueue, false);
+          boolean success = conn.notifyRepoUpdate(localQmgr, mQueue, false);
           mLogger.debug("DeleteQueueProcessor::postprocess() - Notification returned: " + success);
           
-          client.disconnect();
+          conn.disconnect();
         }
+        ServerConnPool.getInstance().release(conn);
       }
     }
     

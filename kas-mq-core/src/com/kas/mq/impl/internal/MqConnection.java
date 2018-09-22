@@ -23,14 +23,20 @@ import com.kas.mq.impl.IMqMessage;
 public class MqConnection extends AKasObject
 {
   /**
-   * Messenger
-   */
-  private IMessenger mMessenger;
-  
-  /**
    * A logger
    */
-  private ILogger mLogger;
+  protected ILogger mLogger;
+  
+  /**
+   * Messenger
+   */
+  protected IMessenger mMessenger;
+  
+  /**
+   * Active user.<br>
+   * This data member is set after each successful {@link #login(String, String) login}.
+   */
+  protected String mUser = null;
   
   /**
    * Connection ID
@@ -41,12 +47,6 @@ public class MqConnection extends AKasObject
    * The session ID the connection is serving
    */
   private UniqueId mSessionId = null;
-  
-  /**
-   * Active user.<br>
-   * This data member is set after each successful {@link #login(String, String) login}.
-   */
-  private String mUser = IMqConstants.cSystemUserName;
   
   /**
    * The response from last call
@@ -121,7 +121,7 @@ public class MqConnection extends AKasObject
       logInfoAndSetResponse("Connection terminated with " + addr.toString());
       
       mMessenger = null;
-      mUser = IMqConstants.cSystemUserName;
+      mUser = null;
       mSessionId = null;
     }
     
@@ -244,13 +244,13 @@ public class MqConnection extends AKasObject
    * 
    * @param queue The target queue name
    * @param message The message to be put
-   * @return {@code true} if message was put into the specified queue, or {@code false} otherwise
+   * @return the {@link IMqMessage} returned by the messenger
    */
-  public boolean put(String queue, IMqMessage<?> message)
+  public IMqMessage<?> put(String queue, IMqMessage<?> message)
   {
     mLogger.debug("MqConnection::put() - IN");
     
-    boolean success = false;
+    IMqMessage<?> reply = null;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
@@ -262,11 +262,10 @@ public class MqConnection extends AKasObject
         message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue);
         message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
         message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
-        mLogger.debug("MqConnection::put() - sending message: " + StringUtils.asPrintableString(message));
-        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(message);
         
+        mLogger.debug("MqConnection::put() - sending message: " + StringUtils.asPrintableString(message));
+        reply = (IMqMessage<?>)mMessenger.sendAndReceive(message);
         mLogger.debug("MqConnection::put() - received response: " + StringUtils.asPrintableString(reply));
-        success = reply.getResponse().getCode() == EMqCode.cOkay;
         setResponse(reply.getResponse().getDesc());
       }
       catch (IOException e)
@@ -279,7 +278,7 @@ public class MqConnection extends AKasObject
     }
     
     mLogger.debug("MqConnection::put() - OUT");
-    return success;
+    return reply;
   }
   
 //  /**
@@ -566,9 +565,9 @@ public class MqConnection extends AKasObject
   }
   
   /**
-   * Log INFO a message
+   * Log INFO and set a message as the connection's response
    * 
-   * @param message The message to log and set as the client's response
+   * @param message The message to log and set as the connection's response
    */
   private void logInfoAndSetResponse(String message)
   {
@@ -577,9 +576,9 @@ public class MqConnection extends AKasObject
   }
   
   /**
-   * Log ERROR a message
+   * Log ERROR and set a message as the connection's response
    * 
-   * @param message The message to log and set as the client's response
+   * @param message The message to log and set as the connection's response
    */
   private void logErrorAndSetResponse(String message)
   {
@@ -595,9 +594,9 @@ public class MqConnection extends AKasObject
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("Session...........: ").append(StringUtils.asString(mSessionId)).append('\n');
-    sb.append("  User.......: ").append(StringUtils.asString(mUser)).append('\n');
-    sb.append("  Messenger..: ").append(StringUtils.asString(mMessenger)).append('\n');
+    sb.append("Session...........: ").append(mSessionId == null ? "N/A" : mSessionId).append('\n');
+    sb.append("  User.......: ").append(mUser == null ? "N/A" : mUser).append('\n');
+    sb.append("  Address....: ").append(mMessenger == null ? "N/A" : mMessenger.toString()).append('\n');
     return sb.toString();
   }
   

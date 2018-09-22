@@ -9,7 +9,6 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.RemoteQueuesManager;
@@ -32,6 +31,11 @@ public class ServerNotifier extends AKasObject
   private IRepository mRepository;
   
   /**
+   * Connection pool
+   */
+  private ServerConnPool mPool;
+  
+  /**
    * Construct a {@link ServerNotifier server notifier}, specifying the associated {@link MqConfiguration}
    * 
    * @param config The associated {@link MqConfiguration}
@@ -42,6 +46,7 @@ public class ServerNotifier extends AKasObject
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
     mRepository = repository;
+    mPool = ServerConnPool.getInstance();
   }
   
   /**
@@ -77,15 +82,6 @@ public class ServerNotifier extends AKasObject
     String qmgr = mConfig.getManagerName();
     IMqMessage<?> message = MqRequestFactory.createSystemStateMessage(qmgr, false);
     
-//    Properties props = new Properties();
-//    for (Map.Entry<UniqueId, SessionHandler> entry : mController.getHandlers().entrySet())
-//    {
-//      UniqueId uid = entry.getKey();
-//      String key = IMqConstants.cKasPropertySyssSessionPrefix + "." + uid.toString();
-//      props.setStringProperty(key, uid.toString());
-//    }
-//    message.setSubset(props);
-//    
     notify(message, false);
     
     mLogger.debug("ServerNotifier::notifyServerDeactivated() - OUT");
@@ -99,6 +95,7 @@ public class ServerNotifier extends AKasObject
    * prior to assuming it should be put into a queue.
    * 
    * @param message The {@link IMqMessage} that will be sent to each and every remote address
+   * @return the reply message received from receiver 
    */
   private void notify(IMqMessage<?> message, boolean activate)
   {
@@ -113,23 +110,25 @@ public class ServerNotifier extends AKasObject
       
       mLogger.debug("ServerNotifier::notify() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on server state change");
       
-      MqConnection client = new MqConnection();
-      client.connect(address.getHost(), address.getPort());
-      if (client.isConnected())
+      MqServerConnection conn = mPool.allocate();
+      conn.connect(address.getHost(), address.getPort());
+      if (conn.isConnected())
       {
-        IMqMessage<?> reply = client.notifySysState(message, activate);
-        if (reply != null)
+        conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+        IMqMessage<?> reply = conn.notifySysState(message);
+        
+        Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+        RemoteQueuesManager rqmgr = (RemoteQueuesManager)mRepository.getRemoteManager(remoteQmgrName);
+        if (!rqmgr.isActive())
         {
-          Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
-          RemoteQueuesManager rqmgr = (RemoteQueuesManager)mRepository.getRemoteManager(remoteQmgrName);
-          if (!rqmgr.isActive())
-          {
-            rqmgr.activate();
-            rqmgr.setQueues(remoteQueues);
-          }
+          rqmgr.activate();
+          rqmgr.setQueues(remoteQueues);
         }
-        client.disconnect();
+        
+        conn.disconnect();
       }
+      
+      mPool.release(conn);
     }
     
     mLogger.debug("ServerNotifier::notify() - OUT");
