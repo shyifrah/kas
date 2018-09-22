@@ -86,6 +86,7 @@ public class ShutdownCommand extends ACliCommand
     }
     
     boolean shutdown = mClient.shutdown();
+    String resp = mClient.getResponse();
     if (shutdown)
     {
       try
@@ -95,7 +96,7 @@ public class ShutdownCommand extends ACliCommand
       catch (KasException e) {}
     }
     
-    writeln(mClient.getResponse());
+    writeln(resp);
     writeln(" ");
     return false;
   }

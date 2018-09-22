@@ -569,7 +569,7 @@ public class MqConnection extends AKasObject
    * 
    * @param message The message to log and set as the connection's response
    */
-  private void logInfoAndSetResponse(String message)
+  protected void logInfoAndSetResponse(String message)
   {
     mLogger.info(message);
     setResponse(message);
@@ -580,7 +580,7 @@ public class MqConnection extends AKasObject
    * 
    * @param message The message to log and set as the connection's response
    */
-  private void logErrorAndSetResponse(String message)
+  protected void logErrorAndSetResponse(String message)
   {
     mLogger.error(message);
     setResponse(message);

@@ -89,9 +89,18 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextDelegator::shutdown() - IN");
     
-    IMqMessage<?> request = MqRequestFactory.createShutdownRequest(mUser);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
+    boolean success = false;
+    if (mMessenger == null)
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createShutdownRequest(mUser);
+      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      success = reply.getResponse().getCode() == EMqCode.cOkay;
+      logInfoAndSetResponse(reply.getResponse().getDesc());
+    }
     
     mLogger.debug("MqContextDelegator::shutdown() - OUT");
     return success;
