@@ -5,8 +5,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
  * A GET command
@@ -29,7 +29,7 @@ public class GetCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected GetCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  protected GetCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }

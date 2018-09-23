@@ -142,7 +142,12 @@ public class SessionController extends AKasObject implements IController
   
   /**
    * Graceful shutdown.<br>
-   * Signal all handlers to shutdown and signal the main server's thread it should stop
+   * <br>
+   * First, we signal all handlers to shutdown, so the next time a handler
+   * tests if it should shutdown the result will be that it needs to end.<br>
+   * Than, we're closing all opened connections, so if a handler depends on one
+   * that won't prevent it from from shutting down...<br>
+   * Finally, we signal the main server's thread it should stop.
    */
   public void shutdown()
   {
@@ -150,7 +155,6 @@ public class SessionController extends AKasObject implements IController
     
     mConsole.info("KAS/MQ server received a Shutdown request");
     mConsole.info("Signaling all handlers to terminate...");
-    
     for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
     {
       UniqueId uid = entry.getKey();
@@ -160,32 +164,13 @@ public class SessionController extends AKasObject implements IController
       handler.stop();
     }
     
+    mConsole.info("Closing all opened connections...");
+    ServerConnPool.getInstance().shutdown();
+    
     mConsole.info("Signaling main thread to terminate...");
     mServer.stop();
     
     mLogger.debug("SessionController::shutdown() - OUT");
-  }
-
-  /**
-   * Brutal shutdown.<br>
-   * Terminate forcefully all still-running handlers
-   */
-  public void forceShutdown()
-  {
-    mLogger.debug("SessionController::forceShutdown() - IN");
-    
-    mConsole.info("Checking if there are hanged handlers and terminate them forcefully...");
-    
-    for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
-    {
-      UniqueId uid = entry.getKey();
-      SessionHandler handler = entry.getValue();
-      
-      mLogger.debug("SessionController::forceShutdown() - Killing Handler for session ID " + uid);
-      handler.killSession();
-    }
-    
-    mLogger.debug("SessionController::forceShutdown() - OUT");
   }
 
   /**

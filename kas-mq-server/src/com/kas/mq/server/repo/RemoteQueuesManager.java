@@ -1,16 +1,15 @@
 package com.kas.mq.server.repo;
 
-import java.util.Collection;
 import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqClientImpl;
-//import com.kas.mq.impl.internal.MqClientImpl;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
+import com.kas.mq.server.internal.MqServerConnection;
+import com.kas.mq.server.internal.ServerConnPool;
 
 /**
  * The {@link RemoteQueuesManager} is the class that does the actual managing of remote queues
@@ -21,11 +20,6 @@ import com.kas.mq.impl.internal.MqRemoteQueue;
 public class RemoteQueuesManager extends MqManager
 {
   /**
-   * KAS/MQ server configuration
-   */
-  private MqConfiguration mConfig;
-  
-  /**
    * Construct the {@link RemoteQueuesManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
@@ -33,7 +27,6 @@ public class RemoteQueuesManager extends MqManager
   RemoteQueuesManager(MqConfiguration config, String name)
   {
     super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
-    mConfig = config;
   }
   
   /**
@@ -63,7 +56,8 @@ public class RemoteQueuesManager extends MqManager
       String qname = key.substring(IMqConstants.cKasPropertyQryqResultPrefix.length()+1);
       if (qname.length() > 0)
       {
-        MqRemoteQueue queue = new MqRemoteQueue(this, qname);
+        MqServerConnection conn = ServerConnPool.getInstance().allocate();
+        MqRemoteQueue queue = new MqRemoteQueue(this, qname, conn);
         mLogger.debug("RemoteQueuesManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
         mQueues.put(qname, queue);
       }
@@ -145,8 +139,9 @@ public class RemoteQueuesManager extends MqManager
     {
       if (name != null)
       {
+        MqServerConnection conn = ServerConnPool.getInstance().allocate();
         name = name.toUpperCase();
-        queue = new MqRemoteQueue(this, name);
+        queue = new MqRemoteQueue(this, name, conn);
         mQueues.put(name, queue);
       }
     }
@@ -177,46 +172,6 @@ public class RemoteQueuesManager extends MqManager
     
     mLogger.debug("RemoteQueuesManager::removeQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return (MqRemoteQueue)queue;
-  }
-  
-  /**
-   * Notify remote KAS/MQ server that the local repository was updated
-   * 
-   * @param name The name of the queue that was subject to the update
-   * @param added If {@code true}, then queue {@code name} was added, otherwise, it was removed
-   */
-  void notifyRepositoryUpdated(String name, boolean added)
-  {
-    mLogger.debug("RemoteQueuesManager::notifyLocalQueueAdded() - IN, Name=" + name);
-    
-    MqClientImpl client = new MqClientImpl();
-    client.connect(mHost, mPort);
-    if (client.isConnected())
-    {
-      client.notifyRepoUpdate(mConfig.getManagerName(), name, added);
-    }
-    client.disconnect();
-    
-    mLogger.debug("RemoteQueuesManager::notifyLocalQueueAdded() - OUT");
-  }
-  
-  /**
-   * Get a collection of all local queues
-   * 
-   * @return a collection of all local queues
-   */
-  Collection<MqQueue> getAll()
-  {
-    mLogger.debug("RemoteQueuesManager::getAll() - IN");
-    
-    Collection<MqQueue> result = null;
-    if (isActive())
-    {
-      result = mQueues.values();
-    }
-    
-    mLogger.debug("RemoteQueuesManager::getAll() - IN");
-    return result;
   }
   
   /**

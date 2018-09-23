@@ -2,7 +2,7 @@ package com.kas.mq.admin.commands;
 
 import java.util.Scanner;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.MqContext;
 
 /**
  * A QUERY SESSION command
@@ -19,7 +19,7 @@ public class QrySessionCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QrySessionCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  protected QrySessionCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }

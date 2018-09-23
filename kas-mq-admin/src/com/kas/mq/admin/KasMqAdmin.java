@@ -11,7 +11,7 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
 import com.kas.mq.admin.commands.CliCommandFactory;
 import com.kas.mq.admin.commands.ICliCommand;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.MqContext;
 
 /**
  * MQ administration CLI.
@@ -23,9 +23,9 @@ public class KasMqAdmin extends AKasMqAppl
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
   
   /**
-   * A {@link MqClientImpl} which will act as the client
+   * A {@link MqContext} which will act as the client
    */
-  private MqClientImpl mClientImpl = new MqClientImpl();
+  private MqContext mClient = new MqContext();
   
   /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments
@@ -143,7 +143,7 @@ public class KasMqAdmin extends AKasMqAppl
     }
     
     String verb = cmdWords.peek();
-    ICliCommand command = CliCommandFactory.newCommand(scanner, cmdWords, mClientImpl);
+    ICliCommand command = CliCommandFactory.newCommand(scanner, cmdWords, mClient);
     if (command == null)
     {
       writeln("Unknown command verb: \"" + verb + "\". Type HELP to see available commands");
@@ -203,7 +203,7 @@ public class KasMqAdmin extends AKasMqAppl
     sb.append(name()).append("(\n")
       .append(pad).append("  Config=(").append(StringUtils.asPrintableString(mConfig)).append(")\n")
       .append(pad).append("  ShutdownHook=(").append(StringUtils.asPrintableString(mShutdownHook)).append(")\n")
-      .append(pad).append("  ClientImpl=(").append(mClientImpl.toPrintableString(0)).append(")\n");
+      .append(pad).append("  Context=(").append(mClient.toPrintableString(0)).append(")\n");
     sb.append(pad).append(")\n");
     return sb.toString();
   }

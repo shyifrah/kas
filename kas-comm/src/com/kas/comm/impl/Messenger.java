@@ -157,16 +157,17 @@ public class Messenger extends AKasObject implements IMessenger
     
     if (mInputStream == null) throw new IOException("Null input stream; Messenger is probably not connected");
     
-    PacketHeader header = new PacketHeader(mInputStream);
     IPacket packet = null;
     try
     {
       mSocket.setSoTimeout(timeout);
+      PacketHeader header = new PacketHeader(mInputStream);
+      
       packet = header.read(mInputStream);
     }
     catch (KasException e)
     {
-      sLogger.warn("An error occurred while trying to read pack from input stream. Exception: ", e);
+      sLogger.warn("An error occurred while trying to read packet from input stream. Exception: ", e);
     }
     
     sLogger.debug("Messenger::receive() - OUT");

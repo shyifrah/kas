@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.impl.internal.MqClientImpl;
+import com.kas.mq.impl.MqContext;
 
 /**
  * A DEFINE command
@@ -28,7 +28,7 @@ public class DefineCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DefineCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  protected DefineCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }

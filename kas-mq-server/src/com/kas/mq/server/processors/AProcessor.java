@@ -48,7 +48,8 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * Construct abstract {@link IProcessor}
    * 
    * @param request The request message to be processed
-   * @param controller The session conrtoller
+   * @param controller The session controller
+   * @param repository The server's repository
    */
   AProcessor(IMqMessage<?> request, IController controller, IRepository repository)
   {

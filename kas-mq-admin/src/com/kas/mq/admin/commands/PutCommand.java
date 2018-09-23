@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqTextMessage;
-import com.kas.mq.impl.internal.MqClientImpl;
 
 /**
  * A PUT command
@@ -30,7 +30,7 @@ public class PutCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected PutCommand(Scanner scanner, TokenDeque args, MqClientImpl client)
+  protected PutCommand(Scanner scanner, TokenDeque args, MqContext client)
   {
     super(scanner, args, client);
   }

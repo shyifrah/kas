@@ -17,7 +17,7 @@ public interface IMqConstants
   /**
    * Get polling interval length
    */
-  static public final long cDefaultPollingInterval = 150000L;
+  static public final long cDefaultPollingInterval = 1000L;
   
   /**
    * Expiration
