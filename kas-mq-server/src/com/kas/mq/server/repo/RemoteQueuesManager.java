@@ -8,6 +8,8 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
+import com.kas.mq.server.internal.MqServerConnection;
+import com.kas.mq.server.internal.ServerConnPool;
 
 /**
  * The {@link RemoteQueuesManager} is the class that does the actual managing of remote queues
@@ -54,7 +56,8 @@ public class RemoteQueuesManager extends MqManager
       String qname = key.substring(IMqConstants.cKasPropertyQryqResultPrefix.length()+1);
       if (qname.length() > 0)
       {
-        MqRemoteQueue queue = new MqRemoteQueue(this, qname);
+        MqServerConnection conn = ServerConnPool.getInstance().allocate();
+        MqRemoteQueue queue = new MqRemoteQueue(this, qname, conn);
         mLogger.debug("RemoteQueuesManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
         mQueues.put(qname, queue);
       }
@@ -136,8 +139,9 @@ public class RemoteQueuesManager extends MqManager
     {
       if (name != null)
       {
+        MqServerConnection conn = ServerConnPool.getInstance().allocate();
         name = name.toUpperCase();
-        queue = new MqRemoteQueue(this, name);
+        queue = new MqRemoteQueue(this, name, conn);
         mQueues.put(name, queue);
       }
     }

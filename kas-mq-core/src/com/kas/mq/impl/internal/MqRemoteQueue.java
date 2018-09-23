@@ -1,5 +1,6 @@
 package com.kas.mq.impl.internal;
 
+import com.kas.mq.impl.IMqConnection;
 import com.kas.mq.impl.IMqMessage;
 
 /**
@@ -12,7 +13,7 @@ public class MqRemoteQueue extends MqQueue
   /**
    * The client that will execute the actual commands for getting/putting messages
    */
-  private MqConnection mClient;
+  private IMqConnection mConnection;
   
   /**
    * Construct a {@link MqRemoteQueue} object
@@ -20,10 +21,10 @@ public class MqRemoteQueue extends MqQueue
    * @param mgr The owning {@link MqManager} object
    * @param name The name of this destination object
    */
-  public MqRemoteQueue(MqManager mgr, String name)
+  public MqRemoteQueue(MqManager mgr, String name, IMqConnection conn)
   {
     super(mgr, name);
-    mClient = new MqConnection();
+    mConnection = conn;
   }
   
   /**
@@ -41,14 +42,14 @@ public class MqRemoteQueue extends MqQueue
     boolean success = false;
     if (message != null)
     {
-      mClient.connect(mManager.getHost(), mManager.getPort());
-      if (mClient.isConnected())
+      mConnection.connect(mManager.getHost(), mManager.getPort());
+      if (mConnection.isConnected())
       {
-        mClient.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
-        mClient.put(mName, message);
+        mConnection.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+        mConnection.put(mName, message);
         success = true;
       }
-      mClient.disconnect();
+      mConnection.disconnect();
     }
     
     mLogger.debug("MqRemoteQueue::put() - OUT, Returns=" + success);
@@ -69,13 +70,13 @@ public class MqRemoteQueue extends MqQueue
     
     IMqMessage<?> result = null;
     
-    mClient.connect(mManager.getHost(), mManager.getPort());
-    if (mClient.isConnected())
+    mConnection.connect(mManager.getHost(), mManager.getPort());
+    if (mConnection.isConnected())
     {
-      mClient.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
-      result = mClient.get(mName, timeout, interval);
+      mConnection.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+      result = mConnection.get(mName, timeout, interval);
     }
-    mClient.disconnect();
+    mConnection.disconnect();
     
     mLogger.debug("MqRemoteQueue::get() - OUT");
     return result;

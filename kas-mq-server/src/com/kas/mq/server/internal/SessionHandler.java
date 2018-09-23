@@ -75,7 +75,7 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mController = controller;
     mRepository = repository;
-    socket.setSoTimeout(mController.getConfig().getConnSocketTimeout());
+    socket.setSoTimeout(0);
     mMessenger = MessengerFactory.create(socket);
     
     mLogger = LoggerFactory.getLogger(this.getClass());
@@ -105,20 +105,14 @@ public class SessionHandler extends AKasObject implements Runnable
           ERequestType requestType = request.getRequestType();
           mLogger.debug("SessionHandler::run() - Received request of type: " + StringUtils.asPrintableString(requestType));
           
-          boolean success = false;
-          
           IProcessor processor = ProcessorFactory.newProcessor(mController, mRepository, this, request);
           IMqMessage<?> reply = processor.process();
           
-          // not all processors generates a reply, but if there is one - send it back
-          if (reply != null)
-          {
-            mLogger.debug("SessionHandler::run() - Responding with the message: " + StringUtils.asPrintableString(reply));
-            mMessenger.send(reply);
-          }
+          mLogger.debug("SessionHandler::run() - Responding with the message: " + StringUtils.asPrintableString(reply));
+          mMessenger.send(reply);
           
-          success = processor.postprocess(reply);
-          setRunningState(success);
+          boolean stopped = isRunning() & processor.postprocess(reply);
+          setRunningState(stopped);
         }
       }
       catch (SocketTimeoutException e)
@@ -202,16 +196,6 @@ public class SessionHandler extends AKasObject implements Runnable
   public void stop()
   {
     setRunningState(false);
-  }
-
-  /**
-   * Forcefully killing the session.<br>
-   * This method is called by the {@link IController} in circumstances where the session seems hung 
-   */
-  void killSession()
-  {
-    mMessenger.cleanup();
-    mMessenger = null;
   }
 
   /**
