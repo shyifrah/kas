@@ -32,9 +32,18 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextDelegator::defineQueue() - IN");
     
-    IMqMessage<?> request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
+      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      success = reply.getResponse().getCode() == EMqCode.cOkay;
+      logInfoAndSetResponse(reply.getResponse().getDesc());
+    }
     
     mLogger.debug("MqContextDelegator::defineQueue() - OUT");
     return success;
@@ -51,9 +60,18 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextDelegator::deleteQueue() - IN");
     
-    IMqMessage<?> request = MqRequestFactory.createDeleteQueueRequest(queue, force);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
+    boolean success = false;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createDeleteQueueRequest(queue, force);
+      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      success = reply.getResponse().getCode() == EMqCode.cOkay;
+      logInfoAndSetResponse(reply.getResponse().getDesc());
+    }
     
     mLogger.debug("MqContextDelegator::deleteQueue() - OUT");
     return success;
@@ -72,9 +90,17 @@ public class MqContextConnection extends MqConnection
     mLogger.debug("MqContextDelegator::queryQueue() - IN");
     
     Properties result = null;
-    IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all);
+      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+      logInfoAndSetResponse(reply.getResponse().getDesc());
+    }
     
     mLogger.debug("MqContextDelegator::queryQueue() - OUT");
     return result;
@@ -90,7 +116,7 @@ public class MqContextConnection extends MqConnection
     mLogger.debug("MqContextDelegator::shutdown() - IN");
     
     boolean success = false;
-    if (mMessenger == null)
+    if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
     }
