@@ -72,22 +72,40 @@ public class QueryQueueProcessor extends AProcessor
       mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
       
       result = respond(null, props);
-      
-      // if this request was originated from a remote qmgr, we process it as if we got a SysState notification
-      if (mOrigin != null)
-      {
-        mLogger.debug("QueryQueueProcessor::process() - Origin is not null, checking if should also handle a sys-state change");
-        MqManager manager = mRepository.getRemoteManager(mOrigin);
-        if (!manager.isActive())
-        {
-          IMqMessage<?> sysStateRequest = MqRequestFactory.createSystemStateMessage(mOrigin, true);
-          IProcessor processor = new SysStateProcessor(sysStateRequest, mController, mRepository);
-          processor.process();
-        }
-      }
     }
     
     mLogger.debug("QueryQueueProcessor::process() - OUT");
     return result;
+  }
+  
+  /**
+   * Post-process queue query request.<br>
+   * <br>
+   * If a query request came from a remote qmgr, we also process it
+   * as if we got a sys-state request.
+   * 
+   * @param reply The reply message the processor's {@link #process()} method generated
+   * @return always {@code true} 
+   * 
+   * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage)
+   */
+  public boolean postprocess(IMqMessage<?> reply)
+  {
+    mLogger.debug("DefineQueueProcessor::postprocess() - IN");
+    
+    if (mOrigin != null)
+    {
+      mLogger.debug("QueryQueueProcessor::process() - Origin is not null, checking if should also handle a sys-state change");
+      MqManager manager = mRepository.getRemoteManager(mOrigin);
+      if (!manager.isActive())
+      {
+        IMqMessage<?> sysStateRequest = MqRequestFactory.createSystemStateMessage(mOrigin, true);
+        IProcessor processor = new SysStateProcessor(sysStateRequest, mController, mRepository);
+        processor.process();
+      }
+    }
+    
+    mLogger.debug("DefineQueueProcessor::postprocess() - OUT");
+    return true;
   }
 }
