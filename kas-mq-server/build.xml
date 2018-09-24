@@ -27,7 +27,7 @@
 	
   <!-- versioning -->
   <property name="build.major" value="1"/>
-  <property name="build.minor" value="1"/>
+  <property name="build.minor" value="2"/>
   <property name="build.mod"   value="0"/>
 
   <!-- targets -->
