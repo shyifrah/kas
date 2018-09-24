@@ -73,12 +73,28 @@ public class SysStateProcessor extends AProcessor
         ((RemoteQueuesManager)manager).setQueues(remoteQueues);
         
         Properties localQueues = mRepository.queryLocalQueues("", true, false);
-        result = respond();
-        result.setSubset(localQueues);
+        result = respond(null, localQueues);
       }
     }
     
     mLogger.debug("SysStateProcessor::process() - OUT");
     return result;
+  }
+  
+  /**
+   * Post-process request.<br>
+   * <br>
+   * DO NOT ADD A POST-PROCESS FOR SYS-STATE PROCESSOR.
+   * Its {@link #process()} is also called from QueryQueueProcessor, which means there might
+   * not be a possibility for its {@link #postprocess(IMqMessage)} to execute.
+   * 
+   * @param reply The reply message the processor's {@link #process()} method generated
+   * @return Always {@code true} 
+   * 
+   * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage)
+   */
+  public boolean postprocess(IMqMessage<?> reply)
+  {
+    return true;
   }
 }

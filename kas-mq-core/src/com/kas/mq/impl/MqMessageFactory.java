@@ -32,17 +32,17 @@ public class MqMessageFactory
   }
   
   /**
-   * Create a response message
+   * Create a dummy text message as a response to {@code request}
    * 
    * @param request A {@link IMqMessage} to which we reply
    * @param code A {@link EMqCode} representing how successful was the request.
    * @param val An integer value that describes the {@code code}
    * @param desc The message sent by the server to the client which describes the response code.
-   * @return a {@link IMqMessage<?>}
+   * @return a {@link MqTextMessage}
    */
-  static public IMqMessage<?> createResponse(IMqMessage<?> request, EMqCode code, int val, String desc)
+  static public MqTextMessage createResponse(IMqMessage<?> request, EMqCode code, int val, String desc)
   {
-    MqObjectMessage message = new MqObjectMessage();
+    MqTextMessage message = new MqTextMessage();
     message.setReferenceId(request.getMessageId());
     message.setResponse(new MqResponse(code, val, desc));
     return message;
