@@ -71,8 +71,7 @@ public class QueryQueueProcessor extends AProcessor
       mValue = props.size();
       mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
       
-      result = respond();
-      result.setSubset(props);
+      result = respond(null, props);
       
       // if this request was originated from a remote qmgr, we process it as if we got a SysState notification
       if (mOrigin != null)

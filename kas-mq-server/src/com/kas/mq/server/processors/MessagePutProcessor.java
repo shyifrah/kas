@@ -51,7 +51,6 @@ public class MessagePutProcessor extends AProcessor
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyPutQueueName, null);
       mLogger.debug("MessagePutProcessor::process() - Queue=" + mQueue);
       
-      
       MqQueue queue = mRepository.getQueue(mQueue);
       MqLocalQueue dead = mRepository.getDeadQueue();
       if ((mQueue == null) || (mQueue.length() == 0))

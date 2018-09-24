@@ -73,8 +73,7 @@ public class SysStateProcessor extends AProcessor
         ((RemoteQueuesManager)manager).setQueues(remoteQueues);
         
         Properties localQueues = mRepository.queryLocalQueues("", true, false);
-        result = respond();
-        result.setSubset(localQueues);
+        result = respond(null, localQueues);
       }
     }
     
