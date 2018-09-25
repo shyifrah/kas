@@ -599,7 +599,8 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
    */
   public void setSubset(Properties props)
   {
-    mProperties.putAll(props);
+    if (props != null)
+      mProperties.putAll(props);
   }
   
   /**

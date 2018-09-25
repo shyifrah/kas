@@ -98,7 +98,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    */
   public MqTextMessage respond()
   {
-    return MqMessageFactory.createResponse(mRequest, mCode, mValue, mDesc);
+    return respond(null, null);
   }
   
   /**

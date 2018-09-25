@@ -83,4 +83,6 @@ public interface IMqConstants
   static public final String cKasPropertyRepoQmgrName  = cKasPropertyPrefix + "repo.qmgr";
   static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";
   static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
+  
+  static public final String cKasPropertyQrysQueryType = cKasPropertyPrefix + "qrys.type";
 }

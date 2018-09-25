@@ -58,11 +58,11 @@ public class HelpCommand extends ACliCommand
     writeln("                   |                               |");
     writeln("                   +--- DISCONNECT|DISC -----------+");
     writeln("                   |                               |");
-    writeln("                   +--- DEFINE --------------------+");
+    writeln("                   +--- DEFINE|DEF ----------------+");
     writeln("                   |                               |");
-    writeln("                   +--- DELETE --------------------+");
+    writeln("                   +--- DELETE|DEL ----------------+");
     writeln("                   |                               |");
-    writeln("                   +--- QUERY ---------------------+");
+    writeln("                   +--- QUERY|Q -------------------+");
     writeln("                   |                               |");
     writeln("                   +--- PUT -----------------------+");
     writeln("                   |                               |");

@@ -1,5 +1,6 @@
 package com.kas.mq.impl;
 
+import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqConnection;
@@ -106,6 +107,33 @@ public class MqContextConnection extends MqConnection
     }
     
     mLogger.debug("MqContextConnection::queryQueue() - OUT");
+    return result;
+  }
+
+  /**
+   * Query KAS/MQ server for information
+   * 
+   * @param qType a {@link EQueryType} value that describes the type of query
+   * @return the message returned by the KAS/MQ server
+   */
+  public MqTextMessage queryServer(EQueryType qType)
+  {
+    mLogger.debug("MqContextConnection::queryServer() - IN");
+    
+    MqTextMessage result = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage<?> request = MqRequestFactory.createQueryServerRequest(qType);
+      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      result = (MqTextMessage)reply;
+      logInfoAndSetResponse(reply.getResponse().getDesc());
+    }
+    
+    mLogger.debug("MqContextConnection::queryServer() - OUT");
     return result;
   }
 

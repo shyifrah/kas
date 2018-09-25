@@ -40,6 +40,11 @@ public enum ERequestType implements IObject
   cQueryQueue,
   
   /**
+   * Query server info
+   */
+  cQueryServer,
+  
+  /**
    * Shutdown KAS/MQ server
    */
   cShutdown,

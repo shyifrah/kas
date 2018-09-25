@@ -2,6 +2,7 @@ package com.kas.mq.impl.internal;
 
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqTextMessage;
 
@@ -53,6 +54,14 @@ public class MqRequestFactory
     message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, prefix);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);
     message.setBoolProperty(IMqConstants.cKasPropertyQryqOutOnlyProps, outProps);
+    return message;
+  }
+  
+  static public MqTextMessage createQueryServerRequest(EQueryType qType)
+  {
+    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    message.setRequestType(ERequestType.cQueryServer);
+    message.setIntProperty(IMqConstants.cKasPropertyQrysQueryType, qType.ordinal());
     return message;
   }
   

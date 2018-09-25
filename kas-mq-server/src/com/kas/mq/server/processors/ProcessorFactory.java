@@ -42,6 +42,9 @@ public class ProcessorFactory
       case cQueryQueue:
         processor = new QueryQueueProcessor(request, controller, repository);
         break;
+      case cQueryServer:
+        processor = new QueryServerProcessor(request, controller, repository);
+        break;
       case cRepoUpdate:
         processor = new RepoUpdateProcessor(request, controller, repository);
         break;

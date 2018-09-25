@@ -58,6 +58,10 @@ public class QueryCommand extends ACliCommand
     writeln("                      |                                      +--- ALL -----+   |");
     writeln("                      |                                                        |");
     writeln("                      +--- SESSION|SESS ---------------------------------------+");
+    writeln("                      |                                                        |");
+    writeln("                      |                                                        |");
+    writeln("                      |                                                        |");
+    writeln("                      +--- CONFIGURATION|CONFIG|CONF|CFG-----------------------+");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
@@ -70,6 +74,9 @@ public class QueryCommand extends ACliCommand
     writeln("     -- For SESSION --");
     writeln("     Provide information about the current session.");
     writeln(" ");
+    writeln("     -- For CONFIGURATION --");
+    writeln("     Provide the server's active configuration.");
+    writeln(" ");
     writeln("Examples:");
     writeln(" ");
     writeln("     Query basic information about all queues matching regexp \\CLIENT.APP.*\\:");
@@ -80,6 +87,9 @@ public class QueryCommand extends ACliCommand
     writeln(" ");
     writeln("     Query information about the current session");
     writeln("          KAS/MQ Admin> Q SESS");
+    writeln(" ");
+    writeln("     Query server's configuration");
+    writeln("          KAS/MQ Admin> Q CONFIG");
     writeln(" ");
   }
   
@@ -106,10 +116,20 @@ public class QueryCommand extends ACliCommand
       return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
     if (type.equals("Q"))
       return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
+    
     if (type.equals("SESSION"))
       return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
     if (type.equals("SESS"))
       return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
+    
+    if (type.equals("CONFIGURATION"))
+      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("CONFIG"))
+      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("CONF"))
+      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("CFG"))
+      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

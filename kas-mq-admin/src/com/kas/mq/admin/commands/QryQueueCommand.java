@@ -81,7 +81,8 @@ public class QryQueueCommand extends ACliCommand
     }
     
     MqTextMessage result = mClient.queryQueue(name, prefix, all);
-    writeln(result.getBody());
+    if (result != null)
+      writeln(result.getBody());
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

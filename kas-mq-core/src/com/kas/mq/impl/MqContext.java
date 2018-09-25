@@ -6,6 +6,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.IMqMessage;
 
 /**
@@ -167,6 +168,22 @@ public final class MqContext extends AKasObject
     }
     
     mLogger.debug("MqContext::queryQueue() - OUT, Returns=" + result);
+    return result;
+  }
+  
+  /**
+   * Query KAS/MQ server for information
+   * 
+   * @param qType a {@link EQueryType} value that describes the type of query
+   * @return the message returned by the KAS/MQ server
+   */
+  public MqTextMessage queryServer(EQueryType qType)
+  {
+    mLogger.debug("MqContext::queryServer() - IN, QueryType=" + qType);
+    
+    MqTextMessage result = mConnection.queryServer(qType);
+    
+    mLogger.debug("MqContext::queryServer() - OUT, Returns=" + result);
     return result;
   }
   
