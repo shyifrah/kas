@@ -112,7 +112,10 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    */
   public MqTextMessage respond(String body, Properties props)
   {
-    return MqMessageFactory.createResponse(mRequest, mCode, mValue, mDesc);
+    MqTextMessage response = MqMessageFactory.createResponse(mRequest, mCode, mValue, mDesc);
+    response.setBody(body);
+    response.setSubset(props);
+    return response;
   }
   
   /**

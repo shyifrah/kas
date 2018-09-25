@@ -91,7 +91,7 @@ public class QueryQueueProcessor extends AProcessor
    */
   public boolean postprocess(IMqMessage<?> reply)
   {
-    mLogger.debug("DefineQueueProcessor::postprocess() - IN");
+    mLogger.debug("QueryQueueProcessor::postprocess() - IN");
     
     if (mOrigin != null)
     {
@@ -105,7 +105,7 @@ public class QueryQueueProcessor extends AProcessor
       }
     }
     
-    mLogger.debug("DefineQueueProcessor::postprocess() - OUT");
+    mLogger.debug("QueryQueueProcessor::postprocess() - OUT");
     return true;
   }
 }
