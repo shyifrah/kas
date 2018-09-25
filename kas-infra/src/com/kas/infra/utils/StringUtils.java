@@ -32,7 +32,19 @@ public class StringUtils
    */
   static public String asPrintableString(IObject obj)
   {
-    return (obj == null ? "null" : obj.toPrintableString(0));
+    return asPrintableString(obj, 0);
+  }
+  
+  /**
+   * Return {@link IObject#toPrintableString(int)} value, or "null" if object is null
+   * 
+   * @param obj The IObject
+   * @param level The padding level
+   * @return IObject's toPrintableString() value, or "null"
+   */
+  static public String asPrintableString(IObject obj, int level)
+  {
+    return (obj == null ? "null" : obj.toPrintableString(level));
   }
   
   /**
@@ -90,6 +102,20 @@ public class StringUtils
    */
   static public String asPrintableString(Collection<?> collection, int level)
   {
+    return asPrintableString(collection, level, false);
+  }
+  
+  /**
+   * Return the printable String value for a Collection object, just as if it had the 
+   * {@link com.kas.infra.base.IObject#toPrintableString(int)} method as part of it.
+   * 
+   * @param collection The {@link Collection}
+   * @param level Padding level
+   * @param iobj When {@code true}, {@code collection} holds {@link IObject} 
+   * @return the object's printable string representation 
+   */
+  static public String asPrintableString(Collection<?> collection, int level, boolean iobj)
+  {
     String pad = getPadding(level);
     StringBuilder sb = new StringBuilder();
     
@@ -99,8 +125,11 @@ public class StringUtils
     for (Object entry : collection)
     {
       ++i;
-      sb.append(pad)
-        .append(asString(entry));
+      sb.append(pad);
+      if (iobj)
+        sb.append(asPrintableString((IObject)entry, level+1));
+      else
+        sb.append(asString(entry));
       
       if (i + 1 <= size)
         sb.append("\n");

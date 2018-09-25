@@ -343,10 +343,10 @@ public class MqConfiguration extends AConfiguration
       sb.append(pad).append("    {" + entry.getKey() + '=' + StringUtils.asHexString(entry.getValue()) + "}\n");
     sb.append(pad).append("  )\n")
       .append(pad).append("  RemoteManagers=(\n")
-      .append(pad).append(StringUtils.asPrintableString(mRemoteManagersMap, level+2)).append("\n")
+      .append(StringUtils.asPrintableString(mRemoteManagersMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append("  PredefinedQueues=(\n")
-      .append(pad).append(StringUtils.asPrintableString(mPredefQueuesMap, level+2)).append("\n")
+      .append(StringUtils.asPrintableString(mPredefQueuesMap, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

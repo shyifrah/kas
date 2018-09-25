@@ -84,8 +84,12 @@ public class SerializerConfiguration extends AConfiguration
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  ID to Class=(").append(StringUtils.asPrintableString(mIdToClassMap, level+2)).append(")\n")
-      .append(pad).append("  Class to ID=(").append(StringUtils.asPrintableString(mClassToIdMap, level+2)).append(")\n")
+      .append(pad).append("  ID to Class=(\n");
+    sb.append(StringUtils.asPrintableString(mIdToClassMap, level+2)).append('\n');
+    sb.append(pad).append("  )\n")
+      .append(pad).append("  Class to ID=(\n");
+    sb.append(StringUtils.asPrintableString(mClassToIdMap, level+2)).append('\n');
+    sb.append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

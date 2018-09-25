@@ -1,11 +1,13 @@
 package com.kas.infra.config;
 
+import com.kas.infra.base.IObject;
+
 /**
  * A configuration listener.
  *   
  * @author Pippo
  */
-public interface IBaseListener
+public interface IBaseListener extends IObject
 {
   /**
    * Refresh configuration.<br>

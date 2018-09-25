@@ -14,6 +14,7 @@ import com.kas.infra.config.IConfiguration;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.infra.utils.StringUtils;
 
 /**
  * The {@link MainConfiguration} object class.<br>
@@ -361,14 +362,11 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     {
       sb.append(pad).append("  MonitoringDelay=").append(mConfigMonitoringDelay).append(" MilliSeconds\n")
         .append(pad).append("  MonitoringInterval=").append(mConfigMonitoringInterval).append(" MilliSeconds\n")
-        .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level + 1)).append(")\n")
-        .append(pad).append("  ConfigTask=(").append(mConfigTask.toPrintableString(level + 1)).append(")\n")
+        .append(pad).append("  Properties=(").append(mProperties.toPrintableString(level+1)).append(")\n")
+        .append(pad).append("  ConfigTask=(").append(mConfigTask.toPrintableString(level+1)).append(")\n")
         .append(pad).append("  Listeners=(\n");
-      
-      for (IBaseListener listener : mListeners)
-        sb.append(pad).append("    ").append(listener.toString()).append("\n");
-      
-      sb.append(pad).append("  )\n");
+      sb.append(StringUtils.asPrintableString(mListeners, level+2, true)).append(")\n");
+      sb.append(pad).append("  )");
     }
     
     sb.append(pad).append(")\n");
