@@ -1,18 +1,20 @@
 package com.kas.mq.server.internal;
 
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqContextConnection;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqConnection;
 import com.kas.mq.impl.internal.MqRequestFactory;
 
 /**
- * A {@link MqServerConnection} is an extended {@link MqConnection} used by server side
+ * A {@link MqServerConnection} is an extended {@link MqContextConnection} used by server side.
+ * It enhances the functionality provided by {@link MqContextConnection} by adding two more functions
+ * for notifying remote KAS/MQ servers that a server has changed its state from active to inactive
+ * (or vice versa) or that the local server's repository was updated (defined/deleted queue).
  * 
  * @author Pippo
  */
-public class MqServerConnection extends MqConnection
+public class MqServerConnection extends MqContextConnection
 {
   /**
    * Constructing the client
@@ -20,86 +22,6 @@ public class MqServerConnection extends MqConnection
   MqServerConnection()
   {
     super();
-  }
-
-  /**
-   * Define a new queue.
-   * 
-   * @param queue The queue name to define.
-   * @param threshold The queue threshold
-   * @return the {@code true} if queue was defined, {@code false} otherwise
-   */
-  public boolean defineQueue(String queue, int threshold)
-  {
-    mLogger.debug("MqServerConnection::defineQueue() - IN");
-    
-    IMqMessage<?> request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
-    
-    mLogger.debug("MqServerConnection::defineQueue() - OUT");
-    return success;
-  }
-  
-  /**
-   * Define a new queue.
-   * 
-   * @param queue The queue name to delete.
-   * @param force Should the queue be deleted even if its not empty.
-   * @return the {@code true} if queue was deleted, {@code false} otherwise
-   */
-  public boolean deleteQueue(String queue, boolean force)
-  {
-    mLogger.debug("MqServerConnection::deleteQueue() - IN");
-    
-    IMqMessage<?> request = MqRequestFactory.createDeleteQueueRequest(queue, force);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
-    
-    mLogger.debug("MqServerConnection::deleteQueue() - OUT");
-    return success;
-  }
-  
-  /**
-   * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
-   * 
-   * @param name The queue name.
-   * @param prefix If {@code true}, then {@code name} designates a queue name prefix.
-   * If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues
-   * @param outProps If {@code true}, the output of the query is returned
-   * only on top of the reply message's Properties. if {@code false}, the output is returned
-   * by means of the reply message's Properties <b>and</b> message body (formatted text). 
-   * @return the reply message returned from the server.
-   */
-  public MqTextMessage queryQueue(String name, boolean prefix, boolean all, boolean outProps)
-  {
-    mLogger.debug("MqServerConnection::queryQueue() - IN");
-    
-    MqTextMessage result = null;
-    IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all, outProps);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    result = (MqTextMessage)reply;
-    
-    mLogger.debug("MqServerConnection::queryQueue() - OUT");
-    return result;
-  }
-
-  /**
-   * Mark the KAS/MQ server it should shutdown
-   * 
-   * @return {@code true} if the server accepted the request, {@code false} otherwise
-   */
-  public boolean shutdown()
-  {
-    mLogger.debug("MqServerConnection::shutdown() - IN");
-    
-    IMqMessage<?> request = MqRequestFactory.createShutdownRequest(mUser);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
-    
-    mLogger.debug("MqServerConnection::shutdown() - OUT");
-    return success;
   }
   
   /**

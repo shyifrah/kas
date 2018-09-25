@@ -15,7 +15,7 @@ public class MqContextConnection extends MqConnection
   /**
    * Constructing the client
    */
-  MqContextConnection()
+  protected MqContextConnection()
   {
     super();
   }
