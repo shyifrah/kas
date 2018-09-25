@@ -14,9 +14,12 @@ public interface IMqGlobals
     cUnknown,
     
     /**
-     * Query active configuration
+     * Query configuration
      */
-    cQueryConfig,
+    cQueryConfigAll,
+    cQueryConfigLogging,
+    cQueryConfigMq,
+    cQueryConfigSerializer,
     
     ;
     

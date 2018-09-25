@@ -28,6 +28,13 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   private HashSet<WeakRef<IBaseListener>> mAppenderConfigsSet = new HashSet<WeakRef<IBaseListener>>();
   
   /**
+   * Construct the configuration
+   */
+  LoggingConfiguration()
+  {
+  }
+  
+  /**
    * Refresh configuration
    */
   public void refresh()

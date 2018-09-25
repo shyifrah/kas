@@ -45,6 +45,16 @@ public class AppenderManager extends AKasObject
   }
   
   /**
+   * Get the {@link LoggingConfiguration}
+   * 
+   * @return the {@link LoggingConfiguration}
+   */
+  public LoggingConfiguration getConfig()
+  {
+    return sConfig;
+  }
+  
+  /**
    * Get an appender by requestor class.<br>
    * <br>
    * If this is the first time the {@link LoggingConfiguration} is accessed, it is first initialized.<br>

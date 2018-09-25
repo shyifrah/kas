@@ -45,6 +45,28 @@ public class QryConfigCommand extends ACliCommand
    */
   public boolean run()
   {
+    String opt = mCommandArgs.poll();
+    if (opt == null)
+      opt = "ALL";
+    opt = opt.toUpperCase();
+    
+    EQueryType qType = EQueryType.cUnknown;
+    if (opt.equals("ALL"))
+      qType = EQueryType.cQueryConfigAll;
+    else if (opt.equals("LOG"))
+      qType = EQueryType.cQueryConfigLogging;
+    else if (opt.equals("MQ"))
+      qType = EQueryType.cQueryConfigMq;
+    else if (opt.equals("SERIALIZER"))
+      qType = EQueryType.cQueryConfigSerializer;
+    
+    if (qType == EQueryType.cUnknown)
+    {
+      writeln("Invalid query type \"" + opt + "\"");
+      writeln(" ");
+      return false;
+    }
+    
     if (mCommandArgs.size() > 0)
     {
       writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
@@ -52,7 +74,7 @@ public class QryConfigCommand extends ACliCommand
       return false;
     }
     
-    MqTextMessage result = mClient.queryServer(EQueryType.cQueryConfig);
+    MqTextMessage result = mClient.queryServer(qType);
     if (result != null)
       writeln(result.getBody());
     writeln(mClient.getResponse());

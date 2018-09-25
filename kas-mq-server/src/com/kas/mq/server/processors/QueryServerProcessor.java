@@ -1,7 +1,9 @@
 package com.kas.mq.server.processors;
 
 import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.comm.serializer.SerializerConfiguration;
 import com.kas.config.MainConfiguration;
+import com.kas.logging.impl.AppenderManager;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
@@ -57,8 +59,17 @@ public class QueryServerProcessor extends AProcessor
       
       switch (mQueryType)
       {
-        case cQueryConfig:
-          body = getConfig();
+        case cQueryConfigAll:
+          body = MainConfiguration.getInstance().toPrintableString();
+          break;
+        case cQueryConfigLogging:
+          body = AppenderManager.getInstance().getConfig().toPrintableString();
+          break;
+        case cQueryConfigMq:
+          body = mConfig.toPrintableString();
+          break;
+        case cQueryConfigSerializer:
+          body = SerializerConfiguration.getInstance().toPrintableString();
           break;
         case cUnknown:
         default:
@@ -70,11 +81,5 @@ public class QueryServerProcessor extends AProcessor
     
     mLogger.debug("QueryQueueProcessor::process() - OUT");
     return respond(body, null);
-  }
-  
-  private String getConfig()
-  {
-    MainConfiguration mainConfig = MainConfiguration.getInstance();
-    return mainConfig.toPrintableString(0);
   }
 }
