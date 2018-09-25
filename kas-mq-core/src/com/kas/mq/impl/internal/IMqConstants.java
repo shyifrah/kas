@@ -61,6 +61,7 @@ public interface IMqConstants
   static public final String cKasPropertyQryqQueueName    = cKasPropertyPrefix + "qryq.queue";
   static public final String cKasPropertyQryqPrefix       = cKasPropertyPrefix + "qryq.prefix";
   static public final String cKasPropertyQryqAllData      = cKasPropertyPrefix + "qryq.alldata";
+  static public final String cKasPropertyQryqOutOnlyProps = cKasPropertyPrefix + "qryq.output.only.props";
   static public final String cKasPropertyQryqResultPrefix = cKasPropertyPrefix + "qryq.result";
   
   static public final String cKasPropertyGetTimeout   = cKasPropertyPrefix + "get.timeout";

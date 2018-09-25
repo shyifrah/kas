@@ -2,13 +2,11 @@ package com.kas.mq.impl;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.KasException;
-import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.internal.AMqMessage;
 
 /**
  * A KAS/MQ context is basically a KAS/MQ client, providing all basic
@@ -37,8 +35,6 @@ public final class MqContext extends AKasObject
    * @param pwd The user's password
    * 
    * @throws KasException if client failed to connect to KAS/MQ server
-   * 
-   * @see com.kas.mq.impl.internal.IClient#connect(String, int, String, String)
    */
   public void connect(String host, int port, String user, String pwd) throws KasException
   {
@@ -69,8 +65,6 @@ public final class MqContext extends AKasObject
    * If client was not previously connected, this method has no effect
    * 
    * @throws KasException if client failed to disconnect from KAS/MQ server
-   * 
-   * @see com.kas.mq.impl.internal.IClient#disconnect()
    */
   public void disconnect() throws KasException
   {
@@ -87,8 +81,6 @@ public final class MqContext extends AKasObject
    * Get the connection status.
    * 
    * @return {@code true} if client is connected, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.internal.IClient#isConnected()
    */
   public boolean isConnected()
   {
@@ -101,8 +93,6 @@ public final class MqContext extends AKasObject
    * @param queue The queue name to define.
    * @param threshold The queue threshold
    * @return the {@code true} if queue was defined, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.internal.IClient#defineQueue(String, int)
    */
   public boolean defineQueue(String queue, int threshold)
   {
@@ -132,8 +122,6 @@ public final class MqContext extends AKasObject
    * @param queue The queue name to delete.
    * @param force Should the queue be deleted even if its not empty.
    * @return the {@code true} if queue was deleted, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.internal.IClient#delete(String)
    */
   public boolean deleteQueue(String queue, boolean force)
   {
@@ -158,22 +146,20 @@ public final class MqContext extends AKasObject
    * 
    * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @return the number of records returned that matched the query, or -1 if an error occurred
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean)
+   * @return the message returned by the KAS/MQ server
    */
-  public Properties queryQueue(String name, boolean prefix, boolean all)
+  public MqTextMessage queryQueue(String name, boolean prefix, boolean all)
   {
     mLogger.debug("MqContext::queryQueue() - IN, Queue=" + name);
     
-    Properties result = null;
+    MqTextMessage result = null;
     if (Validators.isQueueName(name))
     {
-      result = mConnection.queryQueue(name, prefix, all);
+      result = mConnection.queryQueue(name, prefix, all, false);
     }
     else if ((name != null) && (name.length() == 0) && (prefix))
     {
-      result = mConnection.queryQueue(name, prefix, all);
+      result = mConnection.queryQueue(name, prefix, all, false);
     }
     else
     {
@@ -190,9 +176,7 @@ public final class MqContext extends AKasObject
    * @param queue The target queue name
    * @param timeout The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link AMqMessage} object or {@code null} if a message is unavailable
-   * 
-   * @see com.kas.mq.impl.internal.IClient#get(String, long, long)
+   * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
   public IMqMessage<?> get(String queue, long timeout, long interval)
   {
@@ -217,8 +201,6 @@ public final class MqContext extends AKasObject
    * 
    * @param queue The target queue name
    * @param message The message to be put
-   * 
-   * @see com.kas.mq.impl.internal.IClient#put(String, IMqMessage)
    */
   public void put(String queue, IMqMessage<?> message)
   {
@@ -252,9 +234,9 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Get last response from last {@link IClient} call.
+   * Get last response from last call.
    * 
-   * @return the last message the {@link IClient} issued for a call.
+   * @return the response got from the last {@link MqConnection} call
    */
   public String getResponse()
   {
@@ -262,7 +244,7 @@ public final class MqContext extends AKasObject
   }
 
   /**
-   * Set {@link IClient} response to {@code response}.
+   * Set last response to {@code response}.
    * 
    * @param response The text that will be saved for {@link #getResponse} call
    */

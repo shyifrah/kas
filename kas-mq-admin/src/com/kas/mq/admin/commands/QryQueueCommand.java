@@ -1,11 +1,10 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Map;
 import java.util.Scanner;
-import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.MqContext;
+import com.kas.mq.impl.MqTextMessage;
 
 /**
  * A QUERY QUEUE command
@@ -81,30 +80,10 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    Properties props = mClient.queryQueue(name, prefix, all);
-    output(props, all);
-    return false;
-  }
-  
-  /**
-   * Print the output of the query followed by the client's response
-   * 
-   * @param props The properties object containing the response from the KAS/MQ server
-   * @param all When {@code true}, query included all data about queues, {@code false} otherwise
-   */
-  private void output(Properties props, boolean all)
-  {
-    if (props != null)
-    {
-      for (Map.Entry<Object, Object> entry : props.entrySet())
-      {
-        String val = (String)entry.getValue();
-        writeln(val);
-        writeln(" ");
-      }
-    }
-    
+    MqTextMessage result = mClient.queryQueue(name, prefix, all);
+    writeln(result.getBody());
     writeln(mClient.getResponse());
     writeln(" ");
+    return false;
   }
 }

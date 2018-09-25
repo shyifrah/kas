@@ -1,6 +1,5 @@
 package com.kas.mq.impl;
 
-import com.kas.infra.base.Properties;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqConnection;
@@ -30,7 +29,7 @@ public class MqContextConnection extends MqConnection
    */
   public boolean defineQueue(String queue, int threshold)
   {
-    mLogger.debug("MqContextDelegator::defineQueue() - IN");
+    mLogger.debug("MqContextConnection::defineQueue() - IN");
     
     boolean success = false;
     if (!isConnected())
@@ -45,7 +44,7 @@ public class MqContextConnection extends MqConnection
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
     
-    mLogger.debug("MqContextDelegator::defineQueue() - OUT");
+    mLogger.debug("MqContextConnection::defineQueue() - OUT");
     return success;
   }
   
@@ -58,7 +57,7 @@ public class MqContextConnection extends MqConnection
    */
   public boolean deleteQueue(String queue, boolean force)
   {
-    mLogger.debug("MqContextDelegator::deleteQueue() - IN");
+    mLogger.debug("MqContextConnection::deleteQueue() - IN");
     
     boolean success = false;
     if (!isConnected())
@@ -73,36 +72,40 @@ public class MqContextConnection extends MqConnection
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
     
-    mLogger.debug("MqContextDelegator::deleteQueue() - OUT");
+    mLogger.debug("MqContextConnection::deleteQueue() - OUT");
     return success;
   }
   
   /**
    * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
    * 
-   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all if {@code true}, display all information on all queues 
-   * @return the queues that returned that matched the query
+   * @param name The queue name.
+   * @param prefix If {@code true}, then {@code name} designates a queue name prefix.
+   * If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues
+   * @param outProps If {@code true}, the output of the query is returned
+   * only on top of the reply message's Properties. if {@code false}, the output is returned
+   * by means of the reply message's Properties <b>and</b> message body (formatted text). 
+   * @return the reply message returned from the server.
    */
-  public Properties queryQueue(String name, boolean prefix, boolean all)
+  public MqTextMessage queryQueue(String name, boolean prefix, boolean all, boolean outProps)
   {
-    mLogger.debug("MqContextDelegator::queryQueue() - IN");
+    mLogger.debug("MqContextConnection::queryQueue() - IN");
     
-    Properties result = null;
+    MqTextMessage result = null;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all);
+      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all, outProps);
       IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-      result = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+      result = (MqTextMessage)reply;
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
     
-    mLogger.debug("MqContextDelegator::queryQueue() - OUT");
+    mLogger.debug("MqContextConnection::queryQueue() - OUT");
     return result;
   }
 
@@ -113,7 +116,7 @@ public class MqContextConnection extends MqConnection
    */
   public boolean shutdown()
   {
-    mLogger.debug("MqContextDelegator::shutdown() - IN");
+    mLogger.debug("MqContextConnection::shutdown() - IN");
     
     boolean success = false;
     if (!isConnected())
@@ -128,7 +131,7 @@ public class MqContextConnection extends MqConnection
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
     
-    mLogger.debug("MqContextDelegator::shutdown() - OUT");
+    mLogger.debug("MqContextConnection::shutdown() - OUT");
     return success;
   }
   

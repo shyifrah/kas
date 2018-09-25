@@ -1,5 +1,6 @@
 package com.kas.mq.server.processors;
 
+import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
@@ -19,12 +20,13 @@ public class QueryQueueProcessor extends AProcessor
 {
   /**
    * Extracted input from the request: 
-   * the query originator, the queue name, whether it's a prefix and whether to query all data
+   * the query originator, the queue name, whether it's a prefix, whether to query all data and whether to reply only by Properties
    */
   private String mOrigin;
+  private String mQueue;
   private boolean mPrefix;
   private boolean mAllData;
-  private String mQueue;
+  private boolean mOutProps;
   
   /**
    * Construct a {@link QueryQueueProcessor}
@@ -57,9 +59,10 @@ public class QueryQueueProcessor extends AProcessor
     else
     {
       mOrigin = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQmgrName, null);
+      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
       mAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
       mPrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
-      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
+      mOutProps = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqOutOnlyProps, false);
       mLogger.debug("QueryQueueProcessor::process() - Origin=" + StringUtils.asString(mOrigin) +"; Queue=" + mQueue + "; Prefix=" + mPrefix + "; AllData=" + mAllData);
       
       if (mQueue == null) mQueue = "";
@@ -71,7 +74,19 @@ public class QueryQueueProcessor extends AProcessor
       mValue = props.size();
       mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
       
-      result = respond(null, props);
+      String body = null;
+      if (!mOutProps)
+      {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Object, Object> entry : props.entrySet())
+        {
+          String val = (String)entry.getValue();
+          sb.append(val).append('\n');
+        }
+        body = sb.toString();
+      }
+      
+      result = respond(body, props);
     }
     
     mLogger.debug("QueryQueueProcessor::process() - OUT");
