@@ -6,7 +6,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
-import com.kas.mq.server.repo.RemoteQueuesManager;
+import com.kas.mq.server.repo.MqRemoteManager;
 import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.impl.internal.MqManager;
 
@@ -27,7 +27,7 @@ public interface IRepository extends IInitializable, IObject
   public abstract MqLocalQueue defineLocalQueue(String name, int threshold);
   
   /**
-   * Add a {@link MqRemoteQueue} object to a specific {@link RemoteQueuesManager}
+   * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}
    * 
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue
@@ -46,7 +46,7 @@ public interface IRepository extends IInitializable, IObject
   public abstract MqLocalQueue deleteLocalQueue(String name);
   
   /**
-   * Delete a {@link MqRemoteQueue} object from a specific {@link RemoteQueuesManager}.
+   * Delete a {@link MqRemoteQueue} object from a specific {@link MqRemoteManager}.
    * 
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue

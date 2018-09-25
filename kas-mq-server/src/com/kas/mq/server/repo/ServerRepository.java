@@ -36,12 +36,12 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * The local queue manager
    */
-  private LocalQueuesManager mLocalManager;
+  private MqLocalManager mLocalManager;
   
   /**
    * The local queue manager
    */
-  private Map<String, RemoteQueuesManager> mRemoteManagersMap;
+  private Map<String, MqRemoteManager> mRemoteManagersMap;
   
   /**
    * Construct the server repository object.
@@ -52,8 +52,8 @@ public class ServerRepository extends AKasObject implements IRepository
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
-    mLocalManager = new LocalQueuesManager(mConfig);
-    mRemoteManagersMap = new ConcurrentHashMap<String, RemoteQueuesManager>();
+    mLocalManager = new MqLocalManager(mConfig);
+    mRemoteManagersMap = new ConcurrentHashMap<String, MqRemoteManager>();
   }
   
   /**
@@ -76,7 +76,7 @@ public class ServerRepository extends AKasObject implements IRepository
     for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
     {
       String name = entry.getKey();
-      RemoteQueuesManager mgr = new RemoteQueuesManager(mConfig, name);
+      MqRemoteManager mgr = new MqRemoteManager(mConfig, name);
       
       mRemoteManagersMap.put(name, mgr);
     }
@@ -121,7 +121,7 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Add a {@link MqRemoteQueue} object to a specific {@link RemoteQueuesManager}
+   * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}
    * 
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue
@@ -134,7 +134,7 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.debug("ServerRepository::defineRemoteQueue() - IN, Qmgr=" + qmgr + ", Queue=" + queue);
     
     MqRemoteQueue mqrq = null;
-    RemoteQueuesManager rqmgr = getRemoteManager(qmgr);
+    MqRemoteManager rqmgr = getRemoteManager(qmgr);
     if (rqmgr != null)
       mqrq = rqmgr.addQueue(queue);
       
@@ -143,7 +143,7 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Delete a {@link MqRemoteQueue} object from a specific {@link RemoteQueuesManager}.
+   * Delete a {@link MqRemoteQueue} object from a specific {@link MqRemoteManager}.
    * 
    * @param name The name of the queue to be removed
    * @return the {@link MqLocalQueue} object removed
@@ -159,7 +159,7 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Delete a {@link MqRemoteQueue} object from a specific {@link RemoteQueuesManager}.
+   * Delete a {@link MqRemoteQueue} object from a specific {@link MqRemoteManager}.
    * 
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue
@@ -171,7 +171,7 @@ public class ServerRepository extends AKasObject implements IRepository
   {
     mLogger.debug("ServerRepository::deleteRemoteQueue() - IN, Qmgr=" + qmgr + ", Queue=" + queue);
     MqRemoteQueue mqrq = null;
-    RemoteQueuesManager rqmgr = getRemoteManager(qmgr);
+    MqRemoteManager rqmgr = getRemoteManager(qmgr);
     if (rqmgr != null)
       mqrq = rqmgr.removeQueue(queue);
     
@@ -207,10 +207,10 @@ public class ServerRepository extends AKasObject implements IRepository
   {
     mLogger.debug("ServerRepository::getRemoteQueue() - IN, Name=" + name);
     MqRemoteQueue queue = null;
-    for (Map.Entry<String, RemoteQueuesManager> entry : mRemoteManagersMap.entrySet())
+    for (Map.Entry<String, MqRemoteManager> entry : mRemoteManagersMap.entrySet())
     {
       String qmgrName = entry.getKey();
-      RemoteQueuesManager qmgr = entry.getValue();
+      MqRemoteManager qmgr = entry.getValue();
       
       mLogger.debug("ServerRepository::getRemoteQueue() - Check if remote KAS/MQ server " + qmgrName + " has a queue named " + name);
       queue = qmgr.getQueue(name);
@@ -277,9 +277,9 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.debug("ServerRepository::queryRemoteQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     Properties result = new Properties();
-    for (Map.Entry<String, RemoteQueuesManager> entry : mRemoteManagersMap.entrySet())
+    for (Map.Entry<String, MqRemoteManager> entry : mRemoteManagersMap.entrySet())
     {
-      RemoteQueuesManager mgr = entry.getValue();
+      MqRemoteManager mgr = entry.getValue();
       mLogger.debug("ServerRepository::queryRemoteQueues() - Checking if RemoteQueuesManager " + mgr.getName() + " has results for this query...");
       Properties props = mgr.queryQueue(name, prefix, all);
       result.putAll(props);
@@ -342,7 +342,7 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @see com.kas.mq.server.IRepository#getRemoteManager(String)
    */
-  public RemoteQueuesManager getRemoteManager(String name)
+  public MqRemoteManager getRemoteManager(String name)
   {
     return mRemoteManagersMap.get(name);
   }

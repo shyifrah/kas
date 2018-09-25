@@ -13,11 +13,11 @@ import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqLocalQueue;
 
 /**
- * The {@link LocalQueuesManager} is the class that does the actual managing of local queues for the {@link ServerRepository}
+ * The {@link MqLocalManager} is the class that does the actual managing of local queues for the {@link ServerRepository}
  * 
  * @author Pippo
  */
-public class LocalQueuesManager extends MqManager
+public class MqLocalManager extends MqManager
 {
   /**
    * KAS/MQ configuration
@@ -30,18 +30,18 @@ public class LocalQueuesManager extends MqManager
   private MqLocalQueue mDeadQueue;
   
   /**
-   * Construct the {@link LocalQueuesManager}
+   * Construct the {@link MqLocalManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
    */
-  LocalQueuesManager(MqConfiguration config)
+  MqLocalManager(MqConfiguration config)
   {
     super(config.getManagerName(), "localhost", config.getPort());
     mConfig = config;
   }
   
   /**
-   * Activate {@link LocalQueuesManager}: restore local queues from file system.<br>
+   * Activate {@link MqLocalManager}: restore local queues from file system.<br>
    * <br>
    * If the {@code repo} directory does not exist, create it
    * If it exists but it's not a directory, end with an error.
@@ -105,7 +105,7 @@ public class LocalQueuesManager extends MqManager
   }
   
   /**
-   * Deactivate {@link LocalQueuesManager}: Backup queues to the file system.<br>
+   * Deactivate {@link MqLocalManager}: Backup queues to the file system.<br>
    * <br>
    * For each queue in the map, save its contents as a file in the {@code repo} directory.
    */

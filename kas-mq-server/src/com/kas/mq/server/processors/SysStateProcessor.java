@@ -7,7 +7,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
-import com.kas.mq.server.repo.RemoteQueuesManager;
+import com.kas.mq.server.repo.MqRemoteManager;
 
 /**
  * Processor for handling system-state change
@@ -70,7 +70,7 @@ public class SysStateProcessor extends AProcessor
       {
         manager.activate();
         Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
-        ((RemoteQueuesManager)manager).setQueues(remoteQueues);
+        ((MqRemoteManager)manager).setQueues(remoteQueues);
         
         Properties localQueues = mRepository.queryLocalQueues("", true, false);
         result = respond(null, localQueues);

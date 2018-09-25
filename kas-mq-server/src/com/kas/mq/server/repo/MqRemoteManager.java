@@ -12,25 +12,25 @@ import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.ServerConnPool;
 
 /**
- * The {@link RemoteQueuesManager} is the class that does the actual managing of remote queues
+ * The {@link MqRemoteManager} is the class that does the actual managing of remote queues
  * owned by a specific KAS/MQ server
  * 
  * @author Pippo
  */
-public class RemoteQueuesManager extends MqManager
+public class MqRemoteManager extends MqManager
 {
   /**
-   * Construct the {@link RemoteQueuesManager}
+   * Construct the {@link MqRemoteManager}
    * 
    * @param config The {@link MqConfiguration configuration} object
    */
-  RemoteQueuesManager(MqConfiguration config, String name)
+  MqRemoteManager(MqConfiguration config, String name)
   {
     super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
   }
   
   /**
-   * Activate the {@link RemoteQueuesManager}: request from the corresponding remote KAS/MQ server its list of queues.
+   * Activate the {@link MqRemoteManager}: request from the corresponding remote KAS/MQ server its list of queues.
    */
   public void activate()
   {

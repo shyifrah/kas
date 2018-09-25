@@ -11,7 +11,7 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
-import com.kas.mq.server.repo.RemoteQueuesManager;
+import com.kas.mq.server.repo.MqRemoteManager;
 
 public class ServerNotifier extends AKasObject
 {
@@ -118,7 +118,7 @@ public class ServerNotifier extends AKasObject
         IMqMessage<?> reply = conn.notifySysState(message);
         
         Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
-        RemoteQueuesManager rqmgr = (RemoteQueuesManager)mRepository.getRemoteManager(remoteQmgrName);
+        MqRemoteManager rqmgr = (MqRemoteManager)mRepository.getRemoteManager(remoteQmgrName);
         if (!rqmgr.isActive())
         {
           rqmgr.activate();
