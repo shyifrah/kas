@@ -4,6 +4,11 @@ import java.io.Console;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+/**
+ * Console related utilities
+ * 
+ * @author Pippo
+ */
 public class ConsoleUtils
 {
   /**
