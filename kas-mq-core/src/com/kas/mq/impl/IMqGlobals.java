@@ -25,6 +25,11 @@ public interface IMqGlobals
      * Query session
      */
     cQuerySession,
+    
+    /**
+     * Query connection
+     */
+    cQueryConnection,
     ;
     
     static final private EQueryType [] cValues = EQueryType.values();

@@ -86,4 +86,5 @@ public interface IMqConstants
   
   static public final String cKasPropertyQrysQueryType = cKasPropertyPrefix + "qrys.type";
   static public final String cKasPropertyQrysSessionId = cKasPropertyPrefix + "qrys.sessionid";
+  static public final String cKasPropertyQrysConnId    = cKasPropertyPrefix + "qrys.connid";
 }
