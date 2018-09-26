@@ -2,6 +2,8 @@
 @setlocal enabledelayedexpansion
 @echo off
 
+title Client-App
+
 :: the program creates messages by producer threads and
 :: simultaneously consumes them by the consumer threads
 ::
