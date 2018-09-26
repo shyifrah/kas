@@ -85,4 +85,5 @@ public interface IMqConstants
   static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
   
   static public final String cKasPropertyQrysQueryType = cKasPropertyPrefix + "qrys.type";
+  static public final String cKasPropertyQrysSessionId = cKasPropertyPrefix + "qrys.sessionid";
 }

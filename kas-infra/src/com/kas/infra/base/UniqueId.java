@@ -9,7 +9,7 @@ import java.util.UUID;
  * 
  * @author Pippo
  */
-public class UniqueId extends AKasObject implements Serializable
+public class UniqueId extends AKasObject implements Serializable, Comparable<UniqueId>
 {
   static private final long    serialVersionUID = 1L;
   static private final byte [] cZeroArray = ByteBuffer.wrap(new byte [16]).putLong(0L).putLong(0L).array();
@@ -117,6 +117,19 @@ public class UniqueId extends AKasObject implements Serializable
   }
   
   /**
+   * Compares two {@link UniqueId} for ordering
+   * 
+   * @return the value of {@link java.util.UUID#compareTo(UUID)}
+   * 
+   * @see java.util.UUID#compareTo(UUID)
+   * @see java.lang.Comparable
+   */
+  public int compareTo(UniqueId other)
+  {
+    return mUuid.compareTo(other.mUuid);
+  }
+  
+  /**
    * Compares two {@link UniqueId}
    * 
    * @return the value of {@link java.util.UUID#equals(Object)}
@@ -125,7 +138,7 @@ public class UniqueId extends AKasObject implements Serializable
    */
   public boolean equals(UniqueId other)
   {
-    return mUuid.equals(((UniqueId)other).mUuid);
+    return mUuid.equals(other.mUuid);
   }
   
   /**

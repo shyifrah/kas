@@ -1,8 +1,13 @@
 package com.kas.mq.admin.commands;
 
 import java.util.Scanner;
+import com.kas.infra.base.Properties;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
+import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.internal.IMqConstants;
 
 /**
  * A QUERY SESSION command
@@ -36,12 +41,38 @@ public class QrySessionCommand extends ACliCommand
   /**
    * A query session command.<br>
    * <br>
-   * If more tokens than the "QUERY SESSION" are specified, the command will fail with an excessive arguments message.
+   * The command expects the "QUERY SESSION" followed by a zero or one argument. For zero arguments -
+   * it's just as if "ALL" was specified. For one argument - it should be a valid session ID.<br>
+   * If more arguments are specified, the command will fail with an "excessive arguments" message 
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
   public boolean run()
   {
+    String opt = mCommandArgs.poll();
+    if (opt == null)
+      opt = "ALL";
+    opt = opt.toUpperCase();
+    
+    Properties qprops = new Properties();
+    EQueryType qType = EQueryType.cQuerySession;
+    
+    if (!opt.equals("ALL"))
+    {
+      UniqueId uuid = null;
+      try
+      {
+        uuid = UniqueId.fromString(opt);
+        qprops.put(IMqConstants.cKasPropertyQrysSessionId, uuid.toString());
+      }
+      catch (IllegalArgumentException e)
+      {
+        writeln("Invalid session id \"" + opt + "\"");
+        writeln(" ");
+        return false;
+      }
+    }
+    
     if (mCommandArgs.size() > 0)
     {
       writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
@@ -49,7 +80,10 @@ public class QrySessionCommand extends ACliCommand
       return false;
     }
     
-    writeln(mClient.toString());
+    MqTextMessage result = mClient.queryServer(qType, qprops);
+    if (result != null)
+      writeln(result.getBody());
+    writeln(mClient.getResponse());
     writeln(" ");
     return false;
   }

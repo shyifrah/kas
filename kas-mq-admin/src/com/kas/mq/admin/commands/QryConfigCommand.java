@@ -1,6 +1,7 @@
 package com.kas.mq.admin.commands;
 
 import java.util.Scanner;
+import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqTextMessage;
@@ -38,8 +39,10 @@ public class QryConfigCommand extends ACliCommand
   /**
    * A query configuration command.<br>
    * <br>
-   * The command expects only the "QUERY CONFIGURATION" verb. If more than that is specified,
-   * the command terminates with a excessive token error message.
+   * The command expects the "QUERY CONFIGURATION" followed by a zero or one argument. For zero arguments -
+   * it's just as if "ALL" was specified. For one argument - it should be one of "LOGGING", "MQ", or "SERIALIZER" 
+   * to get the specific configuration.<br>
+   * If more arguments are specified, the command will fail with an "excessive arguments" message 
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -50,10 +53,11 @@ public class QryConfigCommand extends ACliCommand
       opt = "ALL";
     opt = opt.toUpperCase();
     
+    Properties qprops = new Properties();
     EQueryType qType = EQueryType.cUnknown;
     if (opt.equals("ALL"))
       qType = EQueryType.cQueryConfigAll;
-    else if (opt.equals("LOG"))
+    else if (opt.equals("LOGGING"))
       qType = EQueryType.cQueryConfigLogging;
     else if (opt.equals("MQ"))
       qType = EQueryType.cQueryConfigMq;
@@ -74,7 +78,7 @@ public class QryConfigCommand extends ACliCommand
       return false;
     }
     
-    MqTextMessage result = mClient.queryServer(qType);
+    MqTextMessage result = mClient.queryServer(qType, qprops);
     if (result != null)
       writeln(result.getBody());
     writeln(mClient.getResponse());

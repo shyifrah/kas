@@ -57,7 +57,11 @@ public class QueryCommand extends ACliCommand
     writeln("                      |                                      |             |        |");
     writeln("                      |                                      +--- ALL -----+        |");
     writeln("                      |                                                             |");
-    writeln("                      +--- SESSION|SESS --------------------------------------------+");
+    writeln("                      |                                      +--- ALL ----------+   |");
+    writeln("                      |                                      |                  |   |");
+    writeln("                      +--- SESSION|SESS ---------------------+------------------+---+");
+    writeln("                      |                                      |                  |   |");
+    writeln("                      |                                      +--- session-id ---+   |");
     writeln("                      |                                                             |");
     writeln("                      |                                      +--- ALL ----------+   |");
     writeln("                      |                                      |                  |   |");
@@ -65,7 +69,7 @@ public class QueryCommand extends ACliCommand
     writeln("                                                             |                  |");
     writeln("                                                             +--- MQ -----------+");
     writeln("                                                             |                  |");
-    writeln("                                                             +--- LOG ----------+");
+    writeln("                                                             +--- LOGGING ------+");
     writeln("                                                             |                  |");
     writeln("                                                             +--- SERIALIZER ---+");
     writeln(" ");
@@ -78,7 +82,7 @@ public class QueryCommand extends ACliCommand
     writeln("     If the keyword ALL is used, a more extensive information is shown.");
     writeln(" ");
     writeln("     -- For SESSION --");
-    writeln("     Provide information about the current session.");
+    writeln("     Provide information about all or a specific session.");
     writeln(" ");
     writeln("     -- For CONFIGURATION --");
     writeln("     Provide the server's active configuration.");
@@ -91,10 +95,10 @@ public class QueryCommand extends ACliCommand
     writeln("     Query all information about the contents of queue QUEUE1");
     writeln("          KAS/MQ Admin> Q Q QUEUE1 ALL");
     writeln(" ");
-    writeln("     Query information about the current session");
-    writeln("          KAS/MQ Admin> Q SESS");
+    writeln("     Query information about all active sessions");
+    writeln("          KAS/MQ Admin> Q SESS ALL");
     writeln(" ");
-    writeln("     Query server's configuration");
+    writeln("     Query entire server's configuration");
     writeln("          KAS/MQ Admin> Q CONFIG");
     writeln(" ");
   }

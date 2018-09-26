@@ -2,8 +2,9 @@ package com.kas.mq.server.internal;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
@@ -32,7 +33,7 @@ public class SessionController extends AKasObject implements IController
   /**
    * A map of session id to session handler
    */
-  private Map<UniqueId, SessionHandler> mHandlers;
+  private ConcurrentHashMap<UniqueId, SessionHandler> mHandlers;
   
   /**
    * KAS/MQ configuration
@@ -59,7 +60,7 @@ public class SessionController extends AKasObject implements IController
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
     mConsole = LoggerFactory.getStdout(this.getClass());
-    mHandlers = new HashMap<UniqueId, SessionHandler>();
+    mHandlers = new ConcurrentHashMap<UniqueId, SessionHandler>();
     mServer = server;
     mConfig = mServer.getConfig();
     mRepository = mServer.getRepository();
@@ -84,6 +85,31 @@ public class SessionController extends AKasObject implements IController
     String remoteAddress = new NetworkAddress(socket).toString();
     mConsole.info("New connection accepted from " + remoteAddress);
     ThreadPool.execute(handler);
+  }
+  
+  /**
+   * Get the handler serving session ID with {@code id}
+   * 
+   * @param id The {@link UniqueId} of the session
+   * @return The {@link SessionHandler handler} associated with the specified session ID
+   */
+  public SessionHandler getHandler(UniqueId id)
+  {
+    mLogger.debug("SessionController::getHandler() - Looking for handler with UniqueId=" + id);
+    mLogger.debug("SessionController::getHandler() - Map contains=" + toPrintableString());
+    
+    if (id == null) return null;
+    return mHandlers.get(id);
+  }
+  
+  /**
+   * Get all handlers
+   * 
+   * @return a collection of all handlers
+   */
+  public Collection<SessionHandler> getHandlers()
+  {
+    return mHandlers.values();
   }
   
   /**
@@ -112,7 +138,8 @@ public class SessionController extends AKasObject implements IController
     mLogger.debug("SessionController::onHandlerEnd() - IN");
     UniqueId id = handler.getSessionId();
     mLogger.trace("Ending handler for session ID: " + id);
-    mHandlers.remove(id);
+    SessionHandler removed = mHandlers.remove(id);
+    mLogger.debug("SessionController::onHandlerEnd() - Removed handler: " + (removed == null ? "null" : removed.toPrintableString()));
     mLogger.debug("SessionController::onHandlerEnd() - OUT");
   }
   

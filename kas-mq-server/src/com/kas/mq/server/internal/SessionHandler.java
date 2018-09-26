@@ -224,7 +224,7 @@ public class SessionHandler extends AKasObject implements Runnable
       .append(pad).append("  IsRunning=").append(mIsRunning).append("\n")
       .append(pad).append("  SessionId=").append(mSessionId.toString()).append("\n")
       .append(pad).append("  ActiveUser=").append(mActiveUserName).append("\n")
-      .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(0)).append("\n")
+      .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(level+1)).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

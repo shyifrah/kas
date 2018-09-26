@@ -1,5 +1,6 @@
 package com.kas.mq.impl;
 
+import com.kas.infra.base.Properties;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
@@ -114,9 +115,10 @@ public class MqContextConnection extends MqConnection
    * Query KAS/MQ server for information
    * 
    * @param qType a {@link EQueryType} value that describes the type of query
+   * @param qProps a {@link Properties} object used as query parameters for refining the query
    * @return the message returned by the KAS/MQ server
    */
-  public MqTextMessage queryServer(EQueryType qType)
+  public MqTextMessage queryServer(EQueryType qType, Properties qProps)
   {
     mLogger.debug("MqContextConnection::queryServer() - IN");
     
@@ -127,7 +129,7 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createQueryServerRequest(qType);
+      IMqMessage<?> request = MqRequestFactory.createQueryServerRequest(qType, qProps);
       IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
       result = (MqTextMessage)reply;
       logInfoAndSetResponse(reply.getResponse().getDesc());

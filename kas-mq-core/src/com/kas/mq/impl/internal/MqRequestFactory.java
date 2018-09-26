@@ -1,5 +1,6 @@
 package com.kas.mq.impl.internal;
 
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
@@ -57,11 +58,12 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqTextMessage createQueryServerRequest(EQueryType qType)
+  static public MqTextMessage createQueryServerRequest(EQueryType qType, Properties qProps)
   {
     MqTextMessage message = MqMessageFactory.createTextMessage(null);
     message.setRequestType(ERequestType.cQueryServer);
     message.setIntProperty(IMqConstants.cKasPropertyQrysQueryType, qType.ordinal());
+    message.setSubset(qProps);
     return message;
   }
   

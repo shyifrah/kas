@@ -21,6 +21,10 @@ public interface IMqGlobals
     cQueryConfigMq,
     cQueryConfigSerializer,
     
+    /**
+     * Query session
+     */
+    cQuerySession,
     ;
     
     static final private EQueryType [] cValues = EQueryType.values();
@@ -51,5 +55,4 @@ public interface IMqGlobals
       return sb.toString();
     }
   };
-  
 }

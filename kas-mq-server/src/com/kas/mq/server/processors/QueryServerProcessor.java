@@ -1,14 +1,17 @@
 package com.kas.mq.server.processors;
 
 import com.kas.mq.impl.IMqGlobals.EQueryType;
+import java.util.Collection;
 import com.kas.comm.serializer.Deserializer;
 import com.kas.config.MainConfiguration;
+import com.kas.infra.base.UniqueId;
 import com.kas.logging.impl.AppenderManager;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * Processor for querying server's information
@@ -22,6 +25,7 @@ public class QueryServerProcessor extends AProcessor
    * the type of information
    */
   private EQueryType mQueryType;
+  private UniqueId   mQuerySessionId;
   
   /**
    * Construct a {@link QueryServerProcessor}
@@ -42,21 +46,25 @@ public class QueryServerProcessor extends AProcessor
    */
   public IMqMessage<?> process()
   {
-    mLogger.debug("QueryQueueProcessor::process() - IN");
+    mLogger.debug("QueryServerProcessor::process() - IN");
     
     String body = null;
     
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
-      mLogger.debug("QueryQueueProcessor::process() - " + mDesc);
+      mLogger.debug("QueryServerProcessor::process() - " + mDesc);
     }
     else
     {
+      String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysSessionId, null);
+      if (sessid != null) mQuerySessionId = UniqueId.fromString(sessid);
       int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQrysQueryType, EQueryType.cUnknown.ordinal());
       mQueryType = EQueryType.fromInt(temp);
-      mLogger.debug("QueryQueueProcessor::process() - QueryType=" + mQueryType.toString());
+      mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString() + "; SessId=" + mQuerySessionId);
       
+      mCode = EMqCode.cOkay;
+      mDesc = "";
       switch (mQueryType)
       {
         case cQueryConfigAll:
@@ -71,6 +79,9 @@ public class QueryServerProcessor extends AProcessor
         case cQueryConfigSerializer:
           body = Deserializer.getInstance().getConfig().toPrintableString();
           break;
+        case cQuerySession:
+          body = querySession();
+          break;
         case cUnknown:
         default:
           mCode = EMqCode.cError;
@@ -79,7 +90,42 @@ public class QueryServerProcessor extends AProcessor
       }
     }
     
-    mLogger.debug("QueryQueueProcessor::process() - OUT");
+    mLogger.debug("QueryServerProcessor::process() - OUT");
     return respond(body, null);
+  }
+  
+  /**
+   * Return the output of the "q session" command
+   * 
+   * @return the output of the "q session" command
+   */
+  private String querySession()
+  {
+    String result = null;
+    if (mQuerySessionId != null)
+    {
+      StringBuilder sb = new StringBuilder();
+      SessionHandler handler = mController.getHandler(mQuerySessionId);
+      if (handler == null)
+      {
+        sb.append("No handlers displayed");
+      }
+      else
+      {
+        sb.append(handler.toPrintableString());
+        sb.append("\n1 handlers displayed");
+      }
+      result = sb.toString();
+    }
+    else
+    {
+      StringBuilder sb = new StringBuilder();
+      Collection<SessionHandler> col = mController.getHandlers();
+      for (SessionHandler handler : col)
+        sb.append(handler.toPrintableString()).append('\n');
+      sb.append(col.size() + " handlers displayed");
+      result = sb.toString();
+    }
+    return result;
   }
 }

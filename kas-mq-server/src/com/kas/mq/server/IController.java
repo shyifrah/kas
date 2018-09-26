@@ -1,6 +1,8 @@
 package com.kas.mq.server;
 
+import java.util.Collection;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionHandler;
 
@@ -24,6 +26,21 @@ import com.kas.mq.server.internal.SessionHandler;
  */
 public interface IController extends IObject
 {
+  /**
+   * Get the handler serving session ID with {@code id}
+   * 
+   * @param id The {@link UniqueId} of the session
+   * @return The {@link SessionHandler handler} associated with the specified session ID
+   */
+  public abstract SessionHandler getHandler(UniqueId id);
+  
+  /**
+   * Get all handlers
+   * 
+   * @return a collection of all handlers
+   */
+  public abstract Collection<SessionHandler> getHandlers();
+  
   /**
    * Get the controller's MQ configuration
    * 
