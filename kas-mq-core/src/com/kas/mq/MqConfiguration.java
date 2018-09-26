@@ -338,10 +338,6 @@ public class MqConfiguration extends AConfiguration
       .append(pad).append("    Enabled=").append(mHskpEnabled).append("\n")
       .append(pad).append("    Interval=").append(mHskpInterval).append(" milliseconds\n")
       .append(pad).append("  )\n")
-      .append(pad).append("  Users=(\n");
-    for (Map.Entry<String, byte[]> entry : mUserMap.entrySet())
-      sb.append(pad).append("    {" + entry.getKey() + '=' + StringUtils.asHexString(entry.getValue()) + "}\n");
-    sb.append(pad).append("  )\n")
       .append(pad).append("  RemoteManagers=(\n")
       .append(StringUtils.asPrintableString(mRemoteManagersMap, level+2)).append("\n")
       .append(pad).append("  )\n")

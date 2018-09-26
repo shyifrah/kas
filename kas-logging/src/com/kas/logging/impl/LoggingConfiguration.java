@@ -155,7 +155,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
     for (WeakRef<IBaseListener> ref : mAppenderConfigsSet)
     {
       IBaseListener listener = ref.get();
-      sb.append(pad).append("    ").append(listener.toString()).append("\n");
+      sb.append(pad).append("    ").append(listener.toPrintableString(level+2)).append("\n");
     }
     
     sb.append(pad).append("  )\n")

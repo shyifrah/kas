@@ -2,7 +2,6 @@ package com.kas.mq.server.processors;
 
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.comm.serializer.Deserializer;
-import com.kas.comm.serializer.SerializerConfiguration;
 import com.kas.config.MainConfiguration;
 import com.kas.logging.impl.AppenderManager;
 import com.kas.mq.impl.IMqMessage;
