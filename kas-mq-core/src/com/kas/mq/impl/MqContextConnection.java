@@ -15,7 +15,7 @@ import com.kas.mq.impl.internal.MqRequestFactory;
 public class MqContextConnection extends MqConnection
 {
   /**
-   * Constructing the client
+   * Constructing the connection
    */
   protected MqContextConnection()
   {
@@ -163,18 +163,5 @@ public class MqContextConnection extends MqConnection
     
     mLogger.debug("MqContextConnection::shutdown() - OUT");
     return success;
-  }
-  
-  /**
-   * Get the object's detailed string representation
-   * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public String toPrintableString(int level)
-  {
-    return name();
   }
 }

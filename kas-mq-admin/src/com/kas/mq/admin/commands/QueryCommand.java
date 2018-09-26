@@ -63,6 +63,13 @@ public class QueryCommand extends ACliCommand
     writeln("                      |                                      |                  |   |");
     writeln("                      |                                      +--- session-id ---+   |");
     writeln("                      |                                                             |");
+    writeln("                      |                                                             |");
+    writeln("                      |                                      +--- ALL ----------+   |");
+    writeln("                      |                                      |                  |   |");
+    writeln("                      +--- CONNECTION|CONN ------------------+------------------+---+");
+    writeln("                      |                                      |                  |   |");
+    writeln("                      |                                      +--- conn-id ------+   |");
+    writeln("                      |                                                             |");
     writeln("                      |                                      +--- ALL ----------+   |");
     writeln("                      |                                      |                  |   |");
     writeln("                      +--- CONFIGURATION|CONFIG|CONF|CFG-----+------------------+---+");
@@ -84,6 +91,9 @@ public class QueryCommand extends ACliCommand
     writeln("     -- For SESSION --");
     writeln("     Provide information about all or a specific session.");
     writeln(" ");
+    writeln("     -- For CONNECTION --");
+    writeln("     Provide information about all or a specific connection.");
+    writeln(" ");
     writeln("     -- For CONFIGURATION --");
     writeln("     Provide the server's active configuration.");
     writeln(" ");
@@ -97,6 +107,9 @@ public class QueryCommand extends ACliCommand
     writeln(" ");
     writeln("     Query information about all active sessions");
     writeln("          KAS/MQ Admin> Q SESS ALL");
+    writeln(" ");
+    writeln("     Query information about a specific connection");
+    writeln("          KAS/MQ Admin> Q CONN a3a1fa1d-107a-4b73-bb11-7631d65cba13");
     writeln(" ");
     writeln("     Query entire server's configuration");
     writeln("          KAS/MQ Admin> Q CONFIG");
@@ -131,6 +144,11 @@ public class QueryCommand extends ACliCommand
       return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
     if (type.equals("SESS"))
       return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
+    
+    if (type.equals("CONNECTION"))
+      return new QryConnectionCommand(mScanner, mCommandArgs, mClient).run();
+    if (type.equals("CONN"))
+      return new QryConnectionCommand(mScanner, mCommandArgs, mClient).run();
     
     if (type.equals("CONFIGURATION"))
       return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
