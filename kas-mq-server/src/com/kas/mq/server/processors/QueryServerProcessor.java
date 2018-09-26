@@ -11,6 +11,8 @@ import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.internal.MqServerConnection;
+import com.kas.mq.server.internal.ServerConnPool;
 import com.kas.mq.server.internal.SessionHandler;
 
 /**
@@ -26,6 +28,7 @@ public class QueryServerProcessor extends AProcessor
    */
   private EQueryType mQueryType;
   private UniqueId   mQuerySessionId;
+  private UniqueId   mQueryConnectionId;
   
   /**
    * Construct a {@link QueryServerProcessor}
@@ -59,9 +62,12 @@ public class QueryServerProcessor extends AProcessor
     {
       String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysSessionId, null);
       if (sessid != null) mQuerySessionId = UniqueId.fromString(sessid);
+      String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysConnId, null);
+      if (connid != null) mQueryConnectionId = UniqueId.fromString(connid);
+      
       int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQrysQueryType, EQueryType.cUnknown.ordinal());
       mQueryType = EQueryType.fromInt(temp);
-      mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString() + "; SessId=" + mQuerySessionId);
+      mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString() + "; SessId=" + mQuerySessionId + "; ConnId=" + mQueryConnectionId);
       
       mCode = EMqCode.cOkay;
       mDesc = "";
@@ -82,6 +88,9 @@ public class QueryServerProcessor extends AProcessor
         case cQuerySession:
           body = querySession();
           break;
+        case cQueryConnection:
+          body = queryConnection();
+          break;
         case cUnknown:
         default:
           mCode = EMqCode.cError;
@@ -101,10 +110,9 @@ public class QueryServerProcessor extends AProcessor
    */
   private String querySession()
   {
-    String result = null;
+    StringBuilder sb = new StringBuilder();
     if (mQuerySessionId != null)
     {
-      StringBuilder sb = new StringBuilder();
       SessionHandler handler = mController.getHandler(mQuerySessionId);
       if (handler == null)
       {
@@ -115,17 +123,45 @@ public class QueryServerProcessor extends AProcessor
         sb.append(handler.toPrintableString());
         sb.append("\n1 handlers displayed");
       }
-      result = sb.toString();
     }
     else
     {
-      StringBuilder sb = new StringBuilder();
       Collection<SessionHandler> col = mController.getHandlers();
       for (SessionHandler handler : col)
         sb.append(handler.toPrintableString()).append('\n');
       sb.append(col.size() + " handlers displayed");
-      result = sb.toString();
     }
-    return result;
+    return sb.toString();
+  }
+  
+  /**
+   * Return the output of the "q connection" command
+   * 
+   * @return the output of the "q connection" command
+   */
+  private String queryConnection()
+  {
+    StringBuilder sb = new StringBuilder();
+    if (mQueryConnectionId != null)
+    {
+      MqServerConnection conn = ServerConnPool.getInstance().getConnection(mQueryConnectionId);
+      if (conn == null)
+      {
+        sb.append("No connections displayed");
+      }
+      else
+      {
+        sb.append(conn.toPrintableString());
+        sb.append("\n1 connections displayed");
+      }
+    }
+    else
+    {
+      Collection<MqServerConnection> col = ServerConnPool.getInstance().getConnections();
+      for (MqServerConnection conn : col)
+        sb.append(conn.toPrintableString()).append('\n');
+      sb.append(col.size() + " connections displayed");
+    }
+    return sb.toString();
   }
 }

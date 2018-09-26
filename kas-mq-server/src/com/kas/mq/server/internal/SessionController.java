@@ -132,7 +132,7 @@ public class SessionController extends AKasObject implements IController
       return null;
     
     SessionHandler handler = mHandlers.get(id);
-    mLogger.debug("SessionController::getHandler() - OUT, Handler=" + handler.toString());
+    mLogger.debug("SessionController::getHandler() - OUT");
     return handler;
   }
   

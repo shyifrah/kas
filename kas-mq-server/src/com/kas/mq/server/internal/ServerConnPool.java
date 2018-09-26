@@ -98,4 +98,32 @@ public class ServerConnPool
     
     mLogger.debug("ServerConnectionPool::shutdown() - OUT");
   }
+  
+  /**
+   * Get the connection associated with {@code id}
+   * 
+   * @param id The {@link UniqueId} of the connection
+   * @return The {@link MqServerConnection connection} associated with the specified session ID
+   */
+  public MqServerConnection getConnection(UniqueId id)
+  {
+    mLogger.debug("ServerConnectionPool::getConnection() - IN, ConnId=" + id);
+    
+    if (id == null)
+      return null;
+    
+    MqServerConnection conn = mConnections.get(id);
+    mLogger.debug("ServerConnectionPool::getConnection() - OUT");
+    return conn;
+  }
+  
+  /**
+   * Get all connections
+   * 
+   * @return a collection of all connections
+   */
+  public Collection<MqServerConnection> getConnections()
+  {
+    return mConnections.values();
+  }
 }

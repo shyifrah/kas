@@ -55,7 +55,7 @@ public class MqConnection extends AKasObject implements IMqConnection
   private String mResponse;
   
   /**
-   * Constructing the client
+   * Constructing the connection
    */
   public MqConnection()
   {
@@ -335,20 +335,6 @@ public class MqConnection extends AKasObject implements IMqConnection
   }
   
   /**
-   * Get string representation of the object
-   * 
-   * @return string representation of the object
-   */
-  public String toString()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append("Session...........: ").append(mSessionId == null ? "N/A" : mSessionId).append('\n');
-    sb.append("  User.......: ").append(mUser == null ? "N/A" : mUser).append('\n');
-    sb.append("  Address....: ").append(mMessenger == null ? "N/A" : mMessenger.toString()).append('\n');
-    return sb.toString();
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -358,6 +344,14 @@ public class MqConnection extends AKasObject implements IMqConnection
    */
   public String toPrintableString(int level)
   {
-    return name();
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  ConnectionId=").append(mConnectionId).append("\n")
+      .append(pad).append("  SessionId=").append(StringUtils.asString(mSessionId)).append("\n")
+      .append(pad).append("  User=").append(StringUtils.asString(mUser)).append("\n")
+      .append(pad).append("  Messenger=").append(StringUtils.asPrintableString(mMessenger, level+1)).append("\n")
+      .append(pad).append(")");
+    return sb.toString();
   }
 }
