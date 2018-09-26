@@ -1,6 +1,7 @@
 package com.kas.mq.server.processors;
 
 import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.SerializerConfiguration;
 import com.kas.config.MainConfiguration;
 import com.kas.logging.impl.AppenderManager;
@@ -69,7 +70,7 @@ public class QueryServerProcessor extends AProcessor
           body = mConfig.toPrintableString();
           break;
         case cQueryConfigSerializer:
-          body = SerializerConfiguration.getInstance().toPrintableString();
+          body = Deserializer.getInstance().getConfig().toPrintableString();
           break;
         case cUnknown:
         default:

@@ -16,19 +16,17 @@ public class SerializerConfiguration extends AConfiguration
   static private final String cSerializerConfigPrefix  = "kas.serializer.";
   static private final String cSerializerClassConfigPrefix  = cSerializerConfigPrefix + "class.";
   
+  /**
+   * Mapping IDs to classes and vice versa
+   */
   private Map<String, Integer> mClassToIdMap = new ConcurrentHashMap<String, Integer>();
   private Map<Integer, String> mIdToClassMap = new ConcurrentHashMap<Integer, String>();
   
-  static private SerializerConfiguration sInstance = new SerializerConfiguration();
-  
   /**
-   * Get singleton instance
-   * 
-   * @return the singleton instance
+   * Not everyone can instantiate this
    */
-  static public SerializerConfiguration getInstance()
+  SerializerConfiguration()
   {
-    return sInstance;
   }
   
   /**

@@ -92,6 +92,16 @@ public class Deserializer extends AKasObject implements IInitializable
   }
   
   /**
+   * Get the {@link Deserializer} configuration object
+   * 
+   * @return {@link SerializerConfiguration}
+   */
+  public SerializerConfiguration getConfig()
+  {
+    return mConfig;
+  }
+  
+  /**
    * Deserialize an object with class id {@code id} from {@code istream}.
    * 
    * @param id The class ID as defined in configuration
