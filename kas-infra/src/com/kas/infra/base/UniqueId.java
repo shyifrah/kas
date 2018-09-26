@@ -136,9 +136,9 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
    * 
    * @see java.util.UUID#equals(Object)
    */
-  public boolean equals(UniqueId other)
+  public boolean equals(Object other)
   {
-    return mUuid.equals(other.mUuid);
+    return mUuid.equals(((UniqueId)other).mUuid);
   }
   
   /**

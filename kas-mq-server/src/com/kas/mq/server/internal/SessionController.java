@@ -88,31 +88,6 @@ public class SessionController extends AKasObject implements IController
   }
   
   /**
-   * Get the handler serving session ID with {@code id}
-   * 
-   * @param id The {@link UniqueId} of the session
-   * @return The {@link SessionHandler handler} associated with the specified session ID
-   */
-  public SessionHandler getHandler(UniqueId id)
-  {
-    mLogger.debug("SessionController::getHandler() - Looking for handler with UniqueId=" + id);
-    mLogger.debug("SessionController::getHandler() - Map contains=" + toPrintableString());
-    
-    if (id == null) return null;
-    return mHandlers.get(id);
-  }
-  
-  /**
-   * Get all handlers
-   * 
-   * @return a collection of all handlers
-   */
-  public Collection<SessionHandler> getHandlers()
-  {
-    return mHandlers.values();
-  }
-  
-  /**
    * A callback that is invoked under the handler's thread right before
    * the handler starts its run() method.
    * 
@@ -141,6 +116,34 @@ public class SessionController extends AKasObject implements IController
     SessionHandler removed = mHandlers.remove(id);
     mLogger.debug("SessionController::onHandlerEnd() - Removed handler: " + (removed == null ? "null" : removed.toPrintableString()));
     mLogger.debug("SessionController::onHandlerEnd() - OUT");
+  }
+  
+  /**
+   * Get the handler serving session ID with {@code id}
+   * 
+   * @param id The {@link UniqueId} of the session
+   * @return The {@link SessionHandler handler} associated with the specified session ID
+   */
+  public SessionHandler getHandler(UniqueId id)
+  {
+    mLogger.debug("SessionController::getHandler() - IN, HandlerId=" + id);
+    
+    if (id == null)
+      return null;
+    
+    SessionHandler handler = mHandlers.get(id);
+    mLogger.debug("SessionController::getHandler() - OUT, Handler=" + handler.toString());
+    return handler;
+  }
+  
+  /**
+   * Get all handlers
+   * 
+   * @return a collection of all handlers
+   */
+  public Collection<SessionHandler> getHandlers()
+  {
+    return mHandlers.values();
   }
   
   /**
