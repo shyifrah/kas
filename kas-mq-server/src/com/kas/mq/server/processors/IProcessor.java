@@ -3,11 +3,11 @@ package com.kas.mq.server.processors;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 
 /**
  * A {@link IProcessor processor} is an object that process request.
- * To create a processor, we call {@link ProcessorFactory#newProcessor(MqTextMessage)}
+ * To create a processor, we call {@link ProcessorFactory#newProcessor(MqStringMessage)}
  *  
  * @author Pippo
  * 
@@ -37,16 +37,16 @@ public interface IProcessor extends IObject
    * 
    * @return the {@link IMqMessage} response object
    */
-  public abstract MqTextMessage respond();
+  public abstract MqStringMessage respond();
     
   /**
    * Generate a response message which will be sent back to remote client.
    * 
    * @param body The message body to be placed on the response message
    * @param props The properties to place in the message's properties
-   * @return the {@link MqTextMessage} response object
+   * @return the {@link MqStringMessage} response object
    * 
    * @see com.kas.mq.server.processors.IProcessor#respond(String, Properties)
    */
-  public abstract MqTextMessage respond(String body, Properties props);
+  public abstract MqStringMessage respond(String body, Properties props);
 }

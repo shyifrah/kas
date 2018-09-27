@@ -4,7 +4,7 @@ import java.util.Scanner;
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 
 /**
@@ -78,7 +78,7 @@ public class QryConfigCommand extends ACliCommand
       return false;
     }
     
-    MqTextMessage result = mClient.queryServer(qType, qprops);
+    MqStringMessage result = mClient.queryServer(qType, qprops);
     if (result != null)
       writeln(result.getBody());
     writeln(mClient.getResponse());

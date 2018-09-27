@@ -7,7 +7,7 @@ import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.samples.Utils;
 
 public class MdbSimulator extends AKasMqAppl
@@ -77,9 +77,9 @@ public class MdbSimulator extends AKasMqAppl
       while (message != null)
       {
         ++total;
-        MqTextMessage request = (MqTextMessage)message;
+        MqStringMessage request = (MqStringMessage)message;
         String replyBody = "reply to: " + request.getBody();
-        MqTextMessage reply = MqMessageFactory.createTextMessage(replyBody);
+        MqStringMessage reply = MqMessageFactory.createStringMessage(replyBody);
         reply.setReferenceId(request.getMessageId());
         client.put(mParams.mRepliesQueue, reply);
             

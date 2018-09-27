@@ -5,13 +5,13 @@ import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 
 public class MqRequestFactory
 {
-  static public MqTextMessage createLoginRequest(String user, String pass)
+  static public MqStringMessage createLoginRequest(String user, String pass)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cLogin);
     message.setStringProperty(IMqConstants.cKasPropertyLoginUserName, user);
     byte [] b64pass = Base64Utils.encode(pass.getBytes());
@@ -19,9 +19,9 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqTextMessage createGetRequest(String queue, long timeout, long interval)
+  static public MqStringMessage createGetRequest(String queue, long timeout, long interval)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cGet);
     message.setStringProperty(IMqConstants.cKasPropertyGetQueueName, queue);
     message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
@@ -29,45 +29,45 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqTextMessage createDefineQueueRequest(String queue, int threshold)
+  static public MqStringMessage createDefineQueueRequest(String queue, int threshold)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cDefineQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDefqQueueName, queue);
     message.setIntProperty(IMqConstants.cKasPropertyDefqThreshold, threshold);
     return message;
   }
   
-  static public MqTextMessage createDeleteQueueRequest(String queue, boolean force)
+  static public MqStringMessage createDeleteQueueRequest(String queue, boolean force)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cDeleteQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDelqQueueName, queue);
     message.setBoolProperty(IMqConstants.cKasPropertyDelqForce, force);
     return message;
   }
   
-  static public MqTextMessage createQueryServerRequest(EQueryType qType, Properties qProps)
+  static public MqStringMessage createQueryServerRequest(EQueryType qType, Properties qProps)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cQueryServer);
     message.setIntProperty(IMqConstants.cKasPropertyQrysQueryType, qType.ordinal());
     message.setSubset(qProps);
     return message;
   }
   
-  static public MqTextMessage createSystemStateMessage(String qmgr, boolean active)
+  static public MqStringMessage createSystemStateMessage(String qmgr, boolean active)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cSysState);
     message.setStringProperty(IMqConstants.cKasPropertySyssQmgrName, qmgr);
     message.setBoolProperty(IMqConstants.cKasPropertySyssActive, active);
     return message;
   }
   
-  static public MqTextMessage createRepositoryUpdateMessage(String qmgr, String queue, boolean added)
+  static public MqStringMessage createRepositoryUpdateMessage(String qmgr, String queue, boolean added)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cRepoUpdate);
     message.setStringProperty(IMqConstants.cKasPropertyRepoQmgrName, qmgr);
     message.setStringProperty(IMqConstants.cKasPropertyRepoQueueName, queue);
@@ -75,9 +75,9 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqTextMessage createShutdownRequest(String user)
+  static public MqStringMessage createShutdownRequest(String user)
   {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
+    MqStringMessage message = MqMessageFactory.createStringMessage(null);
     message.setRequestType(ERequestType.cShutdown);
     message.setStringProperty(IMqConstants.cKasPropertyShutUserName, user);
     return message;

@@ -5,7 +5,7 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.internal.IMqConstants;
 
@@ -80,7 +80,7 @@ public class QrySessionCommand extends ACliCommand
       return false;
     }
     
-    MqTextMessage result = mClient.queryServer(qType, qprops);
+    MqStringMessage result = mClient.queryServer(qType, qprops);
     if (result != null)
       writeln(result.getBody());
     writeln(mClient.getResponse());

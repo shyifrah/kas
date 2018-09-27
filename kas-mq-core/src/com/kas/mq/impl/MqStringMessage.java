@@ -9,13 +9,13 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.internal.AMqMessage;
 
 /**
- * A KAS/MQ text message.<br>
+ * A KAS/MQ string message.<br>
  * <br>
  * The message body is a single {@link String} object
  * 
  * @author Pippo
  */
-public final class MqTextMessage extends AMqMessage<String>
+public final class MqStringMessage extends AMqMessage<String>
 {
   /**
    * The message body
@@ -23,22 +23,22 @@ public final class MqTextMessage extends AMqMessage<String>
   protected String mBody;
   
   /**
-   * Construct a default text message object
+   * Construct a default string message object
    */
-  MqTextMessage()
+  MqStringMessage()
   {
     super();
     mBody = null;
   }
   
   /**
-   * Constructs a {@link MqTextMessage} object from {@link ObjectInputStream}
+   * Constructs a {@link MqStringMessage} object from {@link ObjectInputStream}
    * 
    * @param istream The {@link ObjectInputStream}
    * 
    * @throws IOException if I/O error occurs
    */
-  public MqTextMessage(ObjectInputStream istream) throws IOException
+  public MqStringMessage(ObjectInputStream istream) throws IOException
   {
     super(istream);
     try
@@ -56,7 +56,7 @@ public final class MqTextMessage extends AMqMessage<String>
   }
   
   /**
-   * Serialize the {@link MqTextMessage} to the specified {@link ObjectOutputStream}
+   * Serialize the {@link MqStringMessage} to the specified {@link ObjectOutputStream}
    * 
    * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
    * 
@@ -96,13 +96,13 @@ public final class MqTextMessage extends AMqMessage<String>
   }
   
   /**
-   * Create the {@link PacketHeader} describing this {@link MqTextMessage}
+   * Create the {@link PacketHeader} describing this {@link MqStringMessage}
    * 
    * @return the packet header
    */
   public PacketHeader createHeader()
   {
-    return new PacketHeader(EClassId.cClassMqTextMessage);
+    return new PacketHeader(EClassId.cClassMqStringMessage);
   }
   
   /**

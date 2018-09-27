@@ -150,11 +150,11 @@ public final class MqContext extends AKasObject
    * @param qProps a {@link Properties} object used as query parameters for refining the query
    * @return the message returned by the KAS/MQ server
    */
-  public MqTextMessage queryServer(EQueryType qType, Properties qProps)
+  public MqStringMessage queryServer(EQueryType qType, Properties qProps)
   {
     mLogger.debug("MqContext::queryServer() - IN, QueryType=" + qType);
     
-    MqTextMessage result = mConnection.queryServer(qType, qProps);
+    MqStringMessage result = mConnection.queryServer(qType, qProps);
     
     mLogger.debug("MqContext::queryServer() - OUT, Returns=" + result);
     return result;

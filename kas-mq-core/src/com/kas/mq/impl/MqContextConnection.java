@@ -85,11 +85,11 @@ public class MqContextConnection extends MqConnection
    * @param qProps a {@link Properties} object used as query parameters for refining the query
    * @return the message returned by the KAS/MQ server
    */
-  public MqTextMessage queryServer(EQueryType qType, Properties qProps)
+  public MqStringMessage queryServer(EQueryType qType, Properties qProps)
   {
     mLogger.debug("MqContextConnection::queryServer() - IN");
     
-    MqTextMessage result = null;
+    MqStringMessage result = null;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
@@ -98,7 +98,7 @@ public class MqContextConnection extends MqConnection
     {
       IMqMessage<?> request = MqRequestFactory.createQueryServerRequest(qType, qProps);
       IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-      result = (MqTextMessage)reply;
+      result = (MqStringMessage)reply;
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
     

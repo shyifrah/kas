@@ -7,7 +7,7 @@ import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 
 /**
  * A PUT command
@@ -103,7 +103,7 @@ public class PutCommand extends ACliCommand
     for (String token : mCommandArgs)
       sb.append(token).append(' ');
     String text = sb.toString().trim();
-    MqTextMessage message = MqMessageFactory.createTextMessage(text);
+    MqStringMessage message = MqMessageFactory.createStringMessage(text);
     
     mClient.put(queue, message);
     writeln(mClient.getResponse());

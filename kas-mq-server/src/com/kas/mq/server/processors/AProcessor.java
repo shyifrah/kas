@@ -7,7 +7,7 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
@@ -92,11 +92,11 @@ public abstract class AProcessor extends AKasObject implements IProcessor
   /**
    * Generate a response message which will be sent back to remote client.
    * 
-   * @return the {@link MqTextMessage} response object
+   * @return the {@link MqStringMessage} response object
    * 
    * @see com.kas.mq.server.processors.IProcessor#respond()
    */
-  public MqTextMessage respond()
+  public MqStringMessage respond()
   {
     return respond(null, null);
   }
@@ -106,13 +106,13 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * 
    * @param body The message body to be placed on the response message
    * @param props The properties to place in the message's properties
-   * @return the {@link MqTextMessage} response object
+   * @return the {@link MqStringMessage} response object
    * 
    * @see com.kas.mq.server.processors.IProcessor#respond(String, Properties)
    */
-  public MqTextMessage respond(String body, Properties props)
+  public MqStringMessage respond(String body, Properties props)
   {
-    MqTextMessage response = MqMessageFactory.createResponse(mRequest, mCode, mValue, mDesc);
+    MqStringMessage response = MqMessageFactory.createResponse(mRequest, mCode, mValue, mDesc);
     response.setBody(body);
     response.setSubset(props);
     return response;

@@ -1,7 +1,6 @@
 package com.kas.comm.serializer;
 
 import com.kas.infra.base.IObject;
-import com.kas.infra.logging.ELogLevel;
 
 /**
  * Detailing all serializable classes IDs
@@ -26,10 +25,13 @@ public enum EClassId implements IObject
   cPlaceHolder10,
   
   /**
-   * {@link MqTextMessage},
-   * {@link MqObjectMessage}
+   * {@link com.kas.mq.impl.MqStringMessage}
    */
-  cClassMqTextMessage,
+  cClassMqStringMessage,
+  
+  /**
+   * {@link com.kas.mq.impl.MqObjectMessage}
+   */
   cClassMqObjectMessage,
   
   ;
@@ -48,8 +50,7 @@ public enum EClassId implements IObject
   }
   
   /**
-   * Get the enum detailed string representation. For {@link ELogLevel} this is the same as calling
-   * {@link #toString()} method.
+   * Get the enum detailed string representation
    * 
    * @param level The string padding level
    * @return the string representation with the specified level of padding

@@ -2,7 +2,7 @@ package com.kas.mq.samples.clientapp;
 
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.samples.GenThread;
 
 class ProducerThread extends GenThread
@@ -31,7 +31,7 @@ class ProducerThread extends GenThread
     for (int i = 0; i < mTotalMessages; ++i)
     {
       String messageBody = "message number: " + (i + 1);
-      MqTextMessage putMessage = MqMessageFactory.createTextMessage(messageBody);
+      MqStringMessage putMessage = MqMessageFactory.createStringMessage(messageBody);
       putMessage.setPriority(i%10);
       mContext.put(mQueueName, putMessage);
       
