@@ -1,8 +1,6 @@
 #Build Number for ANT. Do not edit!
-<<<<<<< HEAD
-#Wed Sep 26 23:02:10 IDT 2018
-build.number=36
-=======
-#Wed Sep 26 17:57:43 IDT 2018
-build.number=38
->>>>>>> e1ccaf78ca77559f49d9e670b1bc513b1f7ee5a0
+#Thu Sep 27 08:42:05 IDT 2018
+build.number=40
+>>>>>>>=e1ccaf78ca77559f49d9e670b1bc513b1f7ee5a0
+<<<<<<<=HEAD
+=\=\=\=\=\=\=

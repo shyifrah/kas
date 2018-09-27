@@ -7,6 +7,7 @@ import java.util.Map;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.IBaseLogger;
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
@@ -28,7 +29,7 @@ public class KasMqLauncher
   static public void main(String [] args)
   {
     TimeStamp start = TimeStamp.now();
-    sLogger.info("KAS/MQ launcher started at " + start.toString());
+    sLogger.info(ConsoleUtils.GREEN + "KAS/MQ launcher started at " + start.toString() + ConsoleUtils.RESET);
     
     Map<String, String> pArgumentsMap = getAndProcessStartupArguments(args);
     
@@ -149,7 +150,7 @@ public class KasMqLauncher
         init = app.init();
         if (!init)
         {
-          sLogger.error("KAS/MQ application failed initialization. See previous error messages. Terminating...");
+          sLogger.error(ConsoleUtils.RED + "KAS/MQ application failed initialization. See previous error messages. Terminating..." + ConsoleUtils.RESET);
         }
         else
         {
@@ -159,15 +160,15 @@ public class KasMqLauncher
     }
     catch (ClassNotFoundException e)
     {
-      sLogger.fatal("KAS/MQ launcher failed to locate application class: " + className);
+      sLogger.fatal(ConsoleUtils.RED + "KAS/MQ launcher failed to locate application class: " + className + ConsoleUtils.RESET);
     }
     catch (NoSuchMethodException e)
     {
-      sLogger.fatal("KAS/MQ launcher failed to locate appropriate constructor for class: " + className);
+      sLogger.fatal(ConsoleUtils.RED + "KAS/MQ launcher failed to locate appropriate constructor for class: " + className + ConsoleUtils.RESET);
     }
     catch (Exception e)
     {
-      sLogger.fatal("KAS/MQ launcher failed. Exception encountered: ", e);
+      sLogger.fatal(ConsoleUtils.RED + "KAS/MQ launcher failed. Exception encountered: " + ConsoleUtils.RESET, e);
     }
     finally
     {
