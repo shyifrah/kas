@@ -54,7 +54,7 @@ public interface IMqConnection extends IObject
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
-  public abstract IMqMessage<?> get(String queue, long timeout, long interval);
+  public abstract IMqMessage get(String queue, long timeout, long interval);
   
   /**
    * Put a message into the specified queue.
@@ -63,7 +63,7 @@ public interface IMqConnection extends IObject
    * @param message The message to be put
    * @return the {@link IMqMessage} returned by the messenger
    */
-  public abstract IMqMessage<?> put(String queue, IMqMessage<?> message);
+  public abstract IMqMessage put(String queue, IMqMessage message);
   
   /**
    * Get the connection ID

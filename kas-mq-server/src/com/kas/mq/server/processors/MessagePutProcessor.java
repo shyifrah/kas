@@ -28,7 +28,7 @@ public class MessagePutProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  MessagePutProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  MessagePutProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -38,7 +38,7 @@ public class MessagePutProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("MessagePutProcessor::process() - IN");
     

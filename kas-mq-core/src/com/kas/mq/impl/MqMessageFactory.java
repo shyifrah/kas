@@ -3,6 +3,16 @@ package com.kas.mq.impl;
 public class MqMessageFactory
 {
   /**
+   * Create a no-body message
+   * 
+   * @return a new {@link MqMessage}
+   */
+  static public MqMessage createMessage()
+  {
+    return new MqMessage();
+  }
+  
+  /**
    * Create a string message, with a body containing {@code text}
    * 
    * @param text The message body

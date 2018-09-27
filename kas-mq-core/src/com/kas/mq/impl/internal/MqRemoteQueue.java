@@ -34,7 +34,7 @@ public class MqRemoteQueue extends MqQueue
    * @param message The message to put
    * @return {@code true} if message was put, {@code false} otherwise
    */
-  protected boolean internalPut(IMqMessage<?> message)
+  protected boolean internalPut(IMqMessage message)
   {
     mLogger.debug("MqRemoteQueue::put() - IN");
     
@@ -67,11 +67,11 @@ public class MqRemoteQueue extends MqQueue
    * @param message The message to put
    * @return {@code true} if message was put, {@code false} otherwise
    */
-  protected IMqMessage<?> internalGet(long timeout, long interval)
+  protected IMqMessage internalGet(long timeout, long interval)
   {
     mLogger.debug("MqRemoteQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
-    IMqMessage<?> result = null;
+    IMqMessage result = null;
     
     MqConnection conn = mPool.allocate();
     

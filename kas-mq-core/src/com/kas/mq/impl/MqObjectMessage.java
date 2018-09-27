@@ -15,7 +15,7 @@ import com.kas.mq.impl.internal.AMqMessage;
  * 
  * @author Pippo
  */
-public final class MqObjectMessage extends AMqMessage<Object>
+public final class MqObjectMessage extends AMqMessage
 {
   /**
    * The message body

@@ -10,7 +10,7 @@ import com.kas.mq.impl.internal.AMqMessage;
  * 
  * @author Pippo
  */
-public class MessageQueue extends ConcurrentLinkedQueue<IMqMessage<?>> implements IObject
+public class MessageQueue extends ConcurrentLinkedQueue<IMqMessage> implements IObject
 {
   private static final long serialVersionUID = 1L;
   

@@ -30,11 +30,11 @@ public class MqServerConnection extends MqContextConnection
    * @param request The system-state change request. The message contains the new state of the sender.
    * @return the reply message from the receiver.
    */
-  public IMqMessage<?> notifySysState(IMqMessage<?> request)
+  public IMqMessage notifySysState(IMqMessage request)
   {
     mLogger.debug("MqServerConnection::notifySysState() - IN");
     
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+    IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
     
     mLogger.debug("MqServerConnection::notifySysState() - OUT");
     return reply;
@@ -52,8 +52,8 @@ public class MqServerConnection extends MqContextConnection
   {
     mLogger.debug("MqServerConnection::notifyRepoUpdate() - IN");
     
-    IMqMessage<?> request = MqRequestFactory.createRepositoryUpdateMessage(qmgr, queue, added);
-    IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+    IMqMessage request = MqRequestFactory.createRepositoryUpdateMessage(qmgr, queue, added);
+    IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
     boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
     
     mLogger.debug("MqServerConnection::notifyRepoUpdate() - OUT");

@@ -22,16 +22,12 @@ public enum EClassId implements IObject
   cPlaceHolder07,
   cPlaceHolder08,
   cPlaceHolder09,
-  cPlaceHolder10,
   
   /**
-   * {@link com.kas.mq.impl.MqStringMessage}
+   * KAS/MQ message types
    */
+  cClassMqMessage,
   cClassMqStringMessage,
-  
-  /**
-   * {@link com.kas.mq.impl.MqObjectMessage}
-   */
   cClassMqObjectMessage,
   
   ;

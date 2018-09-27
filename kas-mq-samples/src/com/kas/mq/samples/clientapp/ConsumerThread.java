@@ -29,7 +29,7 @@ class ConsumerThread extends GenThread
     
     mLogger.debug("ConsumerThread::work() - Starting actual work...");
     int total = 0;
-    IMqMessage<?> getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
+    IMqMessage getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
     while (getMessage != null)
     {
       if ((total%100==0) && (total != 0))

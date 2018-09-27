@@ -20,7 +20,7 @@ public class ProcessorFactory
 {
   static private ILogger sLogger = LoggerFactory.getLogger(ProcessorFactory.class);
   
-  static public IProcessor newProcessor(IController controller, IRepository repository, SessionHandler handler, IMqMessage<?> request)
+  static public IProcessor newProcessor(IController controller, IRepository repository, SessionHandler handler, IMqMessage request)
   {
     sLogger.debug("ProcessorFactory::newProcessor() - IN");
     

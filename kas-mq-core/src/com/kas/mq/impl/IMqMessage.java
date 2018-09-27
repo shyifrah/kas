@@ -15,7 +15,7 @@ import com.kas.mq.impl.internal.MqResponse;
  *
  * @param <T>
  */
-public interface IMqMessage<T> extends IObject, IPacket
+public interface IMqMessage extends IObject, IPacket
 {
   /**
    * Get the message ID
@@ -111,20 +111,6 @@ public interface IMqMessage<T> extends IObject, IPacket
    * @return the {@link MqResponse}
    */
   public abstract MqResponse getResponse();
-  
-  /**
-   * Set the message's body
-   * 
-   * @param body The message's body
-   */
-  public abstract void setBody(T body);
-  
-  /**
-   * Get the message's body
-   * 
-   * @return the message's body
-   */
-  public abstract T getBody();
   
   /**
    * Set a Object property.

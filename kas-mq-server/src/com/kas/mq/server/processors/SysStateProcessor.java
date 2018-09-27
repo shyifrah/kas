@@ -30,7 +30,7 @@ public class SysStateProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  SysStateProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  SysStateProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -40,7 +40,7 @@ public class SysStateProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("SysStateProcessor::process() - IN");
     
@@ -82,7 +82,7 @@ public class SysStateProcessor extends AProcessor
    * Post-process request.<br>
    * <br>
    * DO NOT ADD A POST-PROCESS FOR SYS-STATE PROCESSOR.
-   * Its {@link #process()} is also called from QueryQueueProcessor, which means there might
+   * Its {@link #process()} is also called from {@link QueryServerProcessor}, which means there might
    * not be a possibility for its {@link #postprocess(IMqMessage)} to execute.
    * 
    * @param reply The reply message the processor's {@link #process()} method generated
@@ -90,7 +90,7 @@ public class SysStateProcessor extends AProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage)
    */
-  public boolean postprocess(IMqMessage<?> reply)
+  public boolean postprocess(IMqMessage reply)
   {
     return true;
   }

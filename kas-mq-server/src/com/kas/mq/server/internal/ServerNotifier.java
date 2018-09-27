@@ -59,7 +59,7 @@ public class ServerNotifier extends AKasObject
     mLogger.debug("ServerNotifier::notifyServerActivated() - IN");
     
     String qmgr = mConfig.getManagerName();
-    IMqMessage<?> message = MqRequestFactory.createSystemStateMessage(qmgr, true);
+    IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, true);
     
     Properties props = mRepository.queryLocalQueues("", true, false);
     message.setSubset(props);
@@ -80,7 +80,7 @@ public class ServerNotifier extends AKasObject
     mLogger.debug("ServerNotifier::notifyServerDeactivated() - IN");
     
     String qmgr = mConfig.getManagerName();
-    IMqMessage<?> message = MqRequestFactory.createSystemStateMessage(qmgr, false);
+    IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, false);
     
     notify(message, false);
     
@@ -97,7 +97,7 @@ public class ServerNotifier extends AKasObject
    * @param message The {@link IMqMessage} that will be sent to each and every remote address
    * @return the reply message received from receiver 
    */
-  private void notify(IMqMessage<?> message, boolean activate)
+  private void notify(IMqMessage message, boolean activate)
   {
     mLogger.debug("ServerNotifier::notify() - IN");
     
@@ -115,7 +115,7 @@ public class ServerNotifier extends AKasObject
       if (conn.isConnected())
       {
         conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
-        IMqMessage<?> reply = conn.notifySysState(message);
+        IMqMessage reply = conn.notifySysState(message);
         
         Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
         MqRemoteManager rqmgr = (MqRemoteManager)mRepository.getRemoteManager(remoteQmgrName);

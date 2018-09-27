@@ -36,7 +36,7 @@ public class LoginProcessor extends AProcessor
    * @param repository The server's repository
    * @param handler The session handler
    */
-  LoginProcessor(IMqMessage<?> request, IController controller, IRepository repository, SessionHandler handler)
+  LoginProcessor(IMqMessage request, IController controller, IRepository repository, SessionHandler handler)
   {
     super(request, controller, repository);
     mHandler = handler;
@@ -47,7 +47,7 @@ public class LoginProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("LoginProcessor::process() - IN");
     
@@ -95,7 +95,7 @@ public class LoginProcessor extends AProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage, IMqMessage)
    */
-  public boolean postprocess(IMqMessage<?> reply)
+  public boolean postprocess(IMqMessage reply)
   {
     if (mCode == EMqCode.cOkay)
       return true;

@@ -38,7 +38,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
   /**
    * The request message
    */
-  protected IMqMessage<?> mRequest;
+  protected IMqMessage mRequest;
   
   /**
    * The processor response values.<br>
@@ -56,7 +56,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  AProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  AProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mRequest = request;
@@ -72,7 +72,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#process()
    */
-  public abstract IMqMessage<?> process();
+  public abstract IMqMessage process();
   
   /**
    * Post-process request.<br>
@@ -85,7 +85,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage)
    */
-  public boolean postprocess(IMqMessage<?> reply)
+  public boolean postprocess(IMqMessage reply)
   {
     return true;
   }
@@ -97,7 +97,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#respond()
    */
-  public IMqMessage<?> respond()
+  public IMqMessage respond()
   {
     return respond(null, null);
   }
@@ -111,11 +111,10 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#respond(String, Properties)
    */
-  public IMqMessage<?> respond(String body, Properties props)
+  public IMqMessage respond(String body, Properties props)
   {
-    MqStringMessage response = MqMessageFactory.createStringMessage(null);
+    MqStringMessage response = MqMessageFactory.createStringMessage(body);
     response.setReferenceId(mRequest.getMessageId());
-    response.setBody(body);
     response.setSubset(props);
     return respond(response);
   }
@@ -129,7 +128,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#respond(String, Properties)
    */
-  public IMqMessage<?> respond(IMqMessage<?> response)
+  public IMqMessage respond(IMqMessage response)
   {
     if (response == null)
       return respond(null, null);

@@ -19,7 +19,7 @@ import com.kas.mq.impl.IMqMessage;
  * 
  * @author Pippo
  */
-public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMessage<T>
+public abstract class AMqMessage extends AKasObject implements IPacket, IMqMessage
 {
   /**
    * The message unique identifier
@@ -314,24 +314,6 @@ public abstract class AMqMessage<T> extends AKasObject implements IPacket, IMqMe
   {
     return mResponse;
   }
-  
-  /**
-   * Set the message's body
-   * 
-   * @param body The message's body
-   * 
-   * @see com.kas.mq.impl.IMqMessage#setBody(Object)
-   */
-  public abstract void setBody(T body);
-  
-  /**
-   * Get the message's body
-   * 
-   * @return the message's body
-   * 
-   * @see com.kas.mq.impl.IMqMessage#getBody()
-   */
-  public abstract T getBody();
   
   /**
    * Set a Object property.

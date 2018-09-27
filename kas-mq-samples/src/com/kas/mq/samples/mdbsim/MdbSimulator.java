@@ -96,7 +96,7 @@ public class MdbSimulator extends AKasMqAppl
       // get requests from requests' queue, and reply to replies' queue
       //===========================================================================================
       System.out.println("Start reading messages and replying to messages...");
-      IMqMessage<?> message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
+      IMqMessage message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
       while (message != null)
       {
         ++total;

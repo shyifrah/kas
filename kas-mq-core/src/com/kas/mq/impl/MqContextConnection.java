@@ -40,8 +40,8 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
-      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
+      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
       success = reply.getResponse().getCode() == EMqCode.cOkay;
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
@@ -68,8 +68,8 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createDeleteQueueRequest(queue, force);
-      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      IMqMessage request = MqRequestFactory.createDeleteQueueRequest(queue, force);
+      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
       success = reply.getResponse().getCode() == EMqCode.cOkay;
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
@@ -96,8 +96,8 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createQueryServerRequest(qType, qProps);
-      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      IMqMessage request = MqRequestFactory.createQueryServerRequest(qType, qProps);
+      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
       result = (MqStringMessage)reply;
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }
@@ -122,8 +122,8 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createShutdownRequest(mUser);
-      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
+      IMqMessage request = MqRequestFactory.createShutdownRequest(mUser);
+      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
       success = reply.getResponse().getCode() == EMqCode.cOkay;
       logInfoAndSetResponse(reply.getResponse().getDesc());
     }

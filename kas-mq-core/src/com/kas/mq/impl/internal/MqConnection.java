@@ -161,11 +161,11 @@ public class MqConnection extends AKasObject implements IMqConnection
     }
     else
     {
-      IMqMessage<?> request = MqRequestFactory.createLoginRequest(user, pwd);
+      IMqMessage request = MqRequestFactory.createLoginRequest(user, pwd);
       mLogger.debug("MqConnection::login() - sending login request: " + request.toPrintableString(0));
       try
       {
-        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        IMqMessage reply = (IMqMessage)mMessenger.sendAndReceive(request);
         mLogger.debug("MqConnection::login() - received response: " + reply.toPrintableString(0));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
@@ -198,11 +198,11 @@ public class MqConnection extends AKasObject implements IMqConnection
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
-  public IMqMessage<?> get(String queue, long timeout, long interval)
+  public IMqMessage get(String queue, long timeout, long interval)
   {
     mLogger.debug("MqConnection::get() - IN");
     
-    IMqMessage<?> result = null;
+    IMqMessage result = null;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
@@ -211,9 +211,9 @@ public class MqConnection extends AKasObject implements IMqConnection
     {
       try
       {
-        IMqMessage<?> request = MqRequestFactory.createGetRequest(queue, timeout, interval);
+        IMqMessage request = MqRequestFactory.createGetRequest(queue, timeout, interval);
         mLogger.debug("MqConnection::get() - sending get request: " + StringUtils.asPrintableString(request));
-        IMqMessage<?> reply = (IMqMessage<?>)mMessenger.sendAndReceive(request);
+        IMqMessage reply = (IMqMessage)mMessenger.sendAndReceive(request);
         mLogger.debug("MqConnection::get() - received response: " + StringUtils.asPrintableString(reply));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
@@ -247,11 +247,11 @@ public class MqConnection extends AKasObject implements IMqConnection
    * @param message The message to be put
    * @return the {@link IMqMessage} returned by the messenger
    */
-  public IMqMessage<?> put(String queue, IMqMessage<?> message)
+  public IMqMessage put(String queue, IMqMessage message)
   {
     mLogger.debug("MqConnection::put() - IN");
     
-    IMqMessage<?> reply = null;
+    IMqMessage reply = null;
     if (!isConnected())
     {
       logErrorAndSetResponse("Not connected to host");
@@ -265,7 +265,7 @@ public class MqConnection extends AKasObject implements IMqConnection
         message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
         
         mLogger.debug("MqConnection::put() - sending message: " + StringUtils.asPrintableString(message));
-        reply = (IMqMessage<?>)mMessenger.sendAndReceive(message);
+        reply = (IMqMessage)mMessenger.sendAndReceive(message);
         mLogger.debug("MqConnection::put() - received response: " + StringUtils.asPrintableString(reply));
         setResponse(reply.getResponse().getDesc());
       }

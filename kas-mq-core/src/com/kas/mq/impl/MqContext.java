@@ -168,11 +168,11 @@ public final class MqContext extends AKasObject
    * @param interval The number in milliseconds the thread execution is suspended between each polling operation
    * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
-  public IMqMessage<?> get(String queue, long timeout, long interval)
+  public IMqMessage get(String queue, long timeout, long interval)
   {
     mLogger.debug("MqContext::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
-    IMqMessage<?> result = null;
+    IMqMessage result = null;
     if (Validators.isQueueName(queue))
     {
       result = mConnection.get(queue, timeout, interval);
@@ -192,7 +192,7 @@ public final class MqContext extends AKasObject
    * @param queue The target queue name
    * @param message The message to be put
    */
-  public void put(String queue, IMqMessage<?> message)
+  public void put(String queue, IMqMessage message)
   {
     mLogger.debug("MqContext::put() - IN, Message=" + StringUtils.asPrintableString(message));
     

@@ -33,7 +33,7 @@ public class DefineQueueProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  DefineQueueProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  DefineQueueProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -43,7 +43,7 @@ public class DefineQueueProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("DefineQueueProcessor::process() - IN");
     
@@ -91,7 +91,7 @@ public class DefineQueueProcessor extends AProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage, IMqMessage)
    */
-  public boolean postprocess(IMqMessage<?> reply)
+  public boolean postprocess(IMqMessage reply)
   {
     mLogger.debug("DefineQueueProcessor::postprocess() - IN");
     

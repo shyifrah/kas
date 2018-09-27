@@ -32,7 +32,7 @@ public class DeleteQueueProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  DeleteQueueProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  DeleteQueueProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -42,7 +42,7 @@ public class DeleteQueueProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("DeleteQueueProcessor::process() - IN");
     
@@ -104,7 +104,7 @@ public class DeleteQueueProcessor extends AProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage, IMqMessage)
    */
-  public boolean postprocess(IMqMessage<?> reply)
+  public boolean postprocess(IMqMessage reply)
   {
     mLogger.debug("DeleteQueueProcessor::postprocess() - IN");
     

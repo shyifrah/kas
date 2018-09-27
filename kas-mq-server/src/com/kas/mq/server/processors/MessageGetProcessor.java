@@ -29,7 +29,7 @@ public class MessageGetProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  MessageGetProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  MessageGetProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -39,11 +39,11 @@ public class MessageGetProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("MessageGetProcessor::process() - IN");
     
-    IMqMessage<?> result = null;
+    IMqMessage result = null;
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";

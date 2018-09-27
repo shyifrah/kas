@@ -105,7 +105,7 @@ public abstract class MqQueue extends AKasObject
    * @param message The message that should be put to this {@link MqQueue}
    * @return {@code true} if message was put, {@code false} otherwise
    */
-  public boolean put(IMqMessage<?> message)
+  public boolean put(IMqMessage message)
   {
     mLogger.debug("MqQueue::put() - IN");
     
@@ -125,18 +125,18 @@ public abstract class MqQueue extends AKasObject
    * @param message The message to put
    * @return {@code true} if message was put, {@code false} otherwise
    */
-  protected abstract boolean internalPut(IMqMessage<?> message);
+  protected abstract boolean internalPut(IMqMessage message);
   
   /**
    * Get a message and wait indefinitely for one to be available.
    * 
    * @return The {@link AMqMessage}
    */
-  public IMqMessage<?> get()
+  public IMqMessage get()
   {
     mLogger.debug("MqQueue::get() - IN");
     
-    IMqMessage<?> msg = internalGet(0, IMqConstants.cDefaultPollingInterval);
+    IMqMessage msg = internalGet(0, IMqConstants.cDefaultPollingInterval);
     
     mLogger.debug("MqQueue::get() - OUT");
     return msg;
@@ -152,14 +152,14 @@ public abstract class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code timeout} is lower than 0
    */
-  public IMqMessage<?> get(long timeout)
+  public IMqMessage get(long timeout)
   {
     mLogger.debug("MqQueue::get() - IN, Timeout=" + timeout);
     
     if (timeout < 0)
       throw new IllegalArgumentException("Invalid timeout: " + timeout);
     
-    IMqMessage<?> msg = internalGet(timeout, IMqConstants.cDefaultPollingInterval);
+    IMqMessage msg = internalGet(timeout, IMqConstants.cDefaultPollingInterval);
     
     mLogger.debug("MqQueue::get() - OUT");
     return msg;
@@ -176,7 +176,7 @@ public abstract class MqQueue extends AKasObject
    * 
    * @throws IllegalArgumentException if {@code timeout} or {@code interval} are lower than 0
    */
-  public IMqMessage<?> get(long timeout, long interval)
+  public IMqMessage get(long timeout, long interval)
   {
     mLogger.debug("MqQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
@@ -186,7 +186,7 @@ public abstract class MqQueue extends AKasObject
     if (interval <= 0)
       throw new IllegalArgumentException("Invalid polling interval: " + interval);
     
-    IMqMessage<?> msg = internalGet(timeout, interval);
+    IMqMessage msg = internalGet(timeout, interval);
     
     mLogger.debug("MqQueue::get() - OUT");
     return msg;
@@ -198,7 +198,7 @@ public abstract class MqQueue extends AKasObject
    * @param message The message to put
    * @return {@code true} if message was put, {@code false} otherwise
    */
-  protected abstract IMqMessage<?> internalGet(long timeout, long interval);
+  protected abstract IMqMessage internalGet(long timeout, long interval);
   
   /**
    * Response to Query request

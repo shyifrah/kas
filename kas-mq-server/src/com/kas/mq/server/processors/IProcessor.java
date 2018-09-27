@@ -21,7 +21,7 @@ public interface IProcessor extends IObject
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public abstract IMqMessage<?> process();
+  public abstract IMqMessage process();
   
   /**
    * Post-process request
@@ -30,14 +30,14 @@ public interface IProcessor extends IObject
    * @return {@code false} if the processor should cease its operation following
    * this request, {@code true} otherwise
    */
-  public abstract boolean postprocess(IMqMessage<?> reply);
+  public abstract boolean postprocess(IMqMessage reply);
   
   /**
    * Generate a response message which will be sent back to remote client.
    * 
    * @return the {@link IMqMessage} response object
    */
-  public abstract IMqMessage<?> respond();
+  public abstract IMqMessage respond();
     
   /**
    * Generate a response message which will be sent back to remote client.
@@ -46,13 +46,13 @@ public interface IProcessor extends IObject
    * @param props The properties to place in the message's properties
    * @return the {@link MqStringMessage} response object
    */
-  public abstract IMqMessage<?> respond(String body, Properties props);
+  public abstract IMqMessage respond(String body, Properties props);
   
   /**
    * Place response values on an existing message which will be sent back to remote client.
    * 
    * @param response The message that will be sent back
-   * @return the {@link IMqMessage<?>} response message
+   * @return the {@link IMqMessage} response message
    */
-  public abstract IMqMessage<?> respond(IMqMessage<?> response);
+  public abstract IMqMessage respond(IMqMessage response);
 }

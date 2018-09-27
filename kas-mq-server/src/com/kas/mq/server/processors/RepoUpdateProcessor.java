@@ -29,7 +29,7 @@ public class RepoUpdateProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  RepoUpdateProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  RepoUpdateProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -39,7 +39,7 @@ public class RepoUpdateProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("RepoUpdateProcessor::process() - IN");
     

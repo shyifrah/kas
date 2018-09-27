@@ -101,12 +101,12 @@ public class SessionHandler extends AKasObject implements Runnable
         mLogger.debug("SessionHandler::run() - Received packet: " + StringUtils.asPrintableString(packet));
         if (packet != null)
         {
-          IMqMessage<?> request = (IMqMessage<?>)packet;
+          IMqMessage request = (IMqMessage)packet;
           ERequestType requestType = request.getRequestType();
           mLogger.debug("SessionHandler::run() - Received request of type: " + StringUtils.asPrintableString(requestType));
           
           IProcessor processor = ProcessorFactory.newProcessor(mController, mRepository, this, request);
-          IMqMessage<?> reply = processor.process();
+          IMqMessage reply = processor.process();
           
           mLogger.debug("SessionHandler::run() - Responding with the message: " + StringUtils.asPrintableString(reply));
           mMessenger.send(reply);

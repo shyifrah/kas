@@ -46,7 +46,7 @@ public class QueryServerProcessor extends AProcessor
    * @param controller The session controller
    * @param repository The server's repository
    */
-  QueryServerProcessor(IMqMessage<?> request, IController controller, IRepository repository)
+  QueryServerProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
@@ -56,7 +56,7 @@ public class QueryServerProcessor extends AProcessor
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
-  public IMqMessage<?> process()
+  public IMqMessage process()
   {
     mLogger.debug("QueryServerProcessor::process() - IN");
     
@@ -136,7 +136,7 @@ public class QueryServerProcessor extends AProcessor
    * 
    * @see com.kas.mq.server.processors.IProcessor#postprocess(IMqMessage)
    */
-  public boolean postprocess(IMqMessage<?> reply)
+  public boolean postprocess(IMqMessage reply)
   {
     mLogger.debug("QueryServerProcessor::postprocess() - IN");
     
@@ -146,7 +146,7 @@ public class QueryServerProcessor extends AProcessor
       MqManager manager = mRepository.getRemoteManager(mQueryOriginQmgr);
       if (!manager.isActive())
       {
-        IMqMessage<?> sysStateRequest = MqRequestFactory.createSystemStateMessage(mQueryOriginQmgr, true);
+        IMqMessage sysStateRequest = MqRequestFactory.createSystemStateMessage(mQueryOriginQmgr, true);
         IProcessor processor = new SysStateProcessor(sysStateRequest, mController, mRepository);
         processor.process();
       }

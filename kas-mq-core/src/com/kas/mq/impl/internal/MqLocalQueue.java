@@ -147,7 +147,7 @@ public class MqLocalQueue extends MqQueue
           {
             PacketHeader header = new PacketHeader(istream);
             IPacket packet = header.read(istream);
-            IMqMessage<?> message = (IMqMessage<?>)packet;
+            IMqMessage message = (IMqMessage)packet;
             mLogger.diag("MqLocalQueue::restore() - Header="  + StringUtils.asPrintableString(header));
             mLogger.diag("MqLocalQueue::restore() - Message=" + StringUtils.asPrintableString(message));
             
@@ -255,7 +255,7 @@ public class MqLocalQueue extends MqQueue
             MessageQueue mq = mQueueArray[i];
             while (!mq.isEmpty())
             {
-              IMqMessage<?> message = mq.poll();
+              IMqMessage message = mq.poll();
               
               PacketHeader header = message.createHeader();
               header.serialize(ostream);
@@ -309,7 +309,7 @@ public class MqLocalQueue extends MqQueue
     for (int prio = IMqConstants.cMaximumPriority; prio >= IMqConstants.cMinimumPriority; --prio)
     {
       MessageQueue mdq = mQueueArray[prio];
-      for (IMqMessage<?> msg : mdq)
+      for (IMqMessage msg : mdq)
       {
         if (msg.isExpired())
         {
@@ -331,7 +331,7 @@ public class MqLocalQueue extends MqQueue
    * @param updateLastAccess whether to update the last access fields for this operation
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean internalPut(IMqMessage<?> message, boolean updateLastAccess)
+  public boolean internalPut(IMqMessage message, boolean updateLastAccess)
   {
     mLogger.debug("MqLocalQueue::internalPut() - IN");
     
@@ -355,7 +355,7 @@ public class MqLocalQueue extends MqQueue
    * @param message The message that should be stored at this {@link MqLocalQueue} object.
    * @return {@code true} if message was added, {@code false} otherwise.
    */
-  public boolean internalPut(IMqMessage<?> message)
+  public boolean internalPut(IMqMessage message)
   {
     return internalPut(message, true);
   }
@@ -375,11 +375,11 @@ public class MqLocalQueue extends MqQueue
    * @param interval The gap length between polling operations
    * @return The {@link IMqMessage} or {@code null} if one is unavailable
    */
-  protected IMqMessage<?> internalGet(long timeout, long interval)
+  protected IMqMessage internalGet(long timeout, long interval)
   {
     mLogger.debug("MqLocalQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
-    IMqMessage<?> result = null;
+    IMqMessage result = null;
     
     long millisPassed = 0;
     boolean timeoutExpired = false;
