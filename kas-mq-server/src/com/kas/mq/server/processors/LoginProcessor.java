@@ -1,5 +1,6 @@
 package com.kas.mq.server.processors;
 
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
@@ -50,6 +51,7 @@ public class LoginProcessor extends AProcessor
   {
     mLogger.debug("LoginProcessor::process() - IN");
     
+    Properties props = new Properties();
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
@@ -75,14 +77,12 @@ public class LoginProcessor extends AProcessor
         mDesc = "User " + mUser + " successfully authenticated";
         mCode = EMqCode.cOkay;
         mHandler.setActiveUserName(mUser);
+        props.setStringProperty(IMqConstants.cKasPropertyLoginSession, mHandler.getSessionId().toString());
       }
     }
     
-    IMqMessage<?> result = respond();
-    result.setStringProperty(IMqConstants.cKasPropertyLoginSession, mHandler.getSessionId().toString());
-    
     mLogger.debug("LoginProcessor::process() - OUT");
-    return result;
+    return respond(null, props);
   }
   
   /**

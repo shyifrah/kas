@@ -44,12 +44,11 @@ public class SysStateProcessor extends AProcessor
   {
     mLogger.debug("SysStateProcessor::process() - IN");
     
-    IMqMessage<?> result = null;
+    Properties props = null;
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
       mLogger.debug("SysStateProcessor::process() - " + mDesc);
-      result = respond();
     }
     else
     {
@@ -64,7 +63,6 @@ public class SysStateProcessor extends AProcessor
       if (!mActivated && manager.isActive())
       {
         manager.deactivate();
-        result = respond();
       }
       else if (mActivated && !manager.isActive())
       {
@@ -72,13 +70,12 @@ public class SysStateProcessor extends AProcessor
         Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
         ((MqRemoteManager)manager).setQueues(remoteQueues);
         
-        Properties localQueues = mRepository.queryLocalQueues("", true, false);
-        result = respond(null, localQueues);
+        props = mRepository.queryLocalQueues("", true, false);
       }
     }
     
     mLogger.debug("SysStateProcessor::process() - OUT");
-    return result;
+    return respond(null, props);
   }
   
   /**

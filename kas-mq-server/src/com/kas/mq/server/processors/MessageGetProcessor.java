@@ -4,7 +4,6 @@ import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.internal.EMqCode;
 import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqQueue;
-import com.kas.mq.impl.internal.MqResponse;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 
@@ -49,7 +48,6 @@ public class MessageGetProcessor extends AProcessor
     {
       mDesc = "KAS/MQ server is disabled";
       mLogger.debug("MessageGetProcessor::process() - " + mDesc);
-      result = respond();
     }
     else
     {
@@ -63,13 +61,11 @@ public class MessageGetProcessor extends AProcessor
       {
         mDesc = "Invalid queue name: null or empty string";
         mLogger.debug("MessageGetProcessor::process() - " + mDesc);
-        result = respond();
       }
       else if (queue == null)
       {
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("MessageGetProcessor::process() - " + mDesc);
-        result = respond();
       }
       else
       {
@@ -79,19 +75,17 @@ public class MessageGetProcessor extends AProcessor
           mDesc = "No message found in queue " + mQueue;
           mCode = EMqCode.cWarn;
           mLogger.debug("MessageGetProcessor::process() - " + mDesc);
-          result = respond();
         }
         else
         {
           mDesc = "Successfully retrieved message from queue " + mQueue;
           mLogger.debug("MessageGetProcessor::process() - " + mDesc);
           mCode = EMqCode.cOkay;
-          result.setResponse(new MqResponse(mCode, mValue, mDesc));
         }
       }
     }
     
     mLogger.debug("MessageGetProcessor::process() - OUT");
-    return result;
+    return respond(result);
   }
 }

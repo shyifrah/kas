@@ -37,7 +37,7 @@ public interface IProcessor extends IObject
    * 
    * @return the {@link IMqMessage} response object
    */
-  public abstract MqStringMessage respond();
+  public abstract IMqMessage<?> respond();
     
   /**
    * Generate a response message which will be sent back to remote client.
@@ -45,8 +45,14 @@ public interface IProcessor extends IObject
    * @param body The message body to be placed on the response message
    * @param props The properties to place in the message's properties
    * @return the {@link MqStringMessage} response object
-   * 
-   * @see com.kas.mq.server.processors.IProcessor#respond(String, Properties)
    */
-  public abstract MqStringMessage respond(String body, Properties props);
+  public abstract IMqMessage<?> respond(String body, Properties props);
+  
+  /**
+   * Place response values on an existing message which will be sent back to remote client.
+   * 
+   * @param response The message that will be sent back
+   * @return the {@link IMqMessage<?>} response message
+   */
+  public abstract IMqMessage<?> respond(IMqMessage<?> response);
 }
