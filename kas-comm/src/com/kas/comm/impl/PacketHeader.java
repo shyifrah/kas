@@ -84,14 +84,14 @@ public class PacketHeader extends AKasObject implements ISerializable
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
-    sLogger.debug("PacketHeader::serialize() - IN");
+    sLogger.diag("PacketHeader::serialize() - IN");
     
     ostream.writeObject(mEyeCatcher);
     ostream.reset();
     ostream.writeInt(mClassId.ordinal());
     ostream.reset();
     
-    sLogger.debug("PacketHeader::serialize() - OUT");
+    sLogger.diag("PacketHeader::serialize() - OUT");
   }
   
   /**
@@ -108,7 +108,7 @@ public class PacketHeader extends AKasObject implements ISerializable
    */
   public IPacket read(ObjectInputStream istream) throws KasException
   {
-    sLogger.debug("PacketHeader::read() - IN");
+    sLogger.diag("PacketHeader::read() - IN");
     
     if (!mVerified) verify();
     
@@ -125,7 +125,7 @@ public class PacketHeader extends AKasObject implements ISerializable
       throw new KasException("Created object is not a valid IPacket");
     }
     
-    sLogger.debug("PacketHeader::read() - OUT");
+    sLogger.diag("PacketHeader::read() - OUT");
     return iPacket;
   }
   

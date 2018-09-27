@@ -110,7 +110,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public void send(IPacket packet) throws IOException
   {
-    sLogger.debug("Messenger::send() - IN");
+    sLogger.diag("Messenger::send() - IN");
     
     if (mOutputStream == null) throw new IOException("Null output stream; Messenger is probably not connected");
     
@@ -118,7 +118,7 @@ public class Messenger extends AKasObject implements IMessenger
     header.serialize(mOutputStream);
     packet.serialize(mOutputStream);
     
-    sLogger.debug("Messenger::send() - OUT");
+    sLogger.diag("Messenger::send() - OUT");
   }
 
   /**
@@ -153,7 +153,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public IPacket receive(int timeout) throws IOException
   {
-    sLogger.debug("Messenger::receive() - IN");
+    sLogger.diag("Messenger::receive() - IN");
     
     if (mInputStream == null) throw new IOException("Null input stream; Messenger is probably not connected");
     
@@ -170,7 +170,7 @@ public class Messenger extends AKasObject implements IMessenger
       sLogger.warn("An error occurred while trying to read packet from input stream. Exception: ", e);
     }
     
-    sLogger.debug("Messenger::receive() - OUT");
+    sLogger.diag("Messenger::receive() - OUT");
     return packet;
   }
   

@@ -112,10 +112,10 @@ public class Deserializer extends AKasObject implements IInitializable
    */
   public IObject deserializeObjectWithId(int id, ObjectInputStream istream) throws KasException
   {
-    mLogger.debug("Deserializer::deserialize() - IN");
+    mLogger.diag("Deserializer::deserialize() - IN");
     
     String className = mConfig.getClassName(id);
-    mLogger.debug("Deserializer::deserialize() - Deserializing object with class ID=" + id + ", ClassName=[" + className + "]");
+    mLogger.diag("Deserializer::deserialize() - Deserializing object with class ID=" + id + ", ClassName=[" + className + "]");
     
     Object object;
     Class<?> cls;
@@ -146,7 +146,7 @@ public class Deserializer extends AKasObject implements IInitializable
       throw new KasException("Exception caught during deserialization of class with ID: (" + id + ")", e);
     }
     
-    mLogger.debug("Deserializer::deserialize() - OUT");
+    mLogger.diag("Deserializer::deserialize() - OUT");
     return (IObject)object;
   }
   
