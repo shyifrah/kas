@@ -8,8 +8,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.impl.internal.MqManager;
 import com.kas.mq.impl.internal.MqQueue;
 import com.kas.mq.impl.internal.MqRemoteQueue;
-import com.kas.mq.server.internal.MqServerConnection;
-import com.kas.mq.server.internal.ServerConnPool;
+import com.kas.mq.server.internal.MqServerConnectionPool;
 
 /**
  * The {@link MqRemoteManager} is the class that does the actual managing of remote queues
@@ -34,11 +33,11 @@ public class MqRemoteManager extends MqManager
    */
   public void activate()
   {
-    mLogger.debug("RemoteQueuesManager::activate() - IN");
+    mLogger.debug("MqRemoteManager::activate() - IN");
 
     mActive = true;
 
-    mLogger.debug("RemoteQueuesManager::activate() - OUT");
+    mLogger.debug("MqRemoteManager::activate() - OUT");
   }
   
   /**
@@ -48,7 +47,7 @@ public class MqRemoteManager extends MqManager
    */
   public void setQueues(Properties props)
   {
-    mLogger.debug("RemoteQueuesManager::setQueues() - IN");
+    mLogger.debug("MqRemoteManager::setQueues() - IN");
     
     for (Map.Entry<Object, Object> entry : props.entrySet())
     {
@@ -56,14 +55,13 @@ public class MqRemoteManager extends MqManager
       String qname = key.substring(IMqConstants.cKasPropertyQryqResultPrefix.length()+1);
       if (qname.length() > 0)
       {
-        MqServerConnection conn = ServerConnPool.getInstance().allocate();
-        MqRemoteQueue queue = new MqRemoteQueue(this, qname, conn);
-        mLogger.debug("RemoteQueuesManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
+        MqRemoteQueue queue = new MqRemoteQueue(this, qname, MqServerConnectionPool.getInstance());
+        mLogger.debug("MqRemoteManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
         mQueues.put(qname, queue);
       }
     }
     
-    mLogger.debug("RemoteQueuesManager::setQueues() - OUT");
+    mLogger.debug("MqRemoteManager::setQueues() - OUT");
   }
   
   /**
@@ -76,7 +74,7 @@ public class MqRemoteManager extends MqManager
    */
   Properties queryQueue(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("RemoteQueuesManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.debug("MqRemoteManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     Properties props = new Properties();
     for (MqQueue queue : mQueues.values())
@@ -88,7 +86,7 @@ public class MqRemoteManager extends MqManager
       else
         include = mqrq.getName().equals(name);
       
-      mLogger.debug("RemoteQueuesManager::queryQueue() - Checking if current queue [" + mqrq.getName() + "] matches query: " + include);
+      mLogger.debug("MqRemoteManager::queryQueue() - Checking if current queue [" + mqrq.getName() + "] matches query: " + include);
       if (include)
       {
         String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqrq.getName();
@@ -96,7 +94,7 @@ public class MqRemoteManager extends MqManager
       }
     }
     
-    mLogger.debug("RemoteQueuesManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
+    mLogger.debug("MqRemoteManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
     return props;
   }
   
@@ -108,7 +106,7 @@ public class MqRemoteManager extends MqManager
    */
   MqRemoteQueue getQueue(String name)
   {
-    mLogger.debug("RemoteQueuesManager::getQueue() - IN, Name=" + name);
+    mLogger.debug("MqRemoteManager::getQueue() - IN, Name=" + name);
     MqRemoteQueue queue = null;
     
     if (isActive())
@@ -120,7 +118,7 @@ public class MqRemoteManager extends MqManager
       }
     }
     
-    mLogger.debug("RemoteQueuesManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("MqRemoteManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
@@ -132,21 +130,20 @@ public class MqRemoteManager extends MqManager
    */
   MqRemoteQueue addQueue(String name)
   {
-    mLogger.debug("RemoteQueuesManager::addQueue() - IN, Name=" + name);
+    mLogger.debug("MqRemoteManager::addQueue() - IN, Name=" + name);
     
     MqRemoteQueue queue = null;
     if (isActive())
     {
       if (name != null)
       {
-        MqServerConnection conn = ServerConnPool.getInstance().allocate();
         name = name.toUpperCase();
-        queue = new MqRemoteQueue(this, name, conn);
+        queue = new MqRemoteQueue(this, name, MqServerConnectionPool.getInstance());
         mQueues.put(name, queue);
       }
     }
     
-    mLogger.debug("RemoteQueuesManager::addQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("MqRemoteManager::addQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
@@ -158,7 +155,7 @@ public class MqRemoteManager extends MqManager
    */
   MqRemoteQueue removeQueue(String name)
   {
-    mLogger.debug("RemoteQueuesManager::removeQueue() - IN, Name=" + name);
+    mLogger.debug("MqRemoteManager::removeQueue() - IN, Name=" + name);
     
     MqQueue queue = null;
     if (isActive())
@@ -170,7 +167,7 @@ public class MqRemoteManager extends MqManager
       }
     }
     
-    mLogger.debug("RemoteQueuesManager::removeQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("MqRemoteManager::removeQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return (MqRemoteQueue)queue;
   }
   

@@ -49,7 +49,7 @@ public class MqLocalManager extends MqManager
    */
   public void activate()
   {
-    mLogger.debug("LocalQueuesManager::activate() - IN");
+    mLogger.debug("MqLocalManager::activate() - IN");
     
     boolean success = true;
     String repoDirPath = RunTimeUtils.getProductHomeDir() + File.separatorChar + "repo";
@@ -57,12 +57,12 @@ public class MqLocalManager extends MqManager
     if (!repoDir.exists())
     {
       success = repoDir.mkdir();
-      mLogger.info("LocalQueuesManager::activate() - Repository directory does not exist, try to create. result=" + success);
+      mLogger.info("MqLocalManager::activate() - Repository directory does not exist, try to create. result=" + success);
     }
     else if (!repoDir.isDirectory())
     {
       success = false;
-      mLogger.fatal("LocalQueuesManager::activate() - Repository directory path points to a file. Terminating...");
+      mLogger.fatal("MqLocalManager::activate() - Repository directory path points to a file. Terminating...");
     }
     else
     {
@@ -76,10 +76,10 @@ public class MqLocalManager extends MqManager
         if (qFile.isFile())
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
-          mLogger.trace("LocalQueuesManager::activate() - Restoring contents of queue [" + qName + ']');
+          mLogger.trace("MqLocalManager::activate() - Restoring contents of queue [" + qName + ']');
           MqLocalQueue q = defineQueue(qName, IMqConstants.cDefaultQueueThreshold);
           boolean restored = q.restore();
-          mLogger.trace("LocalQueuesManager::activate() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
+          mLogger.trace("MqLocalManager::activate() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
           success = success && restored;
         }
       }
@@ -101,7 +101,7 @@ public class MqLocalManager extends MqManager
     }
     
     mActive = success;
-    mLogger.debug("LocalQueuesManager::activate() - OUT");
+    mLogger.debug("MqLocalManager::activate() - OUT");
   }
   
   /**
@@ -111,7 +111,7 @@ public class MqLocalManager extends MqManager
    */
   public void deactivate()
   {
-    mLogger.debug("LocalQueuesManager::deactivate() - IN");
+    mLogger.debug("MqLocalManager::deactivate() - IN");
     boolean success = true;
     
     for (MqQueue queue : mQueues.values())
@@ -119,15 +119,15 @@ public class MqLocalManager extends MqManager
       MqLocalQueue lq = (MqLocalQueue)queue;
       boolean backed = true;
       String name = queue.getName();
-      mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents. Queue=[" + name + "]; Messages=[" + lq.size() + "]");
+      mLogger.debug("MqLocalManager::deactivate() - Writing queue contents. Queue=[" + name + "]; Messages=[" + lq.size() + "]");
       backed = queue.backup();  
       
-      mLogger.debug("LocalQueuesManager::deactivate() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
+      mLogger.debug("MqLocalManager::deactivate() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
       success = success && backed;
     }
     
     mActive = false;
-    mLogger.debug("LocalQueuesManager::deactivate() - OUT");
+    mLogger.debug("MqLocalManager::deactivate() - OUT");
   }
   
   /**
@@ -139,7 +139,7 @@ public class MqLocalManager extends MqManager
    */
   MqLocalQueue defineQueue(String name, int threshold)
   {
-    mLogger.debug("LocalQueuesManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold);
+    mLogger.debug("MqLocalManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -149,7 +149,7 @@ public class MqLocalManager extends MqManager
       mQueues.put(name, queue);
     }
     
-    mLogger.debug("LocalQueuesManager::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));
+    mLogger.debug("MqLocalManager::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));
     return queue;
   }
   
@@ -161,7 +161,7 @@ public class MqLocalManager extends MqManager
    */
   MqLocalQueue deleteQueue(String name)
   {
-    mLogger.debug("LocalQueuesManager::deleteQueue() - IN, Name=" + name);
+    mLogger.debug("MqLocalManager::deleteQueue() - IN, Name=" + name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -170,7 +170,7 @@ public class MqLocalManager extends MqManager
       queue = (MqLocalQueue)mQueues.remove(name);
     }
     
-    mLogger.debug("LocalQueuesManager::deleteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("MqLocalManager::deleteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
@@ -184,7 +184,7 @@ public class MqLocalManager extends MqManager
    */
   Properties queryQueue(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("LocalQueuesManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.debug("MqLocalManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     Properties props = new Properties();
     for (MqQueue queue : mQueues.values())
@@ -196,14 +196,14 @@ public class MqLocalManager extends MqManager
       else
         include = mqlq.getName().equals(name);
       
-      mLogger.debug("LocalQueuesManager::queryQueue() - Checking if current queue [" + mqlq.getName() + "] matches query: " + include);
+      mLogger.debug("MqLocalManager::queryQueue() - Checking if current queue [" + mqlq.getName() + "] matches query: " + include);
       if (include)
       {
         String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqlq.getName();
         props.setStringProperty(key, mqlq.queryResponse(all));
       }
     }
-    mLogger.debug("LocalQueuesManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
+    mLogger.debug("MqLocalManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
     return props;
   }
   
@@ -215,7 +215,7 @@ public class MqLocalManager extends MqManager
    */
   MqLocalQueue getQueue(String name)
   {
-    mLogger.debug("LocalQueuesManager::getQueue() - IN, Name=" + name);
+    mLogger.debug("MqLocalManager::getQueue() - IN, Name=" + name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -224,7 +224,7 @@ public class MqLocalManager extends MqManager
       queue = (MqLocalQueue)mQueues.get(name);
     }
     
-    mLogger.debug("LocalQueuesManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.debug("MqLocalManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
   
