@@ -1,10 +1,13 @@
 package com.kas.mq.admin.commands;
 
 import java.util.Scanner;
+import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqTextMessage;
+import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.internal.IMqConstants;
 
 /**
  * A QUERY QUEUE command
@@ -38,9 +41,11 @@ public class QryQueueCommand extends ACliCommand
   /**
    * A query queue command.<br>
    * <br>
-   * For only the "QUERY QUEUE" verb, the command will fail with a missing queue name message.
-   * The next token is the query option (possibly a "ALL").
-   * For more than that, the command will fail with an excessive arguments message.
+   * The command expects the "QUERY QUEUE" followed by a one or two arguments. The first argument
+   * is the queue name / queue name prefix. This argument is mandatory.<br>
+   * The second argument is either "ALL" or "BASIC". Omitting this argument is just like
+   * specifying "BASIC".<br>
+   * If more arguments are specified, the command will fail with an "excessive arguments" message 
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -53,12 +58,13 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
+    Properties qprops = new Properties();
+    
     String name = mCommandArgs.poll().toUpperCase();
-    boolean prefix = false;
     if (name.endsWith("*"))
     {
       name = name.substring(0, name.length()-1);
-      prefix = true;
+      qprops.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
     }
     
     if ((name.length() > 0) && (!Validators.isQueueName(name)))
@@ -68,10 +74,14 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
+    qprops.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
+    
     boolean all = false;
     String opt = mCommandArgs.poll();
     if ((opt != null) && (opt.equalsIgnoreCase("ALL")))
       all = true;
+    
+    qprops.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);
     
     if (mCommandArgs.size() > 0)
     {
@@ -80,7 +90,7 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    MqTextMessage result = mClient.queryQueue(name, prefix, all);
+    MqTextMessage result = mClient.queryServer(EQueryType.cQueryQueue, qprops);
     if (result != null)
       writeln(result.getBody());
     writeln(mClient.getResponse());

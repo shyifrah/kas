@@ -144,35 +144,6 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
-   * 
-   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @return the message returned by the KAS/MQ server
-   */
-  public MqTextMessage queryQueue(String name, boolean prefix, boolean all)
-  {
-    mLogger.debug("MqContext::queryQueue() - IN, Queue=" + name);
-    
-    MqTextMessage result = null;
-    if (Validators.isQueueName(name))
-    {
-      result = mConnection.queryQueue(name, prefix, all, false);
-    }
-    else if ((name != null) && (name.length() == 0) && (prefix))
-    {
-      result = mConnection.queryQueue(name, prefix, all, false);
-    }
-    else
-    {
-      setResponse("Query failed, invalid queue name" + (prefix ? " prefix: " : ": ") + ":" + name);
-    }
-    
-    mLogger.debug("MqContext::queryQueue() - OUT, Returns=" + result);
-    return result;
-  }
-  
-  /**
    * Query KAS/MQ server for information
    * 
    * @param qType a {@link EQueryType} value that describes the type of query

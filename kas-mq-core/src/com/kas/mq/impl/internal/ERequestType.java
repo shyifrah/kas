@@ -35,11 +35,6 @@ public enum ERequestType implements IObject
   cDeleteQueue,
   
   /**
-   * Query a queue
-   */
-  cQueryQueue,
-  
-  /**
    * Query server info
    */
   cQueryServer,

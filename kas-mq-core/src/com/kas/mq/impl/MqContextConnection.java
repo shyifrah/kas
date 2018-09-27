@@ -77,39 +77,6 @@ public class MqContextConnection extends MqConnection
     mLogger.debug("MqContextConnection::deleteQueue() - OUT");
     return success;
   }
-  
-  /**
-   * Query KAS/MQ server for information regarding all queues whose name begins with the specified prefix.
-   * 
-   * @param name The queue name.
-   * @param prefix If {@code true}, then {@code name} designates a queue name prefix.
-   * If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues
-   * @param outProps If {@code true}, the output of the query is returned
-   * only on top of the reply message's Properties. if {@code false}, the output is returned
-   * by means of the reply message's Properties <b>and</b> message body (formatted text). 
-   * @return the reply message returned from the server.
-   */
-  public MqTextMessage queryQueue(String name, boolean prefix, boolean all, boolean outProps)
-  {
-    mLogger.debug("MqContextConnection::queryQueue() - IN");
-    
-    MqTextMessage result = null;
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
-    else
-    {
-      IMqMessage<?> request = MqRequestFactory.createQueryQueueRequest(name, prefix, all, outProps);
-      IMqMessage<?> reply = put(IMqConstants.cAdminQueueName, request);
-      result = (MqTextMessage)reply;
-      logInfoAndSetResponse(reply.getResponse().getDesc());
-    }
-    
-    mLogger.debug("MqContextConnection::queryQueue() - OUT");
-    return result;
-  }
 
   /**
    * Query KAS/MQ server for information

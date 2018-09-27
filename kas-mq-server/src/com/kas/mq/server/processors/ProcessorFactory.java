@@ -39,9 +39,6 @@ public class ProcessorFactory
       case cDeleteQueue:
         processor = new DeleteQueueProcessor(request, controller, repository);
         break;
-      case cQueryQueue:
-        processor = new QueryQueueProcessor(request, controller, repository);
-        break;
       case cQueryServer:
         processor = new QueryServerProcessor(request, controller, repository);
         break;

@@ -47,17 +47,6 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqTextMessage createQueryQueueRequest(String name, boolean prefix, boolean all, boolean outProps)
-  {
-    MqTextMessage message = MqMessageFactory.createTextMessage(null);
-    message.setRequestType(ERequestType.cQueryQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
-    message.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, prefix);
-    message.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);
-    message.setBoolProperty(IMqConstants.cKasPropertyQryqOutOnlyProps, outProps);
-    return message;
-  }
-  
   static public MqTextMessage createQueryServerRequest(EQueryType qType, Properties qProps)
   {
     MqTextMessage message = MqMessageFactory.createTextMessage(null);
