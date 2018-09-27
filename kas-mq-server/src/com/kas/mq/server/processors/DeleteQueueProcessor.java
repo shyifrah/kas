@@ -9,7 +9,7 @@ import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
-import com.kas.mq.server.internal.ServerConnPool;
+import com.kas.mq.server.internal.MqServerConnectionPool;
 
 /**
  * Processor for deleting queues
@@ -120,7 +120,7 @@ public class DeleteQueueProcessor extends AProcessor
         
         mLogger.debug("DeleteQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqServerConnection conn = ServerConnPool.getInstance().allocate();
+        MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
         conn.connect(address.getHost(), address.getPort());
         if (conn.isConnected())
         {
@@ -129,7 +129,7 @@ public class DeleteQueueProcessor extends AProcessor
           
           conn.disconnect();
         }
-        ServerConnPool.getInstance().release(conn);
+        MqServerConnectionPool.getInstance().release(conn);
       }
     }
     

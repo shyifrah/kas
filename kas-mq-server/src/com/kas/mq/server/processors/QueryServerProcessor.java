@@ -12,7 +12,7 @@ import com.kas.mq.impl.internal.IMqConstants;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
-import com.kas.mq.server.internal.ServerConnPool;
+import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
 
 /**
@@ -144,7 +144,7 @@ public class QueryServerProcessor extends AProcessor
     StringBuilder sb = new StringBuilder();
     if (mQueryConnectionId != null)
     {
-      MqServerConnection conn = ServerConnPool.getInstance().getConnection(mQueryConnectionId);
+      MqServerConnection conn = MqServerConnectionPool.getInstance().getConnection(mQueryConnectionId);
       if (conn == null)
       {
         sb.append("No connections displayed");
@@ -157,7 +157,7 @@ public class QueryServerProcessor extends AProcessor
     }
     else
     {
-      Collection<MqServerConnection> col = ServerConnPool.getInstance().getConnections();
+      Collection<MqServerConnection> col = MqServerConnectionPool.getInstance().getConnections();
       for (MqServerConnection conn : col)
         sb.append(conn.toPrintableString()).append('\n');
       sb.append(col.size() + " connections displayed");

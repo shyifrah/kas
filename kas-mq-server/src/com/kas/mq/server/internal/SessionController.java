@@ -195,7 +195,7 @@ public class SessionController extends AKasObject implements IController
     }
     
     mConsole.info("Closing all opened connections...");
-    ServerConnPool.getInstance().shutdown();
+    MqServerConnectionPool.getInstance().shutdown();
     
     mConsole.info("Signaling main thread to terminate...");
     mServer.stop();

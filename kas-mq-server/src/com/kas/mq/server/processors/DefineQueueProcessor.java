@@ -10,7 +10,7 @@ import com.kas.mq.impl.internal.MqLocalQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
-import com.kas.mq.server.internal.ServerConnPool;
+import com.kas.mq.server.internal.MqServerConnectionPool;
 
 /**
  * Processor for defining queues
@@ -107,7 +107,7 @@ public class DefineQueueProcessor extends AProcessor
         
         mLogger.debug("DefineQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqServerConnection conn = ServerConnPool.getInstance().allocate();
+        MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
         conn.connect(address.getHost(), address.getPort());
         if (conn.isConnected())
         {
@@ -116,7 +116,7 @@ public class DefineQueueProcessor extends AProcessor
           
           conn.disconnect();
         }
-        ServerConnPool.getInstance().release(conn);
+        MqServerConnectionPool.getInstance().release(conn);
       }
     }
     

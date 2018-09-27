@@ -4,17 +4,36 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.internal.IMqConnectionPool;
+import com.kas.mq.impl.internal.MqConnection;
 
 /**
  * Not really a pool, just a class that keeps track of all allocated connections
  * 
  * @author Pippo
  */
-public class ServerConnPool
+public class MqServerConnectionPool extends AKasObject implements IMqConnectionPool
 {
+  /**
+   * Singleton instance
+   */
+  private static MqServerConnectionPool sInstance = new MqServerConnectionPool();
+  
+  /**
+   * Get the singleton instance
+   * 
+   * @return the singleton instance
+   */
+  public static MqServerConnectionPool getInstance()
+  {
+    return sInstance;
+  }
+  
   /**
    * Logger
    */
@@ -26,24 +45,9 @@ public class ServerConnPool
   private Map<UniqueId, MqServerConnection> mConnections = new ConcurrentHashMap<UniqueId, MqServerConnection>();
   
   /**
-   * Singleton instance
-   */
-  private static ServerConnPool sInstance = new ServerConnPool();
-  
-  /**
-   * Get the singleton instance
-   * 
-   * @return the singleton instance
-   */
-  public static ServerConnPool getInstance()
-  {
-    return sInstance;
-  }
-  
-  /**
    * Private constructor
    */
-  private ServerConnPool()
+  private MqServerConnectionPool()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
   }
@@ -55,11 +59,13 @@ public class ServerConnPool
    */
   public MqServerConnection allocate()
   {
-    mLogger.debug("ServerConnectionPool::allocate() - IN");
+    mLogger.debug("MqServerConnectionPool::allocate() - IN");
+    
     MqServerConnection conn = new MqServerConnection();
     UniqueId uid = conn.getConnectionId();
     mConnections.put(uid, conn);
-    mLogger.debug("ServerConnectionPool::allocate() - OUT");
+    
+    mLogger.debug("MqServerConnectionPool::allocate() - OUT");
     return conn;
   }
   
@@ -68,13 +74,15 @@ public class ServerConnPool
    * 
    * @param conn {@link MqServerConnection} to be released
    */
-  public void release(MqServerConnection conn)
+  public void release(MqConnection conn)
   {
-    mLogger.debug("ServerConnectionPool::release() - IN");
+    mLogger.debug("MqServerConnectionPool::release() - IN");
+    
     mConnections.remove(conn.getConnectionId());
     conn.disconnect();
     conn = null;
-    mLogger.debug("ServerConnectionPool::release() - OUT");
+    
+    mLogger.debug("MqServerConnectionPool::release() - OUT");
   }
   
   /**
@@ -82,21 +90,21 @@ public class ServerConnPool
    */
   public void shutdown()
   {
-    mLogger.debug("ServerConnectionPool::shutdown() - IN");
+    mLogger.debug("MqServerConnectionPool::shutdown() - IN");
     
     Collection<MqServerConnection> col = mConnections.values();
     for (Iterator<MqServerConnection> iter = col.iterator(); iter.hasNext();)
     {
       MqServerConnection conn = iter.next();
       UniqueId id = conn.getConnectionId();
-      mLogger.debug("ServerConnectionPool::shutdown() - Closing connection ID " + id);
+      mLogger.debug("MqServerConnectionPool::shutdown() - Closing connection ID " + id);
       conn.disconnect();
       iter.remove();
     }
     
     mConnections.clear();
     
-    mLogger.debug("ServerConnectionPool::shutdown() - OUT");
+    mLogger.debug("MqServerConnectionPool::shutdown() - OUT");
   }
   
   /**
@@ -107,13 +115,14 @@ public class ServerConnPool
    */
   public MqServerConnection getConnection(UniqueId id)
   {
-    mLogger.debug("ServerConnectionPool::getConnection() - IN, ConnId=" + id);
+    mLogger.debug("MqServerConnectionPool::getConnection() - IN, ConnId=" + id);
     
     if (id == null)
       return null;
     
     MqServerConnection conn = mConnections.get(id);
-    mLogger.debug("ServerConnectionPool::getConnection() - OUT");
+    
+    mLogger.debug("MqServerConnectionPool::getConnection() - OUT");
     return conn;
   }
   
@@ -125,5 +134,23 @@ public class ServerConnPool
   public Collection<MqServerConnection> getConnections()
   {
     return mConnections.values();
+  }
+  
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
+  public String toPrintableString(int level)
+  {
+    String pad = pad(level);
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("(\n")
+      .append(pad).append("  Connections=(").append(StringUtils.asPrintableString(mConnections, level+2)).append(")\n")
+      .append(pad).append(")");
+    return sb.toString();
   }
 }

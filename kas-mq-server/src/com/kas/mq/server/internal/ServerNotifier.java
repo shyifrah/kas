@@ -33,7 +33,7 @@ public class ServerNotifier extends AKasObject
   /**
    * Connection pool
    */
-  private ServerConnPool mPool;
+  private MqServerConnectionPool mPool;
   
   /**
    * Construct a {@link ServerNotifier server notifier}, specifying the associated {@link MqConfiguration}
@@ -46,7 +46,7 @@ public class ServerNotifier extends AKasObject
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
     mRepository = repository;
-    mPool = ServerConnPool.getInstance();
+    mPool = MqServerConnectionPool.getInstance();
   }
   
   /**
