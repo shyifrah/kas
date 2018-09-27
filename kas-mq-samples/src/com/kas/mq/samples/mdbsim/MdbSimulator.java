@@ -10,6 +10,17 @@ import com.kas.mq.impl.MqMessageFactory;
 import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.samples.Utils;
 
+/**
+ * This is a sample {@link AKasMqAppl KAS/MQ application} that is intended
+ * to demonstrate the use of the KAS/MQ API.<br>
+ * <br>
+ * The program reads messages from a designated queue and replies to a different one. 
+ * <br><br>
+ * For information regarding the applicable arguments for this application,
+ * see class {@link MdbSimulatorParams}
+ * 
+ * @author Pippo
+ */
 public class MdbSimulator extends AKasMqAppl
 {
   static final long cConsumerPollingInterval = 1000L;
@@ -17,6 +28,11 @@ public class MdbSimulator extends AKasMqAppl
   
   private MdbSimulatorParams mParams;
   
+  /**
+   * Construct the application
+   * 
+   * @param args
+   */
   public MdbSimulator(Map<String, String> args)
   {
     super(args);
@@ -54,6 +70,9 @@ public class MdbSimulator extends AKasMqAppl
     int total = 0;
     TimeStamp tsStart = TimeStamp.now();
     MqContext client = new MqContext();
+    
+    mParams.print();
+    
     try
     {
       client.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);
@@ -61,11 +80,14 @@ public class MdbSimulator extends AKasMqAppl
       //===========================================================================================
       // defining queues which will be used by mdb
       //===========================================================================================
+      System.out.println("Creating resources..." + (mParams.mCreateResources ? "" : " skipped"));
       if (mParams.mCreateResources)
       {
+        System.out.println("Creating queue: " + mParams.mRequestsQueue);
         Utils.createQueue(client, mParams.mRequestsQueue, 10000);
         if (!mParams.mRequestsQueue.equals(mParams.mRepliesQueue))
         {
+          System.out.println("Creating queue: " + mParams.mRepliesQueue);
           Utils.createQueue(client, mParams.mRepliesQueue , 10000);
         }
       }
@@ -73,6 +95,7 @@ public class MdbSimulator extends AKasMqAppl
       //===========================================================================================
       // get requests from requests' queue, and reply to replies' queue
       //===========================================================================================
+      System.out.println("Start reading messages and replying to messages...");
       IMqMessage<?> message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
       while (message != null)
       {
@@ -82,13 +105,17 @@ public class MdbSimulator extends AKasMqAppl
         MqStringMessage reply = MqMessageFactory.createStringMessage(replyBody);
         reply.setReferenceId(request.getMessageId());
         client.put(mParams.mRepliesQueue, reply);
-            
+        
+        if (total%100==0)
+          System.out.println(String.format("Number of messages processed by MDB: ", total));
+        
         message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
       }
       
       //===========================================================================================
       // deleting queues which were used by mdb
       //===========================================================================================
+      System.out.println("Deleting created queues (if necessary)...");
       Utils.deleteQueue(client, mParams.mRequestsQueue);
       Utils.deleteQueue(client, mParams.mRepliesQueue);
     }

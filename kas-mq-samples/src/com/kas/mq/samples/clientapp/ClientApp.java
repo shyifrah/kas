@@ -6,17 +6,23 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.samples.Utils;
+import com.kas.mq.samples.mdbsim.MdbSimulator;
 
 /**
  * This is a sample {@link AKasMqAppl KAS/MQ application} that is intended
  * to demonstrate the use of the KAS/MQ API.<br>
  * <br>
- * The program writes {@code cNumOfMessages} messages to the queue named
- * {@code cQueueName} and then reads them back.<br>
+ * The program writes messages to a queue and then reads them back.<br>
+ * The queue from which the consumers get messages can be the same one the producers use.
+ * However, if it's not, it is up to the user to make sure messages arrive to that queue.
+ * It is possible to use the {@link MdbSimulator} application in addition to this
+ * to make sure messages arrive to the consumers' queue.<br>
  * At the end of the execution, the program will print how long its execution took. 
+ * <br><br>
+ * For information regarding the applicable arguments for this application,
+ * see class {@link ClientAppParams}
  * 
  * @author Pippo
- *
  */
 public class ClientApp extends AKasMqAppl 
 {
@@ -72,6 +78,9 @@ public class ClientApp extends AKasMqAppl
   {
     TimeStamp tsStart = TimeStamp.now();
     MqContext client = new MqContext();
+    
+    mParams.print();
+    
     try
     {
       client.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);

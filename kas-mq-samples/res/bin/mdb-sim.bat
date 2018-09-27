@@ -21,6 +21,7 @@ title MDB-Simulator
 
 set "BATCH_DIR=%~dp0"
 call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.mdbsim.MdbSimulator ^
+  mdb.sim.create.res=true ^
   mdb.sim.req.queuename=mdb.req.queue ^
   mdb.sim.rep.queuename=mdb.rep.queue ^
   mdb.sim.username=admin ^

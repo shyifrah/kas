@@ -76,4 +76,13 @@ public class ParamsContainer
     }
     return result;
   }
+  
+  public void print()
+  {
+    System.out.println("Printing specified parameters: ");
+    System.out.println("=====================================================");
+    for (Map.Entry<String, String> entry : mMap.entrySet())
+      System.out.println(entry.getKey() + "=" + entry.getValue());
+    System.out.println("=====================================================");
+  }
 }

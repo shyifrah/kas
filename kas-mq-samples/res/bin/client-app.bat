@@ -24,8 +24,8 @@ title Client-App
 
 set "BATCH_DIR=%~dp0"
 call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.clientapp.ClientApp ^
-  client.app.put.queuename=clientappq1 ^
-  client.app.get.queuename=clientappq1 ^
+  client.app.put.queuename=mdb.req.queue ^
+  client.app.get.queuename=mdb.rep.queue ^
   client.app.total.messages=10000 ^
   client.app.total.producers=4 ^
   client.app.total.consumers=4 ^
