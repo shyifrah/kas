@@ -147,8 +147,11 @@ public class ClientApp extends AKasMqAppl
       //===========================================================================================
       // deleting queues which were used by producers and consumers
       //===========================================================================================
-      Utils.deleteQueue(client, mParams.mProdQueueName);
-      Utils.deleteQueue(client, mParams.mConsQueueName);
+      if (mParams.mCreateResources)
+      {
+        Utils.deleteQueue(client, mParams.mProdQueueName);
+        Utils.deleteQueue(client, mParams.mConsQueueName);
+      }
     }
     catch (KasException e)
     {

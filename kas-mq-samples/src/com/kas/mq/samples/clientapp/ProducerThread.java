@@ -1,8 +1,8 @@
 package com.kas.mq.samples.clientapp;
 
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.samples.GenThread;
 
 class ProducerThread extends GenThread
@@ -30,15 +30,33 @@ class ProducerThread extends GenThread
     mLogger.debug("ProducerThread::work() - Starting actual work...");
     for (int i = 0; i < mTotalMessages; ++i)
     {
-      String messageBody = "message number: " + (i + 1);
-      MqStringMessage putMessage = MqMessageFactory.createStringMessage(messageBody);
+      IMqMessage putMessage = createMessage(i);
       putMessage.setPriority(i%10);
       mContext.put(mQueueName, putMessage);
       
-      if (i%100==0)
-        System.out.println(String.format("[P%d] ... %d", mThreadIndex, i));
+      if (i % 100 == 0) System.out.println(String.format("[P%d] ... %d", mThreadIndex, i));
     }
     
     mLogger.debug("ProducerThread::work() - OUT");
+  }
+  
+  private IMqMessage createMessage(int idx)
+  {
+    IMqMessage msg;
+    switch (mParams.mMessageType)
+    {
+      case 1:
+        msg = MqMessageFactory.createStringMessage("Message number: " + (idx+1));
+        break;
+      case 2:
+        msg = MqMessageFactory.createObjectMessage(mParams);
+        break;
+      case 0:
+      default:
+        msg = MqMessageFactory.createMessage();
+        msg.setStringProperty("client.app.author", "shy ifrah");
+        break;
+    }
+    return msg;
   }
 }

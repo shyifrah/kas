@@ -9,6 +9,7 @@ title Client-App
 ::
 :: available arguments to the application:
 ::
+:: client.app.message.type=<num_msg_type>     -- 0-no body, 1-string, 2-object
 :: client.app.put.queuename=<queue_name>      -- name of the queue to which messages are put
 :: client.app.get.queuename=<queue_name>      -- name of the queue frmo which messages are get
 :: client.app.total.messages=<total_messages> -- the number of messages to produce
@@ -24,6 +25,7 @@ title Client-App
 
 set "BATCH_DIR=%~dp0"
 call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.clientapp.ClientApp ^
+  client.app.message.type=0 ^
   client.app.put.queuename=mdb.req.queue ^
   client.app.get.queuename=mdb.rep.queue ^
   client.app.total.messages=10000 ^

@@ -32,8 +32,7 @@ class ConsumerThread extends GenThread
     IMqMessage getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
     while (getMessage != null)
     {
-      if ((total%100==0) && (total != 0))
-        System.out.println(String.format("[C%d] ... %d", mThreadIndex, total));
+      if ((total != 0) && (total % 100 == 0)) System.out.println(String.format("[C%d] ... %d", mThreadIndex, total));
       ++total;
       getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
     }

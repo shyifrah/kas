@@ -3,10 +3,12 @@ package com.kas.mq.samples.mdbsim;
 import java.util.Map;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.base.UniqueId;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.MqMessageFactory;
+import com.kas.mq.impl.MqObjectMessage;
 import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.samples.Utils;
 
@@ -100,14 +102,22 @@ public class MdbSimulator extends AKasMqAppl
       while (message != null)
       {
         ++total;
-        MqStringMessage request = (MqStringMessage)message;
-        String replyBody = "reply to: " + request.getBody();
+        UniqueId requestId = message.getMessageId();
+        String body = null;
+        
+        if (message instanceof MqStringMessage)
+          body = ((MqStringMessage)message).getBody();
+        else if (message instanceof MqObjectMessage)
+          body = ((MqObjectMessage)message).getBody().toString();
+        else
+          body = message.getStringProperty("client.app.author", "the king");
+
+        String replyBody = "Reply to " + body;
         MqStringMessage reply = MqMessageFactory.createStringMessage(replyBody);
-        reply.setReferenceId(request.getMessageId());
+        reply.setReferenceId(requestId);
         client.put(mParams.mRepliesQueue, reply);
         
-        if (total%100==0)
-          System.out.println(String.format("Number of messages processed by MDB: ", total));
+        if (total % 100 == 0) System.out.println(String.format("Number of messages processed by MDB: %d", total));
         
         message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
       }
@@ -116,8 +126,11 @@ public class MdbSimulator extends AKasMqAppl
       // deleting queues which were used by mdb
       //===========================================================================================
       System.out.println("Deleting created queues (if necessary)...");
-      Utils.deleteQueue(client, mParams.mRequestsQueue);
-      Utils.deleteQueue(client, mParams.mRepliesQueue);
+      if (mParams.mCreateResources)
+      {
+        Utils.deleteQueue(client, mParams.mRequestsQueue);
+        Utils.deleteQueue(client, mParams.mRepliesQueue);
+      }
     }
     catch (KasException e)
     {
