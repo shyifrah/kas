@@ -13,28 +13,28 @@ public class MqMessageFactory
   }
   
   /**
-   * Create a string message, with a body containing {@code text}
+   * Create a string message, with a body containing {@code body}
    * 
-   * @param text The message body
+   * @param body The message body
    * @return a new {@link MqStringMessage}
    */
-  static public MqStringMessage createStringMessage(String text)
+  static public MqStringMessage createStringMessage(String body)
   {
     MqStringMessage message = new MqStringMessage();
-    message.setBody(text);
+    message.setBody(body);
     return message;
   }
   
   /**
-   * Create a text message, with a body containing {@code text}
+   * Create a Object message, with a body containing {@code body}
    * 
-   * @param text The message body
+   * @param body The message body
    * @return a new {@link MqObjectMessage}
    */
-  static public MqObjectMessage createObjectMessage(Object object)
+  static public MqObjectMessage createObjectMessage(Object body)
   {
     MqObjectMessage message = new MqObjectMessage();
-    message.setBody(object);
+    message.setBody(body);
     return message;
   }
 }

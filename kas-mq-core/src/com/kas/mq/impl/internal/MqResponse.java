@@ -7,10 +7,9 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ISerializable;
 
 /**
- * A KAS/MQ response message.<br>
+ * A KAS/MQ response.<br>
  * <br>
- * This is an extension of the the base message object - {@link AMqMessage} - with the additions of
- * two new data members: The response code and the response message.
+ * The response is composed of three fields: a {@link EMqCode code}, an integer value and a description.
  * 
  * @author Pippo
  */

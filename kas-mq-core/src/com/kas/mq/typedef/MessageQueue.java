@@ -3,10 +3,9 @@ package com.kas.mq.typedef;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.kas.infra.base.IObject;
 import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.internal.AMqMessage;
 
 /**
- * {@link MessageQueue} is the actual container for {@link AMqMessage}
+ * {@link MessageQueue} is the actual container for {@link IMqMessage}
  * 
  * @author Pippo
  */

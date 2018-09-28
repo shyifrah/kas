@@ -130,7 +130,7 @@ public abstract class MqQueue extends AKasObject
   /**
    * Get a message and wait indefinitely for one to be available.
    * 
-   * @return The {@link AMqMessage}
+   * @return The {@link IMqMessage}
    */
   public IMqMessage get()
   {
@@ -148,7 +148,7 @@ public abstract class MqQueue extends AKasObject
    * If {@code timeout} is 0, this method is equivalent to {@link #get()}.
    * 
    * @param timeout The amount of time to wait for message availability before giving up
-   * @return The {@link AMqMessage} or {@code null} if one is unavailable
+   * @return The {@link IMqMessage} or {@code null} if one is unavailable
    * 
    * @throws IllegalArgumentException if {@code timeout} is lower than 0
    */
@@ -172,7 +172,7 @@ public abstract class MqQueue extends AKasObject
    * 
    * @param timeout The amount of time to wait for message availability before giving up
    * @param interval The polling interval length
-   * @return The {@link AMqMessage} or {@code null} if one is unavailable
+   * @return The {@link IMqMessage} or {@code null} if one is unavailable
    * 
    * @throws IllegalArgumentException if {@code timeout} or {@code interval} are lower than 0
    */

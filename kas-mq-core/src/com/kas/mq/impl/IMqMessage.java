@@ -4,12 +4,11 @@ import com.kas.comm.IPacket;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.impl.internal.AMqMessage;
 import com.kas.mq.impl.internal.ERequestType;
 import com.kas.mq.impl.internal.MqResponse;
 
 /**
- * The rules all {@link AMqMessage} driven classes must obey
+ * The rules a {@link MqMessage a base message} and its driven classes must obey
  * 
  * @author Pippo
  *
