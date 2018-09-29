@@ -4,11 +4,11 @@ import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
-import com.kas.mq.impl.internal.MqQueue;
-import com.kas.mq.impl.internal.MqRemoteQueue;
+import com.kas.mq.internal.MqLocalQueue;
+import com.kas.mq.internal.MqManager;
+import com.kas.mq.internal.MqQueue;
+import com.kas.mq.internal.MqRemoteQueue;
 import com.kas.mq.server.repo.MqRemoteManager;
-import com.kas.mq.impl.internal.MqLocalQueue;
-import com.kas.mq.impl.internal.MqManager;
 
 /**
  * A Repository of queues

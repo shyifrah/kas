@@ -4,10 +4,10 @@ import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqManager;
-import com.kas.mq.impl.internal.MqQueue;
-import com.kas.mq.impl.internal.MqRemoteQueue;
+import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqManager;
+import com.kas.mq.internal.MqQueue;
+import com.kas.mq.internal.MqRemoteQueue;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 
 /**

@@ -1,4 +1,4 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.messages;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -6,15 +6,16 @@ import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.internal.ABaseMessage;
 
 /**
- * A KAS/MQ string message.<br>
+ * A KAS/MQ message with a String payload.<br>
  * <br>
  * The message body is a single {@link String} object
  * 
  * @author Pippo
  */
-public final class MqStringMessage extends MqMessage
+public final class MqStringMessage extends ABaseMessage
 {
   /**
    * The message body
@@ -74,8 +75,6 @@ public final class MqStringMessage extends MqMessage
    * Set the message body
    * 
    * @param body The message body
-   * 
-   * @see com.kas.mq.impl.IMqMessage#setBody(Object)
    */
   public void setBody(String body)
   {
@@ -86,8 +85,6 @@ public final class MqStringMessage extends MqMessage
    * Get the message body
    * 
    * @return the message body
-   * 
-   * @see com.kas.mq.impl.IMqMessage#getBody()
    */
   public String getBody()
   {

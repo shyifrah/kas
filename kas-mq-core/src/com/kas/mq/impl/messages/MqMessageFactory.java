@@ -1,4 +1,4 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.messages;
 
 import java.io.Serializable;
 

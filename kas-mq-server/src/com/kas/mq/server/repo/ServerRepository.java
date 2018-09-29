@@ -10,10 +10,10 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.internal.MqQueue;
-import com.kas.mq.impl.internal.MqRemoteQueue;
-import com.kas.mq.impl.internal.MqLocalQueue;
-import com.kas.mq.impl.internal.MqManager;
+import com.kas.mq.internal.MqLocalQueue;
+import com.kas.mq.internal.MqManager;
+import com.kas.mq.internal.MqQueue;
+import com.kas.mq.internal.MqRemoteQueue;
 import com.kas.mq.server.IRepository;
 
 /**

@@ -2,8 +2,8 @@ package com.kas.mq.server.processors;
 
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
-import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqStringMessage;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.impl.messages.MqStringMessage;
 
 /**
  * A {@link IProcessor processor} is an object that process request.

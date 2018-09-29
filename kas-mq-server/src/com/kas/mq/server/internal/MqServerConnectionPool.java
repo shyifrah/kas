@@ -9,8 +9,8 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.internal.IMqConnectionPool;
-import com.kas.mq.impl.internal.MqConnection;
+import com.kas.mq.internal.IMqConnectionPool;
+import com.kas.mq.internal.MqConnection;
 
 /**
  * Not really a pool, just a class that keeps track of all allocated connections

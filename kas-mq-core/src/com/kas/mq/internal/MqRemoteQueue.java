@@ -1,6 +1,6 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
 
 /**
  * A {@link MqRemoteQueue} object is a remotely-managed destination

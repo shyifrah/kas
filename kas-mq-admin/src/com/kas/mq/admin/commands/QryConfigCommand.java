@@ -4,8 +4,8 @@ import java.util.Scanner;
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.messages.MqStringMessage;
 
 /**
  * A QUERY CONFIGURATION command

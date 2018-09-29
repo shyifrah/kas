@@ -1,4 +1,4 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +12,7 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.typedef.MessageQueue;
 
 /**

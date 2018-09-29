@@ -6,11 +6,11 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
-import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqObjectMessage;
-import com.kas.mq.impl.MqStringMessage;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.impl.messages.MqMessageFactory;
+import com.kas.mq.impl.messages.MqObjectMessage;
+import com.kas.mq.impl.messages.MqStringMessage;
 import com.kas.mq.samples.Utils;
 
 /**

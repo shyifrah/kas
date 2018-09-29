@@ -6,8 +6,8 @@ import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqStringMessage;
+import com.kas.mq.impl.messages.MqMessageFactory;
+import com.kas.mq.impl.messages.MqStringMessage;
 
 /**
  * A PUT command

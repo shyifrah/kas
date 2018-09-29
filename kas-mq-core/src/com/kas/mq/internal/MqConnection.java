@@ -1,4 +1,4 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
 import java.io.IOException;
 import java.net.ConnectException;
@@ -13,7 +13,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqConnection;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
 
 /**
  * A connection is the object that responsible for connecting, authenticating etc.

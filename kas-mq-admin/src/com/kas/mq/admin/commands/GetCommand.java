@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.internal.IMqConstants;
+import com.kas.mq.internal.IMqConstants;
 
 /**
  * A GET command

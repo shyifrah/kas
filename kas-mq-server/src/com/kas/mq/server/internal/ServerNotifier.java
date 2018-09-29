@@ -7,9 +7,9 @@ import com.kas.infra.base.Properties;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqRequestFactory;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.MqRemoteManager;
 

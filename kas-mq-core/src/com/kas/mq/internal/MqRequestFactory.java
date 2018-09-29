@@ -1,11 +1,11 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
-import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqMessage;
+import com.kas.mq.impl.messages.MqMessage;
+import com.kas.mq.impl.messages.MqMessageFactory;
 
 public class MqRequestFactory
 {

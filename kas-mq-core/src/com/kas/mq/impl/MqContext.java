@@ -8,7 +8,8 @@ import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.impl.messages.MqStringMessage;
 
 /**
  * A KAS/MQ context is basically a KAS/MQ client, providing all basic

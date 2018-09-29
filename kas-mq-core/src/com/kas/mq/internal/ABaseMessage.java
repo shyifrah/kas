@@ -1,19 +1,18 @@
-package com.kas.mq.impl;
+package com.kas.mq.internal;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import com.kas.comm.IPacket;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.internal.EMqCode;
-import com.kas.mq.impl.internal.ERequestType;
-import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqResponse;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.internal.EMqCode;
+import com.kas.mq.internal.ERequestType;
+import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqResponse;
 
 /**
  * A KAS/MQ base message, without a payload.<br>
@@ -25,7 +24,7 @@ import com.kas.mq.impl.internal.MqResponse;
  * 
  * @author Pippo
  */
-public class MqMessage extends AKasObject implements IPacket, IMqMessage
+public abstract class ABaseMessage extends AKasObject implements IMqMessage
 {
   /**
    * The message unique identifier
@@ -70,7 +69,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
   /**
    * Construct a default string message object
    */
-  MqMessage()
+  protected ABaseMessage()
   {
     mMessageId = UniqueId.generate();
     mReferenceId = UniqueId.cNullUniqueId;
@@ -82,13 +81,13 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
   }
   
   /**
-   * Constructs a {@link MqMessage} object from {@link ObjectInputStream}
+   * Constructs a {@link ABaseMessage} object from {@link ObjectInputStream}
    * 
    * @param istream The {@link ObjectInputStream}
    * 
    * @throws IOException if I/O error occurs
    */
-  public MqMessage(ObjectInputStream istream) throws IOException
+  public ABaseMessage(ObjectInputStream istream) throws IOException
   {
     try
     {
@@ -122,7 +121,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
   }
   
   /**
-   * Serialize the {@link MqMessage} to the specified {@link ObjectOutputStream}
+   * Serialize the {@link ABaseMessage} to the specified {@link ObjectOutputStream}
    * 
    * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
    * 
@@ -158,21 +157,20 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
   }
   
   /**
-   * Create the {@link PacketHeader} describing this {@link MqMessage}
+   * Create a header describing the packet
    * 
-   * @return the packet header
+   * @return the header describing the packet 
+   * 
+   * @throws IOException if an I/O error occurs
    */
-  public PacketHeader createHeader()
-  {
-    return new PacketHeader(EClassId.cClassMqMessage);
-  }
+  public abstract PacketHeader createHeader();
   
   /**
    * Get the message ID
    * 
    * @return the message id
    * 
-   * @see com.kas.mq.impl.IMqMessage#getMessageId()
+   * @see com.kas.mq.impl.messages.IMqMessage#getMessageId()
    */
   public UniqueId getMessageId()
   {
@@ -184,7 +182,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @param id The reference ID to set
    * 
-   * @see com.kas.mq.impl.IMqMessage#setReferenceId(UniqueId)
+   * @see com.kas.mq.impl.messages.IMqMessage#setReferenceId(UniqueId)
    */
   public void setReferenceId(UniqueId id)
   {
@@ -196,7 +194,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return the reference id
    * 
-   * @see com.kas.mq.impl.IMqMessage#getReferenceId()
+   * @see com.kas.mq.impl.messages.IMqMessage#getReferenceId()
    */
   public UniqueId getReferenceId()
   {
@@ -210,7 +208,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @throws IllegalArgumentException if the new priority is invalid
    * 
-   * @see com.kas.mq.impl.IMqMessage#setPriority(int)
+   * @see com.kas.mq.impl.messages.IMqMessage#setPriority(int)
    */
   public void setPriority(int priority)
   {
@@ -225,7 +223,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return the message priority
    * 
-   * @see com.kas.mq.impl.IMqMessage#getPriority()
+   * @see com.kas.mq.impl.messages.IMqMessage#getPriority()
    */
   public int getPriority()
   {
@@ -239,7 +237,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @param type The {@link ERequestType} of the message
    * 
-   * @see com.kas.mq.impl.IMqMessage#setRequestType(ERequestType)
+   * @see com.kas.mq.impl.messages.IMqMessage#setRequestType(ERequestType)
    */
   public void setRequestType(ERequestType type)
   {
@@ -251,7 +249,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return the message's request type
    * 
-   * @see com.kas.mq.impl.IMqMessage#getRequestType()
+   * @see com.kas.mq.impl.messages.IMqMessage#getRequestType()
    */
   public ERequestType getRequestType()
   {
@@ -263,7 +261,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return the timestamp at which the message was created
    * 
-   * @see com.kas.mq.impl.IMqMessage#getTimeStamp()
+   * @see com.kas.mq.impl.messages.IMqMessage#getTimeStamp()
    */
   public long getTimeStamp()
   {
@@ -275,7 +273,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @param exp The number of milliseconds from message creation till the message expires
    * 
-   * @see com.kas.mq.impl.IMqMessage#setExpiration(long)
+   * @see com.kas.mq.impl.messages.IMqMessage#setExpiration(long)
    */
   public void setExpiration(long exp)
   {
@@ -287,7 +285,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return the number of milliseconds from message creation till the message expires
    * 
-   * @see com.kas.mq.impl.IMqMessage#getExpiration()
+   * @see com.kas.mq.impl.messages.IMqMessage#getExpiration()
    */
   public long getExpiration()
   {
@@ -299,7 +297,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return {@code true} if message expired, {@code false} otherwise
    * 
-   * @see com.kas.mq.impl.IMqMessage#isExpired()
+   * @see com.kas.mq.impl.messages.IMqMessage#isExpired()
    */
   public boolean isExpired()
   {
@@ -312,7 +310,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @param the {@link MqResponse} to set
    * 
-   * @see com.kas.mq.impl.IMqMessage#setResponse(MqResponse)
+   * @see com.kas.mq.impl.messages.IMqMessage#setResponse(MqResponse)
    */
   public void setResponse(MqResponse resp)
   {
@@ -324,7 +322,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * 
    * @return the {@link MqResponse}
    * 
-   * @see com.kas.mq.impl.IMqMessage#getResponse()
+   * @see com.kas.mq.impl.messages.IMqMessage#getResponse()
    */
   public MqResponse getResponse()
   {
@@ -337,7 +335,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setObjectProperty(String, Object)
+   * @see com.kas.mq.impl.messages.IMqMessage#setObjectProperty(String, Object)
    */
   public void setObjectProperty(String key, Object value)
   {
@@ -351,7 +349,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getObjectProperty(String, Object)
+   * @see com.kas.mq.impl.messages.IMqMessage#getObjectProperty(String, Object)
    */
   public Object getObjectProperty(String key, Object defaultValue)
   {
@@ -364,7 +362,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setBoolProperty(String, boolean)
+   * @see com.kas.mq.impl.messages.IMqMessage#setBoolProperty(String, boolean)
    */
   public void setBoolProperty(String key, boolean value)
   {
@@ -378,7 +376,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getBoolProperty(String, boolean)
+   * @see com.kas.mq.impl.messages.IMqMessage#getBoolProperty(String, boolean)
    */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
@@ -391,7 +389,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setStringProperty(String, String)
+   * @see com.kas.mq.impl.messages.IMqMessage#setStringProperty(String, String)
    */
   public void setStringProperty(String key, String value)
   {
@@ -405,7 +403,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getStringProperty(String, String)
+   * @see com.kas.mq.impl.messages.IMqMessage#getStringProperty(String, String)
    */
   public String getStringProperty(String key, String defaultValue)
   {
@@ -418,7 +416,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setByteProperty(String, byte)
+   * @see com.kas.mq.impl.messages.IMqMessage#setByteProperty(String, byte)
    */
   public void setByteProperty(String key, byte value)
   {
@@ -432,7 +430,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getByteProperty(String, byte)
+   * @see com.kas.mq.impl.messages.IMqMessage#getByteProperty(String, byte)
    */
   public byte getByteProperty(String key, byte defaultValue)
   {
@@ -445,7 +443,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setShortProperty(String, short)
+   * @see com.kas.mq.impl.messages.IMqMessage#setShortProperty(String, short)
    */
   public void setShortProperty(String key, short value)
   {
@@ -459,7 +457,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getShortProperty(String, short)
+   * @see com.kas.mq.impl.messages.IMqMessage#getShortProperty(String, short)
    */
   public short getShortProperty(String key, short defaultValue)
   {
@@ -472,7 +470,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setIntProperty(String, int)
+   * @see com.kas.mq.impl.messages.IMqMessage#setIntProperty(String, int)
    */
   public void setIntProperty(String key, int value)
   {
@@ -486,7 +484,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getIntProperty(String, int)
+   * @see com.kas.mq.impl.messages.IMqMessage#getIntProperty(String, int)
    */
   public int getIntProperty(String key, int defaultValue)
   {
@@ -499,7 +497,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setLongProperty(String, long)
+   * @see com.kas.mq.impl.messages.IMqMessage#setLongProperty(String, long)
    */
   public void setLongProperty(String key, long value)
   {
@@ -513,7 +511,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getLongProperty(String, long)
+   * @see com.kas.mq.impl.messages.IMqMessage#getLongProperty(String, long)
    */
   public long getLongProperty(String key, long defaultValue)
   {
@@ -526,7 +524,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setFloatProperty(String, float)
+   * @see com.kas.mq.impl.messages.IMqMessage#setFloatProperty(String, float)
    */
   public void setFloatProperty(String key, float value)
   {
@@ -540,7 +538,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getFloatProperty(String, float)
+   * @see com.kas.mq.impl.messages.IMqMessage#getFloatProperty(String, float)
    */
   public float getFloatProperty(String key, float defaultValue)
   {
@@ -553,7 +551,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param key The name of the property
    * @param value The value of the property
    * 
-   * @see com.kas.mq.impl.IMqMessage#setDoubleProperty(String, double)
+   * @see com.kas.mq.impl.messages.IMqMessage#setDoubleProperty(String, double)
    */
   public void setDoubleProperty(String key, double value)
   {
@@ -567,7 +565,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param defaultValue The default value of the property
    * @return the property value, or {@code defaultValue} if one is not present
    * 
-   * @see com.kas.mq.impl.IMqMessage#getDoubleProperty(String, double)
+   * @see com.kas.mq.impl.messages.IMqMessage#getDoubleProperty(String, double)
    */
   public double getDoubleProperty(String key, double defaultValue)
   {
@@ -580,7 +578,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param prefix A string that all returned properties are prefixed with
    * @return a subset of the properties collection
    * 
-   * @see com.kas.mq.impl.IMqMessage#getSubset(String)
+   * @see com.kas.mq.impl.messages.IMqMessage#getSubset(String)
    */
   public Properties getSubset(String prefix)
   {
@@ -593,7 +591,7 @@ public class MqMessage extends AKasObject implements IPacket, IMqMessage
    * @param props A subset of {@link Properties} to include
    * @return the number of properties included
    * 
-   * @see com.kas.mq.impl.IMqMessage#setSubset(Properties)
+   * @see com.kas.mq.impl.messages.IMqMessage#setSubset(Properties)
    */
   public void setSubset(Properties props)
   {

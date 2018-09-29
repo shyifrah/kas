@@ -1,7 +1,7 @@
 package com.kas.mq.samples.clientapp;
 
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.samples.GenThread;
 
 class ConsumerThread extends GenThread

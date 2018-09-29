@@ -9,7 +9,7 @@ import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.internal.IMqConstants;
+import com.kas.mq.internal.IMqConstants;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties

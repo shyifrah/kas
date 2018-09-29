@@ -1,11 +1,11 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.messages;
 
 import com.kas.comm.IPacket;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.impl.internal.ERequestType;
-import com.kas.mq.impl.internal.MqResponse;
+import com.kas.mq.internal.ERequestType;
+import com.kas.mq.internal.MqResponse;
 
 /**
  * The rules a {@link MqMessage a base message} and its driven classes must obey

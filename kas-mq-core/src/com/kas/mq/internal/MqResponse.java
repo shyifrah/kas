@@ -1,4 +1,4 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

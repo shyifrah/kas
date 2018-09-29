@@ -1,4 +1,4 @@
-package com.kas.mq.impl;
+package com.kas.mq.impl.messages;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,15 +8,16 @@ import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
 import com.kas.comm.serializer.Serializer;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.internal.ABaseBytesMessage;
 
 /**
- * A KAS/MQ object message.<br>
+ * A KAS/MQ message with a Serializable object payload.<br>
  * <br>
  * The message body is a single {@link Object} object
  * 
  * @author Pippo
  */
-public final class MqObjectMessage extends MqMessage
+public final class MqObjectMessage extends ABaseBytesMessage
 {
   /**
    * The message body
@@ -42,23 +43,6 @@ public final class MqObjectMessage extends MqMessage
   public MqObjectMessage(ObjectInputStream istream) throws IOException
   {
     super(istream);
-    try
-    {
-      int len = istream.readInt();
-      if (len > 0)
-      {
-        mBody = new byte [len];
-        istream.read(mBody);
-      }
-    }
-    catch (IOException e)
-    {
-      throw e;
-    }
-    catch (Throwable e)
-    {
-      throw new IOException(e);
-    }
   }
   
   /**
@@ -73,25 +57,12 @@ public final class MqObjectMessage extends MqMessage
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
     super.serialize(ostream);
-    
-    // body length
-    int len = (mBody == null ? 0 : mBody.length);
-    ostream.writeInt(len);
-    ostream.reset();
-    
-    if (len > 0)
-    {
-      ostream.write(mBody);
-      ostream.reset();
-    }
   }
   
   /**
    * Set the message body
    * 
    * @param body The message body
-   * 
-   * @see com.kas.mq.impl.IMqMessage#setBody(Object)
    */
   public void setBody(Serializable body)
   {
@@ -102,11 +73,11 @@ public final class MqObjectMessage extends MqMessage
    * Get the message body
    * 
    * @return the message body
-   * 
-   * @see com.kas.mq.impl.IMqMessage#getBody()
    */
   public Serializable getBody()
   {
+    if (mBody == null) return null;
+    
     return Serializer.toSerializable(mBody);
   }
   

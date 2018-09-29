@@ -1,4 +1,4 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;

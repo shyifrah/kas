@@ -2,10 +2,12 @@ package com.kas.mq.impl;
 
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
-import com.kas.mq.impl.internal.EMqCode;
-import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqConnection;
-import com.kas.mq.impl.internal.MqRequestFactory;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.EMqCode;
+import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqConnection;
+import com.kas.mq.internal.MqRequestFactory;
 
 /**
  * A {@link MqContextConnection} is an extended {@link MqConnection} used by {@link MqContext}

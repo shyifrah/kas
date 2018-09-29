@@ -1,10 +1,10 @@
 package com.kas.mq.server.internal;
 
-import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContextConnection;
-import com.kas.mq.impl.internal.EMqCode;
-import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqRequestFactory;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.internal.EMqCode;
+import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqRequestFactory;
 
 /**
  * A {@link MqServerConnection} is an extended {@link MqContextConnection} used by server side.

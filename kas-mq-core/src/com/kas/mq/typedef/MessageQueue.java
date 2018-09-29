@@ -2,7 +2,7 @@ package com.kas.mq.typedef;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.kas.infra.base.IObject;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
 
 /**
  * {@link MessageQueue} is the actual container for {@link IMqMessage}

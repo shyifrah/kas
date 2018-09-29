@@ -3,13 +3,13 @@ package com.kas.mq.typedef;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.internal.MqQueue;
+import com.kas.mq.internal.MqQueue;
 
 /**
- * {@link QueueMap} is the actual container for {@link com.kas.mq.impl.IMqMessage}.<br>
+ * {@link QueueMap} is the actual container for {@link com.kas.mq.impl.messages.IMqMessage}.<br>
  * <br>
  * It is actually an extension of {@link ConcurrentHashMap} that maps a name to the associated {@link MqQueue}.
- * The {@link MqQueue} object can be either {@link com.kas.mq.impl.internal.MqLocalQueue local} or {@link com.kas.mq.impl.internal.MqRemoteQueue remote}.
+ * The {@link MqQueue} object can be either {@link com.kas.mq.internal.MqLocalQueue local} or {@link com.kas.mq.internal.MqRemoteQueue remote}.
  * 
  * @author Pippo
  */

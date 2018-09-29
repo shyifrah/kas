@@ -5,11 +5,11 @@ import com.kas.infra.base.Properties;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.IMqMessage;
-import com.kas.mq.impl.MqMessageFactory;
-import com.kas.mq.impl.MqStringMessage;
-import com.kas.mq.impl.internal.EMqCode;
-import com.kas.mq.impl.internal.MqResponse;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.impl.messages.MqMessageFactory;
+import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.EMqCode;
+import com.kas.mq.internal.MqResponse;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 

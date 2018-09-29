@@ -7,10 +7,10 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.MqConfiguration;
-import com.kas.mq.impl.internal.IMqConstants;
-import com.kas.mq.impl.internal.MqManager;
-import com.kas.mq.impl.internal.MqQueue;
-import com.kas.mq.impl.internal.MqLocalQueue;
+import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqLocalQueue;
+import com.kas.mq.internal.MqManager;
+import com.kas.mq.internal.MqQueue;
 
 /**
  * The {@link MqLocalManager} is the class that does the actual managing of local queues for the {@link ServerRepository}

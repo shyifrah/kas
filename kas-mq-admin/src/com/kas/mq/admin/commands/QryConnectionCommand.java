@@ -5,9 +5,9 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.MqStringMessage;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
-import com.kas.mq.impl.internal.IMqConstants;
+import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.IMqConstants;
 
 /**
  * A QUERY CONNECTION command

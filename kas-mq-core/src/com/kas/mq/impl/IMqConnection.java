@@ -3,7 +3,8 @@ package com.kas.mq.impl;
 import java.net.Socket;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.impl.internal.MqConnection;
+import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.internal.MqConnection;
 
 public interface IMqConnection extends IObject
 {

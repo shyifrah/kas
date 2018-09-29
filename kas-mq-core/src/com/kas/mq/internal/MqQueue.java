@@ -1,9 +1,9 @@
-package com.kas.mq.impl.internal;
+package com.kas.mq.internal;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.impl.IMqMessage;
+import com.kas.mq.impl.messages.IMqMessage;
 
 /**
  * A {@link MqQueue} object is a message container that is managed by the KAS/MQ system.
