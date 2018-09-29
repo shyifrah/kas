@@ -51,6 +51,9 @@ class ProducerThread extends GenThread
       case 2:
         msg = MqMessageFactory.createObjectMessage(mParams);
         break;
+      case 3:
+        msg = MqMessageFactory.createBytesMessage(("Message number: " + (idx+1)).getBytes());
+        break;
       case 0:
       default:
         msg = MqMessageFactory.createMessage();

@@ -39,4 +39,17 @@ public class MqMessageFactory
     message.setBody(body);
     return message;
   }
+  
+  /**
+   * Create a byte [] message, with a body containing {@code body}
+   * 
+   * @param body The message body
+   * @return a new {@link MqBytesMessage}
+   */
+  static public MqBytesMessage createBytesMessage(byte [] body)
+  {
+    MqBytesMessage message = new MqBytesMessage();
+    message.setBody(body);
+    return message;
+  }
 }

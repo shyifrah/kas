@@ -8,6 +8,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.impl.messages.MqBytesMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
 import com.kas.mq.impl.messages.MqObjectMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -110,6 +111,8 @@ public class MdbSimulator extends AKasMqAppl
           body = ((MqStringMessage)message).getBody();
         else if (message instanceof MqObjectMessage)
           body = StringUtils.asString(((MqObjectMessage)message).getBody());
+        else if (message instanceof MqBytesMessage)
+          body = new String(((MqBytesMessage)message).getBody());
         else
           body = message.getStringProperty("client.app.author", "the king");
 

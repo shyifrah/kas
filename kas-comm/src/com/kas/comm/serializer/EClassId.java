@@ -29,6 +29,7 @@ public enum EClassId implements IObject
   cClassMqMessage,
   cClassMqStringMessage,
   cClassMqObjectMessage,
+  cClassMqBytesMessage,
   
   ;
   
