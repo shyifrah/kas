@@ -1,5 +1,7 @@
 package com.kas.mq.impl;
 
+import java.io.Serializable;
+
 public class MqMessageFactory
 {
   /**
@@ -31,7 +33,7 @@ public class MqMessageFactory
    * @param body The message body
    * @return a new {@link MqObjectMessage}
    */
-  static public MqObjectMessage createObjectMessage(Object body)
+  static public MqObjectMessage createObjectMessage(Serializable body)
   {
     MqObjectMessage message = new MqObjectMessage();
     message.setBody(body);

@@ -4,6 +4,7 @@ import java.util.Map;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.IMqMessage;
 import com.kas.mq.impl.MqContext;
@@ -108,7 +109,7 @@ public class MdbSimulator extends AKasMqAppl
         if (message instanceof MqStringMessage)
           body = ((MqStringMessage)message).getBody();
         else if (message instanceof MqObjectMessage)
-          body = ((MqObjectMessage)message).getBody().toString();
+          body = StringUtils.asString(((MqObjectMessage)message).getBody());
         else
           body = message.getStringProperty("client.app.author", "the king");
 

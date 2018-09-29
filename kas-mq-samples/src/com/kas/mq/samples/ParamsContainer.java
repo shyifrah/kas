@@ -1,10 +1,13 @@
 package com.kas.mq.samples;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class ParamsContainer
+public class ParamsContainer implements Serializable
 {
-  private Map<String,String> mMap;
+  static private final long serialVersionUID = 1L;
+  
+  transient private Map<String,String> mMap;
   private String mPrefix;
   
   public String mUserName;
@@ -77,6 +80,9 @@ public class ParamsContainer
     return result;
   }
   
+  /**
+   * Print the parameters
+   */
   public void print()
   {
     System.out.println("Printing specified parameters: ");

@@ -3,8 +3,10 @@ package com.kas.mq.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
+import com.kas.comm.serializer.Serializer;
 import com.kas.infra.utils.StringUtils;
 
 /**
@@ -19,7 +21,7 @@ public final class MqObjectMessage extends MqMessage
   /**
    * The message body
    */
-  protected Object mBody;
+  private byte [] mBody;
   
   /**
    * Construct a default text message object
@@ -42,7 +44,12 @@ public final class MqObjectMessage extends MqMessage
     super(istream);
     try
     {
-      mBody = istream.readObject();
+      int len = istream.readInt();
+      if (len > 0)
+      {
+        mBody = new byte [len];
+        istream.read(mBody);
+      }
     }
     catch (IOException e)
     {
@@ -67,7 +74,16 @@ public final class MqObjectMessage extends MqMessage
   {
     super.serialize(ostream);
     
-    ostream.writeObject(mBody);
+    // body length
+    int len = (mBody == null ? 0 : mBody.length);
+    ostream.writeInt(len);
+    ostream.reset();
+    
+    if (len > 0)
+    {
+      ostream.write(mBody);
+      ostream.reset();
+    }
   }
   
   /**
@@ -77,9 +93,9 @@ public final class MqObjectMessage extends MqMessage
    * 
    * @see com.kas.mq.impl.IMqMessage#setBody(Object)
    */
-  public void setBody(Object body)
+  public void setBody(Serializable body)
   {
-    mBody = body;
+    mBody = Serializer.toByteArray(body);
   }
   
   /**
@@ -89,9 +105,9 @@ public final class MqObjectMessage extends MqMessage
    * 
    * @see com.kas.mq.impl.IMqMessage#getBody()
    */
-  public Object getBody()
+  public Serializable getBody()
   {
-    return mBody;
+    return Serializer.toSerializable(mBody);
   }
   
   /**

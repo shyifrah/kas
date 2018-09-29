@@ -5,6 +5,8 @@ import com.kas.mq.samples.ParamsContainer;
 
 public class ClientAppParams extends ParamsContainer
 {
+  private static final long serialVersionUID = 1L;
+  
   public String mProdQueueName;
   public String mConsQueueName;
   public int    mTotalProducers;

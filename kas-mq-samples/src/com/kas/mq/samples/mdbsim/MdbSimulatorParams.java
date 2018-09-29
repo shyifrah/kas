@@ -5,6 +5,8 @@ import com.kas.mq.samples.ParamsContainer;
 
 public class MdbSimulatorParams extends ParamsContainer
 {
+  private static final long serialVersionUID = 1L;
+  
   public String mRequestsQueue;
   public String mRepliesQueue;
   
