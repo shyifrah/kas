@@ -1,10 +1,11 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.logging.ELogLevel;
+import com.kas.logging.impl.LoggingConfiguration;
 
 /**
  * Abstract appender's configuration

@@ -1,4 +1,7 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
+
+import com.kas.logging.impl.AppenderManager;
+import com.kas.logging.impl.LoggingConfiguration;
 
 /**
  * The {@link FileAppender} configuration object.
@@ -58,7 +61,7 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
    * When this method is called, it calls the {@link com.kas.config.MainConfiguration MainConfiguration} in order to re-read the values
    * of the relevant properties.
    * 
-   * @see com.kas.logging.impl.AAppenderConfiguration#refresh()
+   * @see com.kas.logging.impl.appenders.AAppenderConfiguration#refresh()
    */
   public void refresh()
   {

@@ -1,4 +1,4 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
 
 /**
  * STDERR appender
@@ -12,7 +12,7 @@ public class StderrAppender extends ConsoleAppender
    * 
    * @param cac The {@link ConsoleAppenderConfiguration}
    */
-  protected StderrAppender(ConsoleAppenderConfiguration cac)
+  public StderrAppender(ConsoleAppenderConfiguration cac)
   {
     super(cac, System.err);
   }

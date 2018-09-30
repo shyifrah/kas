@@ -1,4 +1,4 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -204,7 +204,7 @@ public class FileAppender extends AAppender
    * 
    * @return {@code true} if the {@link BufferedWriter#flush()} was called, {@code false} otherwise
    * 
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getFlushRate()
+   * @see com.kas.logging.impl.appenders.FileAppenderConfiguration#getFlushRate()
    */
   private boolean flush()
   {
@@ -230,9 +230,9 @@ public class FileAppender extends AAppender
    * 
    * @throws IOException if an I/O error occurs
    * 
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveTestSizeRate()
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxGenerations()
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
+   * @see com.kas.logging.impl.appenders.FileAppenderConfiguration#getArchiveTestSizeRate()
+   * @see com.kas.logging.impl.appenders.FileAppenderConfiguration#getArchiveMaxGenerations()
+   * @see com.kas.logging.impl.appenders.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
    */
   private void archive() throws IOException
   {

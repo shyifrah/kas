@@ -1,4 +1,4 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
 
 import java.io.PrintStream;
 import com.kas.infra.base.TimeStamp;

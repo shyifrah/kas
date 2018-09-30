@@ -1,4 +1,4 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
 
 /**
  * STDOUT appender
@@ -12,7 +12,7 @@ public class StdoutAppender extends ConsoleAppender
    * 
    * @param cac The {@link ConsoleAppenderConfiguration}
    */
-  protected StdoutAppender(ConsoleAppenderConfiguration cac)
+  public StdoutAppender(ConsoleAppenderConfiguration cac)
   {
     super(cac, System.out);
   }

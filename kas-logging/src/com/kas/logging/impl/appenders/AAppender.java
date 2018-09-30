@@ -1,8 +1,9 @@
-package com.kas.logging.impl;
+package com.kas.logging.impl.appenders;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.impl.IAppender;
 
 /**
  * A general purpose {@link AAppender}

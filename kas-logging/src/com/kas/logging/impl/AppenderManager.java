@@ -4,6 +4,14 @@ import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.impl.appenders.ConsoleAppender;
+import com.kas.logging.impl.appenders.ConsoleAppenderConfiguration;
+import com.kas.logging.impl.appenders.FileAppender;
+import com.kas.logging.impl.appenders.FileAppenderConfiguration;
+import com.kas.logging.impl.appenders.StderrAppender;
+import com.kas.logging.impl.appenders.StderrAppenderConfiguration;
+import com.kas.logging.impl.appenders.StdoutAppender;
+import com.kas.logging.impl.appenders.StdoutAppenderConfiguration;
 
 /**
  * A singleton class for managing all appenders
