@@ -18,7 +18,7 @@ import com.kas.mq.internal.ABaseBytesMessage;
 public final class MqBytesMessage extends ABaseBytesMessage
 {
   /**
-   * Construct a default text message object
+   * Construct a default bytes message object
    */
   MqBytesMessage()
   {
