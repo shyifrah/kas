@@ -1,5 +1,6 @@
 package com.kas.mq.samples.clientapp;
 
+import com.kas.infra.base.Properties;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
@@ -53,6 +54,11 @@ class ProducerThread extends GenThread
         break;
       case 3:
         msg = MqMessageFactory.createBytesMessage(("Message number: " + (idx+1)).getBytes());
+        break;
+      case 4:
+        Properties map = new Properties();
+        map.setStringProperty("client.app.author", "shy ifrah");
+        msg = MqMessageFactory.createMapMessage(map);
         break;
       case 0:
       default:
