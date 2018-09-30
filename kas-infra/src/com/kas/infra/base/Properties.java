@@ -32,13 +32,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   }
   
   /**
-   * Construct a set of {@link Properties} from a different set.<br>
+   * Construct a set of {@link Properties} from a map.<br>
    * <br>
-   * After construction, this {@link Properties} object will have the same contents as {@code other}.
+   * After construction, this {@link Properties} object will have the same entries as {@code map}.
    * 
-   * @param other The other {@link Properties} object.
+   * @param map The map.
    */
-  public Properties(Properties other)
+  public Properties(Map<?, ?> other)
   {
     super(other);
   }
@@ -179,6 +179,73 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   public void setBoolProperty(String key, boolean value)
   {
     put(key, new Boolean(value));
+  }
+  
+  /**
+   * Get a Character property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code char} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the {@link Char} value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
+  public char getCharProperty(String key) throws KasException
+  {
+    Object objResult = getProperty(key);
+    if (objResult == null)
+      throw new KasException("getCharProperty() - Property not found: " + key);
+    
+    Character result;
+    try
+    {
+      result = (Character)objResult;
+    }
+    catch (ClassCastException e)
+    {
+      String strResult = (String)objResult;
+      if (strResult.length() == 1)
+        result = strResult.charAt(0);
+      throw new KasException("getCharProperty() - Invalid value: " + strResult);
+    }
+    catch (Throwable e)
+    {
+      throw new KasException("getCharProperty() - Invalid value: " + objResult);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Get a Character property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   * 
+   * @see com.kas.infra.config.IConfiguration#getIntProperty(String, int)
+   */
+  public char getCharProperty(String key, char defaultValue)
+  {
+    char value = defaultValue;
+    try
+    {
+      value = getCharProperty(key);
+    }
+    catch (Throwable e) {}
+    return value;
+  }
+  
+  /**
+   * Set an Character property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
+  public void setCharProperty(String key, char value)
+  {
+    put(key, new Character(value));
   }
   
   /**
@@ -435,7 +502,78 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setByteProperty(String key, byte value)
   {
-    put(key, new Byte(value));
+    put(key, value);
+  }
+  
+  /**
+   * Get a Bytes (byte []) property.<br>
+   * <br>
+   * If the property does not exist, or property does not designate a valid {@code byte} value, an exception is thrown.
+   * 
+   * @param key The name of the property
+   * @return the an array of bytes value
+   * 
+   * @throws {@link KasException} if property is not found or some other error occurred
+   */
+  public byte [] getBytesProperty(String key) throws KasException
+  {
+    Object objResult = getProperty(key);
+    if (objResult == null)
+      throw new KasException("getBytesProperty() - Property not found: " + key);
+    
+    byte [] result;
+    try
+    {
+      result = (byte [])objResult;
+    }
+    catch (Throwable e)
+    {
+      throw new KasException("getBytesProperty() - Invalid value: " + objResult);
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Get a byte [] property with default value if one is not present
+   * 
+   * @param key The name of the property
+   * @param defaultValue The default value of the property
+   * @return the property value, or {@code defaultValue} if one is not present
+   */
+  public byte [] getBytesProperty(String key, byte [] defaultValue)
+  {
+    byte [] value = defaultValue;
+    try
+    {
+      value = getBytesProperty(key);
+    }
+    catch (Throwable e) {}
+    return value;
+  }
+  
+  /**
+   * Set a byte [] property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
+  public void setBytesProperty(String key, byte [] value)
+  {
+    put(key, value);
+  }
+  
+  /**
+   * Set a Byte property.
+   * 
+   * @param key The name of the property
+   * @param value The value of the property
+   */
+  public void setBytesProperty(String key, byte [] value, int offset, int length)
+  {
+    byte [] subarray = new byte [length];
+    System.arraycopy(value, offset, subarray, 0, length);
+    put(key, subarray);
   }
   
   /**
