@@ -1,6 +1,7 @@
 package com.kas.mq.impl.messages;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class MqMessageFactory
 {
@@ -50,6 +51,18 @@ public class MqMessageFactory
   {
     MqBytesMessage message = new MqBytesMessage();
     message.setBody(body);
+    return message;
+  }
+  
+  /**
+   * Create a map message, with a body containing {@code body}
+   * 
+   * @param body The message body
+   * @return a new {@link MqMapMessage}
+   */
+  static public MqMapMessage createMapMessage(Map<?, ?> body)
+  {
+    MqMapMessage message = new MqMapMessage(body);
     return message;
   }
 }
