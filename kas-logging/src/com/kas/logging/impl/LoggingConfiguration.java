@@ -5,6 +5,7 @@ import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
+import com.kas.logging.appender.AAppenderConfiguration;
 
 /**
  * The logging configuration

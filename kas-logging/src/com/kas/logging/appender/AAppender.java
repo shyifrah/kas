@@ -1,8 +1,9 @@
-package com.kas.logging.impl;
+package com.kas.logging.appender;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.impl.IAppender;
 
 /**
  * A general purpose {@link AAppender}
@@ -11,7 +12,7 @@ import com.kas.infra.utils.StringUtils;
  */
 public abstract class AAppender extends AKasObject implements IAppender
 {
-  static protected final String cAppenderMessageFormat = "%s %5d:%-2d %-5s (%s) %s%n";
+  static public final String cAppenderMessageFormat = "%s %5d:%-2d %-5s (%s) %s%n";
   
   /**
    * Write a message

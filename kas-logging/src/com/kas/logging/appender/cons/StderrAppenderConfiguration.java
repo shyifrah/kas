@@ -1,4 +1,7 @@
-package com.kas.logging.impl;
+package com.kas.logging.appender.cons;
+
+import com.kas.logging.impl.LogSystem;
+import com.kas.logging.impl.LoggingConfiguration;
 
 /**
  * A STDERR appender configuration
@@ -12,7 +15,7 @@ public class StderrAppenderConfiguration extends ConsoleAppenderConfiguration
    */
   public StderrAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(AppenderManager.cStderrAppenderName, loggingConfig);
+    super(LogSystem.cStderrAppenderName, loggingConfig);
   }
   
   /**

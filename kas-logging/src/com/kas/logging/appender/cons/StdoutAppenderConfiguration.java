@@ -1,4 +1,7 @@
-package com.kas.logging.impl;
+package com.kas.logging.appender.cons;
+
+import com.kas.logging.impl.LogSystem;
+import com.kas.logging.impl.LoggingConfiguration;
 
 /**
  * A STDOUT appender configuration
@@ -12,7 +15,7 @@ public class StdoutAppenderConfiguration extends ConsoleAppenderConfiguration
    */
   public StdoutAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(AppenderManager.cStdoutAppenderName, loggingConfig);
+    super(LogSystem.cStdoutAppenderName, loggingConfig);
   }
   
   /**

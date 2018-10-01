@@ -1,10 +1,11 @@
-package com.kas.logging.impl;
+package com.kas.logging.appender;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.logging.ELogLevel;
+import com.kas.logging.impl.LoggingConfiguration;
 
 /**
  * Abstract appender's configuration
@@ -13,10 +14,10 @@ import com.kas.infra.logging.ELogLevel;
  */
 public abstract class AAppenderConfiguration extends AKasObject implements IBaseListener
 {
-  static final String cLoggingConfigPrefix  = "kas.logging.";
-  static final String cConfigAppenderPrefix = cLoggingConfigPrefix + "appender."; 
+  static protected final String cLoggingConfigPrefix  = "kas.logging.";
+  static protected final String cConfigAppenderPrefix = cLoggingConfigPrefix + "appender."; 
   
-  static final boolean cDefaultEnabled  = true;
+  static final boolean   cDefaultEnabled  = true;
   static final ELogLevel cDefaultLogLevel = ELogLevel.INFO;
    
   static protected IMainConfiguration sMainConfig = MainConfiguration.getInstance();
@@ -61,12 +62,14 @@ public abstract class AAppenderConfiguration extends AKasObject implements IBase
    */
   public void refresh()
   {
-    mEnabled        = sMainConfig.getBoolProperty  ( cLoggingConfigPrefix + "appender." + mName + ".enabled" , mEnabled);
-    String logLevel = sMainConfig.getStringProperty( cLoggingConfigPrefix + "appender." + mName + ".logLevel", mLogLevel.name());
+    mEnabled        = sMainConfig.getBoolProperty  ( cLoggingConfigPrefix + "appender." + mName + ".enabled" , mEnabled         );
+    String logLevel = sMainConfig.getStringProperty( cLoggingConfigPrefix + "appender." + mName + ".logLevel", mLogLevel.name() );
     
-    try {
-      mLogLevel = ELogLevel.valueOf(ELogLevel.class, logLevel);
-    } catch(IllegalArgumentException e) {}
+    try
+    {
+      mLogLevel = ELogLevel.valueOf(logLevel);
+    }
+    catch(IllegalArgumentException e) {}
   }
 
   /**

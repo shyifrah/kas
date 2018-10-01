@@ -1,20 +1,25 @@
-package com.kas.logging.impl;
+package com.kas.logging.appender.file;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.TimeUnit;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.logging.appender.AAppender;
 
 /**
  * The Appender that responsible for writing to the log file
  * 
  * @author Pippo
  */
-public class FileAppender extends AAppender
+public class FileAppender extends AAppender implements IMessageDataWriter
 {
   static private final int cBytesPerMB = 1024 * 1024;
   
@@ -49,9 +54,19 @@ public class FileAppender extends AAppender
   private String mFileName = FileAppenderConfiguration.cDefaultLogFileName;
   
   /**
-   * The {@link File} referncing the log file
+   * The {@link File} referencing the log file
    */
   private File mLogFile = null;
+  
+  /**
+   * Queue of messages, in use only for asynchronous file appender 
+   */
+  private Queue<MessageData> mMessages = new ConcurrentLinkedDeque<>();
+  
+  /**
+   * The write task
+   */
+  private FileAppenderWriter mAsyncWriter = null;
   
   /**
    * Construct a {@link FileAppender} with the specified configuration
@@ -85,6 +100,12 @@ public class FileAppender extends AAppender
     
     mErrorCount  = 0;
     mWriteCount  = 0;
+    
+    if (mConfig.isAsyncEnabled())
+    {
+      mAsyncWriter = new FileAppenderWriter(this, mMessages);
+      ThreadPool.scheduleAtFixedRate(mAsyncWriter, 0L, mConfig.getAsyncInterval(), TimeUnit.MILLISECONDS);
+    }
     
     return true;
   }
@@ -158,27 +179,36 @@ public class FileAppender extends AAppender
     {
       if (mConfig.getLogLevel().isGreaterOrEqual(messageLevel))
       {
-        try
-        {
-          mBufferedWriter.write(String.format(cAppenderMessageFormat, 
-            TimeStamp.nowAsString(),
-            RunTimeUtils.getProcessId(),
-            RunTimeUtils.getThreadId(),
-            messageLevel.toString(), 
-            logger,
-            message));
-          ++mWriteCount;
-          
-          flushAndArchive(); // might throw IOException if archiving fails
-        }
-        catch (IOException e)
-        {
-          ++mErrorCount;
-          if (mErrorCount >= mConfig.getMaxWriteErrors())
-          {
-            term();
-          }
-        }
+        MessageData md = new MessageData(TimeStamp.now(), RunTimeUtils.getThreadId(), messageLevel, logger, message);
+        
+        if (mConfig.isAsyncEnabled())
+          mMessages.offer(md);
+        else
+          write(md);
+      }
+    }
+  }
+  
+  /**
+   * Actual writing is done via this method
+   * 
+   * @param md The {@link MessageData} describing the message to write
+   */
+  public void write(MessageData md)
+  {
+    try
+    {
+      mBufferedWriter.write(md.format());
+      ++mWriteCount;
+      
+      flushAndArchive(); // might throw IOException if archiving fails
+    }
+    catch (IOException e)
+    {
+      ++mErrorCount;
+      if (mErrorCount >= mConfig.getMaxWriteErrors())
+      {
+        term();
       }
     }
   }
@@ -204,7 +234,7 @@ public class FileAppender extends AAppender
    * 
    * @return {@code true} if the {@link BufferedWriter#flush()} was called, {@code false} otherwise
    * 
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getFlushRate()
+   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getFlushRate()
    */
   private boolean flush()
   {
@@ -230,9 +260,9 @@ public class FileAppender extends AAppender
    * 
    * @throws IOException if an I/O error occurs
    * 
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveTestSizeRate()
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxGenerations()
-   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
+   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getArchiveTestSizeRate()
+   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getArchiveMaxGenerations()
+   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
    */
   private void archive() throws IOException
   {

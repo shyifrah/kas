@@ -1,6 +1,6 @@
 package com.kas.logging;
 
-import com.kas.logging.impl.AppenderManager;
+import com.kas.logging.impl.LogSystem;
 import com.kas.logging.impl.IAppender;
 import com.kas.logging.impl.Logger;
 
@@ -19,7 +19,7 @@ public class LoggerFactory
    */
   static public ILogger getLogger(Class<?> requestorClass)
   {
-    IAppender appender = AppenderManager.getInstance().getAppender(requestorClass);
+    IAppender appender = LogSystem.getInstance().getAppender(requestorClass);
     return new Logger(requestorClass.getCanonicalName(), appender);
   }
   
@@ -31,7 +31,7 @@ public class LoggerFactory
    */
   static public ILogger getStdout(Class<?> requestorClass)
   {
-    IAppender appender = AppenderManager.getInstance().getAppender(AppenderManager.cStdoutAppenderName);
+    IAppender appender = LogSystem.getInstance().getAppender(LogSystem.cStdoutAppenderName);
     return new Logger(requestorClass.getCanonicalName(), appender);
   }
   
@@ -43,7 +43,7 @@ public class LoggerFactory
    */
   static public ILogger getStderr(Class<?> requestorClass)
   {
-    IAppender appender = AppenderManager.getInstance().getAppender(AppenderManager.cStderrAppenderName);
+    IAppender appender = LogSystem.getInstance().getAppender(LogSystem.cStderrAppenderName);
     return new Logger(requestorClass.getCanonicalName(), appender);
   }
 }

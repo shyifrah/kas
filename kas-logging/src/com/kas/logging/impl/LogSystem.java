@@ -4,13 +4,21 @@ import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.appender.cons.ConsoleAppender;
+import com.kas.logging.appender.cons.ConsoleAppenderConfiguration;
+import com.kas.logging.appender.cons.StderrAppender;
+import com.kas.logging.appender.cons.StderrAppenderConfiguration;
+import com.kas.logging.appender.cons.StdoutAppender;
+import com.kas.logging.appender.cons.StdoutAppenderConfiguration;
+import com.kas.logging.appender.file.FileAppender;
+import com.kas.logging.appender.file.FileAppenderConfiguration;
 
 /**
- * A singleton class for managing all appenders
+ * A singleton class for managing logging
  * 
  * @author Pippo
  */
-public class AppenderManager extends AKasObject
+public class LogSystem extends AKasObject
 {
   static public final String cFileAppenderName   = "file";
   static public final String cStdoutAppenderName = "stdout";
@@ -19,7 +27,7 @@ public class AppenderManager extends AKasObject
   /**
    * The {@link MainConfiguration} singleton instance
    */
-  static private AppenderManager sInstance = new AppenderManager();
+  static private LogSystem sInstance = new LogSystem();
   
   /**
    * The {@link LoggingConfiguration} singleton instance
@@ -37,11 +45,18 @@ public class AppenderManager extends AKasObject
   private boolean mAppendersLoaded = false;
   
   /**
-   * Get the instance of the {@link AppenderManager}
+   * Get the instance of the {@link LogSystem}
    */
-  static public AppenderManager getInstance()
+  static public LogSystem getInstance()
   {
     return sInstance;
+  }
+  
+  /**
+   * Private constructor
+   */
+  private LogSystem()
+  { 
   }
   
   /**
@@ -91,14 +106,10 @@ public class AppenderManager extends AKasObject
   public IAppender getAppender(String name)
   {
     if (!sConfig.isInitialized())
-    {
       sConfig.init();
-    }
     
     if (!mAppendersLoaded)
-    {
       load();
-    }
     
     return mAppenders.get(name);
   }
@@ -108,21 +119,18 @@ public class AppenderManager extends AKasObject
    */
   private synchronized void load()
   {
-    // File appender
     FileAppenderConfiguration fac = new FileAppenderConfiguration(sConfig);
     sConfig.register(fac);
     FileAppender fa = new FileAppender(fac);
     fa.init();
     mAppenders.put(cFileAppenderName, fa);
     
-    // stdout
     ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(sConfig);
     sConfig.register(soac);
     ConsoleAppender stdout = new StdoutAppender(soac);
     stdout.init();
     mAppenders.put(cStdoutAppenderName, stdout);
     
-    // stderr
     ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(sConfig);
     sConfig.register(seac);
     ConsoleAppender stderr = new StderrAppender(seac);
@@ -133,7 +141,7 @@ public class AppenderManager extends AKasObject
   }
   
   /**
-   * Returns the {@link AppenderManager} string representation.
+   * Returns the {@link LogSystem} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
@@ -146,7 +154,7 @@ public class AppenderManager extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Appenders=(\n")
-      .append(StringUtils.asPrintableString(mAppenders, level + 2)).append("\n")
+      .append(StringUtils.asPrintableString(mAppenders, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
