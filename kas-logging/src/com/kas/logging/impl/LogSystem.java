@@ -14,11 +14,11 @@ import com.kas.logging.appender.file.FileAppender;
 import com.kas.logging.appender.file.FileAppenderConfiguration;
 
 /**
- * A singleton class for managing all appenders
+ * A singleton class for managing logging
  * 
  * @author Pippo
  */
-public class AppenderManager extends AKasObject
+public class LogSystem extends AKasObject
 {
   static public final String cFileAppenderName   = "file";
   static public final String cStdoutAppenderName = "stdout";
@@ -27,7 +27,7 @@ public class AppenderManager extends AKasObject
   /**
    * The {@link MainConfiguration} singleton instance
    */
-  static private AppenderManager sInstance = new AppenderManager();
+  static private LogSystem sInstance = new LogSystem();
   
   /**
    * The {@link LoggingConfiguration} singleton instance
@@ -45,11 +45,18 @@ public class AppenderManager extends AKasObject
   private boolean mAppendersLoaded = false;
   
   /**
-   * Get the instance of the {@link AppenderManager}
+   * Get the instance of the {@link LogSystem}
    */
-  static public AppenderManager getInstance()
+  static public LogSystem getInstance()
   {
     return sInstance;
+  }
+  
+  /**
+   * Private constructor
+   */
+  private LogSystem()
+  { 
   }
   
   /**
@@ -99,14 +106,10 @@ public class AppenderManager extends AKasObject
   public IAppender getAppender(String name)
   {
     if (!sConfig.isInitialized())
-    {
       sConfig.init();
-    }
     
     if (!mAppendersLoaded)
-    {
       load();
-    }
     
     return mAppenders.get(name);
   }
@@ -138,7 +141,7 @@ public class AppenderManager extends AKasObject
   }
   
   /**
-   * Returns the {@link AppenderManager} string representation.
+   * Returns the {@link LogSystem} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
@@ -151,7 +154,7 @@ public class AppenderManager extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Appenders=(\n")
-      .append(StringUtils.asPrintableString(mAppenders, level + 2)).append("\n")
+      .append(StringUtils.asPrintableString(mAppenders, level+2)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();

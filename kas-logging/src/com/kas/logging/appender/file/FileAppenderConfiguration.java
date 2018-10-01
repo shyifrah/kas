@@ -1,7 +1,7 @@
 package com.kas.logging.appender.file;
 
 import com.kas.logging.appender.AAppenderConfiguration;
-import com.kas.logging.impl.AppenderManager;
+import com.kas.logging.impl.LogSystem;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -65,7 +65,7 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
    */
   public FileAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(AppenderManager.cFileAppenderName, loggingConfig);
+    super(LogSystem.cFileAppenderName, loggingConfig);
   }
   
   /**

@@ -7,7 +7,7 @@ import com.kas.comm.serializer.Deserializer;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
-import com.kas.logging.impl.AppenderManager;
+import com.kas.logging.impl.LogSystem;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -83,7 +83,7 @@ public class QueryServerProcessor extends AProcessor
           break;
           
         case cQueryConfigLogging:
-          body = AppenderManager.getInstance().getConfig().toPrintableString();
+          body = LogSystem.getInstance().getConfig().toPrintableString();
           break;
           
         case cQueryConfigMq:

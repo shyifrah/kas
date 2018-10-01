@@ -1,6 +1,6 @@
 package com.kas.logging.appender.cons;
 
-import com.kas.logging.impl.AppenderManager;
+import com.kas.logging.impl.LogSystem;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -15,7 +15,7 @@ public class StderrAppenderConfiguration extends ConsoleAppenderConfiguration
    */
   public StderrAppenderConfiguration(LoggingConfiguration loggingConfig)
   {
-    super(AppenderManager.cStderrAppenderName, loggingConfig);
+    super(LogSystem.cStderrAppenderName, loggingConfig);
   }
   
   /**
