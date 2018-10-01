@@ -1,5 +1,6 @@
-package com.kas.logging.impl.appenders;
+package com.kas.logging.appender.file;
 
+import com.kas.logging.appender.AAppenderConfiguration;
 import com.kas.logging.impl.AppenderManager;
 import com.kas.logging.impl.LoggingConfiguration;
 
@@ -10,12 +11,14 @@ import com.kas.logging.impl.LoggingConfiguration;
  */
 public class FileAppenderConfiguration extends AAppenderConfiguration
 {
-  static final String cDefaultLogFileName           = "kas-%p-%d.log";
-  static final int    cDefaultMaxWriteErrors        = 10;
-  static final int    cDefaultFlushRate             = 10;
-  static final int    cDefaultArchiveMaxFileSizeMb  = 10;
-  static final int    cDefaultArchiveMaxGenerations = 5;
-  static final int    cDefaultArchiveTestSizeRate   = 20;
+  static final String  cDefaultLogFileName           = "kas-%p-%d.log";
+  static final int     cDefaultMaxWriteErrors        = 10;
+  static final int     cDefaultFlushRate             = 10;
+  static final int     cDefaultArchiveMaxFileSizeMb  = 10;
+  static final int     cDefaultArchiveMaxGenerations = 5;
+  static final int     cDefaultArchiveTestSizeRate   = 20;
+  static final boolean cDefaultAsyncEnabled          = false;
+  static final long    cDefaultAsyncInterval         = 1000L;
   
   /**
    * The log file name pattern
@@ -48,6 +51,16 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   private int mArchiveTestSizeRate = cDefaultArchiveTestSizeRate;
   
   /**
+   * Is async-appender enabled
+   */
+  protected boolean mAsyncEnabled = cDefaultAsyncEnabled;
+  
+  /**
+   * Async interval length in Milliseconds
+   */
+  protected long mAsyncInterval = cDefaultAsyncInterval;
+  
+  /**
    * Construct the appender's configuration, providing the {@link LoggingConfiguration}
    */
   public FileAppenderConfiguration(LoggingConfiguration loggingConfig)
@@ -61,7 +74,7 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
    * When this method is called, it calls the {@link com.kas.config.MainConfiguration MainConfiguration} in order to re-read the values
    * of the relevant properties.
    * 
-   * @see com.kas.logging.impl.appenders.AAppenderConfiguration#refresh()
+   * @see com.kas.logging.appender.AAppenderConfiguration#refresh()
    */
   public void refresh()
   {
@@ -73,6 +86,8 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
     mArchiveMaxFileSizeMb  = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.maxFileSizeMb"  , mArchiveMaxFileSizeMb  );
     mArchiveMaxGenerations = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.maxGenerations" , mArchiveMaxGenerations );
     mArchiveTestSizeRate   = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.testSizeRate"   , mArchiveTestSizeRate   );
+    mAsyncEnabled          = sMainConfig.getBoolProperty   ( cLoggingConfigPrefix + "appender." + mName + ".async.enabled"          , mAsyncEnabled          );
+    mAsyncInterval         = sMainConfig.getLongProperty   ( cLoggingConfigPrefix + "appender." + mName + ".async.interval"         , mAsyncInterval         );
   }
   
   /**
@@ -136,6 +151,26 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   }
   
   /**
+   * Is appender work asynchronously
+   * 
+   * @return {@code true} if the appender is asynchronous, {@code false}
+   */
+  public boolean isAsyncEnabled()
+  {
+    return mAsyncEnabled;
+  }
+  
+  /**
+   * Get asynchronous writes interval length in milliseconds
+   * 
+   * @return asynchronous writes interval length in milliseconds
+   */
+  public long getAsyncInterval()
+  {
+    return mAsyncInterval;
+  }
+  
+  /**
    * Returns the {@link FileAppenderConfiguration} string representation.
    * 
    * @param level the required level padding
@@ -147,7 +182,6 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   {
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
-    
     sb.append(name()).append("(\n")
       .append(pad).append("  Enabled=").append(mEnabled).append("\n")
       .append(pad).append("  LogLevel=").append(mLogLevel.name()).append("\n")
@@ -158,7 +192,6 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
       .append(pad).append("  Archive.MaxGenerations=").append(mArchiveMaxGenerations).append("\n")
       .append(pad).append("  Archive.TestSizeRate=").append(mArchiveTestSizeRate).append(" writes\n")
       .append(pad).append(")");
-    
     return sb.toString();
   }
 }

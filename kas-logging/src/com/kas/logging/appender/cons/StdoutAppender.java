@@ -1,4 +1,4 @@
-package com.kas.logging.impl.appenders;
+package com.kas.logging.appender.cons;
 
 /**
  * STDOUT appender

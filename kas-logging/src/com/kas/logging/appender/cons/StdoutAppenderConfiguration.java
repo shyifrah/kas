@@ -1,4 +1,4 @@
-package com.kas.logging.impl.appenders;
+package com.kas.logging.appender.cons;
 
 import com.kas.logging.impl.AppenderManager;
 import com.kas.logging.impl.LoggingConfiguration;

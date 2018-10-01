@@ -4,14 +4,14 @@ import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.impl.appenders.ConsoleAppender;
-import com.kas.logging.impl.appenders.ConsoleAppenderConfiguration;
-import com.kas.logging.impl.appenders.FileAppender;
-import com.kas.logging.impl.appenders.FileAppenderConfiguration;
-import com.kas.logging.impl.appenders.StderrAppender;
-import com.kas.logging.impl.appenders.StderrAppenderConfiguration;
-import com.kas.logging.impl.appenders.StdoutAppender;
-import com.kas.logging.impl.appenders.StdoutAppenderConfiguration;
+import com.kas.logging.appender.cons.ConsoleAppender;
+import com.kas.logging.appender.cons.ConsoleAppenderConfiguration;
+import com.kas.logging.appender.cons.StderrAppender;
+import com.kas.logging.appender.cons.StderrAppenderConfiguration;
+import com.kas.logging.appender.cons.StdoutAppender;
+import com.kas.logging.appender.cons.StdoutAppenderConfiguration;
+import com.kas.logging.appender.file.FileAppender;
+import com.kas.logging.appender.file.FileAppenderConfiguration;
 
 /**
  * A singleton class for managing all appenders
@@ -116,21 +116,18 @@ public class AppenderManager extends AKasObject
    */
   private synchronized void load()
   {
-    // File appender
     FileAppenderConfiguration fac = new FileAppenderConfiguration(sConfig);
     sConfig.register(fac);
     FileAppender fa = new FileAppender(fac);
     fa.init();
     mAppenders.put(cFileAppenderName, fa);
     
-    // stdout
     ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(sConfig);
     sConfig.register(soac);
     ConsoleAppender stdout = new StdoutAppender(soac);
     stdout.init();
     mAppenders.put(cStdoutAppenderName, stdout);
     
-    // stderr
     ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(sConfig);
     sConfig.register(seac);
     ConsoleAppender stderr = new StderrAppender(seac);

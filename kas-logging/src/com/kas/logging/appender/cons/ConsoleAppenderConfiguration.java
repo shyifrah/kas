@@ -1,5 +1,6 @@
-package com.kas.logging.impl.appenders;
+package com.kas.logging.appender.cons;
 
+import com.kas.logging.appender.AAppenderConfiguration;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -23,7 +24,7 @@ public class ConsoleAppenderConfiguration extends AAppenderConfiguration
    * When this method is called, it calls the {@link com.kas.config.MainConfiguration MainConfiguration} in order to re-read the values
    * of the relevant properties.
    * 
-   * @see com.kas.logging.impl.appenders.AAppenderConfiguration#refresh()
+   * @see com.kas.logging.appender.AAppenderConfiguration#refresh()
    */
   public void refresh()
   {

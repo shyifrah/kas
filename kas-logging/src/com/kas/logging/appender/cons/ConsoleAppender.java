@@ -1,9 +1,11 @@
-package com.kas.logging.impl.appenders;
+package com.kas.logging.appender.cons;
 
 import java.io.PrintStream;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.RunTimeUtils;
+import com.kas.logging.appender.AAppender;
+import com.kas.logging.appender.file.FileAppenderConfiguration;
 
 /**
  * A console appender
