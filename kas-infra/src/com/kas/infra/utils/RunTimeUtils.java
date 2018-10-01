@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
 
 /**
@@ -21,6 +22,7 @@ public class RunTimeUtils
    * The product home directory
    */
   static private String sProductHomeDir = null;
+  static private int    sProcessId = -1;
   
   /**
    * Get the current host name
@@ -61,16 +63,51 @@ public class RunTimeUtils
   }
   
   /**
+   * Get the process ID.<br>
+   * <br>
+   * This method is called upon static initialization to be used by {@link #getProcessId()}<br>
+   * <br>
+   * NOTE: Since there are about a million ways that the method might now work as expected,
+   * the {@code name} variable is initialized to a string that will produce a process ID of 0. 
+   * 
+   * @return the KAS home directory
+   */
+  static private int initProcessId()
+  {
+    RuntimeMXBean rtmx = ManagementFactory.getRuntimeMXBean();
+    if (rtmx == null)
+      return 0;
+    
+    String name = rtmx.getName();
+    if (name == null)
+      return 0;
+    
+    if (name.indexOf('@') == -1)
+      return 0;
+    
+    String str = name.split("@")[0];
+    int pid = 0;
+    try
+    {
+      pid = Integer.valueOf(str);
+    }
+    catch (NumberFormatException e) {}
+    
+    return pid;
+  }
+  
+  /**
    * Get the current Process ID
    * 
    * @return the ID of the current Process
    */
   static public int getProcessId()
   {
-    // may not work on all JVMs
-    String name = ManagementFactory.getRuntimeMXBean().getName(); //742912@localhost
-    String [] tokens = name.split("@");
-    return Integer.valueOf(tokens[0]);
+    if (sProcessId == -1)
+    {
+      sProcessId = initProcessId();
+    }
+    return sProcessId;
   }
   
   /**
