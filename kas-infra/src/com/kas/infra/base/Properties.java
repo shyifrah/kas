@@ -1,15 +1,11 @@
 package com.kas.infra.base;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.config.IConfiguration;
-import com.kas.infra.typedef.StringList;
-import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.StringUtils;
 
 /**
@@ -20,7 +16,6 @@ import com.kas.infra.utils.StringUtils;
  */
 public class Properties extends ConcurrentHashMap<Object, Object> implements ISerializable
 {
-  static public  final String cIncludeKey      = "kas.include";
   static private final long   serialVersionUID = 1L;
   
   /**
@@ -858,73 +853,6 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
     }
     
     return subset;
-  }
-
-  /**
-   * Load the properties defined in file {@code fileName} into this {@link Properties} object.<br>
-   * <br>
-   * This method is used by outside callers to allow properties refresh.  
-   * 
-   * @param fileName The fully-pathed name of the file to be loaded
-   */
-  public void load(String fileName)
-  {
-    load(fileName, this);
-  }
-  
-  /**
-   * Load the properties defined in file {@code fileName} into {@code properties}.<br>
-   * <br>
-   * Lines in {@code fileName} are processed one at a time. Comments are ignored and lines are checked
-   * to have valid syntax. That is, non-comment lines should have a format of key=value.<br>
-   * When {@code include} statement is encountered, it actually points to a new file that should be loaded as well.  
-   * 
-   * @param fileName The fully-pathed name of the file to be loaded
-   * @param properties The {@link Properties} object into which keys will be mapped to values.
-   */
-  private void load(String fileName, Properties properties)
-  {
-    // now try to load the properties inside this file
-    File file = new File(fileName);
-    List<String> input = null;
-    if ((file.exists()) && (file.isFile()) && (file.canRead()))
-    {
-      input = FileUtils.load(file);
-      
-      for (int i = 0; i < input.size(); ++i)
-      {
-        String [] parsedLine = input.get(i).split("=");
-        
-        if (parsedLine.length == 2)
-        {
-          String key = parsedLine[0].trim();
-          String val = parsedLine[1].trim();
-          String actualVal = PropertyResolver.resolve(val, this);
-
-          if (key.equalsIgnoreCase(cIncludeKey))           // if we encounter an "include" statement - load the new file
-          {
-            load(actualVal, properties);
-          }
-          else
-          {
-            properties.put(key, actualVal);
-          }
-        }
-      }
-      
-      // add file to list of monitored files
-      StringList included = (StringList)properties.get(cIncludeKey);
-      if (included == null)
-      {
-        included = new StringList();
-        included.add(fileName);
-      }
-      else
-      {
-        included.add(fileName);
-      }
-      properties.put(cIncludeKey, included);
-    }
   }
   
   /**

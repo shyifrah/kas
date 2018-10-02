@@ -1,8 +1,8 @@
 package com.kas.infra.config;
 
-import java.util.Set;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
+import com.kas.infra.typedef.StringList;
 
 /**
  * Main configuration object.<br>
@@ -28,7 +28,7 @@ public interface IMainConfiguration extends IConfiguration, IInitializable, IObj
    * 
    * @return a set of all configuration files
    */
-  public abstract Set<String> getConfigFiles();
+  public abstract StringList getConfigFiles();
   
   /**
    * Get the fully-pathed configuration directory
