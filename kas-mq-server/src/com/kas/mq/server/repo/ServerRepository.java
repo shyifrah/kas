@@ -52,7 +52,7 @@ public class ServerRepository extends AKasObject implements IRepository
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
-    mLocalManager = new MqLocalManager(mConfig);
+    mLocalManager = new MqLocalManager(mConfig.getManagerName(), mConfig.getPort(), mConfig.getDeadQueueName());
     mRemoteManagersMap = new ConcurrentHashMap<String, MqRemoteManager>();
   }
   
@@ -71,7 +71,10 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.trace("ServerRepository::init() - Initializing repository...");
     mLocalManager.activate();
     if (mLocalManager.isActive())
+    {
+      createPredefinedQueues();
       success = true;
+    }
     
     for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
     {
@@ -374,6 +377,20 @@ public class ServerRepository extends AKasObject implements IRepository
   public Collection<MqQueue> getLocalQueues()
   {
     return mLocalManager.getAll();
+  }
+  
+  /**
+   * Create queues that are configured in configuration file
+   */
+  private void createPredefinedQueues()
+  {
+    for (Map.Entry<String, Integer> entry : mConfig.getQueueDefinitions().entrySet())
+    {
+      String name = entry.getKey();
+      int threshold = entry.getValue();
+      MqQueue queue = getLocalQueue(name);
+      if (queue == null) defineLocalQueue(name, threshold);
+    }
   }
   
   /**
