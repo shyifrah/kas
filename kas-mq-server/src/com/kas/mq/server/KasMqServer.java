@@ -72,6 +72,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * - creating session controller
    * - creating the server's listener socket
    * - creating the server's repository
+   * - start the housekeeper
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
@@ -125,6 +126,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * or by the Shutdown Hook thread, if, for instance, the user sent a SIGTERM signal (via CTRL-C).
    * <br>
    * Termination consisting of:
+   * - stop the housekeeper
    * - closing server's listener socket
    * - terminate server repository
    * - super class termination
