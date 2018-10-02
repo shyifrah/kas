@@ -148,7 +148,7 @@ public class MqConnection extends AKasObject implements IMqConnection
    * 
    * @param user The user's name
    * @param pwd The user's password
-   * @return {@code true} if {@code password} matches the user's password as defined in {@link MqConfiguration}, {@code false} otherwise
+   * @return {@code true} if {@code password} matches the user's password
    */
   public boolean login(String user, String pwd)
   {
