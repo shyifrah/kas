@@ -29,6 +29,11 @@ public class MqLocalQueue extends MqQueue
   private int mThreshold;
   
   /**
+   * Should this queue be saved to file-system
+   */
+  private boolean mBackup;
+  
+  /**
    * Last access
    */
   private String mLastAccessUser = IMqConstants.cSystemUserName;
@@ -54,11 +59,13 @@ public class MqLocalQueue extends MqQueue
    * @param mgr The name of the manager that owns this {@link MqLocalQueue}
    * @param name The name of this {@link MqLocalQueue} object.
    * @param threshold The maximum message capacity this {@link MqLocalQueue} can hold
+   * @param backup Should this queue be saved to file-system
    */
-  public MqLocalQueue(MqManager mgr, String name, int threshold)
+  public MqLocalQueue(MqManager mgr, String name, int threshold, boolean backup)
   {
     super(mgr, name);
     mThreshold = threshold;
+    mBackup = backup;
     mQueueArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
       mQueueArray[i] = new MessageQueue();
@@ -201,95 +208,98 @@ public class MqLocalQueue extends MqQueue
     mLogger.debug("MqLocalQueue::backup() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
-    mBackupFile = new File(fullFileName);
-    mLogger.debug("MqLocalQueue::backup() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
-    
-    if (mBackupFile.exists())
+    if (mBackup)
     {
-      success = FileUtils.deleteFile(fullFileName);
-      mLogger.debug("MqLocalQueue::backup() - Backup file already exists. Deleting it... " + Boolean.toString(success));
-    }
-    
-    if (success && (!mBackupFile.exists()))
-    {
-      success = FileUtils.createFile(fullFileName);
-      mLogger.debug("MqLocalQueue::backup() - Backup file doesn't exist. Creating it... " + Boolean.toString(success));
-    }
-    
-    if (success && (!mBackupFile.canWrite()))
-    {
-      mLogger.warn("Cannot write contents to backup file [" + fullFileName + "], file is not writable...");
-      success = false;
-    }
-    
-    if (success && (!mBackupFile.isFile()))
-    {
-      mLogger.warn("Backup file " + fullFileName + " doesn't designate a regular file");
-      success = false;
-    }
-
-    if (success)
-    {
-      // save all messages to file
-      int msgs = 0;
-      FileOutputStream fos = null;
-      ObjectOutputStream ostream = null;
+      String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
+      mBackupFile = new File(fullFileName);
+      mLogger.debug("MqLocalQueue::backup() - Backup file: [" + mBackupFile.getAbsolutePath() + "]");
       
-      try
+      if (mBackupFile.exists())
       {
-        fos = new FileOutputStream(mBackupFile);
-        ostream = new ObjectOutputStream(fos);
-        
-        try
-        {
-          // write queue details
-          mLogger.debug("MqLocalQueue::backup() - Threshold=" + mThreshold + "; LastAccess=(" + getLastAccess() + ")");
-          ostream.writeInt(mThreshold);
-          ostream.writeObject(mLastAccessUser);
-          ostream.writeLong(mLastAccessTimeStamp.getAsLong());
-          ostream.writeObject(mLastAccessMethod);
-          
-          for (int i = 0; i < mQueueArray.length; ++i)
-          {
-            MessageQueue mq = mQueueArray[i];
-            while (!mq.isEmpty())
-            {
-              IMqMessage message = mq.poll();
-              
-              PacketHeader header = message.createHeader();
-              header.serialize(ostream);
-              message.serialize(ostream);
-              mLogger.diag("MqLocalQueue::backup() - Header="  + StringUtils.asPrintableString(header));
-              mLogger.diag("MqLocalQueue::backup() - Message=" + StringUtils.asPrintableString(message));
-              
-              ++msgs;
-            }
-          }
-        }
-        catch (Throwable e)
-        {
-          mLogger.warn("Exception caught while trying to write to queue " + mName + " backup file. Exception: ", e);
-          success = false;
-        }
+        success = FileUtils.deleteFile(fullFileName);
+        mLogger.debug("MqLocalQueue::backup() - Backup file already exists. Deleting it... " + Boolean.toString(success));
       }
-      catch (IOException e)
+      
+      if (success && (!mBackupFile.exists()))
       {
-        mLogger.warn("Exception caught while trying to open queue " + mName + " backup file. Exception: ", e);
+        success = FileUtils.createFile(fullFileName);
+        mLogger.debug("MqLocalQueue::backup() - Backup file doesn't exist. Creating it... " + Boolean.toString(success));
+      }
+      
+      if (success && (!mBackupFile.canWrite()))
+      {
+        mLogger.warn("Cannot write contents to backup file [" + fullFileName + "], file is not writable...");
         success = false;
       }
       
-      // cleanup
-      try
+      if (success && (!mBackupFile.isFile()))
       {
-        ostream.flush();
-        ostream.close();
-        fos.flush();
-        fos.close();
+        mLogger.warn("Backup file " + fullFileName + " doesn't designate a regular file");
+        success = false;
       }
-      catch (Throwable e) {}
-      
-      if (success) mLogger.info("Total messages saved to queue " + mName + " backup file: " + msgs);
+
+      if (success)
+      {
+        // save all messages to file
+        int msgs = 0;
+        FileOutputStream fos = null;
+        ObjectOutputStream ostream = null;
+        
+        try
+        {
+          fos = new FileOutputStream(mBackupFile);
+          ostream = new ObjectOutputStream(fos);
+          
+          try
+          {
+            // write queue details
+            mLogger.debug("MqLocalQueue::backup() - Threshold=" + mThreshold + "; LastAccess=(" + getLastAccess() + ")");
+            ostream.writeInt(mThreshold);
+            ostream.writeObject(mLastAccessUser);
+            ostream.writeLong(mLastAccessTimeStamp.getAsLong());
+            ostream.writeObject(mLastAccessMethod);
+            
+            for (int i = 0; i < mQueueArray.length; ++i)
+            {
+              MessageQueue mq = mQueueArray[i];
+              while (!mq.isEmpty())
+              {
+                IMqMessage message = mq.poll();
+                
+                PacketHeader header = message.createHeader();
+                header.serialize(ostream);
+                message.serialize(ostream);
+                mLogger.diag("MqLocalQueue::backup() - Header="  + StringUtils.asPrintableString(header));
+                mLogger.diag("MqLocalQueue::backup() - Message=" + StringUtils.asPrintableString(message));
+                
+                ++msgs;
+              }
+            }
+          }
+          catch (Throwable e)
+          {
+            mLogger.warn("Exception caught while trying to write to queue " + mName + " backup file. Exception: ", e);
+            success = false;
+          }
+        }
+        catch (IOException e)
+        {
+          mLogger.warn("Exception caught while trying to open queue " + mName + " backup file. Exception: ", e);
+          success = false;
+        }
+        
+        // cleanup
+        try
+        {
+          ostream.flush();
+          ostream.close();
+          fos.flush();
+          fos.close();
+        }
+        catch (Throwable e) {}
+        
+        if (success) mLogger.info("Total messages saved to queue " + mName + " backup file: " + msgs);
+      }
     }
     
     mLogger.debug("MqLocalQueue::backup() - OUT, Returns=" + Boolean.toString(success));
