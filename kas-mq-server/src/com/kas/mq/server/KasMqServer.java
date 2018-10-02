@@ -108,8 +108,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       return false;
     }
     
-    mHousekeeper = new ServerHouseKeeper(mConfig, mRepository);
-    ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
+    startHouseKeeper();
     
     mNotifier.notifyServerActivated();
     
@@ -137,6 +136,8 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     mLogger.info("KAS/MQ server termination in progress");
     
     mNotifier.notifyServerDeactivated();
+    
+    stopHouseKeeper();
     
     boolean term = mRepository.term();
     if (!term)
@@ -262,6 +263,28 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   public MqConfiguration getConfig()
   {
     return mConfig;
+  }
+  
+  /**
+   * Stop the house keeper task
+   */
+  private void stopHouseKeeper()
+  {
+    mHousekeeper.stop();
+    ThreadPool.removeSchedule(mHousekeeper);
+    mHousekeeper = null;
+  }
+  
+  /**
+   * Start the house keeper task
+   */
+  private void startHouseKeeper()
+  {
+    if ((mConfig.isEnabled()) && (mConfig.isHousekeeperEnabled()))
+    {
+      mHousekeeper = new ServerHouseKeeper(mRepository);
+      ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
+    }
   }
   
   /**

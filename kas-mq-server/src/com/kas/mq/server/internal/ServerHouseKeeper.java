@@ -1,11 +1,9 @@
 package com.kas.mq.server.internal;
 
-import java.util.Collection;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.MqConfiguration;
 import com.kas.mq.internal.MqQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
@@ -30,20 +28,18 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
   private IRepository mRepository;
   
   /**
-   * KAS/MQ configuration
+   * Stop flag
    */
-  private MqConfiguration mConfig;
+  private boolean mStop = false;
   
   /**
    * Construct the {@link ServerHouseKeeper}, passing it the {@link IController} and the {@link ServerRepository}
    * 
-   * @param config The KAS/MQ server's configuration
    * @param repository The server's queue repository
    */
-  public ServerHouseKeeper(MqConfiguration config, IRepository repository)
+  public ServerHouseKeeper(IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mConfig = config;
     mRepository = repository;
   }
   
@@ -61,27 +57,26 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
   {
     mLogger.debug("ServerHouseKeeper::run() - IN");
     
-    if (!mConfig.isEnabled())
+    mLogger.debug("ServerHouseKeeper::run() - Expiring messages...");
+    
+    Object [] destinations = mRepository.getLocalQueues().toArray();
+    for (int i = 0; (i < destinations.length) && (!mStop); ++i)
     {
-      mLogger.debug("ServerHouseKeeper::run() - KAS/MQ Server is disabled");
-    }
-    else if (!mConfig.isHousekeeperEnabled())
-    {
-      mLogger.debug("ServerHouseKeeper::run() - KAS/MQ Server housekeeper is disabled");
-    }
-    else
-    {
-      mLogger.debug("ServerHouseKeeper::run() - Expiring messages...");
-      Collection<MqQueue> destinations = mRepository.getLocalQueues();
-      for (MqQueue dest : destinations)
-      {
-        mLogger.debug("ServerHouseKeeper::run() - Expiring messages in destination " + dest.getName() + ":");
-        int exp = dest.expire();
-        mLogger.debug("ServerHouseKeeper::run() - Total messages expired: " + exp);
-      }
+      MqQueue dest = (MqQueue)destinations[i];
+      mLogger.debug("ServerHouseKeeper::run() - Expiring messages in destination " + dest.getName() + ":");
+      int exp = dest.expire();
+      mLogger.debug("ServerHouseKeeper::run() - Total messages expired: " + exp);
     }
     
     mLogger.debug("ServerHouseKeeper::run() - OUT");
+  }
+  
+  /**
+   * Mark the house keeper task it should stop
+   */
+  public synchronized void stop()
+  {
+    mStop = true;
   }
   
   /**
