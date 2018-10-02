@@ -8,6 +8,7 @@ import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqQueue;
 import com.kas.mq.internal.MqRemoteQueue;
+import com.kas.mq.server.repo.MqLocalManager;
 import com.kas.mq.server.repo.MqRemoteManager;
 
 /**
@@ -125,6 +126,20 @@ public interface IRepository extends IInitializable, IObject
    * @return the {@link MqManager}
    */
   public abstract MqManager getRemoteManager(String name);
+  
+  /**
+   * Get all remote {@link MqRemoteManager managers} 
+   * 
+   * @return the {@link MqManager}
+   */
+  public abstract Collection<MqRemoteManager> getRemoteManagers();
+  
+  /**
+   * Get the local {@link MqLocalManager} 
+   * 
+   * @return the local {@link MqLocalManager}
+   */
+  public abstract MqLocalManager getLocalManager();
   
   /**
    * Get the {@link MqLocalQueue} object representing the dead queue

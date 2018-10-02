@@ -76,7 +76,8 @@ public class ServerRepository extends AKasObject implements IRepository
     for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
     {
       String name = entry.getKey();
-      MqRemoteManager mgr = new MqRemoteManager(mConfig, name);
+      NetworkAddress addr = entry.getValue();
+      MqRemoteManager mgr = new MqRemoteManager(name, addr.getHost(), addr.getPort());
       
       mRemoteManagersMap.put(name, mgr);
     }
@@ -315,26 +316,6 @@ public class ServerRepository extends AKasObject implements IRepository
   }
   
   /**
-   * Is a queue exists
-   * 
-   * @param name The name of the queue to be tested
-   * @return {@code true} if a queue named {@code name} exists, {@code false} otherwise 
-   * 
-   * @see com.kas.mq.server.IRepository#isLocalQueueExist(String)
-   */
-  public boolean isLocalQueueExist(String name)
-  {
-    mLogger.debug("ServerRepository::isQueueExist() - IN, Name=" + name);
-    
-    boolean result = false;
-    if ((name != null) && (getLocalQueue(name) != null))
-      result = true;
-    
-    mLogger.debug("ServerRepository::isQueueExist() - OUT, Returns=" + result);
-    return result;
-  }
-  
-  /**
    * Get {@link MqManager} by its name 
    * 
    * @param name The name of the {@link MqManager}
@@ -345,6 +326,30 @@ public class ServerRepository extends AKasObject implements IRepository
   public MqRemoteManager getRemoteManager(String name)
   {
     return mRemoteManagersMap.get(name);
+  }
+  
+  /**
+   * Get all remote {@link MqRemoteManager managers} 
+   * 
+   * @return the {@link MqManager}
+   * 
+   * @see com.kas.mq.server.IRepository#getRemoteManagers()
+   */
+  public Collection<MqRemoteManager> getRemoteManagers()
+  {
+    return mRemoteManagersMap.values();
+  }
+  
+  /**
+   * Get the local {@link MqLocalManager} 
+   * 
+   * @return the local {@link MqLocalManager}
+   * 
+   * @see com.kas.mq.server.IRepository#getLocalManager()
+   */
+  public MqLocalManager getLocalManager()
+  {
+    return mLocalManager;
   }
   
   /**
