@@ -1,12 +1,10 @@
 package com.kas.mq.server.internal;
 
-import java.util.Map;
-import com.kas.comm.impl.NetworkAddress;
+import java.util.Collection;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqRequestFactory;
@@ -21,11 +19,6 @@ public class ServerNotifier extends AKasObject
   private ILogger mLogger;
   
   /**
-   * KAS/MQ server configuration
-   */
-  private MqConfiguration mConfig;
-  
-  /**
    * Server's repository
    */
   private IRepository mRepository;
@@ -36,15 +29,13 @@ public class ServerNotifier extends AKasObject
   private MqServerConnectionPool mPool;
   
   /**
-   * Construct a {@link ServerNotifier server notifier}, specifying the associated {@link MqConfiguration}
+   * Construct a {@link ServerNotifier server notifier}, specifying the {@link IRepository}
    * 
-   * @param config The associated {@link MqConfiguration}
-   * @param controller The session controller
+   * @param repository The {@link IRepository server repository}
    */
-  public ServerNotifier(MqConfiguration config, IRepository repository)
+  public ServerNotifier(IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mConfig = config;
     mRepository = repository;
     mPool = MqServerConnectionPool.getInstance();
   }
@@ -58,7 +49,7 @@ public class ServerNotifier extends AKasObject
   {
     mLogger.debug("ServerNotifier::notifyServerActivated() - IN");
     
-    String qmgr = mConfig.getManagerName();
+    String qmgr = mRepository.getLocalManager().getName();
     IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, true);
     
     Properties props = mRepository.queryLocalQueues("", true, false);
@@ -79,7 +70,7 @@ public class ServerNotifier extends AKasObject
   {
     mLogger.debug("ServerNotifier::notifyServerDeactivated() - IN");
     
-    String qmgr = mConfig.getManagerName();
+    String qmgr = mRepository.getLocalManager().getName();
     IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, false);
     
     notify(message, false);
@@ -101,28 +92,28 @@ public class ServerNotifier extends AKasObject
   {
     mLogger.debug("ServerNotifier::notify() - IN");
     
-    Map<String, NetworkAddress> map = mConfig.getRemoteManagers();
-    
-    for (Map.Entry<String, NetworkAddress> entry : map.entrySet())
+    Collection<MqRemoteManager> remoteManagers = mRepository.getRemoteManagers();
+    for (MqRemoteManager remoteManager : remoteManagers)
     {
-      String remoteQmgrName  = entry.getKey();
-      NetworkAddress address = entry.getValue();
+      String name = remoteManager.getName();
+      String host = remoteManager.getHost();
+      int port = remoteManager.getPort();
       
-      mLogger.debug("ServerNotifier::notify() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on server state change");
-      
+      mLogger.debug("ServerNotifier::notify() - Notifying KAS/MQ server \"" + name + "\" (" + host + ':' + port + ") on server state change");
       MqServerConnection conn = mPool.allocate();
-      conn.connect(address.getHost(), address.getPort());
+      
+      conn.connect(host, port);
       if (conn.isConnected())
       {
         conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+        
         IMqMessage reply = conn.notifySysState(message);
         
         Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
-        MqRemoteManager rqmgr = (MqRemoteManager)mRepository.getRemoteManager(remoteQmgrName);
-        if (!rqmgr.isActive())
+        if (!remoteManager.isActive())
         {
-          rqmgr.activate();
-          rqmgr.setQueues(remoteQueues);
+          remoteManager.activate();
+          remoteManager.setQueues(remoteQueues);
         }
         
         conn.disconnect();

@@ -3,7 +3,6 @@ package com.kas.mq.server.repo;
 import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.MqConfiguration;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqQueue;
@@ -23,9 +22,17 @@ public class MqRemoteManager extends MqManager
    * 
    * @param config The {@link MqConfiguration configuration} object
    */
-  MqRemoteManager(MqConfiguration config, String name)
+  
+  /**
+   * Construct the {@link MqRemoteManager}
+   * 
+   * @param name The name of this manager
+   * @param host The name (or IP address) of the host 
+   * @param port The port to which this manager listens on
+   */
+  MqRemoteManager(String name, String host, int port)
   {
-    super(name, config.getRemoteManagers().get(name).getHost(), config.getRemoteManagers().get(name).getPort());
+    super(name, host, port);
   }
   
   /**
