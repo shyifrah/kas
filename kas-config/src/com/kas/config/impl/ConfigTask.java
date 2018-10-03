@@ -3,7 +3,7 @@ package com.kas.config.impl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.threads.AKasRunnable;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.utils.StringUtils;
 
@@ -14,7 +14,7 @@ import com.kas.infra.utils.StringUtils;
  * 
  * @author Pippo
  */
-final public class ConfigTask extends AKasObject implements Runnable
+final public class ConfigTask extends AKasRunnable
 {
   /**
    * The main configuration

@@ -178,9 +178,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
       synchronized (mListeners)
       {
         for (IBaseListener listener : mListeners)
-        {
           listener.refresh();
-        }
       }
     }
   }

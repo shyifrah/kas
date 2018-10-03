@@ -1,6 +1,6 @@
 package com.kas.mq.server.internal;
 
-import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.threads.AKasRunnable;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -15,7 +15,7 @@ import com.kas.mq.server.repo.ServerRepository;
  * 
  * @author Pippo
  */
-public class ServerHouseKeeper extends AKasObject implements Runnable
+public class ServerHouseKeeper extends AKasRunnable
 {
   /**
    * Logger
@@ -26,11 +26,6 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
    * Queue repository
    */
   private IRepository mRepository;
-  
-  /**
-   * Stop flag
-   */
-  private boolean mStop = false;
   
   /**
    * Construct the {@link ServerHouseKeeper}, passing it the {@link IController} and the {@link ServerRepository}
@@ -69,14 +64,6 @@ public class ServerHouseKeeper extends AKasObject implements Runnable
     }
     
     mLogger.debug("ServerHouseKeeper::run() - OUT");
-  }
-  
-  /**
-   * Mark the house keeper task it should stop
-   */
-  public synchronized void stop()
-  {
-    mStop = true;
   }
   
   /**
