@@ -25,7 +25,7 @@ public class KasException extends Exception
    */
   public KasException(String message)
   {
-    this(cDefaultMessage + ": " + message, null);
+    this(message, null);
   }
   
   /**
@@ -46,6 +46,6 @@ public class KasException extends Exception
    */
   public KasException(String message, Throwable cause)
   {
-    super(cDefaultMessage + ": " + message, cause);
+    super(message, cause);
   }
 }
