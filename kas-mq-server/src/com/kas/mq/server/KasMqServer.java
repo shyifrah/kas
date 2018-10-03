@@ -87,6 +87,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     
     mLogger.info("KAS/MQ base application initialized successfully");
     mRepository = new ServerRepository(mConfig);
+    mHousekeeper = new ServerHouseKeeper(mRepository);
     mController = new SessionController(this);
     mNotifier = new ServerNotifier( mRepository);
     
@@ -164,6 +165,30 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     
     sStartupLogger.info("KAS/MQ server shutdown complete");
     return true;
+  }
+  
+  /**
+   * Configuration has been refreshed.<br>
+   * <br>
+   * If KAS/MQ server's configuration has been refreshed, it means that the server
+   * should restart (if necessary) the house-keeper task
+   */
+  public void refresh()
+  {
+    mLogger.debug("KasMqServer::refresh() - IN");
+    
+    /*
+     * need to update housekeeper task state according to this scheme:
+     * 
+     * if it's not running & disabled - stop
+     * if it's not running & enabled - start
+     * --if running & disabled - stop
+     * if running & enabled - 
+     *   if interval changed - stop and start
+     *   else - do nothing
+     */
+    
+    mLogger.debug("KasMqServer::refresh() - OUT");
   }
   
   /**
@@ -274,7 +299,6 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   {
     mHousekeeper.stop();
     ThreadPool.removeSchedule(mHousekeeper);
-    mHousekeeper = null;
   }
   
   /**
@@ -284,7 +308,6 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   {
     if ((mConfig.isEnabled()) && (mConfig.isHousekeeperEnabled()))
     {
-      mHousekeeper = new ServerHouseKeeper(mRepository);
       ThreadPool.scheduleAtFixedRate(mHousekeeper, 0L, mConfig.getHousekeeperInterval(), TimeUnit.MILLISECONDS);
     }
   }

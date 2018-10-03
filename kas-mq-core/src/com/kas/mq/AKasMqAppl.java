@@ -71,6 +71,8 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
     if (!mConfig.isInitialized())
       return false;
     
+    mConfig.register(this);
+    
     mLogger = LoggerFactory.getLogger(this.getClass());
     sStartupLogger.info("Logging services are now active, switching to log file...");
     mLogger.info("Loaded configuration: " + mConfig.toPrintableString());
@@ -98,6 +100,15 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
     
     ThreadPool.shutdownNow();
     return true;
+  }
+  
+  /**
+   * KAS/MQ server's configuration has been refreshed.<br>
+   * <br>
+   * Most {@link AKasMqAppl} objects have nothing to do with this, so supply a default implementation
+   */
+  public void refresh()
+  {
   }
   
   /**

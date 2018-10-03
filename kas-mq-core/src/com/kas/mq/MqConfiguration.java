@@ -1,10 +1,13 @@
 package com.kas.mq;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
+import com.kas.infra.config.IBaseListener;
+import com.kas.infra.config.IBaseRegistrar;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -16,7 +19,7 @@ import com.kas.mq.internal.IMqConstants;
  * 
  * @author Pippo
  */
-public class MqConfiguration extends AConfiguration
+public class MqConfiguration extends AConfiguration implements IBaseRegistrar
 {
   /**
    * Configuration prefixes
@@ -101,6 +104,12 @@ public class MqConfiguration extends AConfiguration
   private Map<String, Integer> mPredefQueuesMap = new ConcurrentHashMap<String, Integer>();
   
   /**
+   * A set of configuration listener objects.<br>
+   * When configuration changes, all listeners are notified
+   */
+  private HashSet<IBaseListener> mListeners = new HashSet<IBaseListener>();
+  
+  /**
    * Refresh configuration - reload values of all properties
    */
   public void refresh()
@@ -119,6 +128,10 @@ public class MqConfiguration extends AConfiguration
     refreshUserMap();
     refreshRemoteManagersMap();
     refreshPredefQueuesMap();
+    
+    mLogger.debug("MqConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
+    for (IBaseListener listener : mListeners)
+      listener.refresh();
     
     mLogger.debug("MqConfiguration::refresh() - OUT");
   }
@@ -195,6 +208,30 @@ public class MqConfiguration extends AConfiguration
     mPredefQueuesMap = queueDefsMap;
     
     mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - OUT");
+  }
+  
+  /**
+   * Register an object as a listener to to configuration changes
+   * 
+   * @param listener The listener
+   * 
+   * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
+   */
+  public synchronized void register(IBaseListener listener)
+  {
+    mListeners.add(listener);
+  }
+  
+  /**
+   * Register an object as a listener to to configuration changes
+   * 
+   * @param listener The listener
+   * 
+   * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
+   */
+  public synchronized void unregister(IBaseListener listener)
+  {
+    mListeners.remove(listener);
   }
   
   /**

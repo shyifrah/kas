@@ -169,6 +169,13 @@ public class SessionController extends AKasObject implements IController
   }
   
   /**
+   * Configuration has been refreshed
+   */
+  public void refresh()
+  {
+  }
+  
+  /**
    * Graceful shutdown.<br>
    * <br>
    * First, we signal all handlers to shutdown, so the next time a handler

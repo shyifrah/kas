@@ -54,6 +54,8 @@ public class ServerRepository extends AKasObject implements IRepository
     mConfig = config;
     mLocalManager = new MqLocalManager(mConfig.getManagerName(), mConfig.getPort(), mConfig.getDeadQueueName());
     mRemoteManagersMap = new ConcurrentHashMap<String, MqRemoteManager>();
+    
+    mConfig.register(this);
   }
   
   /**
@@ -105,6 +107,21 @@ public class ServerRepository extends AKasObject implements IRepository
     
     mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
     return success;
+  }
+  
+  /**
+   * Configuration has been refreshed.<br>
+   * <br>
+   * If KAS/MQ server's configuration has been refreshed, it means that the repository
+   * should re-create (if necessary) the list of pre-defined queues.
+   */
+  public void refresh()
+  {
+    mLogger.debug("ServerRepository::refresh() - IN");
+    
+    createPredefinedQueues();
+    
+    mLogger.debug("ServerRepository::refresh() - OUT");
   }
   
   /**
@@ -310,6 +327,7 @@ public class ServerRepository extends AKasObject implements IRepository
   public Properties queryQueues(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
     Properties result = queryRemoteQueues(name, prefix, all);
     Properties locals = queryLocalQueues(name, prefix, all);
     result.putAll(locals);
@@ -384,13 +402,25 @@ public class ServerRepository extends AKasObject implements IRepository
    */
   private void createPredefinedQueues()
   {
+    mLogger.debug("ServerRepository::createPredefinedQueues() - IN");
+    
+    int total = 0, defined = 0;
     for (Map.Entry<String, Integer> entry : mConfig.getQueueDefinitions().entrySet())
     {
+      ++total;
       String name = entry.getKey();
       int threshold = entry.getValue();
       MqQueue queue = getLocalQueue(name);
-      if (queue == null) defineLocalQueue(name, threshold);
+      if (queue == null)
+      {
+        defineLocalQueue(name, threshold);
+        ++defined;
+      }
     }
+    
+    mLogger.debug("ServerRepository::createPredefinedQueues() - Total pre-defined queues: " + total + ", defined: " + defined);
+    
+    mLogger.debug("ServerRepository::createPredefinedQueues() - OUT");
   }
   
   /**

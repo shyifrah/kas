@@ -3,6 +3,7 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.config.IBaseListener;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionHandler;
 
@@ -24,7 +25,7 @@ import com.kas.mq.server.internal.SessionHandler;
  * 
  * @author Pippo
  */
-public interface IController extends IObject
+public interface IController extends IBaseListener, IObject
 {
   /**
    * Get the handler serving session ID with {@code id}
