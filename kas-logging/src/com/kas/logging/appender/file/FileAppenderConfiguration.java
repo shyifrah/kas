@@ -1,7 +1,6 @@
 package com.kas.logging.appender.file;
 
 import com.kas.logging.appender.AAppenderConfiguration;
-import com.kas.logging.impl.LogSystem;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -62,10 +61,13 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   
   /**
    * Construct the appender's configuration, providing the {@link LoggingConfiguration}
+   * 
+   * @param name The name of the appender
+   * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public FileAppenderConfiguration(LoggingConfiguration loggingConfig)
+  public FileAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
-    super(LogSystem.cFileAppenderName, loggingConfig);
+    super(name, loggingConfig);
   }
   
   /**
@@ -80,14 +82,14 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   {
     super.refresh();
     
-    mFileNamePattern       = sMainConfig.getStringProperty ( cLoggingConfigPrefix + "appender." + mName + ".fileNamePattern"        , mFileNamePattern       );
-    mMaxWriteErrors        = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".maxWriteErrors"         , mMaxWriteErrors        );
-    mFlushRate             = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".flushRate"              , mFlushRate             );
-    mArchiveMaxFileSizeMb  = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.maxFileSizeMb"  , mArchiveMaxFileSizeMb  );
-    mArchiveMaxGenerations = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.maxGenerations" , mArchiveMaxGenerations );
-    mArchiveTestSizeRate   = sMainConfig.getIntProperty    ( cLoggingConfigPrefix + "appender." + mName + ".archive.testSizeRate"   , mArchiveTestSizeRate   );
-    mAsyncEnabled          = sMainConfig.getBoolProperty   ( cLoggingConfigPrefix + "appender." + mName + ".async.enabled"          , mAsyncEnabled          );
-    mAsyncInterval         = sMainConfig.getLongProperty   ( cLoggingConfigPrefix + "appender." + mName + ".async.interval"         , mAsyncInterval         );
+    mFileNamePattern       = sMainConfig.getStringProperty ( cLogAppenderConfigPrefix + mName + ".fileNamePattern"        , mFileNamePattern       );
+    mMaxWriteErrors        = sMainConfig.getIntProperty    ( cLogAppenderConfigPrefix + mName + ".maxWriteErrors"         , mMaxWriteErrors        );
+    mFlushRate             = sMainConfig.getIntProperty    ( cLogAppenderConfigPrefix + mName + ".flushRate"              , mFlushRate             );
+    mArchiveMaxFileSizeMb  = sMainConfig.getIntProperty    ( cLogAppenderConfigPrefix + mName + ".archive.maxFileSizeMb"  , mArchiveMaxFileSizeMb  );
+    mArchiveMaxGenerations = sMainConfig.getIntProperty    ( cLogAppenderConfigPrefix + mName + ".archive.maxGenerations" , mArchiveMaxGenerations );
+    mArchiveTestSizeRate   = sMainConfig.getIntProperty    ( cLogAppenderConfigPrefix + mName + ".archive.testSizeRate"   , mArchiveTestSizeRate   );
+    mAsyncEnabled          = sMainConfig.getBoolProperty   ( cLogAppenderConfigPrefix + mName + ".async.enabled"          , mAsyncEnabled          );
+    mAsyncInterval         = sMainConfig.getLongProperty   ( cLogAppenderConfigPrefix + mName + ".async.interval"         , mAsyncInterval         );
   }
   
   /**

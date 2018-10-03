@@ -1,9 +1,17 @@
 package com.kas.logging.impl;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.config.impl.AConfiguration;
+import com.kas.infra.base.Properties;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
+import com.kas.logging.appender.AAppenderConfiguration;
+import com.kas.logging.appender.EAppenderType;
+import com.kas.logging.appender.cons.StderrAppenderConfiguration;
+import com.kas.logging.appender.cons.StdoutAppenderConfiguration;
+import com.kas.logging.appender.file.FileAppenderConfiguration;
 /**
  * The logging configuration
  * 
@@ -11,13 +19,20 @@ import com.kas.infra.config.IBaseRegistrar;
  */
 public class LoggingConfiguration extends AConfiguration implements IBaseRegistrar
 {
-  static public final String  cLoggingConfigPrefix = "kas.logging.";
+  static public final String  cLogConfigPrefix         = "kas.logging.";
+  static public final String  cLogAppenderConfigPrefix = cLogConfigPrefix + "appender.";
+  
   static public final boolean cDefaultEnabled = true;
   
   /**
    * An indicator whether logging is enabled or disabled
    */
   private boolean mEnabled = cDefaultEnabled;
+  
+  /**
+   * Configured appenders
+   */
+  private Map<String, AAppenderConfiguration> mAppenderConfigs = new ConcurrentHashMap<String, AAppenderConfiguration>();
   
   /**
    * A set of configuration listener objects.<br>
@@ -40,10 +55,52 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
    */
   public void refresh()
   {
-    mEnabled = mMainConfig.getBoolProperty ( cLoggingConfigPrefix + "enabled" , mEnabled );
+    mEnabled = mMainConfig.getBoolProperty ( cLogConfigPrefix + "enabled" , mEnabled );
+    
+    refreshAppenderConfigs();
     
     for (IBaseListener listener : mListeners)
       listener.refresh();
+  }
+  
+  /**
+   * Refresh the appenders' configurations
+   */
+  private void refreshAppenderConfigs()
+  {
+    Map<String, AAppenderConfiguration> appenderConfigs = new ConcurrentHashMap<String, AAppenderConfiguration>();
+    
+    Properties props = mMainConfig.getSubset(cLogAppenderConfigPrefix, ".type");
+    for (Map.Entry<Object, Object> oentry : props.entrySet())
+    {
+      String key = (String)oentry.getKey();
+      int beginindex = cLogAppenderConfigPrefix.length();
+      int endindex = key.lastIndexOf(".type");
+      String name = key.substring(beginindex, endindex);
+      
+      String type = (String)oentry.getValue();
+      EAppenderType appenderType = EAppenderType.fromString(type);
+      
+      AAppenderConfiguration config = null;
+      switch (appenderType)
+      {
+        case File:
+          config = new FileAppenderConfiguration(name, this);
+          break;
+        case Stdout:
+          config = new StdoutAppenderConfiguration(name, this);
+          break;
+        case Stderr:
+          config = new StderrAppenderConfiguration(name, this);
+          break;
+        case Unknown:
+        default:
+      }
+      
+      if (config != null) appenderConfigs.put(name, config);
+    }
+    
+    mAppenderConfigs = appenderConfigs;
   }
   
   /**
@@ -61,7 +118,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
     // looking for best match
     do
     {
-      String key = cLoggingConfigPrefix + "logger." + loggerName + ".appender";
+      String key = cLogConfigPrefix + "logger." + loggerName + ".appender";
       String val = mMainConfig.getStringProperty(key, "");
       
       if (val.length() > 0)

@@ -1,6 +1,5 @@
 package com.kas.logging.appender.cons;
 
-import com.kas.logging.impl.LogSystem;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -12,21 +11,12 @@ public class StderrAppenderConfiguration extends ConsoleAppenderConfiguration
 {
   /**
    * Construct the appender's configuration, providing the {@link LoggingConfiguration}
-   */
-  public StderrAppenderConfiguration(LoggingConfiguration loggingConfig)
-  {
-    super(LogSystem.cStderrAppenderName, loggingConfig);
-  }
-  
-  /**
-   * Returns a replica of this {@link StderrAppenderConfiguration}.
    * 
-   * @return a replica of this {@link StderrAppenderConfiguration}
-   * 
-   * @see com.kas.infra.base.IObject#replicate()
+   * @param name The name of the appender
+   * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public StderrAppenderConfiguration replicate()
+  public StderrAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
-    return new StderrAppenderConfiguration(mLoggingConfig);
+    super(name, loggingConfig);
   }
 }

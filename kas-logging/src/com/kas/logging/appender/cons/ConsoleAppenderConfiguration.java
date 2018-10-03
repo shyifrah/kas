@@ -11,11 +11,14 @@ import com.kas.logging.impl.LoggingConfiguration;
 public class ConsoleAppenderConfiguration extends AAppenderConfiguration
 {
   /**
-   * Construct the appender's configuration, providing the appender's name and the {@link LoggingConfiguration}
+   * Construct the appender's configuration, providing the {@link LoggingConfiguration}
+   * 
+   * @param name The name of the appender
+   * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public ConsoleAppenderConfiguration(String appenderName, LoggingConfiguration loggingConfig)
+  public ConsoleAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
-    super(appenderName, loggingConfig);
+    super(name, loggingConfig);
   }
   
   /**
