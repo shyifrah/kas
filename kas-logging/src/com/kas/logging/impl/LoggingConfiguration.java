@@ -2,11 +2,8 @@ package com.kas.logging.impl;
 
 import java.util.HashSet;
 import com.kas.config.impl.AConfiguration;
-import com.kas.infra.base.WeakRef;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
-import com.kas.logging.appender.AAppenderConfiguration;
-
 /**
  * The logging configuration
  * 
@@ -23,37 +20,30 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   private boolean mEnabled = cDefaultEnabled;
   
   /**
-   * A set of weak-references to all appenders' configuration objects.<br>
-   * When configuration changes, all appender's configurations are refreshed
+   * A set of configuration listener objects.<br>
+   * When configuration changes, all listeners are notified
    */
-  private HashSet<WeakRef<IBaseListener>> mAppenderConfigsSet = new HashSet<WeakRef<IBaseListener>>();
+  private HashSet<IBaseListener> mListeners;
   
   /**
    * Construct the configuration
    */
   LoggingConfiguration()
   {
+    mListeners = new HashSet<IBaseListener>();
   }
   
   /**
-   * Refresh configuration
+   * Configuration has been refreshed.<br>
+   * <br>
+   * Notify to all listeners that configuration has been changed.
    */
   public void refresh()
   {
-    mEnabled = mMainConfig.getBoolProperty ( cLoggingConfigPrefix + "enabled" , mEnabled);
+    mEnabled = mMainConfig.getBoolProperty ( cLoggingConfigPrefix + "enabled" , mEnabled );
     
-    for (WeakRef<IBaseListener> appenderConfigRef : mAppenderConfigsSet)
-    {
-      IBaseListener appenderConfig = appenderConfigRef.get();
-      if (appenderConfig == null)
-      {
-        mAppenderConfigsSet.remove(appenderConfigRef);
-      }
-      else
-      {
-        appenderConfig.refresh();
-      }
-    }
+    for (IBaseListener listener : mListeners)
+      listener.refresh();
   }
   
   /**
@@ -104,36 +94,28 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   }
   
   /**
-   * Register a {@link AAppenderConfiguration} object as a configuration listener
+   * Register an object as a listener to to configuration changes
    * 
-   * @param listener The {@link AAppenderConfiguration} listening for configuration changes
+   * @param listener The listener
    * 
    * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
    */
   public synchronized void register(IBaseListener listener)
   {
-    WeakRef<IBaseListener> appenderConfigRef = new WeakRef<IBaseListener>(listener);
-    mAppenderConfigsSet.add(appenderConfigRef);
+    mListeners.add(listener);
     listener.refresh();
   }
   
   /**
-   * Unregister a {@link AAppenderConfiguration} object as a configuration listener
+   * Register an object as a listener to to configuration changes
    * 
-   * @param listener The {@link AAppenderConfiguration} listening for configuration changes
+   * @param listener The listener
    * 
    * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
    */
   public synchronized void unregister(IBaseListener listener)
   {
-    for (WeakRef<IBaseListener> ref : mAppenderConfigsSet)
-    {
-      if ((ref != null) && listener.equals(ref.get()))
-      {
-        mAppenderConfigsSet.remove(ref);
-        break;
-      }
-    }
+    mListeners.remove(listener);
   }
   
   /**
@@ -153,11 +135,8 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
       .append(pad).append("  Enabled=").append(mEnabled).append("\n")
       .append(pad).append("  AppendersConfigurations=(\n");
 
-    for (WeakRef<IBaseListener> ref : mAppenderConfigsSet)
-    {
-      IBaseListener listener = ref.get();
+    for (IBaseListener listener : mListeners)
       sb.append(pad).append("    ").append(listener.toPrintableString(level+2)).append("\n");
-    }
     
     sb.append(pad).append("  )\n")
       .append(pad).append(")");

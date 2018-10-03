@@ -2,11 +2,9 @@ package com.kas.mq.server.repo;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Map;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.MqConfiguration;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
@@ -20,11 +18,6 @@ import com.kas.mq.internal.MqQueue;
 public class MqLocalManager extends MqManager
 {
   /**
-   * KAS/MQ configuration
-   */
-  private MqConfiguration mConfig;
-  
-  /**
    * The Dead queue
    */
   private MqLocalQueue mDeadQueue;
@@ -32,12 +25,14 @@ public class MqLocalManager extends MqManager
   /**
    * Construct the {@link MqLocalManager}
    * 
-   * @param config The {@link MqConfiguration configuration} object
+   * @param name The name of the local manager
+   * @param port The port on which the manager listens
+   * @param deadq The name of the dead queue
    */
-  MqLocalManager(MqConfiguration config)
+  MqLocalManager(String name, int port, String deadq)
   {
-    super(config.getManagerName(), "localhost", config.getPort());
-    mConfig = config;
+    super(name, "localhost", port);
+    mDeadQueue = defineQueue(deadq, IMqConstants.cDefaultQueueThreshold, false);
   }
   
   /**
@@ -83,21 +78,6 @@ public class MqLocalManager extends MqManager
           success = success && restored;
         }
       }
-      
-      // define the deadq
-      MqLocalQueue deadq = getQueue(mConfig.getDeadQueueName());
-      if (deadq != null)
-        mDeadQueue = deadq;
-      else
-        mDeadQueue = defineQueue(mConfig.getDeadQueueName(), IMqConstants.cDefaultQueueThreshold);
-      
-      // predefined queues
-      for (Map.Entry<String, Integer> entry : mConfig.getQueueDefinitions().entrySet())
-      {
-        String queue = entry.getKey();
-        int threshold = entry.getValue();
-        defineQueue(queue, threshold);
-      }
     }
     
     mActive = success;
@@ -139,13 +119,26 @@ public class MqLocalManager extends MqManager
    */
   MqLocalQueue defineQueue(String name, int threshold)
   {
-    mLogger.debug("MqLocalManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold);
+    return defineQueue(name, threshold, true);
+  }
+  
+  /**
+   * Define a local queue object
+   * 
+   * @param name The name of the queue to define
+   * @param threshold The threshold of the queue
+   * @param backup Should the queue be backed up to file-system
+   * @return the created {@link MqLocalQueue}
+   */
+  MqLocalQueue defineQueue(String name, int threshold, boolean backup)
+  {
+    mLogger.debug("MqLocalManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold + ", BackupToFilesys=" + backup);
     MqLocalQueue queue = null;
     
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = new MqLocalQueue(this, name, threshold);
+      queue = new MqLocalQueue(this, name, threshold, backup);
       mQueues.put(name, queue);
     }
     

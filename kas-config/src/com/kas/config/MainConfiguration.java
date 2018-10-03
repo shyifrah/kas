@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import com.kas.config.impl.ConfigProperties;
 import com.kas.config.impl.ConfigTask;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.Properties;
@@ -25,8 +26,9 @@ import com.kas.infra.utils.StringUtils;
  */
 final public class MainConfiguration extends AKasObject implements IMainConfiguration, IBaseRegistrar 
 {
-  static private final long cDefaultMonitoringDelay    = 10000L;
-  static private final long cDefaultMonitoringInterval = 10000L;
+  static private final long   cDefaultMonitoringDelay    = 10000L;
+  static private final long   cDefaultMonitoringInterval = 10000L;
+  
   static private final String cMainConfigFileName = "kas.properties";
   static private final String cConfigPropPrefix   = "kas.config.";
   
@@ -48,17 +50,12 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * A collection of {@link IBaseListener} objects that are listening for configuration changes
    */
-  private Set<IBaseListener> mListeners   = new HashSet<IBaseListener>();
+  private Set<IBaseListener> mListeners = new HashSet<IBaseListener>();
   
   /**
-   * A collection of configuration files
+   * A {@link ConfigProperties} object holding all KAS properties read from configuration files
    */
-  private Set<String> mConfigFiles = new HashSet<String>();
-  
-  /**
-   * A {@link Properties} object holding all KAS properties read from configuration files
-   */
-  private Properties mProperties = null;
+  private ConfigProperties mProperties = null;
   
   /**
    * A {@link ConfigTask} which is responsible for monitoring configuration files for changes
@@ -158,27 +155,19 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    */
   private boolean load()
   {
-    // reloading configuration to new object and switch. old object will be gc'ed
-    mProperties = new Properties();
+    mProperties = new ConfigProperties();
     mProperties.load(mConfigDir + File.separatorChar + cMainConfigFileName);
     
     if (mProperties.isEmpty())
       return false;
     
-    mConfigFiles.clear();
-    
-    StringList monitoredFiles = (StringList)mProperties.getObjectProperty(Properties.cIncludeKey, null);
-    if (monitoredFiles == null) // this should not happen, cIncludeKey should have at least one file name 
-      return false;
-    
-    mConfigFiles.addAll(monitoredFiles);
     return true;
   }
 
   /**
    * Reload configuration properties
    */
-  public void reload()
+  public void refresh()
   {
     // load new properties
     load();
@@ -189,9 +178,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
       synchronized (mListeners)
       {
         for (IBaseListener listener : mListeners)
-        {
           listener.refresh();
-        }
       }
     }
   }
@@ -231,16 +218,16 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   }
 
   /**
-   * Get a {@link Set} containing all configuration files composing this configuration object.<br>
+   * Get a {@link StringList} containing all configuration files composing this configuration object.<br>
    * <br>
    * This includes the main configuration file - kas.properties - as well as all configuration files
    * that are included via the {@code kas.include} statement.
    * 
-   * @return a set of the configuration files
+   * @return a list of the configuration files
    */
-  public Set<String> getConfigFiles()
+  public StringList getConfigFiles()
   {
-    return mConfigFiles;
+    return mProperties.getConfigFiles();
   }
 
   /**

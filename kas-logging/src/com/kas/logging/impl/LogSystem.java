@@ -3,6 +3,7 @@ package com.kas.logging.impl;
 import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.config.IBaseListener;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.appender.cons.ConsoleAppender;
 import com.kas.logging.appender.cons.ConsoleAppenderConfiguration;
@@ -18,7 +19,7 @@ import com.kas.logging.appender.file.FileAppenderConfiguration;
  * 
  * @author Pippo
  */
-public class LogSystem extends AKasObject
+public class LogSystem extends AKasObject implements IBaseListener
 {
   static public final String cFileAppenderName   = "file";
   static public final String cStdoutAppenderName = "stdout";
@@ -30,19 +31,19 @@ public class LogSystem extends AKasObject
   static private LogSystem sInstance = new LogSystem();
   
   /**
-   * The {@link LoggingConfiguration} singleton instance
+   * The {@link LoggingConfiguration}
    */
-  static private LoggingConfiguration sConfig = new LoggingConfiguration();
+  private LoggingConfiguration mConfig;
 
   /**
    * Name to {@link IAppender} map
    */
-  private HashMap<String, IAppender> mAppenders = new HashMap<String, IAppender>();
+  private HashMap<String, IAppender> mAppenders;
   
   /**
    * An indicator whether appenders were loaded or not
    */
-  private boolean mAppendersLoaded = false;
+  private boolean mAppendersLoaded;
   
   /**
    * Get the instance of the {@link LogSystem}
@@ -56,7 +57,11 @@ public class LogSystem extends AKasObject
    * Private constructor
    */
   private LogSystem()
-  { 
+  {
+    mAppenders = new HashMap<String, IAppender>();
+    mAppendersLoaded = false;
+    mConfig = new LoggingConfiguration();
+    mConfig.register(this);
   }
   
   /**
@@ -66,7 +71,15 @@ public class LogSystem extends AKasObject
    */
   public LoggingConfiguration getConfig()
   {
-    return sConfig;
+    return mConfig;
+  }
+  
+  /**
+   * Configuration has been refreshed
+   */
+  public void refresh()
+  {
+    /// TODO : reloadAppenders();
   }
   
   /**
@@ -80,37 +93,13 @@ public class LogSystem extends AKasObject
    */
   public IAppender getAppender(Class<?> requestorClass)
   {
-    if (!sConfig.isInitialized())
-    {
-      sConfig.init();
-    }
-    
-    if (!mAppendersLoaded)
-    {
-      load();
-    }
-    
-    String name = sConfig.getAppenderName(requestorClass.getName());
-    return mAppenders.get(name);
-  }
-  
-  /**
-   * Get an appender by name.<br>
-   * <br>
-   * If this is the first time the {@link LoggingConfiguration} is accessed, it is first initialized.<br>
-   * If appender's weren't loaded yet, first load them.
-   * 
-   * @param name The name of the appender
-   * @return the {@link IAppender} assigned to the class' package or {@code null} if no such assignment exists
-   */
-  public IAppender getAppender(String name)
-  {
-    if (!sConfig.isInitialized())
-      sConfig.init();
+    if (!mConfig.isInitialized())
+      mConfig.init();
     
     if (!mAppendersLoaded)
       load();
     
+    String name = mConfig.getAppenderName(requestorClass.getName());
     return mAppenders.get(name);
   }
 
@@ -119,20 +108,20 @@ public class LogSystem extends AKasObject
    */
   private synchronized void load()
   {
-    FileAppenderConfiguration fac = new FileAppenderConfiguration(sConfig);
-    sConfig.register(fac);
+    FileAppenderConfiguration fac = new FileAppenderConfiguration(mConfig);
+    mConfig.register(fac);
     FileAppender fa = new FileAppender(fac);
     fa.init();
     mAppenders.put(cFileAppenderName, fa);
     
-    ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(sConfig);
-    sConfig.register(soac);
+    ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(mConfig);
+    mConfig.register(soac);
     ConsoleAppender stdout = new StdoutAppender(soac);
     stdout.init();
     mAppenders.put(cStdoutAppenderName, stdout);
     
-    ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(sConfig);
-    sConfig.register(seac);
+    ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(mConfig);
+    mConfig.register(seac);
     ConsoleAppender stderr = new StderrAppender(seac);
     stderr.init();
     mAppenders.put(cStderrAppenderName, stderr);

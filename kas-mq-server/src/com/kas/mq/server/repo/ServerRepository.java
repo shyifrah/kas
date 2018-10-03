@@ -52,8 +52,10 @@ public class ServerRepository extends AKasObject implements IRepository
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConfig = config;
-    mLocalManager = new MqLocalManager(mConfig);
+    mLocalManager = new MqLocalManager(mConfig.getManagerName(), mConfig.getPort(), mConfig.getDeadQueueName());
     mRemoteManagersMap = new ConcurrentHashMap<String, MqRemoteManager>();
+    
+    mConfig.register(this);
   }
   
   /**
@@ -71,12 +73,16 @@ public class ServerRepository extends AKasObject implements IRepository
     mLogger.trace("ServerRepository::init() - Initializing repository...");
     mLocalManager.activate();
     if (mLocalManager.isActive())
+    {
+      createPredefinedQueues();
       success = true;
+    }
     
     for (Map.Entry<String, NetworkAddress> entry : mConfig.getRemoteManagers().entrySet())
     {
       String name = entry.getKey();
-      MqRemoteManager mgr = new MqRemoteManager(mConfig, name);
+      NetworkAddress addr = entry.getValue();
+      MqRemoteManager mgr = new MqRemoteManager(name, addr.getHost(), addr.getPort());
       
       mRemoteManagersMap.put(name, mgr);
     }
@@ -101,6 +107,21 @@ public class ServerRepository extends AKasObject implements IRepository
     
     mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
     return success;
+  }
+  
+  /**
+   * Configuration has been refreshed.<br>
+   * <br>
+   * If KAS/MQ server's configuration has been refreshed, it means that the repository
+   * should re-create (if necessary) the list of pre-defined queues.
+   */
+  public void refresh()
+  {
+    mLogger.debug("ServerRepository::refresh() - IN");
+    
+    createPredefinedQueues();
+    
+    mLogger.debug("ServerRepository::refresh() - OUT");
   }
   
   /**
@@ -306,31 +327,12 @@ public class ServerRepository extends AKasObject implements IRepository
   public Properties queryQueues(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
     Properties result = queryRemoteQueues(name, prefix, all);
     Properties locals = queryLocalQueues(name, prefix, all);
     result.putAll(locals);
     
     mLogger.debug("ServerRepository::queryQueues() - OUT, Returns=" + result.size() + " records");
-    return result;
-  }
-  
-  /**
-   * Is a queue exists
-   * 
-   * @param name The name of the queue to be tested
-   * @return {@code true} if a queue named {@code name} exists, {@code false} otherwise 
-   * 
-   * @see com.kas.mq.server.IRepository#isLocalQueueExist(String)
-   */
-  public boolean isLocalQueueExist(String name)
-  {
-    mLogger.debug("ServerRepository::isQueueExist() - IN, Name=" + name);
-    
-    boolean result = false;
-    if ((name != null) && (getLocalQueue(name) != null))
-      result = true;
-    
-    mLogger.debug("ServerRepository::isQueueExist() - OUT, Returns=" + result);
     return result;
   }
   
@@ -345,6 +347,30 @@ public class ServerRepository extends AKasObject implements IRepository
   public MqRemoteManager getRemoteManager(String name)
   {
     return mRemoteManagersMap.get(name);
+  }
+  
+  /**
+   * Get all remote {@link MqRemoteManager managers} 
+   * 
+   * @return the {@link MqManager}
+   * 
+   * @see com.kas.mq.server.IRepository#getRemoteManagers()
+   */
+  public Collection<MqRemoteManager> getRemoteManagers()
+  {
+    return mRemoteManagersMap.values();
+  }
+  
+  /**
+   * Get the local {@link MqLocalManager} 
+   * 
+   * @return the local {@link MqLocalManager}
+   * 
+   * @see com.kas.mq.server.IRepository#getLocalManager()
+   */
+  public MqLocalManager getLocalManager()
+  {
+    return mLocalManager;
   }
   
   /**
@@ -369,6 +395,32 @@ public class ServerRepository extends AKasObject implements IRepository
   public Collection<MqQueue> getLocalQueues()
   {
     return mLocalManager.getAll();
+  }
+  
+  /**
+   * Create queues that are configured in configuration file
+   */
+  private void createPredefinedQueues()
+  {
+    mLogger.debug("ServerRepository::createPredefinedQueues() - IN");
+    
+    int total = 0, defined = 0;
+    for (Map.Entry<String, Integer> entry : mConfig.getQueueDefinitions().entrySet())
+    {
+      ++total;
+      String name = entry.getKey();
+      int threshold = entry.getValue();
+      MqQueue queue = getLocalQueue(name);
+      if (queue == null)
+      {
+        defineLocalQueue(name, threshold);
+        ++defined;
+      }
+    }
+    
+    mLogger.debug("ServerRepository::createPredefinedQueues() - Total pre-defined queues: " + total + ", defined: " + defined);
+    
+    mLogger.debug("ServerRepository::createPredefinedQueues() - OUT");
   }
   
   /**

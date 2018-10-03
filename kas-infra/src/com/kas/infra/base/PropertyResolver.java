@@ -18,7 +18,7 @@ import com.kas.infra.utils.RunTimeUtils;
  * 
  * @author Pippo
  */
-class PropertyResolver
+public class PropertyResolver
 {
   /**
    * Resolve the value of {@code rawValue}. 

@@ -4,10 +4,12 @@ import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
+import com.kas.infra.config.IBaseListener;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqQueue;
 import com.kas.mq.internal.MqRemoteQueue;
+import com.kas.mq.server.repo.MqLocalManager;
 import com.kas.mq.server.repo.MqRemoteManager;
 
 /**
@@ -15,7 +17,7 @@ import com.kas.mq.server.repo.MqRemoteManager;
  * 
  * @author Pippo
  */
-public interface IRepository extends IInitializable, IObject
+public interface IRepository extends IBaseListener, IInitializable, IObject
 {
   /**
    * Define a {@link MqLocalQueue} object with the specified {@code name}
@@ -125,6 +127,20 @@ public interface IRepository extends IInitializable, IObject
    * @return the {@link MqManager}
    */
   public abstract MqManager getRemoteManager(String name);
+  
+  /**
+   * Get all remote {@link MqRemoteManager managers} 
+   * 
+   * @return the {@link MqManager}
+   */
+  public abstract Collection<MqRemoteManager> getRemoteManagers();
+  
+  /**
+   * Get the local {@link MqLocalManager} 
+   * 
+   * @return the local {@link MqLocalManager}
+   */
+  public abstract MqLocalManager getLocalManager();
   
   /**
    * Get the {@link MqLocalQueue} object representing the dead queue

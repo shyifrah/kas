@@ -1,6 +1,7 @@
 package com.kas.mq;
 
 import com.kas.infra.base.IInitializable;
+import com.kas.infra.config.IBaseListener;
 
 /**
  * A KAS/MQ application is one that has initialization/termination phases which occur
@@ -10,7 +11,7 @@ import com.kas.infra.base.IInitializable;
  * 
  * @author Pippo
  */
-public interface IKasMqAppl extends IInitializable
+public interface IKasMqAppl extends IBaseListener, IInitializable
 {
   /**
    * Initializing the application. 
