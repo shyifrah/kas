@@ -3,6 +3,7 @@ package com.kas.logging.impl;
 import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.config.IBaseListener;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.appender.cons.ConsoleAppender;
 import com.kas.logging.appender.cons.ConsoleAppenderConfiguration;
@@ -18,7 +19,7 @@ import com.kas.logging.appender.file.FileAppenderConfiguration;
  * 
  * @author Pippo
  */
-public class LogSystem extends AKasObject
+public class LogSystem extends AKasObject implements IBaseListener
 {
   static public final String cFileAppenderName   = "file";
   static public final String cStdoutAppenderName = "stdout";
@@ -56,7 +57,8 @@ public class LogSystem extends AKasObject
    * Private constructor
    */
   private LogSystem()
-  { 
+  {
+    sConfig.register(this);
   }
   
   /**
@@ -67,6 +69,14 @@ public class LogSystem extends AKasObject
   public LoggingConfiguration getConfig()
   {
     return sConfig;
+  }
+  
+  /**
+   * Configuration has been refreshed
+   */
+  public void refresh()
+  {
+    /// TODO : reloadAppenders();
   }
   
   /**
@@ -81,36 +91,12 @@ public class LogSystem extends AKasObject
   public IAppender getAppender(Class<?> requestorClass)
   {
     if (!sConfig.isInitialized())
-    {
       sConfig.init();
-    }
     
     if (!mAppendersLoaded)
-    {
       load();
-    }
     
     String name = sConfig.getAppenderName(requestorClass.getName());
-    return mAppenders.get(name);
-  }
-  
-  /**
-   * Get an appender by name.<br>
-   * <br>
-   * If this is the first time the {@link LoggingConfiguration} is accessed, it is first initialized.<br>
-   * If appender's weren't loaded yet, first load them.
-   * 
-   * @param name The name of the appender
-   * @return the {@link IAppender} assigned to the class' package or {@code null} if no such assignment exists
-   */
-  public IAppender getAppender(String name)
-  {
-    if (!sConfig.isInitialized())
-      sConfig.init();
-    
-    if (!mAppendersLoaded)
-      load();
-    
     return mAppenders.get(name);
   }
 
