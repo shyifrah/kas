@@ -25,10 +25,9 @@ import com.kas.mq.server.IRepository;
 public class SessionController extends AKasObject implements IController
 {
   /**
-   * Loggers
+   * Logger
    */
   private ILogger mLogger;
-  private ILogger mConsole;
   
   /**
    * A map of session id to session handler
@@ -59,7 +58,6 @@ public class SessionController extends AKasObject implements IController
   public SessionController(IMqServer server)
   {
     mLogger  = LoggerFactory.getLogger(this.getClass());
-    mConsole = LoggerFactory.getStdout(this.getClass());
     mHandlers = new ConcurrentHashMap<UniqueId, SessionHandler>();
     mServer = server;
     mConfig = mServer.getConfig();
@@ -83,7 +81,7 @@ public class SessionController extends AKasObject implements IController
     SessionHandler handler = new SessionHandler(socket, this, mRepository);
     
     String remoteAddress = new NetworkAddress(socket).toString();
-    mConsole.info("New connection accepted from " + remoteAddress);
+    mLogger.info("New connection accepted from " + remoteAddress);
     ThreadPool.execute(handler);
   }
   
@@ -183,8 +181,8 @@ public class SessionController extends AKasObject implements IController
   {
     mLogger.debug("SessionController::shutdown() - IN");
     
-    mConsole.info("KAS/MQ server received a Shutdown request");
-    mConsole.info("Signaling all handlers to terminate...");
+    mLogger.info("KAS/MQ server received a Shutdown request");
+    mLogger.info("Signaling all handlers to terminate...");
     for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
     {
       UniqueId uid = entry.getKey();
@@ -194,10 +192,10 @@ public class SessionController extends AKasObject implements IController
       handler.stop();
     }
     
-    mConsole.info("Closing all opened connections...");
+    mLogger.info("Closing all opened connections...");
     MqServerConnectionPool.getInstance().shutdown();
     
-    mConsole.info("Signaling main thread to terminate...");
+    mLogger.info("Signaling main thread to terminate...");
     mServer.stop();
     
     mLogger.debug("SessionController::shutdown() - OUT");
