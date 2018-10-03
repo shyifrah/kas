@@ -167,7 +167,7 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Reload configuration properties
    */
-  public void reload()
+  public void refresh()
   {
     // load new properties
     load();

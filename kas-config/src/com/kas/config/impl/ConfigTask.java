@@ -85,7 +85,7 @@ final public class ConfigTask extends AKasObject implements Runnable
       }
     }
     
-    if (reload) mMainConfig.reload();
+    if (reload) mMainConfig.refresh();
   }
   
   /**

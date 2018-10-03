@@ -13,16 +13,8 @@ import com.kas.infra.typedef.StringList;
  * 
  * @author Pippo
  */
-public interface IMainConfiguration extends IConfiguration, IInitializable, IObject
+public interface IMainConfiguration extends IBaseListener,IConfiguration, IInitializable, IObject
 {
-  /**
-   * This method is invoked by a side-thread which is responsible to monitor the configuration files.<br>
-   * <br>
-   * When the thread detects that at least one of the configuration files was modified, it calls this method
-   * in order to reload the properties from the updated configuration files.
-   */
-  public abstract void reload();
-  
   /**
    * Get a set of all configuration files
    * 
