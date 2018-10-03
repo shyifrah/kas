@@ -35,18 +35,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::defineQueue() - IN");
     
-    boolean success = false;
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
-    else
-    {
-      IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
-      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
-      success = reply.getResponse().getCode() == EMqCode.cOkay;
-      logInfoAndSetResponse(reply.getResponse().getDesc());
-    }
+    IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
+    boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::defineQueue() - OUT");
     return success;
@@ -63,18 +53,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::deleteQueue() - IN");
     
-    boolean success = false;
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
-    else
-    {
-      IMqMessage request = MqRequestFactory.createDeleteQueueRequest(queue, force);
-      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
-      success = reply.getResponse().getCode() == EMqCode.cOkay;
-      logInfoAndSetResponse(reply.getResponse().getDesc());
-    }
+    IMqMessage request = MqRequestFactory.createDeleteQueueRequest(queue, force);
+    boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::deleteQueue() - OUT");
     return success;
@@ -91,21 +71,18 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::queryServer() - IN");
     
-    MqStringMessage result = null;
-    if (!isConnected())
-    {
-      logErrorAndSetResponse("Not connected to host");
-    }
+    IMqMessage request = MqRequestFactory.createQueryServerRequest(qType, qProps);
+    IMqMessage reply = requestReply(request);
+    
+    String resp;
+    if (reply == null)
+      resp = "Failed to receive reply for latest request: " + request.getRequestType().toString();
     else
-    {
-      IMqMessage request = MqRequestFactory.createQueryServerRequest(qType, qProps);
-      IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
-      result = (MqStringMessage)reply;
-      logInfoAndSetResponse(reply.getResponse().getDesc());
-    }
+      resp = reply.getResponse().getDesc();
+    logInfoAndSetResponse(resp);
     
     mLogger.debug("MqContextConnection::queryServer() - OUT");
-    return result;
+    return (MqStringMessage)reply;
   }
 
   /**
@@ -117,6 +94,49 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::shutdown() - IN");
     
+    IMqMessage request = MqRequestFactory.createShutdownRequest(mUser);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::shutdown() - OUT");
+    return success;
+  }
+  
+  /**
+   * Send an administrative request to KAS/MQ server.
+   * 
+   * @param request The request message
+   * @return The reply message, if there is one.
+   */
+  protected IMqMessage requestReply(IMqMessage request)
+  {
+    mLogger.debug("MqContextConnection::sendAdminRequest() - IN");
+    
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      reply = put(IMqConstants.cAdminQueueName, request);
+    }
+    
+    mLogger.debug("MqContextConnection::sendAdminRequest() - OUT");
+    return reply;
+  }
+  
+  /**
+   * Send an administrative request to KAS/MQ server and analyze response.<br>
+   * <br>
+   * The reply's description will be set to the latest response
+   * 
+   * @param request The request message
+   * @return {@code true} if successful, {@code false} otherwise
+   */
+  protected boolean requestReplyAndAnalyze(IMqMessage request)
+  {
+    mLogger.debug("MqContextConnection::sendAdminRequest() - IN");
+    
     boolean success = false;
     if (!isConnected())
     {
@@ -124,13 +144,21 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage request = MqRequestFactory.createShutdownRequest(mUser);
       IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
-      success = reply.getResponse().getCode() == EMqCode.cOkay;
-      logInfoAndSetResponse(reply.getResponse().getDesc());
+      String resp;
+      if (reply != null)
+      {
+        success = reply.getResponse().getCode() == EMqCode.cOkay;
+        resp = reply.getResponse().getDesc();
+      }
+      else
+      {
+        resp = "Failed to receive reply for latest request: " + request.getRequestType().toString();
+      }
+      logInfoAndSetResponse(resp);
     }
     
-    mLogger.debug("MqContextConnection::shutdown() - OUT");
+    mLogger.debug("MqContextConnection::sendAdminRequest() - OUT");
     return success;
   }
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import com.kas.comm.IPacket;
 import com.kas.comm.IMessenger;
 import com.kas.infra.base.AKasObject;
@@ -164,6 +165,10 @@ public class Messenger extends AKasObject implements IMessenger
       PacketHeader header = new PacketHeader(mInputStream);
       
       packet = header.read(mInputStream);
+    }
+    catch (SocketException e)
+    {
+      sLogger.warn("Connection was reset by remote peer"); 
     }
     catch (KasException e)
     {

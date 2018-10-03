@@ -2,8 +2,6 @@ package com.kas.mq.server.internal;
 
 import com.kas.mq.impl.MqContextConnection;
 import com.kas.mq.impl.messages.IMqMessage;
-import com.kas.mq.internal.EMqCode;
-import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqRequestFactory;
 
 /**
@@ -34,7 +32,7 @@ public class MqServerConnection extends MqContextConnection
   {
     mLogger.debug("MqServerConnection::notifySysState() - IN");
     
-    IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
+    IMqMessage reply = requestReply(request);
     
     mLogger.debug("MqServerConnection::notifySysState() - OUT");
     return reply;
@@ -53,8 +51,7 @@ public class MqServerConnection extends MqContextConnection
     mLogger.debug("MqServerConnection::notifyRepoUpdate() - IN");
     
     IMqMessage request = MqRequestFactory.createRepositoryUpdateMessage(qmgr, queue, added);
-    IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
-    boolean success = reply.getResponse().getCode() == EMqCode.cOkay;
+    boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqServerConnection::notifyRepoUpdate() - OUT");
     return success;
