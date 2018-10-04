@@ -1,10 +1,11 @@
 package com.kas.logging.impl;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.appender.AAppenderConfiguration;
+import com.kas.logging.appender.IAppenderConfiguration;
 
 /**
  * A singleton class for managing logging
@@ -30,7 +31,7 @@ public class LogSystem extends AKasObject
   /**
    * Name to {@link IAppender} map
    */
-  private HashMap<String, IAppender> mAppenders;
+  private Map<String, IAppender> mAppenders;
   
   /**
    * Get the instance of the {@link LogSystem}
@@ -45,7 +46,8 @@ public class LogSystem extends AKasObject
    */
   private LogSystem()
   {
-   mConfig = new LoggingConfiguration();
+    mConfig = new LoggingConfiguration();
+    mAppenders = new ConcurrentHashMap<String, IAppender>();
   }
   
   /**
@@ -72,7 +74,7 @@ public class LogSystem extends AKasObject
     if (!mConfig.isInitialized())
       mConfig.init();
     
-    AAppenderConfiguration config = mConfig.getAppenderConfig(requestorClass.getName());
+    IAppenderConfiguration config = mConfig.getAppenderConfig(requestorClass.getName());
     IAppender appender = null;
     if (config != null)
     {
@@ -80,6 +82,7 @@ public class LogSystem extends AKasObject
       if (appender == null)
       {
          appender = config.createAppender();
+         appender.init();
          mAppenders.put(config.getName(), appender);
       }
     }

@@ -9,9 +9,7 @@ import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
 import com.kas.logging.appender.AAppenderConfiguration;
 import com.kas.logging.appender.EAppenderType;
-import com.kas.logging.appender.cons.StderrAppenderConfiguration;
-import com.kas.logging.appender.cons.StdoutAppenderConfiguration;
-import com.kas.logging.appender.file.FileAppenderConfiguration;
+import com.kas.logging.appender.IAppenderConfiguration;
 /**
  * The logging configuration
  * 
@@ -32,7 +30,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   /**
    * Configured appenders
    */
-  private Map<String, AAppenderConfiguration> mAppenderConfigs = new ConcurrentHashMap<String, AAppenderConfiguration>();
+  private Map<String, IAppenderConfiguration> mAppenderConfigs = new ConcurrentHashMap<String, IAppenderConfiguration>();
   
   /**
    * A set of configuration listener objects.<br>
@@ -68,7 +66,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
    */
   private void refreshAppenderConfigs()
   {
-    Map<String, AAppenderConfiguration> appenderConfigs = new ConcurrentHashMap<String, AAppenderConfiguration>();
+    Map<String, IAppenderConfiguration> appenderConfigs = new ConcurrentHashMap<String, IAppenderConfiguration>();
     
     Properties props = mMainConfig.getSubset(cLogAppenderConfigPrefix, ".type");
     for (Map.Entry<Object, Object> oentry : props.entrySet())
@@ -146,7 +144,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
    * @param requestorClassName The name of the class that created the logger
    * @return the {@link AAppenderConfiguration} that should be used for the appender 
    */
-  public AAppenderConfiguration getAppenderConfig(String requestorClassName)
+  public IAppenderConfiguration getAppenderConfig(String requestorClassName)
   {
     String appenderName = getAppenderName(requestorClassName);
     return mAppenderConfigs.get(appenderName);
