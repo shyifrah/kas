@@ -1,6 +1,8 @@
 package com.kas.logging.appender.file;
 
 import com.kas.logging.appender.AAppenderConfiguration;
+import com.kas.logging.appender.IAppenderConfiguration;
+import com.kas.logging.impl.IAppender;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -170,6 +172,16 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
   public long getAsyncInterval()
   {
     return mAsyncInterval;
+  }
+  
+  /**
+   * Create an appender that uses this {@link IAppenderConfiguration} object
+   * 
+   * @return a new {@link IAppender} that is associated with this {@link IAppenderConfiguration}
+   */
+  public IAppender createAppender()
+  {
+    return new FileAppender(this);
   }
   
   /**

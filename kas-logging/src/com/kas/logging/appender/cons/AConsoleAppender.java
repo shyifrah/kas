@@ -8,16 +8,19 @@ import com.kas.logging.appender.AAppender;
 import com.kas.logging.appender.file.FileAppenderConfiguration;
 
 /**
- * A console appender
+ * A console appender.<br>
+ * <br>
+ * This class is abstract so it won't be instantiated, but it doesn't really have
+ * an abstract methods. 
  * 
  * @author Pippo
  */
-public class ConsoleAppender extends AAppender
+public abstract class AConsoleAppender extends AAppender
 {
   /**
    * The appender's configuration
    */
-  protected ConsoleAppenderConfiguration mConfig = null;
+  protected AConsoleAppenderConfiguration mConfig = null;
   
   /**
    * The print stream to which messages are written
@@ -27,12 +30,12 @@ public class ConsoleAppender extends AAppender
   /**
    * Construct the console appender
    * 
-   * @param cac The {@link ConsoleAppenderConfiguration}
+   * @param cac The {@link AConsoleAppenderConfiguration}
    * @param pstream The {@link PrintStream} to which messages are directed
    */
-  protected ConsoleAppender(ConsoleAppenderConfiguration cac, PrintStream pstream)
+  protected AConsoleAppender(AConsoleAppenderConfiguration cac, PrintStream pstream)
   {
-    mConfig      = cac;
+    mConfig = cac;
     mPrintStream = pstream;
   }
   

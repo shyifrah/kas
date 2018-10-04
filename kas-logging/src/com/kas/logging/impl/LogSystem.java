@@ -4,6 +4,7 @@ import java.util.HashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.appender.AAppenderConfiguration;
 
 /**
  * A singleton class for managing logging
@@ -71,14 +72,15 @@ public class LogSystem extends AKasObject
     if (!mConfig.isInitialized())
       mConfig.init();
     
-    String name = mConfig.getAppenderName(requestorClass.getName());
+    AAppenderConfiguration config = mConfig.getAppenderConfig(requestorClass.getName());
     IAppender appender = null;
-    if (name != null)
+    if (config != null)
     {
-      appender = mAppenders.get(name);
+      appender = mAppenders.get(config.getName());
       if (appender == null)
       {
-         
+         appender = config.createAppender();
+         mAppenders.put(config.getName(), appender);
       }
     }
     return appender;

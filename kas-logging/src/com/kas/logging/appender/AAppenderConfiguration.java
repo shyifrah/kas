@@ -2,9 +2,9 @@ package com.kas.logging.appender;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.logging.ELogLevel;
+import com.kas.logging.impl.IAppender;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -12,7 +12,7 @@ import com.kas.logging.impl.LoggingConfiguration;
  * 
  * @author Pippo
  */
-public abstract class AAppenderConfiguration extends AKasObject implements IBaseListener
+public abstract class AAppenderConfiguration extends AKasObject implements IAppenderConfiguration
 {
   static protected final String cLogConfigPrefix  = "kas.logging.";
   static protected final String cLogAppenderConfigPrefix = cLogConfigPrefix + "appender."; 
@@ -73,6 +73,16 @@ public abstract class AAppenderConfiguration extends AKasObject implements IBase
   }
 
   /**
+   * Get the appender's name
+   * 
+   * @return the name associated with this appender's configuration
+   */
+  public String getName()
+  {
+    return mName;
+  }
+
+  /**
    * Get the appender's state
    * 
    * @return {@code true} if the appender is enabled <b>and</b> logging is enabled. {@code false} otherwise
@@ -91,6 +101,13 @@ public abstract class AAppenderConfiguration extends AKasObject implements IBase
   {
     return mLogLevel;
   }
+  
+  /**
+   * Create an appender that uses this {@link IAppenderConfiguration} object
+   * 
+   * @return a new {@link IAppender} that is associated with this {@link IAppenderConfiguration}
+   */
+  public abstract IAppender createAppender();
   
   /**
    * Returns the {@link AAppenderConfiguration} string representation.

@@ -5,14 +5,14 @@ package com.kas.logging.appender.cons;
  * 
  * @author Pippo
  */
-public class StdoutAppender extends ConsoleAppender
+public class StdoutAppender extends AConsoleAppender
 {
   /**
-   * Construct STDOUT appender specifying the {@link ConsoleAppenderConfiguration} object
+   * Construct STDOUT appender specifying the {@link AConsoleAppenderConfiguration} object
    * 
-   * @param cac The {@link ConsoleAppenderConfiguration}
+   * @param cac The {@link AConsoleAppenderConfiguration}
    */
-  public StdoutAppender(ConsoleAppenderConfiguration cac)
+  public StdoutAppender(AConsoleAppenderConfiguration cac)
   {
     super(cac, System.out);
   }

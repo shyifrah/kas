@@ -109,7 +109,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
    * @param requestorClassName The name of the class that created the logger
    * @return the name of the appenders associated with this class/package, or {@code null} if none could be found
    */
-  public String getAppenderName(String requestorClassName)
+  private String getAppenderName(String requestorClassName)
   {
     String loggerName = requestorClassName;
     String appenderName = null;
@@ -141,6 +141,18 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   }
   
   /**
+   * Get appender's configuration by requestor class name
+   * 
+   * @param requestorClassName The name of the class that created the logger
+   * @return the {@link AAppenderConfiguration} that should be used for the appender 
+   */
+  public AAppenderConfiguration getAppenderConfig(String requestorClassName)
+  {
+    String appenderName = getAppenderName(requestorClassName);
+    return mAppenderConfigs.get(appenderName);
+  }
+  
+  /**
    * Get logging configuration status
    * 
    * @return {@code true} if logging is enabled, {@code false} otherwise
@@ -160,7 +172,6 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   public synchronized void register(IBaseListener listener)
   {
     mListeners.add(listener);
-    listener.refresh();
   }
   
   /**
