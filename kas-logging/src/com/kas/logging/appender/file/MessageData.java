@@ -5,6 +5,7 @@ import com.kas.infra.base.TimeStamp;
 import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.appender.AAppender;
+import com.kas.logging.impl.FileAppenderConfiguration;
 
 /**
  * A message descriptor

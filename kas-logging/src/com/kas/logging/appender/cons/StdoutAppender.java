@@ -1,5 +1,7 @@
 package com.kas.logging.appender.cons;
 
+import com.kas.logging.impl.AConsoleAppenderConfiguration;
+
 /**
  * STDOUT appender
  * 
