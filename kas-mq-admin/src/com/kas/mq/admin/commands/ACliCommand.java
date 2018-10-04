@@ -3,6 +3,7 @@ package com.kas.mq.admin.commands;
 import java.util.Scanner;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.MqContext;
 
@@ -70,14 +71,28 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   }
   
   /**
-   * Reading a command (one line) from STDIN and return it as a queue of tokens.
+   * Reading a command (a single line) from STDIN and return it as a queue of tokens.<br>
+   * The read command is clear-text.
    * 
-   * @return a queue in which each element is a token from the read line
+   * @param prompt The prompt message to print to the user
+   * @return a {@link TokenDeque} containing command's tokens 
    */
-  protected TokenDeque read(String message)
+  protected TokenDeque readClear(String prompt)
   {
-    write(message);
-    String input = mScanner.nextLine();
+    String input = ConsoleUtils.readClearText(prompt);
+    return new TokenDeque(input);
+  }
+  
+  /**
+   * Reading a command (a single line) from STDIN and return it as a queue of tokens.<br>
+   * The read command is masked text.
+   * 
+   * @param prompt The prompt message to print to the user
+   * @return a {@link TokenDeque} containing command's tokens 
+   */
+  protected TokenDeque readMasked(String prompt)
+  {
+    String input = ConsoleUtils.readMaskedText(prompt);
     return new TokenDeque(input);
   }
   

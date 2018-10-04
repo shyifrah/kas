@@ -127,7 +127,7 @@ public class ConnectCommand extends ACliCommand
       return false;
     }
     
-    TokenDeque input = read("Enter user name: ");
+    TokenDeque input = readClear("Enter user name: ");
     String username = input.poll();
     String extra = input.poll();
     if ((username == null) || (username.length() == 0))
@@ -151,7 +151,7 @@ public class ConnectCommand extends ACliCommand
       return false;
     }
     
-    input = read("Enter password: ");
+    input = readMasked("Enter password: ");
     String password = input.getOriginalString();
     
     try

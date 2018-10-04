@@ -6,6 +6,7 @@ import java.util.Scanner;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.AKasMqAppl;
 import com.kas.mq.IKasMqAppl;
@@ -21,6 +22,7 @@ import com.kas.mq.impl.MqContext;
 public class KasMqAdmin extends AKasMqAppl 
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
+  static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
   
   /**
    * A {@link MqContext} which will act as the client
@@ -92,14 +94,14 @@ public class KasMqAdmin extends AKasMqAppl
     try
     {
       scanner = new Scanner(System.in);
-      TokenDeque command = read(scanner);
+      TokenDeque command = readClear(cAdminPrompt);
       boolean stop = false;
       while (!stop)
       {
         stop = process(scanner, command);
         if (!stop)
         {
-          command = read(scanner);
+          command = readClear(cAdminPrompt);
         }
       }
     }
@@ -155,25 +157,11 @@ public class KasMqAdmin extends AKasMqAppl
   }
   
   /**
-   * Reading a command (one line) from STDIN and return it as a queue of tokens.
-   * 
-   * @param scanner The {@link Scanner} object associated with STDIN
-   * 
-   * @return a queue in which each element is a token from the read line
-   */
-  private TokenDeque read(Scanner scanner)
-  {
-    write("KAS/MQ Admin> ");
-    String cmd = scanner.nextLine();
-    return new TokenDeque(cmd);
-  }
-  
-  /**
    * Writing a message to STDOUT.
    * 
    * @param message The message to print
    */
-  private void write(String message)
+  protected void write(String message)
   {
     System.out.print(message);
   }
@@ -183,9 +171,35 @@ public class KasMqAdmin extends AKasMqAppl
    * 
    * @param message The message to print
    */
-  private void writeln(String message)
+  protected void writeln(String message)
   {
     System.out.println(message);
+  }
+  
+  /**
+   * Reading a command (a single line) from STDIN and return it as a queue of tokens.<br>
+   * The read command is clear-text.
+   * 
+   * @param prompt The prompt message to print to the user
+   * @return a {@link TokenDeque} containing command's tokens 
+   */
+  protected TokenDeque readClear(String prompt)
+  {
+    String input = ConsoleUtils.readClearText(prompt);
+    return new TokenDeque(input);
+  }
+  
+  /**
+   * Reading a command (a single line) from STDIN and return it as a queue of tokens.<br>
+   * The read command is masked text.
+   * 
+   * @param prompt The prompt message to print to the user
+   * @return a {@link TokenDeque} containing command's tokens 
+   */
+  protected TokenDeque readMasked(String prompt)
+  {
+    String input = ConsoleUtils.readMaskedText(prompt);
+    return new TokenDeque(input);
   }
   
   /**
