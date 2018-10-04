@@ -2,9 +2,9 @@ package com.kas.logging.appender;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.logging.ELogLevel;
+import com.kas.logging.impl.IAppender;
 import com.kas.logging.impl.LoggingConfiguration;
 
 /**
@@ -12,10 +12,10 @@ import com.kas.logging.impl.LoggingConfiguration;
  * 
  * @author Pippo
  */
-public abstract class AAppenderConfiguration extends AKasObject implements IBaseListener
+public abstract class AAppenderConfiguration extends AKasObject implements IAppenderConfiguration
 {
-  static protected final String cLoggingConfigPrefix  = "kas.logging.";
-  static protected final String cConfigAppenderPrefix = cLoggingConfigPrefix + "appender."; 
+  static protected final String cLogConfigPrefix  = "kas.logging.";
+  static protected final String cLogAppenderConfigPrefix = cLogConfigPrefix + "appender."; 
   
   static final boolean   cDefaultEnabled  = true;
   static final ELogLevel cDefaultLogLevel = ELogLevel.INFO;
@@ -62,14 +62,24 @@ public abstract class AAppenderConfiguration extends AKasObject implements IBase
    */
   public void refresh()
   {
-    mEnabled        = sMainConfig.getBoolProperty  ( cLoggingConfigPrefix + "appender." + mName + ".enabled" , mEnabled         );
-    String logLevel = sMainConfig.getStringProperty( cLoggingConfigPrefix + "appender." + mName + ".logLevel", mLogLevel.name() );
+    mEnabled        = sMainConfig.getBoolProperty  ( cLogAppenderConfigPrefix + mName + ".enabled" , mEnabled         );
+    String logLevel = sMainConfig.getStringProperty( cLogAppenderConfigPrefix + mName + ".logLevel", mLogLevel.name() );
     
     try
     {
       mLogLevel = ELogLevel.valueOf(logLevel);
     }
     catch(IllegalArgumentException e) {}
+  }
+
+  /**
+   * Get the appender's name
+   * 
+   * @return the name associated with this appender's configuration
+   */
+  public String getName()
+  {
+    return mName;
   }
 
   /**
@@ -91,6 +101,13 @@ public abstract class AAppenderConfiguration extends AKasObject implements IBase
   {
     return mLogLevel;
   }
+  
+  /**
+   * Create an appender that uses this {@link IAppenderConfiguration} object
+   * 
+   * @return a new {@link IAppender} that is associated with this {@link IAppenderConfiguration}
+   */
+  public abstract IAppender createAppender();
   
   /**
    * Returns the {@link AAppenderConfiguration} string representation.

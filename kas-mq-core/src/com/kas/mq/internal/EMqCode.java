@@ -3,7 +3,7 @@ package com.kas.mq.internal;
 import com.kas.infra.base.IObject;
 
 /**
- * This enum is used to categorize administrative messages
+ * This enum is used to differentiate between the different response codes
  * 
  * @author Pippo
  */

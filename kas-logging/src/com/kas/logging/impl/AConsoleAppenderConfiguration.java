@@ -1,21 +1,25 @@
-package com.kas.logging.appender.cons;
+package com.kas.logging.impl;
 
 import com.kas.logging.appender.AAppenderConfiguration;
-import com.kas.logging.impl.LoggingConfiguration;
+import com.kas.logging.appender.IAppenderConfiguration;
+import com.kas.logging.appender.cons.AConsoleAppender;
 
 /**
- * The {@link ConsoleAppender} configuration object.
+ * The {@link AConsoleAppender} configuration object.
  * 
  * @author Pippo
  */
-public class ConsoleAppenderConfiguration extends AAppenderConfiguration
+public abstract class AConsoleAppenderConfiguration extends AAppenderConfiguration
 {
   /**
-   * Construct the appender's configuration, providing the appender's name and the {@link LoggingConfiguration}
+   * Construct the appender's configuration, providing the {@link LoggingConfiguration}
+   * 
+   * @param name The name of the appender
+   * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public ConsoleAppenderConfiguration(String appenderName, LoggingConfiguration loggingConfig)
+  AConsoleAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
-    super(appenderName, loggingConfig);
+    super(name, loggingConfig);
   }
   
   /**
@@ -32,7 +36,14 @@ public class ConsoleAppenderConfiguration extends AAppenderConfiguration
   }
   
   /**
-   * Returns the {@link ConsoleAppenderConfiguration} string representation.
+   * Create an appender that uses this {@link IAppenderConfiguration} object.
+   * 
+   * @return a new {@link IAppender} that is associated with this {@link IAppenderConfiguration}
+   */
+  public abstract IAppender createAppender();
+  
+  /**
+   * Returns the {@link AConsoleAppenderConfiguration} string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation

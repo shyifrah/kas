@@ -13,6 +13,7 @@ import com.kas.infra.logging.ELogLevel;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.appender.AAppender;
+import com.kas.logging.impl.FileAppenderConfiguration;
 
 /**
  * The Appender that responsible for writing to the log file
@@ -51,7 +52,7 @@ public class FileAppender extends AAppender implements IMessageDataWriter
   /**
    * The name of the log file
    */
-  private String mFileName = FileAppenderConfiguration.cDefaultLogFileName;
+  private String mFileName = "kas.log";
   
   /**
    * The {@link File} referencing the log file
@@ -234,7 +235,7 @@ public class FileAppender extends AAppender implements IMessageDataWriter
    * 
    * @return {@code true} if the {@link BufferedWriter#flush()} was called, {@code false} otherwise
    * 
-   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getFlushRate()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getFlushRate()
    */
   private boolean flush()
   {
@@ -260,9 +261,9 @@ public class FileAppender extends AAppender implements IMessageDataWriter
    * 
    * @throws IOException if an I/O error occurs
    * 
-   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getArchiveTestSizeRate()
-   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getArchiveMaxGenerations()
-   * @see com.kas.logging.appender.file.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveTestSizeRate()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxGenerations()
+   * @see com.kas.logging.impl.FileAppenderConfiguration#getArchiveMaxFileSizeMb()
    */
   private void archive() throws IOException
   {

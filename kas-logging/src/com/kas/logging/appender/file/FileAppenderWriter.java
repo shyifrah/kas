@@ -2,6 +2,7 @@ package com.kas.logging.appender.file;
 
 import java.util.Queue;
 import com.kas.infra.base.AKasObject;
+import com.kas.logging.impl.FileAppenderConfiguration;
 
 /**
  * Writer thread.<br>

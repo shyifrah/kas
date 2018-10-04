@@ -1,25 +1,18 @@
 package com.kas.logging.impl;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.config.IBaseListener;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.appender.cons.ConsoleAppender;
-import com.kas.logging.appender.cons.ConsoleAppenderConfiguration;
-import com.kas.logging.appender.cons.StderrAppender;
-import com.kas.logging.appender.cons.StderrAppenderConfiguration;
-import com.kas.logging.appender.cons.StdoutAppender;
-import com.kas.logging.appender.cons.StdoutAppenderConfiguration;
-import com.kas.logging.appender.file.FileAppender;
-import com.kas.logging.appender.file.FileAppenderConfiguration;
+import com.kas.logging.appender.IAppenderConfiguration;
 
 /**
  * A singleton class for managing logging
  * 
  * @author Pippo
  */
-public class LogSystem extends AKasObject implements IBaseListener
+public class LogSystem extends AKasObject
 {
   static public final String cFileAppenderName   = "file";
   static public final String cStdoutAppenderName = "stdout";
@@ -38,12 +31,7 @@ public class LogSystem extends AKasObject implements IBaseListener
   /**
    * Name to {@link IAppender} map
    */
-  private HashMap<String, IAppender> mAppenders;
-  
-  /**
-   * An indicator whether appenders were loaded or not
-   */
-  private boolean mAppendersLoaded;
+  private Map<String, IAppender> mAppenders;
   
   /**
    * Get the instance of the {@link LogSystem}
@@ -58,10 +46,8 @@ public class LogSystem extends AKasObject implements IBaseListener
    */
   private LogSystem()
   {
-    mAppenders = new HashMap<String, IAppender>();
-    mAppendersLoaded = false;
     mConfig = new LoggingConfiguration();
-    mConfig.register(this);
+    mAppenders = new ConcurrentHashMap<String, IAppender>();
   }
   
   /**
@@ -73,15 +59,7 @@ public class LogSystem extends AKasObject implements IBaseListener
   {
     return mConfig;
   }
-  
-  /**
-   * Configuration has been refreshed
-   */
-  public void refresh()
-  {
-    /// TODO : reloadAppenders();
-  }
-  
+
   /**
    * Get an appender by requestor class.<br>
    * <br>
@@ -96,37 +74,19 @@ public class LogSystem extends AKasObject implements IBaseListener
     if (!mConfig.isInitialized())
       mConfig.init();
     
-    if (!mAppendersLoaded)
-      load();
-    
-    String name = mConfig.getAppenderName(requestorClass.getName());
-    return mAppenders.get(name);
-  }
-
-  /**
-   * Load all available appenders and place them in the map.
-   */
-  private synchronized void load()
-  {
-    FileAppenderConfiguration fac = new FileAppenderConfiguration(mConfig);
-    mConfig.register(fac);
-    FileAppender fa = new FileAppender(fac);
-    fa.init();
-    mAppenders.put(cFileAppenderName, fa);
-    
-    ConsoleAppenderConfiguration soac = new StdoutAppenderConfiguration(mConfig);
-    mConfig.register(soac);
-    ConsoleAppender stdout = new StdoutAppender(soac);
-    stdout.init();
-    mAppenders.put(cStdoutAppenderName, stdout);
-    
-    ConsoleAppenderConfiguration seac = new StderrAppenderConfiguration(mConfig);
-    mConfig.register(seac);
-    ConsoleAppender stderr = new StderrAppender(seac);
-    stderr.init();
-    mAppenders.put(cStderrAppenderName, stderr);
-    
-    mAppendersLoaded = true;
+    IAppenderConfiguration config = mConfig.getAppenderConfig(requestorClass.getName());
+    IAppender appender = null;
+    if (config != null)
+    {
+      appender = mAppenders.get(config.getName());
+      if (appender == null)
+      {
+         appender = config.createAppender();
+         appender.init();
+         mAppenders.put(config.getName(), appender);
+      }
+    }
+    return appender;
   }
   
   /**
