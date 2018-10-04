@@ -459,6 +459,7 @@ public class MqLocalQueue extends MqQueue
       sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
       sb.append("  Accessed...: ").append(getLastAccess()).append('\n');
       sb.append("  Threshold..: ").append(mThreshold).append('\n');
+      sb.append("  Backup.....: ").append(mBackup).append('\n');
       sb.append("  Messages...: ").append(size()).append('\n');
     }
     return sb.toString();
@@ -493,6 +494,7 @@ public class MqLocalQueue extends MqQueue
     sb.append(name()).append("(\n")
       .append(pad).append("  Manager=").append(mManager).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
+      .append(pad).append("  Backup=").append(mBackup).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
       .append(pad).append("  LastAccess=(\n")
       .append(pad).append("    By=").append(mLastAccessUser).append("\n")
