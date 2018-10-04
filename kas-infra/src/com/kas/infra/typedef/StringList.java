@@ -14,7 +14,7 @@ public class StringList extends ArrayList<String> implements IObject
   private static final long serialVersionUID = 1L;
 
   /**
-   * Returns the {@link TokenDeque} simple class name enclosed with chevrons.
+   * Returns the {@link StringList} simple class name enclosed with chevrons.
    * 
    * @return class name enclosed with chevrons.
    * 
