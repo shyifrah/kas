@@ -1,9 +1,8 @@
-package com.kas.logging.appender.cons;
+package com.kas.logging.impl;
 
 import com.kas.logging.appender.AAppenderConfiguration;
 import com.kas.logging.appender.IAppenderConfiguration;
-import com.kas.logging.impl.IAppender;
-import com.kas.logging.impl.LoggingConfiguration;
+import com.kas.logging.appender.cons.AConsoleAppender;
 
 /**
  * The {@link AConsoleAppender} configuration object.
@@ -18,7 +17,7 @@ public abstract class AConsoleAppenderConfiguration extends AAppenderConfigurati
    * @param name The name of the appender
    * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public AConsoleAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
+  AConsoleAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
     super(name, loggingConfig);
   }

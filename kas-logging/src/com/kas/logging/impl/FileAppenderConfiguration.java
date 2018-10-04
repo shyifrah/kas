@@ -1,9 +1,8 @@
-package com.kas.logging.appender.file;
+package com.kas.logging.impl;
 
 import com.kas.logging.appender.AAppenderConfiguration;
 import com.kas.logging.appender.IAppenderConfiguration;
-import com.kas.logging.impl.IAppender;
-import com.kas.logging.impl.LoggingConfiguration;
+import com.kas.logging.appender.file.FileAppender;
 
 /**
  * The {@link FileAppender} configuration object.
@@ -67,9 +66,10 @@ public class FileAppenderConfiguration extends AAppenderConfiguration
    * @param name The name of the appender
    * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public FileAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
+  FileAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
     super(name, loggingConfig);
+    refresh();
   }
   
   /**

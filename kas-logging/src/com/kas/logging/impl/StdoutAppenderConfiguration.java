@@ -1,15 +1,14 @@
-package com.kas.logging.appender.cons;
+package com.kas.logging.impl;
 
 import com.kas.logging.appender.IAppenderConfiguration;
-import com.kas.logging.impl.IAppender;
-import com.kas.logging.impl.LoggingConfiguration;
+import com.kas.logging.appender.cons.StdoutAppender;
 
 /**
- * A STDERR appender configuration
+ * A STDOUT appender configuration
  * 
  * @author Pippo
  */
-public class StderrAppenderConfiguration extends AConsoleAppenderConfiguration
+public class StdoutAppenderConfiguration extends AConsoleAppenderConfiguration
 {
   /**
    * Construct the appender's configuration, providing the {@link LoggingConfiguration}
@@ -17,7 +16,7 @@ public class StderrAppenderConfiguration extends AConsoleAppenderConfiguration
    * @param name The name of the appender
    * @param loggingConfig The {@link LoggingConfiguration}
    */
-  public StderrAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
+  StdoutAppenderConfiguration(String name, LoggingConfiguration loggingConfig)
   {
     super(name, loggingConfig);
   }
@@ -29,6 +28,6 @@ public class StderrAppenderConfiguration extends AConsoleAppenderConfiguration
    */
   public IAppender createAppender()
   {
-    return new StderrAppender(this);
+    return new StdoutAppender(this);
   }
 }
