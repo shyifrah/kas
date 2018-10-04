@@ -168,7 +168,8 @@ public class Messenger extends AKasObject implements IMessenger
     }
     catch (SocketException e)
     {
-      sLogger.warn("Connection was reset by remote peer"); 
+      sLogger.diag("Connection was reset by remote peer: ", e);
+      throw e;
     }
     catch (KasException e)
     {
