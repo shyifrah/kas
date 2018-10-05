@@ -49,6 +49,9 @@ public class CliCommandFactory
     if (GetCommand.sCommandVerbs.contains(verb))
       return new GetCommand(scanner, cmdWords, client);
     
+    if (TerminateCommand.sCommandVerbs.contains(verb))
+      return new TerminateCommand(scanner, cmdWords, client);
+    
     if (ShutdownCommand.sCommandVerbs.contains(verb))
       return new ShutdownCommand(scanner, cmdWords, client);
     
