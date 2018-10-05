@@ -1,6 +1,7 @@
 package com.kas.mq.impl;
 
 import com.kas.infra.base.Properties;
+import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -71,20 +72,65 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::queryServer() - IN");
     
-    IMqMessage request = MqRequestFactory.createQueryServerRequest(qType, qProps);
-    IMqMessage reply = requestReply(request);
-    
-    String resp;
-    if (reply == null)
-      resp = "Failed to receive reply for latest request: " + request.getRequestType().toString();
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
     else
-      resp = reply.getResponse().getDesc();
-    logInfoAndSetResponse(resp);
+    {
+      IMqMessage request = MqRequestFactory.createQueryServerRequest(qType, qProps);
+      reply = put(IMqConstants.cAdminQueueName, request);
+      String resp;
+      if (reply != null)
+      {
+        resp = reply.getResponse().getDesc();
+      }
+      else
+      {
+        resp = "Failed to receive reply for latest request: " + request.getRequestType().toString();
+      }
+      logInfoAndSetResponse(resp);
+    }
     
     mLogger.debug("MqContextConnection::queryServer() - OUT");
     return (MqStringMessage)reply;
   }
 
+  /**
+   * Terminate a connection
+   * 
+   * @param id The connection ID to terminate
+   * @return the {@code true} if connection was terminated, {@code false} otherwise
+   */
+  public boolean termConn(UniqueId id)
+  {
+    mLogger.debug("MqContextConnection::termConn() - IN");
+    
+    IMqMessage request = MqRequestFactory.createTermConnRequest(id);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::termConn() - OUT");
+    return success;
+  }
+  
+  /**
+   * Terminate a session
+   * 
+   * @param id The session ID to terminate
+   * @return the {@code true} if session was terminated, {@code false} otherwise
+   */
+  public boolean termSess(UniqueId id)
+  {
+    mLogger.debug("MqContextConnection::termSess() - IN");
+    
+    IMqMessage request = MqRequestFactory.createTermSessRequest(id);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::termSess() - OUT");
+    return success;
+  }
+  
   /**
    * Mark the KAS/MQ server it should shutdown
    * 

@@ -3,6 +3,7 @@ package com.kas.mq.impl;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
@@ -124,7 +125,7 @@ public final class MqContext extends AKasObject
    * 
    * @param queue The queue name to delete.
    * @param force Should the queue be deleted even if its not empty.
-   * @return the {@code true} if queue was deleted, {@code false} otherwise
+   * @return {@code true} if queue was deleted, {@code false} otherwise
    */
   public boolean deleteQueue(String queue, boolean force)
   {
@@ -141,6 +142,38 @@ public final class MqContext extends AKasObject
     }
     
     mLogger.debug("MqContext::deleteQueue() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
+   * Terminate connection
+   * 
+   * @param id The connection's {@link UniqueId} to terminate
+   * @return {@code true} if connection was terminated, {@code false} otherwise
+   */
+  public boolean termConn(UniqueId id)
+  {
+    mLogger.debug("MqContext::termConn() - IN, ConnId=" + id);
+    
+    boolean success = mConnection.termConn(id);
+    
+    mLogger.debug("MqContext::termConn() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
+   * Terminate session
+   * 
+   * @param id The session's {@link UniqueId} to terminate
+   * @return {@code true} if session was terminated, {@code false} otherwise
+   */
+  public boolean termSess(UniqueId id)
+  {
+    mLogger.debug("MqContext::termSess() - IN, SessId=" + id);
+    
+    boolean success = mConnection.termSess(id);
+    
+    mLogger.debug("MqContext::termSess() - OUT, Returns=" + success);
     return success;
   }
   
@@ -225,7 +258,7 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Get last response from last call.
+   * Get response from last call.
    * 
    * @return the response got from the last {@link MqConnection} call
    */
