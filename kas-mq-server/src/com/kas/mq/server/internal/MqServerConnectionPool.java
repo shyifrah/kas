@@ -86,6 +86,22 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   }
   
   /**
+   * Release the connection associated with the specified {@code id}
+   * 
+   * @param id {@link UniqueId} of the {@link MqServerConnection}
+   */
+  public void release(UniqueId id)
+  {
+    mLogger.debug("MqServerConnectionPool::release() - IN");
+    
+    MqServerConnection conn = mConnections.remove(id);
+    conn.disconnect();
+    conn = null;
+    
+    mLogger.debug("MqServerConnectionPool::release() - OUT");
+  }
+  
+  /**
    * Closing all connections and clearing the map
    */
   public void shutdown()
