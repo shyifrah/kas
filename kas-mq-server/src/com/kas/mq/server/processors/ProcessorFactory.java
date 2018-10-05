@@ -54,6 +54,12 @@ public class ProcessorFactory
       case cGet:
         processor = new MessageGetProcessor(request, controller, repository);
         break;
+      case cTermConn:
+        processor = new TermConnectionProcessor(request, controller, repository);
+        break;
+      case cTermSess:
+        processor = new TermSessionProcessor(request, controller, repository);
+        break;
       case cUnknown:
       default:
         processor = new MessagePutProcessor(request, controller, repository);
