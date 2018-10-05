@@ -17,7 +17,6 @@ public class ExitCommand extends ACliCommand
   static
   {
     sCommandVerbs.add("EXIT");
-    sCommandVerbs.add("TERM");
     sCommandVerbs.add("QUIT");
   }
   
@@ -52,7 +51,7 @@ public class ExitCommand extends ACliCommand
     writeln(" ");
     writeln("Format: ");
     writeln(" ");
-    writeln("     >>--- EXIT|TERM|QUIT ---><");
+    writeln("     >>--- EXIT|QUIT ---><");
     writeln(" ");
     writeln("Description: ");
     writeln(" ");
