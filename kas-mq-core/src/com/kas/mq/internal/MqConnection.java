@@ -112,7 +112,7 @@ public class MqConnection extends AKasObject implements IMqConnection
     
     if (!isConnected())
     {
-      logInfoAndSetResponse("Not connected");
+      logInfoAndSetResponse("Not connected to host");
     }
     else
     {
