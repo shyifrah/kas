@@ -1,6 +1,7 @@
 package com.kas.mq.internal;
 
 import com.kas.infra.base.Properties;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
@@ -53,6 +54,22 @@ public class MqRequestFactory
     message.setRequestType(ERequestType.cQueryServer);
     message.setIntProperty(IMqConstants.cKasPropertyQrysQueryType, qType.ordinal());
     message.setSubset(qProps);
+    return message;
+  }
+  
+  static public MqMessage createTermConnRequest(UniqueId id)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cTermConn);
+    message.setStringProperty(IMqConstants.cKasPropertyTermConnId, id.toString());
+    return message;
+  }
+  
+  static public MqMessage createTermSessRequest(UniqueId id)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cTermSess);
+    message.setStringProperty(IMqConstants.cKasPropertyTermSessId, id.toString());
     return message;
   }
   
