@@ -31,7 +31,7 @@ public class QryConnectionCommand extends ACliCommand
 
   /**
    * Display help screen for this command.
-   * Not in use for QUERY SESSION.
+   * Not in use for QUERY CONNECTION.
    */
   public void help()
   {
