@@ -52,7 +52,7 @@ public class HelpCommand extends ACliCommand
     writeln(" ");
     writeln("     >>--- HELP ---+-------------------------------+---><");
     writeln("                   |                               |");
-    writeln("                   +--- EXIT|TERM|QUIT ------------+");
+    writeln("                   +--- EXIT|QUIT -----------------+");
     writeln("                   |                               |");
     writeln("                   +--- CONNECT|CONN --------------+");
     writeln("                   |                               |");
@@ -67,6 +67,8 @@ public class HelpCommand extends ACliCommand
     writeln("                   +--- PUT -----------------------+");
     writeln("                   |                               |");
     writeln("                   +--- GET -----------------------+");
+    writeln("                   |                               |");
+    writeln("                   +--- TERMINATE|TERM ------------+");
     writeln("                   |                               |");
     writeln("                   +--- SHUTDOWN ------------------+");
     writeln(" ");
@@ -112,7 +114,7 @@ public class HelpCommand extends ACliCommand
       writeln(" ");
       writeln("Syntax: ");
       writeln(" ");
-      writeln("     >>---+--- EXIT|TERM|QUIT ------------+---><");
+      writeln("     >>---+--- EXIT|QUIT ------------+---><");
       writeln("          |                               |");
       writeln("          +--- CONNECT|CONN --------------+");
       writeln("          |                               |");
@@ -127,6 +129,8 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- PUT -----------------------+");
       writeln("          |                               |");
       writeln("          +--- GET -----------------------+");
+      writeln("          |                               |");
+      writeln("          +--- TERMINATE|TERM ------------+");
       writeln("          |                               |");
       writeln("          +--- SHUTDOWN ------------------+");
       writeln(" ");
