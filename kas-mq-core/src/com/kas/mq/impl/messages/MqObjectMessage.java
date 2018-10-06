@@ -20,9 +20,9 @@ import com.kas.mq.internal.ABaseBytesMessage;
 public final class MqObjectMessage extends ABaseBytesMessage
 {
   /**
-   * The message body
+   * A cached message body
    */
-  private byte [] mBody;
+  private transient Serializable mCachedBody;
   
   /**
    * Construct a default text message object
@@ -66,7 +66,8 @@ public final class MqObjectMessage extends ABaseBytesMessage
    */
   public void setBody(Serializable body)
   {
-    mBody = Serializer.toByteArray(body);
+    mCachedBody = body;
+    mBody = Serializer.toByteArray(mCachedBody);
   }
   
   /**
@@ -77,8 +78,10 @@ public final class MqObjectMessage extends ABaseBytesMessage
   public Serializable getBody()
   {
     if (mBody == null) return null;
+    if (mCachedBody == null)
+      mCachedBody = Serializer.toSerializable(mBody);
     
-    return Serializer.toSerializable(mBody);
+    return mCachedBody;
   }
   
   /**
