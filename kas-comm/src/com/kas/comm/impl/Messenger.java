@@ -22,7 +22,7 @@ public class Messenger extends AKasObject implements IMessenger
   /**
    * Logger
    */
-  static private ILogger sLogger = LoggerFactory.getLogger(Messenger.class);
+  private ILogger mLogger;
   
   /**
    * Socket used to transfer packets back and forth
@@ -38,8 +38,7 @@ public class Messenger extends AKasObject implements IMessenger
   /**
    * Host and port
    */
-  protected String mHost;
-  protected int    mPort;
+  protected NetworkAddress mAddress;
   
   /**
    * Constructs a {@link Messenger} object using the specified socket, host and port.
@@ -65,10 +64,10 @@ public class Messenger extends AKasObject implements IMessenger
   {
     if (socket == null) throw new IOException("Null socket");
     
+    mLogger = LoggerFactory.getLogger(this.getClass());
+    
     mSocket = socket;
-    NetworkAddress addr = new NetworkAddress(socket);
-    mHost = addr.getHost();
-    mPort = addr.getPort();
+    mAddress = new NetworkAddress(socket);
     
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
@@ -85,7 +84,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public boolean isConnected()
   {
-    return mSocket.isConnected() && !mSocket.isClosed();
+    return mSocket == null ? false : mSocket.isConnected() && !mSocket.isClosed();
   }
   
   /**
@@ -111,15 +110,24 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public void send(IPacket packet) throws IOException
   {
-    sLogger.diag("Messenger::send() - IN");
+    mLogger.diag("Messenger::send() - IN");
     
     if (mOutputStream == null) throw new IOException("Null output stream; Messenger is probably not connected");
     
-    PacketHeader header = packet.createHeader();
-    header.serialize(mOutputStream);
-    packet.serialize(mOutputStream);
+    try
+    {
+      PacketHeader header = packet.createHeader();
+      header.serialize(mOutputStream);
+      packet.serialize(mOutputStream);
+    }
+    catch (SocketException e)
+    {
+      mLogger.diag("Connection was reset: ", e);
+      cleanup();
+      throw e;
+    }
     
-    sLogger.diag("Messenger::send() - OUT");
+    mLogger.diag("Messenger::send() - OUT");
   }
 
   /**
@@ -154,7 +162,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public IPacket receive(int timeout) throws IOException
   {
-    sLogger.diag("Messenger::receive() - IN");
+    mLogger.diag("Messenger::receive() - IN");
     
     if (mInputStream == null) throw new IOException("Null input stream; Messenger is probably not connected");
     
@@ -163,20 +171,21 @@ public class Messenger extends AKasObject implements IMessenger
     {
       mSocket.setSoTimeout(timeout);
       PacketHeader header = new PacketHeader(mInputStream);
-      
       packet = header.read(mInputStream);
     }
     catch (SocketException e)
     {
-      sLogger.diag("Connection was reset by remote peer: ", e);
+      mLogger.diag("Connection was reset: ", e);
+      cleanup();
       throw e;
     }
     catch (KasException e)
     {
-      sLogger.warn("An error occurred while trying to read packet from input stream. Exception: ", e);
+      mLogger.warn("An error occurred while trying to read packet from input stream. Exception: ", e);
+      cleanup();
     }
     
-    sLogger.diag("Messenger::receive() - OUT");
+    mLogger.diag("Messenger::receive() - OUT");
     return packet;
   }
   
@@ -225,15 +234,15 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public void cleanup()
   {
-    sLogger.debug("Messenger::cleanup() - IN");
+    mLogger.debug("Messenger::cleanup() - IN");
     
     if (!isConnected())
     {
-      sLogger.debug("Messenger::cleanup() - Messenger not connected, nothing to cleanup");
+      mLogger.debug("Messenger::cleanup() - Messenger not connected, nothing to cleanup");
     }
     else
     {
-      sLogger.debug("Messenger::cleanup() - Flushing and closing streams, closing the socket...");
+      mLogger.debug("Messenger::cleanup() - Flushing and closing streams, closing the socket...");
       try
       {
         mOutputStream.flush();
@@ -263,7 +272,7 @@ public class Messenger extends AKasObject implements IMessenger
       mSocket = null;
     }
     
-    sLogger.debug("Messenger::cleanup() - OUT");
+    mLogger.debug("Messenger::cleanup() - OUT");
   }
   
   /**
@@ -273,11 +282,7 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public String toString()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append(mHost)
-      .append(':')
-      .append(mPort);
-    return sb.toString();
+    return mAddress.toString();
   }
   
   /**
@@ -293,8 +298,8 @@ public class Messenger extends AKasObject implements IMessenger
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Host=").append(mHost).append("\n")
-      .append(pad).append("  Port=").append(mPort).append("\n")
+      .append(pad).append("  Host=").append(mAddress.getHost()).append("\n")
+      .append(pad).append("  Port=").append(mAddress.getPort()).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }
