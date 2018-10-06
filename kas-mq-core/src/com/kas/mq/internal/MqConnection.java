@@ -94,6 +94,7 @@ public class MqConnection extends AKasObject implements IMqConnection
       sb.append("Exception occurred while trying to connect to [")
         .append(addr).append("]. Exception: ").append(StringUtils.format(e));
       logErrorAndSetResponse(sb.toString());
+      mMessenger.cleanup();
     }
     
     mLogger.debug("MqConnection::connect() - OUT");
@@ -121,7 +122,6 @@ public class MqConnection extends AKasObject implements IMqConnection
       
       logInfoAndSetResponse("Connection terminated with " + addr.toString());
       
-      mMessenger = null;
       mUser = null;
       mSessionId = null;
     }
@@ -183,6 +183,7 @@ public class MqConnection extends AKasObject implements IMqConnection
         sb.append("Exception occurred during login of user [")
           .append(user).append("]. Exception: ").append(StringUtils.format(e));
         logErrorAndSetResponse(sb.toString());
+        mMessenger.cleanup();
       }
     }
     

@@ -83,13 +83,9 @@ public class MqContextConnection extends MqConnection
       reply = put(IMqConstants.cAdminQueueName, request);
       String resp;
       if (reply != null)
-      {
         resp = reply.getResponse().getDesc();
-      }
       else
-      {
-        resp = "Failed to receive reply for latest request: " + request.getRequestType().toString();
-      }
+        resp = "Connection to remote host was lost";
       logInfoAndSetResponse(resp);
     }
     
@@ -155,7 +151,7 @@ public class MqContextConnection extends MqConnection
    */
   protected IMqMessage requestReply(IMqMessage request)
   {
-    mLogger.debug("MqContextConnection::sendAdminRequest() - IN");
+    mLogger.debug("MqContextConnection::requestReply() - IN");
     
     IMqMessage reply = null;
     if (!isConnected())
@@ -167,7 +163,7 @@ public class MqContextConnection extends MqConnection
       reply = put(IMqConstants.cAdminQueueName, request);
     }
     
-    mLogger.debug("MqContextConnection::sendAdminRequest() - OUT");
+    mLogger.debug("MqContextConnection::requestReply() - OUT");
     return reply;
   }
   
@@ -181,7 +177,7 @@ public class MqContextConnection extends MqConnection
    */
   protected boolean requestReplyAndAnalyze(IMqMessage request)
   {
-    mLogger.debug("MqContextConnection::sendAdminRequest() - IN");
+    mLogger.debug("MqContextConnection::requestReplyAndAnalyze() - IN");
     
     boolean success = false;
     if (!isConnected())
@@ -191,20 +187,16 @@ public class MqContextConnection extends MqConnection
     else
     {
       IMqMessage reply = put(IMqConstants.cAdminQueueName, request);
-      String resp;
+      String resp = "Connection to remote host was lost"; // if we get null reply
       if (reply != null)
       {
         success = reply.getResponse().getCode() == EMqCode.cOkay;
         resp = reply.getResponse().getDesc();
       }
-      else
-      {
-        resp = "Failed to receive reply for latest request: " + request.getRequestType().toString();
-      }
       logInfoAndSetResponse(resp);
     }
     
-    mLogger.debug("MqContextConnection::sendAdminRequest() - OUT");
+    mLogger.debug("MqContextConnection::requestReplyAndAnalyze() - OUT");
     return success;
   }
 }
