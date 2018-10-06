@@ -60,7 +60,7 @@ public class TermSessionProcessor extends AProcessor
       }
       else
       {
-        handler.stop();
+        handler.end();
         mDesc = "Session with ID " + mSessionId + " was successfully terminated";
         mCode = EMqCode.cOkay;
       }

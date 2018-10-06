@@ -8,6 +8,7 @@ import java.net.SocketTimeoutException;
 import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
+import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
@@ -92,6 +93,8 @@ public class SessionHandler extends AKasObject implements Runnable
     mLogger.debug("SessionHandler::run() - IN");
     mController.onHandlerStart(this);
     
+    NetworkAddress remoteAddress = mMessenger.getAddress();
+    
     while (isRunning())
     {
       mLogger.debug("SessionHandler::run() - Waiting for messages from client...");
@@ -121,7 +124,7 @@ public class SessionHandler extends AKasObject implements Runnable
       }
       catch (SocketException | EOFException e)
       {
-        mLogger.info("Connection to remote host at " + mMessenger.getAddress() + " was lost");
+        mLogger.info("Connection to remote host at " + remoteAddress + " was lost");
         stop();
       }
       catch (IOException e)
@@ -208,6 +211,14 @@ public class SessionHandler extends AKasObject implements Runnable
     mIsRunning = isRunning;
   }
   
+  /**
+   * Terminate the handler forcefully
+   */
+  public void end()
+  {
+    mMessenger.cleanup();
+  }
+
   /**
    * Get the object's detailed string representation
    * 
