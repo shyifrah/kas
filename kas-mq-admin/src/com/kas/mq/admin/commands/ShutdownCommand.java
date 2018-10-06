@@ -43,20 +43,21 @@ public class ShutdownCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Shutdown the KAS/MQ server");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- SHUTDOWN ---><");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Shutdown the KAS/MQ server.");
     writeln("     If the admin console is not connected to a server, the command will fail.");
+    writeln("     Following the shutdown command, the connection to the KAS/MQ server is terminated.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Shutdown the remote KAS/MQ server:");
     writeln("          KAS/MQ Admin> SHUTDOWN");

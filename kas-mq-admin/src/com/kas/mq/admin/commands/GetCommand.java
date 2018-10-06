@@ -44,20 +44,20 @@ public class GetCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Get a message from queue");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- GET ---+--- queue ---+---><");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Get a message from the specified queue.");
     writeln("     If no message is available, the command will block until one is put to the queue.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Get a message from queue TEMP1Q:");
     writeln("          KAS/MQ Admin> GET TEMP1Q");

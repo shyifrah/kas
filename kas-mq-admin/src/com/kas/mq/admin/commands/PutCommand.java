@@ -45,20 +45,20 @@ public class PutCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Put a text message into queue");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- PUT ---+--- queue ---+---+--- text ---+---><");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     The command will create a text message with a body holding the specified text,");
     writeln("     and then will put it into the specified queue.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Put the text \"shy\" as a message into queue TEMP1Q:");
     writeln("          KAS/MQ Admin> PUT TEMP1Q shy");

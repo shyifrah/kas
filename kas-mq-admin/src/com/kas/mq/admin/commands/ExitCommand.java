@@ -43,19 +43,19 @@ public class ExitCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Terminate KAS/MQ Admin Command Line Interface.");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- EXIT|QUIT ---><");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Terminate KAS/MQ Admin Command Line Interface.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Terminates the current KAS/MQ Admin session:");
     writeln("          KAS/MQ Admin> EXIT");

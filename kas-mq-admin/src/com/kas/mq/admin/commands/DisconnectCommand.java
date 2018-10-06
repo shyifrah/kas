@@ -44,19 +44,19 @@ public class DisconnectCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Disconnect current active connection.");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- DISCONNECT|DISC ---><");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
-    writeln("     Disconnect current active connection. If a connection is not active, the command is simple ignored.");
+    writeln("     Disconnect current active connection. If a connection is not active, the command is simply ignored.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Disconnect current connection:");
     writeln("          KAS/MQ Admin> DISCONNECT");

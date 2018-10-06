@@ -44,16 +44,6 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   public abstract boolean run();
   
   /**
-   * Writing a message to STDOUT.
-   * 
-   * @param message The message to print
-   */
-  protected void write(String message)
-  {
-    System.out.print(message);
-  }
-  
-  /**
    * Writing a message to STDOUT. The message will be followed by a Newline character.
    * 
    * @param message The message to print
@@ -61,6 +51,16 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   protected void writeln(String message)
   {
     System.out.println(message);
+  }
+  
+  /**
+   * Writing a message to STDOUT highlighted in GREEN. The message will be followed by a Newline character.
+   * 
+   * @param message The message to print
+   */
+  protected void writelnGreen(String message)
+  {
+    System.out.println(ConsoleUtils.GREEN + message + ConsoleUtils.RESET);
   }
   
   /**

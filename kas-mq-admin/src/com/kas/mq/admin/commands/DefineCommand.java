@@ -43,17 +43,17 @@ public class DefineCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
-    writeln("     Define a new entity");
+    writeln("     Define a new entity.");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- DEFINE|DEF ---+--- QUEUE|Q ---+---+--- queue ---+---+-----------------+---><");
     writeln("                                                               |                 |");
     writeln("                                                               +--- threshold ---+");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Define a new entity.");
     writeln(" ");
@@ -64,7 +64,7 @@ public class DefineCommand extends ACliCommand
     writeln("     The DEFINE command will fail if a queue with the specified name already exists.");
     writeln("     The threshold is the maximum capacity of the queue.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Define queue TEMP_Q_A:");
     writeln("          KAS/MQ Admin> DEF QUEUE TEMP_Q_A");

@@ -43,19 +43,21 @@ public class TerminateCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Terminate an active session or connection");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- TERMINATE|TERM ---+--- CONNECTION|CONN ---+---+--- connection-id ---+---><");
     writeln("                             |                       |   |                     |");
     writeln("                             +--- SESSION|SESS ------+   +--- session-id ------+");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Terminate an active session or connection.");
+    writeln("     This command is very useful for troubleshooting cases, where you suspect a connection");
+    writeln("     is hung or a session is spinning out of control.");
     writeln(" ");
     writeln("     -- For CONNECTION --");
     writeln("     Terminate the active connection.");
@@ -65,7 +67,7 @@ public class TerminateCommand extends ACliCommand
     writeln("     Terminate the active session.");
     writeln("     Active sessions can be shown via Q SESS command.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Terminate the specified connection");
     writeln("          KAS/MQ Admin> TERM CONN a3a1fa1d-107a-4b73-bb11-7631d65cba13");

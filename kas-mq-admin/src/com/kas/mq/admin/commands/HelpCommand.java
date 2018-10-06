@@ -42,11 +42,11 @@ public class HelpCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Display help information regarding the KAS/MQ Admin Command Line Interface.");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- HELP ---+-------------------------------+---><");
     writeln("                   |                               |");
@@ -70,7 +70,7 @@ public class HelpCommand extends ACliCommand
     writeln("                   |                               |");
     writeln("                   +--- SHUTDOWN ------------------+");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     When invoked with no further arguments, the command will display a short help screen");
     writeln("     detailing all available arguments.");
@@ -78,7 +78,7 @@ public class HelpCommand extends ACliCommand
     writeln("     and if it is, a more detailed screen will be presented, detailing the usage of the specific");
     writeln("     command.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Display general help screen:");
     writeln("          KAS/MQ Admin> HELP");
@@ -106,11 +106,11 @@ public class HelpCommand extends ACliCommand
   {
     if (mCommandArgs.size() == 0)
     {
-      writeln("Purpose: ");
+      writelnGreen("Purpose: ");
       writeln(" ");
       writeln("     Control your KAS/MQ server by connecting to one and issue administrative commands against it.");
       writeln(" ");
-      writeln("Syntax: ");
+      writelnGreen("Syntax: ");
       writeln(" ");
       writeln("     >>---+--- EXIT|QUIT ------------+---><");
       writeln("          |                               |");
@@ -132,13 +132,13 @@ public class HelpCommand extends ACliCommand
       writeln("          |                               |");
       writeln("          +--- SHUTDOWN ------------------+");
       writeln(" ");
-      writeln("Description: ");
+      writelnGreen("Description: ");
       writeln(" ");
       writeln("     Each command has a specific purpose. For help regarding the specific command, type:");
       writeln("          KAS/MQ Admin> HELP nnnnn");
       writeln("     Where 'nnnnn' is a command verb for which you are seeking help for.");
       writeln(" ");
-      writeln("Examples: ");
+      writelnGreen("Examples: ");
       writeln(" ");
       writeln("     Terminate current Admin Command Line Interface:");
       writeln("          KAS/MQ Admin> EXIT");

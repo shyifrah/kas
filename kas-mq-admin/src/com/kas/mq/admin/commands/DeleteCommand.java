@@ -43,17 +43,17 @@ public class DeleteCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
-    writeln("     Define a new queue");
+    writeln("     Delete an existing entity.");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- DELETE ---+--- queue ---+---+-------------+---><");
     writeln("                                       |             |");
     writeln("                                       +--- FORCE ---+");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Delete the specified queue.");
     writeln("     Once a queue is deleted, you cannot undo this operation. All the contents of the queue");
@@ -62,7 +62,7 @@ public class DeleteCommand extends ACliCommand
     writeln("     If the queue is not empty. To ignore the queue contents and delete the queue anyway,");
     writeln("     The user must use the FORCE keyword.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Delete queue TEMP_Q_2DEL:");
     writeln("          KAS/MQ Admin> DELETE TEMP_Q_2DEL");

@@ -43,11 +43,11 @@ public class QueryCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Query entity");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("                                                             +--- BASIC ---+");
     writeln("                                                             |             |");
@@ -70,7 +70,7 @@ public class QueryCommand extends ACliCommand
     writeln("                      |                                                             |");
     writeln("                      |                                      +--- ALL ----------+   |");
     writeln("                      |                                      |                  |   |");
-    writeln("                      +--- CONFIGURATION|CONFIG|CONF|CFG-----+------------------+---+");
+    writeln("                      +--- CONFIGURATION|CONFIG|CONF|CFG ----+------------------+---+");
     writeln("                                                             |                  |");
     writeln("                                                             +--- MQ -----------+");
     writeln("                                                             |                  |");
@@ -78,9 +78,10 @@ public class QueryCommand extends ACliCommand
     writeln("                                                             |                  |");
     writeln("                                                             +--- SERIALIZER ---+");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
-    writeln("     Query entity.");
+    writeln("     Query server's entity.");
+    writeln("     Entity types are listed below.");
     writeln(" ");
     writeln("     -- For QUEUE --");
     writeln("     Provide information about all queues matching the prefix (the default).");
@@ -95,7 +96,7 @@ public class QueryCommand extends ACliCommand
     writeln("     -- For CONFIGURATION --");
     writeln("     Provide the server's active configuration.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Query basic information about all queues matching regexp \\CLIENT.APP.*\\:");
     writeln("          KAS/MQ Admin> QUERY QUEUE CLIENT.APP.*");

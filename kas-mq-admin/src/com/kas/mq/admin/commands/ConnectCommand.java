@@ -45,24 +45,24 @@ public class ConnectCommand extends ACliCommand
       return;
     }
     
-    writeln("Purpose: ");
+    writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Connect to a host - IP address or host name - on a specific port.");
     writeln(" ");
-    writeln("Format: ");
+    writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- CONNECT|CONN ---+--- host ---+---+------------+---><");
     writeln("                           |            |   |            |");
     writeln("                           +--- ip -----+   +--- port ---+");
     writeln(" ");
-    writeln("Description: ");
+    writelnGreen("Description: ");
     writeln(" ");
     writeln("     Connect to the specified host or IP address on the specified port number, or 14560 if no port is specified.");
     writeln("     The host or the IP address are NOT checked for a valid format. However, the command processor does verify");
     writeln("     that the port number has a valid numeric value.");
     writeln("     Once the host and port were validated, the user will be propmpted for its user name and password.");
     writeln(" ");
-    writeln("Examples:");
+    writelnGreen("Examples:");
     writeln(" ");
     writeln("     Connect to host name TLVHOSTA on default port number:");
     writeln("          KAS/MQ Admin> CONNECT TLVHOSTA");
