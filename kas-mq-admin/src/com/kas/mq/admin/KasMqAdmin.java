@@ -2,7 +2,6 @@ package com.kas.mq.admin;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Scanner;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
@@ -90,20 +89,27 @@ public class KasMqAdmin extends AKasMqAppl
     writeln("KAS/MQ Admin Command Processor started");
     writeln(" ");
     
-    Scanner scanner = null;
     try
     {
-      scanner = new Scanner(System.in);
-      TokenDeque command = readClear(cAdminPrompt);
       boolean stop = false;
       while (!stop)
       {
-        stop = process(scanner, command);
-        if (!stop)
-        {
-          command = readClear(cAdminPrompt);
-        }
+        TokenDeque command = readClear(cAdminPrompt);
+        if (command == null)
+          stop = true;
+        else
+          stop = process(command);
       }
+//      TokenDeque command = readClear(cAdminPrompt);
+//      boolean stop = false;
+//      while (!stop)
+//      {
+//        stop = process(command);
+//        if (!stop)
+//        {
+//          command = readClear(cAdminPrompt);
+//        }
+//      }
     }
     catch (NoSuchElementException e)
     {
@@ -114,11 +120,6 @@ public class KasMqAdmin extends AKasMqAppl
       writeln(" ");
       writeln("Exception caught: ");
       e.printStackTrace();
-    }
-    finally
-    {
-      if (scanner != null)
-        scanner.close();
     }
     
     writeln(" ");
@@ -136,7 +137,7 @@ public class KasMqAdmin extends AKasMqAppl
    * @param scanner The scanner, in case further interaction with the user is needed
    * @return {@code true} if an "exit" command was issued, {@code false} otherwise
    */
-  private boolean process(Scanner scanner, TokenDeque cmdWords)
+  private boolean process(TokenDeque cmdWords)
   {
     if (cmdWords.isEmpty() || cmdWords.peek().equals(""))
     {
@@ -145,7 +146,7 @@ public class KasMqAdmin extends AKasMqAppl
     }
     
     String verb = cmdWords.peek();
-    ICliCommand command = CliCommandFactory.newCommand(scanner, cmdWords, mClient);
+    ICliCommand command = CliCommandFactory.newCommand(cmdWords, mClient);
     if (command == null)
     {
       writeln("Unknown command verb: \"" + verb + "\". Type HELP to see available commands");
@@ -185,8 +186,15 @@ public class KasMqAdmin extends AKasMqAppl
    */
   protected TokenDeque readClear(String prompt)
   {
-    String input = ConsoleUtils.readClearText(prompt);
-    return new TokenDeque(input);
+    TokenDeque tdq = null;
+    try
+    {
+      String input = ConsoleUtils.readClearText(prompt);
+      tdq = new TokenDeque(input);
+    }
+    catch (Throwable e) {}
+    
+    return tdq;
   }
   
   /**

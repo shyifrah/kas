@@ -1,6 +1,5 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
@@ -24,13 +23,12 @@ public class TerminateCommand extends ACliCommand
    * Construct a {@link TerminateCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
-   * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected TerminateCommand(Scanner scanner, TokenDeque args, MqContext client)
+  protected TerminateCommand(TokenDeque args, MqContext client)
   {
-    super(scanner, args, client);
+    super(args, client);
   }
 
   /**
@@ -97,14 +95,14 @@ public class TerminateCommand extends ACliCommand
     String type = mCommandArgs.poll().toUpperCase();
     
     if (type.equals("CONNECTION"))
-      return new TrmConnectionCommand(mScanner, mCommandArgs, mClient).run();
+      return new TrmConnectionCommand(mCommandArgs, mClient).run();
     if (type.equals("CONN"))
-      return new TrmConnectionCommand(mScanner, mCommandArgs, mClient).run();
+      return new TrmConnectionCommand(mCommandArgs, mClient).run();
     
     if (type.equals("SESSION"))
-      return new TrmSessionCommand(mScanner, mCommandArgs, mClient).run();
+      return new TrmSessionCommand(mCommandArgs, mClient).run();
     if (type.equals("SESS"))
-      return new TrmSessionCommand(mScanner, mCommandArgs, mClient).run();
+      return new TrmSessionCommand(mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

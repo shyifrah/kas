@@ -1,6 +1,5 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Scanner;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
 
@@ -18,42 +17,42 @@ public class CliCommandFactory
    * @param cmdWords The command arguments
    * @return A {@link ICliCommand} object or {@code null} if the command verb is unknown
    */
-  static public ICliCommand newCommand(Scanner scanner, TokenDeque cmdWords, MqContext client)
+  static public ICliCommand newCommand(TokenDeque cmdWords, MqContext client)
   {
     String verb = cmdWords.poll().toUpperCase();
     
     if (HelpCommand.sCommandVerbs.contains(verb))
-      return new HelpCommand(scanner, cmdWords, client);
+      return new HelpCommand(cmdWords, client);
     
     if (ExitCommand.sCommandVerbs.contains(verb))
-      return new ExitCommand(scanner, cmdWords, client);
+      return new ExitCommand(cmdWords, client);
     
     if (ConnectCommand.sCommandVerbs.contains(verb))
-      return new ConnectCommand(scanner, cmdWords, client);
+      return new ConnectCommand(cmdWords, client);
     
     if (DisconnectCommand.sCommandVerbs.contains(verb))
-      return new DisconnectCommand(scanner, cmdWords, client);
+      return new DisconnectCommand(cmdWords, client);
     
     if (DefineCommand.sCommandVerbs.contains(verb))
-      return new DefineCommand(scanner, cmdWords, client);
+      return new DefineCommand(cmdWords, client);
     
     if (DeleteCommand.sCommandVerbs.contains(verb))
-      return new DeleteCommand(scanner, cmdWords, client);
+      return new DeleteCommand(cmdWords, client);
     
     if (QueryCommand.sCommandVerbs.contains(verb))
-      return new QueryCommand(scanner, cmdWords, client);
+      return new QueryCommand(cmdWords, client);
     
     if (PutCommand.sCommandVerbs.contains(verb))
-      return new PutCommand(scanner, cmdWords, client);
+      return new PutCommand(cmdWords, client);
     
     if (GetCommand.sCommandVerbs.contains(verb))
-      return new GetCommand(scanner, cmdWords, client);
+      return new GetCommand(cmdWords, client);
     
     if (TerminateCommand.sCommandVerbs.contains(verb))
-      return new TerminateCommand(scanner, cmdWords, client);
+      return new TerminateCommand(cmdWords, client);
     
     if (ShutdownCommand.sCommandVerbs.contains(verb))
-      return new ShutdownCommand(scanner, cmdWords, client);
+      return new ShutdownCommand(cmdWords, client);
     
     // Unknown command
     return null;

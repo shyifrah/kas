@@ -1,6 +1,5 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
@@ -23,13 +22,12 @@ public class HelpCommand extends ACliCommand
    * Construct a {@link HelpCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
-   * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual disconnection
    */
-  protected HelpCommand(Scanner scanner, TokenDeque args, MqContext client)
+  protected HelpCommand(TokenDeque args, MqContext client)
   {
-    super(scanner, args, client);
+    super(args, client);
   }
 
   /**
@@ -152,7 +150,7 @@ public class HelpCommand extends ACliCommand
     else
     {
       String verb = mCommandArgs.peek();
-      ICliCommand command = CliCommandFactory.newCommand(mScanner, mCommandArgs, mClient);
+      ICliCommand command = CliCommandFactory.newCommand(mCommandArgs, mClient);
       if (command == null)
       {
         writeln("Help requested for unknown command verb: \"" + verb + "\". Type HELP to see available commands");

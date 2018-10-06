@@ -1,6 +1,5 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Scanner;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.impl.MqContext;
@@ -16,13 +15,12 @@ public class TrmConnectionCommand extends ACliCommand
    * Construct a {@link TrmConnectionCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
-   * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected TrmConnectionCommand(Scanner scanner, TokenDeque args, MqContext client)
+  protected TrmConnectionCommand(TokenDeque args, MqContext client)
   {
-    super(scanner, args, client);
+    super(args, client);
   }
 
   /**

@@ -1,6 +1,5 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
@@ -24,13 +23,12 @@ public class QueryCommand extends ACliCommand
    * Construct a {@link QueryCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
-   * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QueryCommand(Scanner scanner, TokenDeque args, MqContext client)
+  protected QueryCommand(TokenDeque args, MqContext client)
   {
-    super(scanner, args, client);
+    super(args, client);
   }
 
   /**
@@ -136,28 +134,28 @@ public class QueryCommand extends ACliCommand
     String type = mCommandArgs.poll().toUpperCase();
     
     if (type.equals("QUEUE"))
-      return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryQueueCommand(mCommandArgs, mClient).run();
     if (type.equals("Q"))
-      return new QryQueueCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryQueueCommand(mCommandArgs, mClient).run();
     
     if (type.equals("SESSION"))
-      return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
+      return new QrySessionCommand(mCommandArgs, mClient).run();
     if (type.equals("SESS"))
-      return new QrySessionCommand(mScanner, mCommandArgs, mClient).run();
+      return new QrySessionCommand(mCommandArgs, mClient).run();
     
     if (type.equals("CONNECTION"))
-      return new QryConnectionCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryConnectionCommand(mCommandArgs, mClient).run();
     if (type.equals("CONN"))
-      return new QryConnectionCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryConnectionCommand(mCommandArgs, mClient).run();
     
     if (type.equals("CONFIGURATION"))
-      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryConfigCommand(mCommandArgs, mClient).run();
     if (type.equals("CONFIG"))
-      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryConfigCommand(mCommandArgs, mClient).run();
     if (type.equals("CONF"))
-      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryConfigCommand(mCommandArgs, mClient).run();
     if (type.equals("CFG"))
-      return new QryConfigCommand(mScanner, mCommandArgs, mClient).run();
+      return new QryConfigCommand(mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

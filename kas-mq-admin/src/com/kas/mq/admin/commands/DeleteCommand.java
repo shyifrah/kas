@@ -1,6 +1,5 @@
 package com.kas.mq.admin.commands;
 
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
@@ -24,13 +23,12 @@ public class DeleteCommand extends ACliCommand
    * Construct a {@link DeleteCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
-   * @param scanner A scanner to be used in case of further interaction is needed 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DeleteCommand(Scanner scanner, TokenDeque args, MqContext client)
+  protected DeleteCommand(TokenDeque args, MqContext client)
   {
-    super(scanner, args, client);
+    super(args, client);
   }
 
   /**
@@ -94,9 +92,9 @@ public class DeleteCommand extends ACliCommand
     String type = mCommandArgs.poll().toUpperCase();
     
     if (type.equals("QUEUE"))
-      return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
+      return new DelQueueCommand(mCommandArgs, mClient).run();
     if (type.equals("Q"))
-      return new DelQueueCommand(mScanner, mCommandArgs, mClient).run();
+      return new DelQueueCommand(mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");
