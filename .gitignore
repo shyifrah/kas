@@ -1,8 +1,8 @@
 *.class 
 *.log 
 *.log.* 
-*.jar
 *.qbk
+kas-*.jar
 .metadata/ 
 .recommenders/ 
 RemoteSystemsTempFiles/ 

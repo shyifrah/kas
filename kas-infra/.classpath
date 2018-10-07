@@ -3,5 +3,6 @@
 	<classpathentry excluding="module-info.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="thirdparty/junit-4.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

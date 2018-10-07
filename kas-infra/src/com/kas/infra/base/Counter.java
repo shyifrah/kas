@@ -25,7 +25,7 @@ public class Counter extends AKasObject
   /**
    * Counter value
    */
-  private int    mValue;
+  private int mValue;
   
   /**
    * Construct a {@link Counter} object with the specified name with an initial value of 0.
