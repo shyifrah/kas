@@ -27,7 +27,7 @@ public class ClientAppParams extends ParamsContainer
     mTotalProducers = getIntArg("total.producers", 2);                   // number of threads that put messages
     mTotalConsumers = getIntArg("total.consumers", 2);                   // number of threads that get messages
     mTotalMessages  = getIntArg("total.messages", 10000);                // total number of messages to put
-    mMessageType    = getIntArg("message.type", 1);                      // the type of messages to send (0-No-body, 1-String, 2-Object, 3-Bytes, 4-Map)
+    mMessageType    = getIntArg("message.type", 1);                      // the type of messages to send (0-No-body, 1-String, 2-Object, 3-Bytes, 4-Map, 5-stream)
   }
   
   public String toString()
