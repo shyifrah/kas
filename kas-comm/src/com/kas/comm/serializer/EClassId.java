@@ -31,7 +31,7 @@ public enum EClassId implements IObject
   cClassMqObjectMessage,
   cClassMqBytesMessage,
   cClassMqMapMessage,
-  
+  cClassMqStreamMessage,
   ;
   
   static final private EClassId [] cValues = EClassId.values();

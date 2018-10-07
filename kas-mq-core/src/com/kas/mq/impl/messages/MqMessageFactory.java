@@ -65,4 +65,15 @@ public class MqMessageFactory
     MqMapMessage message = new MqMapMessage(body);
     return message;
   }
+  
+  /**
+   * Create a stream message, without a body
+   * 
+   * @return a new {@link MqStreamMessage}
+   */
+  static public MqStreamMessage createStreamMessage()
+  {
+    MqStreamMessage message = new MqStreamMessage();
+    return message;
+  }
 }

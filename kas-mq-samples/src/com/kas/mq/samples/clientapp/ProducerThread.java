@@ -1,9 +1,11 @@
 package com.kas.mq.samples.clientapp;
 
+import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
+import com.kas.mq.impl.messages.MqStreamMessage;
 import com.kas.mq.samples.GenThread;
 
 class ProducerThread extends GenThread
@@ -59,6 +61,20 @@ class ProducerThread extends GenThread
         Properties map = new Properties();
         map.setStringProperty("client.app.author", "shy ifrah");
         msg = MqMessageFactory.createMapMessage(map);
+        break;
+      case 5:
+        MqStreamMessage m = MqMessageFactory.createStreamMessage();
+        try
+        {
+          m.writeInt(3);
+          m.writeString("Shy Ifrah");
+          m.writeInt(10);
+        }
+        catch (KasException e)
+        {
+          mLogger.debug("an error occurred while trying to write some data into message body");
+        }
+        msg = m;
         break;
       case 0:
       default:
