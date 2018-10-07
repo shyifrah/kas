@@ -19,9 +19,9 @@ public class ObjectTest extends AStatsCollector
   /**
    * Counters
    */
-  static private final String cMethodTestAdded     = "Method test added";
-  static private final String cMethodNotFound      = "Method not found";
-  static private final String cMethodInaccessible  = "Method inaccessible";
+  static private final String cMethodTestAdded  = "Method test added";
+  static private final String cMethodNotFound   = "Method not found";
+  static private final String cMethodFound      = "Method found";
   
   static private final String cMethodExecuted      = "Method executed";
   static private final String cMethodExecFailed    = "Method execution failed";
@@ -68,7 +68,7 @@ public class ObjectTest extends AStatsCollector
     mStats = new Statistics();
     mStats.newCounter(cMethodTestAdded);
     mStats.newCounter(cMethodNotFound);
-    mStats.newCounter(cMethodInaccessible);
+    mStats.newCounter(cMethodFound);
     mStats.newCounter(cMethodExecuted);
     mStats.newCounter(cMethodExecFailed);
     mStats.newCounter(cMethodExecSucceeded);
@@ -91,6 +91,9 @@ public class ObjectTest extends AStatsCollector
    */
   public void add(String name, Object exr, Object ... args)
   {
+    mLogger.info("Trying to add method: " + name);
+    mStats.increment(cMethodTestAdded);
+    
     Class<?> [] classes = null;
     if ((args != null) && (args.length > 0))
     {
@@ -98,41 +101,56 @@ public class ObjectTest extends AStatsCollector
       for (int i = 0; i < args.length; ++i)
       {
         // special handling for primitives: byte, short, int, long, float, double, boolean, char
-        classes[i] = args[i].getClass();
-        if (classes[i].equals(java.lang.Byte.class))
-          classes[i] = byte.class;
-        else if (classes[i].equals(java.lang.Short.class))
-          classes[i] = short.class;
-        else if (classes[i].equals(java.lang.Integer.class))
-          classes[i] = int.class;
-        else if (classes[i].equals(java.lang.Long.class))
-          classes[i] = long.class;
-        else if (classes[i].equals(java.lang.Float.class))
-          classes[i] = float.class;
-        else if (classes[i].equals(java.lang.Double.class))
-          classes[i] = double.class;
-        else if (classes[i].equals(java.lang.Boolean.class))
-          classes[i] = boolean.class;
-        else if (classes[i].equals(java.lang.Character.class))
-          classes[i] = char.class;
+        classes[i] = Object.class;
+        if (args[i] != null)
+        {
+          classes[i] = args[i].getClass();
+          if (classes[i].equals(java.lang.Byte.class))
+            classes[i] = byte.class;
+          else if (classes[i].equals(java.lang.Short.class))
+            classes[i] = short.class;
+          else if (classes[i].equals(java.lang.Integer.class))
+            classes[i] = int.class;
+          else if (classes[i].equals(java.lang.Long.class))
+            classes[i] = long.class;
+          else if (classes[i].equals(java.lang.Float.class))
+            classes[i] = float.class;
+          else if (classes[i].equals(java.lang.Double.class))
+            classes[i] = double.class;
+          else if (classes[i].equals(java.lang.Boolean.class))
+            classes[i] = boolean.class;
+          else if (classes[i].equals(java.lang.Character.class))
+            classes[i] = char.class;
+        }
       }
     }
     
-    Method method;
-    try
+    Method method = null;
+    Class<?> objClass = mTestedObject.getClass();
+    MethodExec exec = null;
+    while ((method == null) && (objClass != null))
     {
-      method = mTestedObject.getClass().getDeclaredMethod(name, classes);
-      MethodExec exec = new MethodExec(method, mTestedObject, args);
-      mMethodTests.put(exec, exr);
-      mStats.increment(cMethodTestAdded);
+      try
+      {
+        method = objClass.getDeclaredMethod(name, classes);
+        exec = new MethodExec(method, mTestedObject, args);
+      }
+      catch (NoSuchMethodException e)
+      {
+        objClass = objClass.getSuperclass();
+      }
     }
-    catch (NoSuchMethodException e)
+    
+    if (method == null)
     {
+      mLogger.warn("Method not found: " + name);
       mStats.increment(cMethodNotFound);
     }
-    catch (SecurityException e)
+    else
     {
-      mStats.increment(cMethodInaccessible);
+      mMethodTests.put(exec, exr);
+      mLogger.info("Method found and added: " + name);
+      mStats.increment(cMethodFound);
     }
   }
   
@@ -171,11 +189,21 @@ public class ObjectTest extends AStatsCollector
         mStats.increment(cMethodExecSucceeded);
         Object res = exec.getResult();
         if ((exr == null) && (res == null))
+        {
+          mLogger.trace("Test succeeded: " + exec.toString());
           mStats.increment(cMethodTestSucceeded);
+        }
         else if ((exr != null) && (exr.equals(res)))
+        {
+          mLogger.trace("Test succeeded: " + exec.toString());
           mStats.increment(cMethodTestSucceeded);
+        }
         else
+        {
+          mLogger.trace("Test failed: " + exec.toString());
+          mLogger.trace("Expected: [" + exr + "]; Actual: [" + res + "]");
           mStats.increment(cMethodTestFailed);
+        }
       }
     }
     
@@ -193,7 +221,7 @@ public class ObjectTest extends AStatsCollector
     mLogger.trace("Object statistics for: " + mTestedObject.toString());
     mLogger.trace(StringUtils.trunc(cMethodTestAdded   , 45, '.') + ": " + mStats.getValue(cMethodTestAdded));
     mLogger.trace("   " + StringUtils.trunc(cMethodNotFound    , 42, '.') + ": " + mStats.getValue(cMethodNotFound));
-    mLogger.trace("   " + StringUtils.trunc(cMethodInaccessible, 42, '.') + ": " + mStats.getValue(cMethodInaccessible));
+    mLogger.trace("   " + StringUtils.trunc(cMethodFound, 42, '.') + ": " + mStats.getValue(cMethodFound));
     mLogger.trace(StringUtils.trunc(cMethodExecuted    , 45, '.') + ": " + mStats.getValue(cMethodExecuted));
     mLogger.trace("   " + StringUtils.trunc(cMethodExecFailed   , 42, '.') + ": " + mStats.getValue(cMethodExecFailed));
     mLogger.trace("   " + StringUtils.trunc(cMethodExecSucceeded, 42, '.') + ": " + mStats.getValue(cMethodExecSucceeded));
