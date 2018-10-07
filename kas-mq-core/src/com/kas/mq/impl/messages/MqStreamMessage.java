@@ -80,28 +80,26 @@ public final class MqStreamMessage extends ABaseBytesMessage
    */
   private void setReadOnly()
   {
-    if (!isReadOnly())
+    try
     {
-      try
-      {
-        mOos.flush();
-        mBaos.flush();
-        mOos.close();
-        mBaos.close();
-      }
-      catch (Throwable e) {}
-      
-      mBais = new ByteArrayInputStream(mBody);
-      try
-      {
-        mOis = new ObjectInputStream(mBais);
-      }
-      catch (IOException e)
-      {
-        throw new RuntimeException(e);
-      }
-      mReadOnly = true;
+      mOos.flush();
+      mBaos.flush();
+      mOos.close();
+      mBaos.close();
+      mBody = mBaos.toByteArray();
     }
+    catch (Throwable e) {}
+    
+    mBais = new ByteArrayInputStream(mBody);
+    try
+    {
+      mOis = new ObjectInputStream(mBais);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+    mReadOnly = true;
   }
   
   /**
@@ -109,26 +107,23 @@ public final class MqStreamMessage extends ABaseBytesMessage
    */
   private void setWriteOnly()
   {
-    if (isReadOnly())
+    try
     {
-      try
-      {
-        mOis.close();
-        mBais.close();
-      }
-      catch (Throwable e) {}
-      
-      mBaos = new ByteArrayOutputStream();
-      try
-      {
-        mOos = new ObjectOutputStream(mBaos);
-      }
-      catch (IOException e)
-      {
-        throw new RuntimeException(e);
-      }
-      mReadOnly = false;
+      mOis.close();
+      mBais.close();
     }
+    catch (Throwable e) {}
+    
+    mBaos = new ByteArrayOutputStream();
+    try
+    {
+      mOos = new ObjectOutputStream(mBaos);
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException(e);
+    }
+    mReadOnly = false;
   }
   
   /**
