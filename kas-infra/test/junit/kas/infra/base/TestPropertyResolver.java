@@ -11,15 +11,18 @@ import com.kas.infra.utils.RunTimeUtils;
 public class TestPropertyResolver
 {
   @Test
-  public void testResolveNullProps()
+  public void testResolve()
   {
+    Properties props = new Properties();
+    props.setStringProperty("kas.home", "/usr/local/kas");
+    props.setStringProperty("kas.user", "pippo");
+    props.setStringProperty("kas.mq.mgr", "alpha");
     
-  }
-  
-  @Test
-  public void testResolveWithProps()
-  {
-    
+    Assert.assertEquals(  PropertyResolver.resolve("${kas.home", props)              , "${kas.home"           );
+    Assert.assertEquals(  PropertyResolver.resolve("${kas.home}", props)             , "/usr/local/kas"       );
+    Assert.assertEquals(  PropertyResolver.resolve("${kas.home}/${kas.user}", props) , "/usr/local/kas/pippo" );
+    Assert.assertEquals(  PropertyResolver.resolve("${kas.home.user.name}", props)   , ""                     );
+    Assert.assertEquals(  PropertyResolver.resolve("/pippo/${kas.user}/", props)     , "/pippo/pippo/"        );
   }
   
   @Test
@@ -48,17 +51,19 @@ public class TestPropertyResolver
   {
     Properties props = new Properties();
     props.setStringProperty("shy.name", "pippo");
-    RunTimeUtils.setProperty("shy.name", "shy", true);
     
     Class<?> [] pClasses = { String.class , Properties.class };
     Method getVarValue = PropertyResolver.class.getDeclaredMethod("getVarValue", pClasses);
     boolean access = getVarValue.isAccessible();
     getVarValue.setAccessible(true);
     
+    RunTimeUtils.setProperty("shy.name", "shy", true);
     Object [] pList1 = { "${shy.name}" , props };
-    Object [] pList2 = { "${shy.name}" , null };
     Assert.assertEquals(getVarValue.invoke(null, pList1), "shy");
-    Assert.assertEquals(getVarValue.invoke(null, pList2), "shy");
+    
+    RunTimeUtils.setProperty("shy.name", "", true);
+    Object [] pList2 = { "${shy.name}" , props };
+    Assert.assertEquals(getVarValue.invoke(null, pList2), "pippo");
     
     getVarValue.setAccessible(access);
   }
