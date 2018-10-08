@@ -1,5 +1,6 @@
 package com.kas.infra.utils;
 
+import com.kas.infra.utils.Validators;
 
 public class TestValidators
 {

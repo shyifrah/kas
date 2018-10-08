@@ -1,4 +1,4 @@
-package junit.kas.infra.base;
+package com.kas.infra.base;
 
 import java.util.UUID;
 import org.junit.Assert;

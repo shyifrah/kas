@@ -1,4 +1,4 @@
-package junit.kas.infra.base;
+package com.kas.infra.base;
 
 import org.junit.Assert;
 import org.junit.Test;

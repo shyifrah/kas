@@ -1,19 +1,21 @@
 package com.kas.infra.utils;
 
+import org.junit.Test;
+import com.kas.infra.utils.Base64Utils;
+import junit.framework.Assert;
+
 public class TestBase64Utils
 {
-  static public void main(String [] args)
+  @Test
+  public void testEncodeAndDecode()
   {
-    String str = "Shy Ifrah is the best";
+    String str = "There's No Death, There's Only The Force";
     byte [] plaintext = str.getBytes();
     byte [] cyphertext = Base64Utils.encode(plaintext);
     
     byte [] decodedtext =  Base64Utils.decode(cyphertext);
     String newstr = new String(decodedtext);
     
-    System.out.println("Original string is....: " + str);
-    System.out.println("Plain length......: " + plaintext.length);
-    System.out.println("Cyphered length...: " + cyphertext.length);
-    System.out.println("Resulted string is....: " + newstr);
+    Assert.assertEquals(str,  newstr);
   }
 }
