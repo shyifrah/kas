@@ -3,7 +3,7 @@ package com.kas.infra.utils;
 import java.util.Base64;
 
 /**
- * An simplifying interface to the {@link java.util.Base64} classes
+ * A simplifying interface to the {@link java.util.Base64} classes
  *  
  * @author Pippo
  */

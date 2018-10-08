@@ -233,11 +233,9 @@ public class TimeStamp extends AKasObject
   public String toPrintableString(int level)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append(name())
-      .append('(')
+    sb.append(name()).append('(')
       .append(toRawString())
-      .append(')')
-      .append(",(")
+      .append("),(")
       .append(toString())
       .append(')');
     return sb.toString();
