@@ -3,6 +3,7 @@ package com.kas.infra.utils;
 import java.io.Console;
 import java.io.PrintStream;
 import java.util.Scanner;
+import com.kas.infra.utils.helpers.EOsType;
 
 /**
  * Console related utilities
@@ -18,7 +19,7 @@ public class ConsoleUtils
    */
   static public boolean isColoredTextSupported()
   {
-    return OsUtils.getOsType() == OsUtils.EOsType.cUnix;
+    return RunTimeUtils.getOsType() == EOsType.cUnix;
   }
   
   /**

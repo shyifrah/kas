@@ -1,4 +1,4 @@
-package com.kas.infra.utils;
+package com.kas.infra.utils.helpers;
 
 /**
  * A utility class for formatting exceptions

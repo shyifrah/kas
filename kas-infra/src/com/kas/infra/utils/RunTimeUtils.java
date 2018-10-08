@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
+import com.kas.infra.utils.helpers.EOsType;
 
 /**
  * Utility functions
@@ -16,6 +17,7 @@ import java.net.InetAddress;
 public class RunTimeUtils
 {
   static public  final String cProductHomeDirProperty = "kas.home";
+  static public  final String cOsNameProperty         = "os.name";
   static private final String cUserNameProperty       = "user.name";
   
   /**
@@ -128,6 +130,36 @@ public class RunTimeUtils
   static public String getUserId()
   {
     return getProperty(cUserNameProperty);
+  }
+  
+  /**
+   * Get the type of the Operating System
+   * 
+   * @return one of the enum values defined in {@link EOsType}
+   */
+  static public EOsType getOsType()
+  {
+    String osn = getOsName().toLowerCase();
+    
+    if (osn.indexOf("win") >= 0)
+      return EOsType.cWindows;
+    if (osn.indexOf("mac") >= 0)
+      return EOsType.cMacOs;
+    if (osn.indexOf("nix") >= 0 || osn.indexOf("nux") >= 0 || osn.indexOf("aix") >= 0)
+      return EOsType.cUnix;
+    if (osn.indexOf("sunos") >= 0)
+      return EOsType.cSolaris;
+    return EOsType.cUnknown;
+  }
+  
+  /**
+   * Get the Operating System name
+   * 
+   * @return the Operating System name
+   */
+  static public String getOsName()
+  {
+    return System.getProperty(cOsNameProperty);
   }
   
   /**
