@@ -20,12 +20,6 @@ public class MqRemoteManager extends MqManager
   /**
    * Construct the {@link MqRemoteManager}
    * 
-   * @param config The {@link MqConfiguration configuration} object
-   */
-  
-  /**
-   * Construct the {@link MqRemoteManager}
-   * 
    * @param name The name of this manager
    * @param host The name (or IP address) of the host 
    * @param port The port to which this manager listens on
@@ -33,18 +27,6 @@ public class MqRemoteManager extends MqManager
   MqRemoteManager(String name, String host, int port)
   {
     super(name, host, port);
-  }
-  
-  /**
-   * Activate the {@link MqRemoteManager}: request from the corresponding remote KAS/MQ server its list of queues.
-   */
-  public void activate()
-  {
-    mLogger.debug("MqRemoteManager::activate() - IN");
-
-    mActive = true;
-
-    mLogger.debug("MqRemoteManager::activate() - OUT");
   }
   
   /**
