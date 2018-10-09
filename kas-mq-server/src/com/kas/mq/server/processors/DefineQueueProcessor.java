@@ -21,10 +21,11 @@ public class DefineQueueProcessor extends AProcessor
 {
   /**
    * Extracted input from the request:
-   * queue name and quue threshold
+   * queue name, its threshold and is it a permanent queue
    */
   private String mQueue;
   private int mThreshold;
+  private boolean mPermanent;
   
   /**
    * Construct a {@link DefineQueueProcessor}
@@ -56,7 +57,8 @@ public class DefineQueueProcessor extends AProcessor
     {
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDefqQueueName, null);
       mThreshold = mRequest.getIntProperty(IMqConstants.cKasPropertyDefqThreshold, IMqConstants.cDefaultQueueThreshold);
-      mLogger.debug("DefineQueueProcessor::process() - Queue=" + mQueue + "; Threshold=" + mThreshold);
+      mPermanent = mRequest.getBoolProperty(IMqConstants.cKasPropertyDefqPermanent, IMqConstants.cDefaultQueuePermanent);
+      mLogger.debug("DefineQueueProcessor::process() - Queue=" + mQueue + "; Threshold=" + mThreshold + "; Permanent=" + mPermanent);
       
       MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);
       
@@ -67,7 +69,7 @@ public class DefineQueueProcessor extends AProcessor
       }
       else
       {
-        mqlq = mRepository.defineLocalQueue(mQueue, mThreshold);
+        mqlq = mRepository.defineLocalQueue(mQueue, mThreshold, mPermanent);
         mLogger.debug("DefineQueueProcessor::process() - Created queue " + StringUtils.asPrintableString(mqlq));
         mDesc = "Queue with name " + mQueue + " and threshold of " + mThreshold + " was successfully defined";
         mCode = EMqCode.cOkay;

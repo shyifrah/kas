@@ -129,14 +129,15 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @param name The name of the queue
    * @param thoreshold The queue threshold
+   * @param perm Is the queue should be defined as permanent
    * @return the {@link MqLocalQueue} object created
    * 
    * @see com.kas.mq.server.IRepository#defineLocalQueue(String, int)
    */
-  public MqLocalQueue defineLocalQueue(String name, int threshold)
+  public MqLocalQueue defineLocalQueue(String name, int threshold, boolean perm)
   {
     mLogger.debug("ServerRepository::defineLocalQueue() - IN, Name=" + name + ", Threshold=" + threshold);
-    MqLocalQueue queue = mLocalManager.defineQueue(name, threshold);
+    MqLocalQueue queue = mLocalManager.defineQueue(name, threshold, perm);
     mLogger.debug("ServerRepository::defineLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
   }
@@ -413,7 +414,7 @@ public class ServerRepository extends AKasObject implements IRepository
       MqQueue queue = getLocalQueue(name);
       if (queue == null)
       {
-        defineLocalQueue(name, threshold);
+        defineLocalQueue(name, threshold, true);
         ++defined;
       }
     }

@@ -49,9 +49,9 @@ public class DefineCommand extends ACliCommand
     writeln(" ");
     writelnGreen("Format: ");
     writeln(" ");
-    writeln("     >>--- DEFINE|DEF ---+--- QUEUE|Q ---+---+--- queue ---+---+-----------------+---><");
-    writeln("                                                               |                 |");
-    writeln("                                                               +--- threshold ---+");
+    writeln("     >>--- DEFINE|DEF ---+--- QUEUE|Q --------------+---+--- queue ---+---+-----------------+---><");
+    writeln("                         |                          |                     |                 |");
+    writeln("                         +--- TEMPQUEUE|TEMPQ|TQ ---+                     +--- threshold ---+");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");
@@ -64,6 +64,11 @@ public class DefineCommand extends ACliCommand
     writeln("     The DEFINE command will fail if a queue with the specified name already exists.");
     writeln("     The threshold is the maximum capacity of the queue.");
     writeln(" ");
+    writeln("     -- For TEMPQUEUE --");
+    writeln("     Define the specified temporary queue.");
+    writeln("     The queue will remain defined until a DELETE command is issued or the KAS/MQ server restarts.");
+    writeln("     Other then that, a TEMPQUEUE is just like a regular QUEUE.");
+    writeln(" ");
     writelnGreen("Examples:");
     writeln(" ");
     writeln("     Define queue TEMP_Q_A:");
@@ -71,6 +76,9 @@ public class DefineCommand extends ACliCommand
     writeln(" ");
     writeln("     Define queue QUEUE_OF_HEARTS with a threshold of 50,000 messages:");
     writeln("          KAS/MQ Admin> DEF QUEUE QUEUE_OF_HEARTS 50000");
+    writeln(" ");
+    writeln("     Define a temporary queue TEMPQUEUE_123 with a threshold of 10,000 messages:");
+    writeln("          KAS/MQ Admin> DEF TQ TEMPQUEUE_123 10000");
     writeln(" ");
   }
   
@@ -97,6 +105,13 @@ public class DefineCommand extends ACliCommand
       return new DefQueueCommand(mCommandArgs, mClient).run();
     if (type.equals("Q"))
       return new DefQueueCommand(mCommandArgs, mClient).run();
+    
+    if (type.equals("TEMPQUEUE"))
+      return new DefTempQueueCommand(mCommandArgs, mClient).run();
+    if (type.equals("TEMPQ"))
+      return new DefTempQueueCommand(mCommandArgs, mClient).run();
+    if (type.equals("TQ"))
+      return new DefTempQueueCommand(mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

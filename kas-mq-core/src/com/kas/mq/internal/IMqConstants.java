@@ -3,9 +3,10 @@ package com.kas.mq.internal;
 public interface IMqConstants
 {
   /**
-   * Queue threshold
+   * Queue definition defaults
    */
   static public final int cDefaultQueueThreshold = 1000;
+  static public final boolean cDefaultQueuePermanent = true;
   
   /**
    * Message priorities
@@ -53,6 +54,7 @@ public interface IMqConstants
   
   static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";
   static public final String cKasPropertyDefqThreshold = cKasPropertyPrefix + "defq.threshold";
+  static public final String cKasPropertyDefqPermanent = cKasPropertyPrefix + "defq.permanent";
   
   static public final String cKasPropertyDelqQueueName = cKasPropertyPrefix + "delq.queue";
   static public final String cKasPropertyDelqForce     = cKasPropertyPrefix + "delq.force";

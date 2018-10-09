@@ -24,9 +24,10 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * 
    * @param name The name of the queue
    * @param threshold The queue threshold
+   * @param perm Is the queue should be defined as permanent
    * @return the {@link MqLocalQueue} object defined
    */
-  public abstract MqLocalQueue defineLocalQueue(String name, int threshold);
+  public abstract MqLocalQueue defineLocalQueue(String name, int threshold, boolean perm);
   
   /**
    * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}

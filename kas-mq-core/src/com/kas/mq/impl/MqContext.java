@@ -96,9 +96,10 @@ public final class MqContext extends AKasObject
    * 
    * @param queue The queue name to define.
    * @param threshold The queue threshold
+   * @param perm Is this a permanent queue
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public boolean defineQueue(String queue, int threshold)
+  public boolean defineQueue(String queue, int threshold, boolean perm)
   {
     mLogger.debug("MqContext::defineQueue() - IN, Queue=" + queue);
     
@@ -113,7 +114,7 @@ public final class MqContext extends AKasObject
     }
     else
     {
-      success = mConnection.defineQueue(queue, threshold);
+      success = mConnection.defineQueue(queue, threshold, perm);
     }
     
     mLogger.debug("MqContext::defineQueue() - OUT, Returns=" + success);

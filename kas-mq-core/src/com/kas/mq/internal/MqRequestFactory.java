@@ -30,12 +30,13 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqMessage createDefineQueueRequest(String queue, int threshold)
+  static public MqMessage createDefineQueueRequest(String queue, int threshold, boolean perm)
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cDefineQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDefqQueueName, queue);
     message.setIntProperty(IMqConstants.cKasPropertyDefqThreshold, threshold);
+    message.setBoolProperty(IMqConstants.cKasPropertyDefqThreshold, perm);
     return message;
   }
   

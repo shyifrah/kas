@@ -30,13 +30,14 @@ public class MqContextConnection extends MqConnection
    * 
    * @param queue The queue name to define.
    * @param threshold The queue threshold
+   * @param perm Is this a permanent queue
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public boolean defineQueue(String queue, int threshold)
+  public boolean defineQueue(String queue, int threshold, boolean perm)
   {
     mLogger.debug("MqContextConnection::defineQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, threshold);
+    IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, threshold, perm);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::defineQueue() - OUT");
