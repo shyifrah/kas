@@ -36,7 +36,7 @@ public class MqRequestFactory
     message.setRequestType(ERequestType.cDefineQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDefqQueueName, queue);
     message.setIntProperty(IMqConstants.cKasPropertyDefqThreshold, threshold);
-    message.setBoolProperty(IMqConstants.cKasPropertyDefqThreshold, perm);
+    message.setBoolProperty(IMqConstants.cKasPropertyDefqPermanent, perm);
     return message;
   }
   
