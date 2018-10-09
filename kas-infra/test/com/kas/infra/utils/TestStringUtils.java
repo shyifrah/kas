@@ -2,8 +2,8 @@ package com.kas.infra.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import com.kas.infra.base.Counter;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 
 public class TestStringUtils
@@ -12,10 +12,10 @@ public class TestStringUtils
   public void testObjectAsString()
   {
     Object obj = null;
-    Object counter = new Counter("a");
+    Object str = new String("a");
     
     Assert.assertEquals( StringUtils.asString(obj), "null");
-    Assert.assertEquals( StringUtils.asString(counter), "a=[0]");
+    Assert.assertEquals( StringUtils.asString(str), "a");
     
     String key, val;
     key = null; val = null;
@@ -32,10 +32,10 @@ public class TestStringUtils
   public void testIObjectAsPrintableString()
   {
     IObject iObj = null;
-    IObject counter = new Counter("a");
+    IObject uuid = UniqueId.fromByteArray( new byte [] { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x00, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F } );
     
     Assert.assertEquals( StringUtils.asPrintableString(iObj), "null");
-    Assert.assertEquals( StringUtils.asPrintableString(counter), "a=[0]");
+    Assert.assertEquals( StringUtils.asPrintableString(uuid), "01020304-0506-0708-0900-0a0b0c0d0e0f");
   }
   
   @Test
