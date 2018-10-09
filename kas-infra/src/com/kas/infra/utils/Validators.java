@@ -17,7 +17,7 @@ public class Validators
   static private Pattern cUserNameCompiledPattern = Pattern.compile(cUserNamePattern);
   
   static private final int cMinimumPortNumber = 1;
-  static private final int cMaxomumPortNumber = (Short.MAX_VALUE + 1) * 2 - 1;
+  static private final int cMaximumPortNumber = (Short.MAX_VALUE + 1) * 2 - 1;
   
   /**
    * Validate IP address with regular expression
@@ -51,7 +51,7 @@ public class Validators
    */
   static public boolean isPort(int port)
   {
-    return (port >= cMinimumPortNumber) && (port <= cMaxomumPortNumber);
+    return (port >= cMinimumPortNumber) && (port <= cMaximumPortNumber);
   }
   
   /**
