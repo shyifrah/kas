@@ -69,7 +69,7 @@ public class DefineCommand extends ACliCommand
     writeln("     Define queue TEMP_Q_A:");
     writeln("          KAS/MQ Admin> DEF QUEUE TEMP_Q_A");
     writeln(" ");
-    writeln("     Define queue QUEUE_OF_HEARTS win a threshold of 50,000 messages:");
+    writeln("     Define queue QUEUE_OF_HEARTS with a threshold of 50,000 messages:");
     writeln("          KAS/MQ Admin> DEF QUEUE QUEUE_OF_HEARTS 50000");
     writeln(" ");
   }
