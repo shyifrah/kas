@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="module-info.java" kind="src" path="src"/>
-	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="src" output="tbin" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="thirdparty/junit-4.10.jar"/>
+	<classpathentry kind="lib" path="/kas-data/thirdparty/junit-4.10.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
