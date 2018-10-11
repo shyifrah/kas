@@ -1,19 +1,24 @@
 package com.kas.infra;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
 public class TestRunner
 {
-  private String mPath;
-  private List<String> mClassFilesList;
-  private List<String> mClassesList;
+  private String mProjectPath;
+  private List<String> mClassesList = new ArrayList<String>();
+  private Set<String> mRootSubDirList = new HashSet<String>();
   
   static public void main(String[] args)
   {
@@ -30,51 +35,55 @@ public class TestRunner
     }
     
     TestRunner runner = new TestRunner(args[0]);
-    runner.load();
-    System.out.println("A total of " + runner.getCount() + " classes found: ");
-    runner.print();
+    ClassLoader loader = runner.load();
+    System.out.println("A total of " + runner.getClassCount() + " classes found in " + runner.getSubDirsCount() + " sub directories of " + runner.getProjectPath());
     
-    runner.execute();
+    runner.execute(loader);
   }
   
   private TestRunner(String path)
   {
-    mPath = path;
+    File f = new File(path);
+    mProjectPath = f.getAbsolutePath();
   }
   
-  private int getCount()
+  private int getClassCount()
   {
-    return mClassFilesList.size();
+    return mClassesList.size();
   }
   
-  private void load() throws MalformedURLException
+  private int getSubDirsCount()
   {
-    mClassFilesList = new ArrayList<String>();
-    mClassesList = new ArrayList<String>();
-    String classdir;
-    File f;
+    return mRootSubDirList.size();
+  }
+  
+  private String getProjectPath()
+  {
+    return mProjectPath;
+  }
+  
+  private ClassLoader load()
+  {
+    load(mProjectPath, mClassesList, mRootSubDirList);
+    
     List<URL> urlList = new ArrayList<URL>();
-    
-    classdir = mPath + File.separator + "bin";
-    loadClassFilesList(classdir, mClassFilesList);
-    loadClassesList(classdir);
-    f = new File(classdir);
-    urlList.add(f.toURI().toURL());
-    
-    classdir = mPath + File.separator + "tbin";
-    loadClassFilesList(classdir, mClassFilesList);
-    loadClassesList(classdir);
-    f = new File(classdir);
-    urlList.add(f.toURI().toURL());
-    
+    for (String subdir : mRootSubDirList)
+    {
+      File f = new File(subdir);
+      try
+      {
+        URL url = f.toURI().toURL();
+        urlList.add(url);
+      }
+      catch (MalformedURLException e) {}
+    }
     URL [] urls = urlList.toArray(new URL[0]);
-    URLClassLoader cl = new URLClassLoader(urls);
+    return new URLClassLoader(urls);
   }
-  
-  private void loadClassFilesList(String path, List<String> classes)
+
+  private void load(String path, List<String> classList, Set<String> subdirList)
   {
     File directory = new File(path);
-
     File [] files = directory.listFiles();
     if (files != null)
     {
@@ -84,67 +93,68 @@ public class TestRunner
         {
           String name = file.getAbsolutePath();
           if (name.endsWith(".class"))
-            classes.add(name);
+          {
+            String rootSubDir =  getRootSubDir(name);
+            subdirList.add(rootSubDir);
+            
+            String className = name.substring(rootSubDir.length()+1, name.lastIndexOf('.'));
+            className = className.replace('\\', '.');
+            classList.add(className);
+          }
         }
         else if (file.isDirectory())
         {
-          loadClassFilesList(file.getAbsolutePath(), classes);
+          load(file.getAbsolutePath(), classList, subdirList);
         }
       }
     }
   }
   
-  private void loadClassesList(String classdir)
+  private String getRootSubDir(String path)
   {
-    for (String cf : mClassFilesList)
+    int startIndex = mProjectPath.length() + 1;
+    int endIndex = path.indexOf(File.separator, startIndex);
+    if (endIndex == -1)
+      return null;
+    
+    String subdir = path.substring(startIndex, endIndex);
+    return mProjectPath + File.separator + subdir;
+  }
+  
+  private void execute(ClassLoader loader)
+  {
+    for (String clsname : mClassesList)
     {
-      if (cf.startsWith(classdir))
+      try
       {
-        String fcn = cf.substring(classdir.length()+1, cf.lastIndexOf('.'));
-        fcn = fcn.replace('\\', '.');
-        mClassesList.add(fcn);
+        Class<?> cls = loader.loadClass(clsname);
+        System.out.println("Loaded...:  [" + cls.getName() + "]");
+        
+        boolean shouldRunTest = false;
+        Method [] declaredMethods = cls.getDeclaredMethods();
+        for (Method mtd : declaredMethods)
+        {
+          if (mtd.isAnnotationPresent(Test.class))
+          {
+            shouldRunTest = true;
+            break;
+          }
+        }
+        
+        if (shouldRunTest)
+        {
+          Result result = JUnitCore.runClasses(cls);
+          
+          for (Failure failure : result.getFailures())
+             System.out.println("   " + failure.toString());
+        
+          System.out.println("   " + result.wasSuccessful() + "\n ");
+        }
       }
-    }
-  }
-  
-  private void print()
-  {
-    for (int i = 0; i < mClassFilesList.size(); ++i)
-    {
-      String classFile = mClassFilesList.get(i);
-      String className = mClassesList.get(i);
-      System.out.println("    " + classFile);
-      System.out.println("      " + className);
-    }
-  }
-  
-  private Class<?> getClass(String file)
-  {
-    Class<?> result = null;
-    String classFullPath = file.substring(0, file.lastIndexOf('.'));
-    
-    try
-    {
-      result = Class.forName(classFullPath);
-    }
-    catch (ClassNotFoundException e)
-    {
-      e.printStackTrace();
-    }
-    catch (Throwable e)
-    {
-      e.printStackTrace();
-    }
-    
-    return result;
-  }
-  
-  private void execute()
-  {
-    for (String str : mClassFilesList)
-    {
-      Class<?> cls = getClass(str);
-      System.out.println("        " + cls.getSimpleName()); 
+      catch (ClassNotFoundException e)
+      {
+        System.out.println("Failed to load class [" + clsname + "]");
+      }
     }
   }
 }
