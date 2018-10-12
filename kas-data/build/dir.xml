@@ -1,0 +1,23 @@
+<project name="dir" basedir=".">
+  
+  <!-- ===================================================== -->
+  <!-- directories                                           -->
+  <!-- ===================================================== -->
+  <property name="src"     location="src"/>
+  <property name="bin"     location="bin"/>
+  <property name="test"    location="test"/>
+  <property name="tbin"    location="tbin"/>
+  <property name="lib"     location="lib"/>
+  <property name="reports"    location="reports"/>
+  <property name="thirdparty" location="thirdparty"/>
+  <property name="res"  location="res"/>
+  <property name="conf" location="conf"/>
+  <property name="logs" location="logs"/>
+
+  <property name="infra"      location="../kas-infra"/>
+  <property name="config"     location="../kas-config"/>
+  <property name="logging"    location="../kas-logging"/>
+  <property name="comm"       location="../kas-comm"/>
+  <property name="mq-core"    location="../kas-mq-core"/>
+      
+</project>

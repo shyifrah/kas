@@ -1,39 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="kas-mq-samples" default="main" basedir=".">
   
-  <property name="src"  location="src"/>
-  <property name="res"  location="res"/>
-  <property name="bin"  location="bin"/>
-  <property name="lib"  location="lib"/>
-  <property name="conf" location="conf"/>
-  <property name="logs" location="logs"/>
-
-  <property name="infra"      location="../kas-infra"/>
-  <property name="config"     location="../kas-config"/>
-  <property name="logging"    location="../kas-logging"/>
-  <property name="comm"       location="../kas-comm"/>
-  <property name="mq-core"    location="../kas-mq-core"/>
-	
-  <property name="infra.jar"      location="../kas-infra/lib/kas-infra.jar"/>
-  <property name="config.jar"     location="../kas-config/lib/kas-config.jar"/>
-  <property name="logging.jar"    location="../kas-logging/lib/kas-logging.jar"/>
-  <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/>
-  <property name="mq-core.jar"    location="../kas-mq-core/lib/kas-mq-core.jar"/>
-	
-  <!-- debugging information -->
-  <property name="debug"      value="true" />
-  <property name="debuglevel" value="lines,vars,source" />
-	
-  <!-- versioning -->
-  <property name="build.major" value="1"/>
-  <property name="build.minor" value="2"/>
-  <property name="build.mod"   value="0"/>
-
-  <!-- targets -->
+  <!-- ===================================================== -->
+  <!-- included files                                        -->
+  <!-- ===================================================== -->
+  
+  <include file="../kas-data/build/dir.xml"/>
+  <include file="../kas-data/build/jar.xml"/>
+  <include file="../kas-data/build/debug.xml"/>
+  <include file="../kas-data/build/version.xml"/>
+    
+  <!-- ===================================================== -->
+  <!-- list of targets                                       -->
+  <!-- ===================================================== -->
+  
+  <!-- main target -->
   <target name="main" depends="copy-res" description="main target (default)">
     <echo>Done building</echo>
   </target>
   
+  <!-- cleaning previous build output -->
   <target name="clean" description="clean up old outputs">
     <delete dir="${bin}"/>
     <delete dir="${lib}"/>
@@ -41,6 +27,7 @@
     <delete dir="${logs}"/>
   </target>
   
+  <!-- preparing for build -->
   <target name="prepare" depends="clean" description="prepare output directories">
     <mkdir dir="${bin}"/>
     <mkdir dir="${lib}"/>
@@ -62,6 +49,7 @@
     </copy>
   </target>
   
+  <!-- compiling sources -->
   <target name="compile" depends="clean, prepare" description="compile sources">
   	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
       <exclude name="module-info.java"/>
@@ -75,6 +63,7 @@
     </javac>
   </target>
   
+  <!-- creating archive -->
   <target name="jar" depends="compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar"
        basedir="${bin}"
@@ -86,6 +75,7 @@
     </jar>
   </target>
 	
+  <!-- copy resources -->
   <target name="copy-res" depends="jar" description="copy outputs">
     <copy todir=".">
       <fileset dir="${res}" excludes="*buildnumber*" />

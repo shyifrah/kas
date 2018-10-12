@@ -2,22 +2,12 @@
 <project name="kas-infra" default="main" basedir=".">
   
   <!-- ===================================================== -->
-  <!-- directories                                           -->
+  <!-- included files                                        -->
   <!-- ===================================================== -->
-  <property name="src"     location="src"/>
-  <property name="bin"     location="bin"/>
-  <property name="test"    location="test"/>
-  <property name="tbin"    location="tbin"/>
-  <property name="lib"     location="lib"/>
-  <property name="reports"    location="reports"/>
-  <property name="thirdparty" location="thirdparty"/>
   
-  <!-- ===================================================== -->
-  <!-- debugging information                                 -->
-  <!-- ===================================================== -->
-  <property name="debug"      value="true" />
-  <property name="debuglevel" value="lines,vars,source" />
-
+  <include file="../kas-data/build/dir.xml"/>
+  <include file="../kas-data/build/debug.xml"/>
+  
   <!-- ===================================================== -->
   <!-- list of targets                                       -->
   <!-- ===================================================== -->
