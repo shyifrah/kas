@@ -3,6 +3,7 @@
 *.log.* 
 *.qbk
 kas-*.jar
+reports/
 .metadata/ 
 .recommenders/ 
 RemoteSystemsTempFiles/ 

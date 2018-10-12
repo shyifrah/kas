@@ -9,6 +9,7 @@
   <property name="test"    location="test"/>
   <property name="tbin"    location="tbin"/>
   <property name="lib"     location="lib"/>
+  <property name="reports"    location="reports"/>
   <property name="thirdparty" location="thirdparty"/>
   
   <!-- ===================================================== -->
@@ -22,23 +23,25 @@
   <!-- ===================================================== -->
   
   <!-- main target -->
-  <target name="main" depends="jar" description="main target (default)">
+  <target name="main" depends="test" description="main target (default)">
     <echo>Done building</echo>
   </target>
   
   <!-- cleaning previous build output -->
   <target name="clean" description="clean up old outputs">
-    <delete dir="${tbin}"/>
     <delete dir="${bin}"/>
+    <delete dir="${tbin}"/>
     <delete dir="${lib}"/>
+    <delete dir="${reports}"/>
     <delete dir="${thirdparty}"/>
   </target>
   
   <!-- preparing for build -->
   <target name="prepare" depends="clean" description="prepare output directories">
-    <mkdir dir="${tbin}"/>
   	<mkdir dir="${bin}"/>
+    <mkdir dir="${tbin}"/>
     <mkdir dir="${lib}"/>
+    <mkdir dir="${reports}"/>
     <mkdir dir="${thirdparty}"/>
     <copy todir="${thirdparty}">
       <fileset dir="../kas-data/thirdparty"/>
@@ -65,4 +68,23 @@
        basedir="${bin}" />
   </target>
 
+  <!-- unit testings -->
+  <target name="test" depends="jar" description="generate jar file">
+    <junit printsummary="yes" haltonfailure="yes">
+      <classpath>
+        <pathelement location="${bin}"/>
+        <pathelement location="${tbin}"/>
+        <pathelement location="${thirdparty}/junit-4.10.jar"/>
+      </classpath>
+      <formatter type="plain"/>
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${reports}">
+        <fileset dir="${test}">
+          <include name="**/*.java"/>
+          <exclude name="**/TestRunner.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+  
 </project>
