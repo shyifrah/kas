@@ -65,10 +65,7 @@
   
   <!-- creating archive -->
   <target name="jar" depends="compile" description="generate jar file">
-    <jar destfile="${lib}/${ant.project.name}.jar"
-       basedir="${bin}"
-       includes="com/kas/mq/samples/**/*.class"
-       excludes="**/Test*.class">
+    <jar basedir="${bin}" destfile="${lib}/${ant.project.name}.jar" includes="com/kas/**/*.class">
       <manifest>
         <attribute name="Kas-Version" value="${build.major}-${build.minor}-${build.mod}-${build.number}"/>
       </manifest>

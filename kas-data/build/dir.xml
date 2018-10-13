@@ -11,6 +11,7 @@
   <property name="reports"    location="reports"/>
   <property name="thirdparty" location="thirdparty"/>
   <property name="res"  location="res"/>
+  <property name="repo" location="repo"/>
   <property name="conf" location="conf"/>
   <property name="logs" location="logs"/>
 
