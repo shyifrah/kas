@@ -173,7 +173,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setBoolProperty(String key, boolean value)
   {
-    put(key, new Boolean(value));
+    put(key, Boolean.valueOf(value));
   }
   
   /**
@@ -240,7 +240,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setCharProperty(String key, char value)
   {
-    put(key, new Character(value));
+    put(key, value);
   }
   
   /**
@@ -305,7 +305,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setIntProperty(String key, int value)
   {
-    put(key, new Integer(value));
+    put(key, value);
   }
   
   /**
@@ -434,7 +434,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setLongProperty(String key, long value)
   {
-    put(key, new Long(value));
+    put(key, value);
   }
   
   /**
@@ -631,7 +631,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setDoubleProperty(String key, double value)
   {
-    put(key, new Double(value));
+    put(key, value);
   }
   
   /**
@@ -694,7 +694,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setFloatProperty(String key, float value)
   {
-    put(key, new Float(value));
+    put(key, value);
   }
   
   /**
@@ -805,7 +805,7 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    */
   public void setShortProperty(String key, short value)
   {
-    put(key, new Short(value));
+    put(key, value);
   }
   
   /**

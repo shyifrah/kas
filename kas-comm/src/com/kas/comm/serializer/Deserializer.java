@@ -123,11 +123,7 @@ public class Deserializer extends AKasObject implements IInitializable
     {
       cls = Class.forName(className);
       Constructor<?> ctor = cls.getConstructor(ObjectInputStream.class);
-      
-      boolean accessible = ctor.isAccessible();
-      ctor.setAccessible(true);
       object = ctor.newInstance(istream);
-      ctor.setAccessible(accessible);
     }
     catch (ClassNotFoundException e)
     {
