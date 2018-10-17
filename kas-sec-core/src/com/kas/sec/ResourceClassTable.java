@@ -4,13 +4,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AKasObject;
 
-public class ResourceTable extends AKasObject
+public class ResourceClassTable extends AKasObject
 {
-  private Map<String, ResourceDescriptor> mTable;
+  private Map<String, ResourceClass> mTable;
   
-  public ResourceTable()
+  public ResourceClassTable()
   {
-    mTable = new ConcurrentHashMap<String, ResourceDescriptor>();
+    mTable = new ConcurrentHashMap<String, ResourceClass>();
   }
   
   public String toPrintableString(int level)

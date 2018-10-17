@@ -14,7 +14,7 @@ public class AccessEntry extends AKasObject
     mPermittedAccess = accessLevel;
   }
   
-  public boolean isMached(String resource)
+  public boolean isMatched(String resource)
   {
     return mResourceRegEx.matcher(resource).matches();
   }
