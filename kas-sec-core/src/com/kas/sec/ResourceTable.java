@@ -6,16 +6,15 @@ import com.kas.infra.base.AKasObject;
 
 public class ResourceTable extends AKasObject
 {
-  private Map<String, IResourceType> mTable;
+  private Map<String, ResourceDescriptor> mTable;
   
   public ResourceTable()
   {
-    mTable = new ConcurrentHashMap<String, IResourceType>();
+    mTable = new ConcurrentHashMap<String, ResourceDescriptor>();
   }
   
   public String toPrintableString(int level)
   {
-    
     return null;
   }
 }
