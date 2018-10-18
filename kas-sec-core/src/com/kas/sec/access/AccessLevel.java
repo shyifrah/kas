@@ -1,4 +1,4 @@
-package com.kas.sec;
+package com.kas.sec.access;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;

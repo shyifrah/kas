@@ -1,10 +1,18 @@
-package com.kas.sec;
+package com.kas.sec.access;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.StringUtils;
+import com.kas.sec.SecurityController;
+import com.kas.sec.entities.IGroupEntity;
+import com.kas.sec.entities.UserEntity;
 
 /**
- * An access entry is a an entry in an access list that protects a resource(s).<br>
+ * An access entry is a an entry in an access list that grants certain permissions to
+ * the resource (designated by the regular expression) to a certain entity.<br>
  * <br>
  * The resources protected by this entry are designated by the regular expression {@code mResourceRegEx}
  * and the permitted access level by the {@code mPermittedAccess}.
@@ -19,9 +27,9 @@ public class AccessEntry extends AKasObject
   private Pattern mResourceRegEx;
   
   /**
-   * Permitted access level
+   * The list of entity IDs that are permitted to the resource(s) designated by the regular expression
    */
-  private AccessLevel mPermittedAccess;
+  private Map<UniqueId, AccessLevel> mPermittedEntities;
   
   /**
    * Construct an access-entry
@@ -29,10 +37,10 @@ public class AccessEntry extends AKasObject
    * @param resource A regular expression that identifies the resources protected by this entry
    * @param accessLevel The permitted level of access
    */
-  AccessEntry(String resource, AccessLevel accessLevel)
+  AccessEntry(String resource)
   {
     mResourceRegEx = Pattern.compile(resource);
-    mPermittedAccess = accessLevel;
+    mPermittedEntities = new ConcurrentHashMap<UniqueId, AccessLevel>();
   }
   
   /**
@@ -47,16 +55,36 @@ public class AccessEntry extends AKasObject
   }
   
   /**
-   * Get the access level allowed for the specified resource
+   * Get the access level allowed for the specified entityId
    * 
-   * @param resource The resource tested
+   * @param entityId a {@link UniqueId} representing the entity
    * @return the allowed {@link AccessLevel}
    */
-  public AccessLevel getAllowedAccessLevel(String resource)
+  public AccessLevel getAllowedAccessLevel(UniqueId entityId)
   {
-    if (isMatched(resource))
-      return mPermittedAccess;
-    return AccessLevel.NONE_ACCESS;
+    AccessLevel result = AccessLevel.NONE_ACCESS;
+    
+    // if user has an entry of its own in the map -- that's the access level he will get
+    AccessLevel level = mPermittedEntities.get(entityId);
+    if (level != null)
+    {
+      result = level;
+    }
+    else
+    {
+      UserEntity user = SecurityController.getInstance().getUserEntity(entityId);
+      for (IGroupEntity group : user.getGroups())
+      {
+        level = mPermittedEntities.get(group.getId());
+        if (level != null)
+        {
+          result = level;
+          break;
+        }
+      } 
+    }
+    
+    return result;
   }
   
   /**
@@ -73,7 +101,7 @@ public class AccessEntry extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  RegEx=").append(mResourceRegEx.toString()).append("\n")
-      .append(pad).append("  Access=").append(mPermittedAccess.toPrintableString(level+1)).append("\n")
+      .append(pad).append("  Access=").append(StringUtils.asPrintableString(mPermittedEntities, level+2)).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }

@@ -1,6 +1,7 @@
-package com.kas.sec;
+package com.kas.sec.resources;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.sec.access.AccessLevel;
 
 /**
  * A {@link ResourceClass} is an object describing a class of resources that can be protected.<br>
@@ -19,7 +20,7 @@ import com.kas.infra.base.AKasObject;
  * 
  * @author Pippo
  */
-public class ResourceClass extends AKasObject
+public class ResourceClass extends AKasObject implements Comparable<ResourceClass>
 {
   static private final int cMaxResourceNameLength = 32;
   static private final int cMaxResourceDescLength = 256;
@@ -121,6 +122,42 @@ public class ResourceClass extends AKasObject
   public void unprotect()
   {
     mProtected = false;
+  }
+  
+  /**
+   * Compare to another resource class
+   * 
+   * @return the value returned by {@link String#compareTo(String)}
+   * 
+   * @see Comparable#compareTo(Object)
+   */
+  public int compareTo(ResourceClass other)
+  {
+    return mName.compareTo(other.mName);
+  }
+  
+  /**
+   * Compare two Objects for equality
+   * 
+   * @return the value returned by {@link String#equals(Object)}
+   * 
+   * @see Comparable#equals(Object)
+   */
+  public boolean equals(Object other)
+  {
+    return mName.equals(((ResourceClass)other).mName);
+  }
+  
+  /**
+   * Get the hash code of the resource class
+   * 
+   * @return the value returned by {@link String#hashCode()}
+   * 
+   * @see Comparable#hashCode()}
+   */
+  public int hashCode()
+  {
+    return mName.hashCode();
   }
   
   /**

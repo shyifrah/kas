@@ -1,9 +1,10 @@
-package com.kas.sec;
+package com.kas.sec.access;
 
 import java.util.ArrayList;
 import java.util.List;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.sec.resources.ResourceClass;
 
 /**
  * An access-list is an object that holds a {@link List} of {@link AccessEntry access entries}.<br>
@@ -33,7 +34,7 @@ public class AccessList extends AKasObject
   AccessList(AccessLevel defaultAccessLevel)
   {
     mAccessList = new ArrayList<AccessEntry>();
-    mDefaultAccessEntry = new AccessEntry(".*", defaultAccessLevel);
+    mDefaultAccessEntry = new AccessEntry(".*");
   }
   
   /**
