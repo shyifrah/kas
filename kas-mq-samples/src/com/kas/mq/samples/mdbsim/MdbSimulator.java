@@ -29,6 +29,7 @@ import com.kas.mq.samples.Utils;
  */
 public class MdbSimulator extends AKasAppl
 {
+  static final String cAppName = "MDB sample";
   static final long cConsumerPollingInterval = 1000L;
   static final long cConsumerGetTimeout      = 60000L;
   
@@ -45,50 +46,44 @@ public class MdbSimulator extends AKasAppl
     mParams = new MdbSimulatorParams(args);
   }
 
+  /**
+   * Ignore this
+   */
   public String toPrintableString(int level)
   {
     return null;
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initialization
    */
-  public boolean init()
+  public boolean appInit()
   {
-    boolean init = super.init();
-    if (!init)
-    {
-      sStartupLogger.error("KAS base application failed to initialize");
-      return false;
-    }
-    
-    String message = "KAS/MQ MDB sample V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStartupLogger.info(message);
-    mLogger.info(message);
-    return init;
+    return true;
   }
   
   /**
    * Termination
    */
-  public boolean term()
+  public boolean appTerm()
   {
-mLogger.info("KAS/MQ MDB sample termination in progress");
-    
-    boolean term = super.term();
-    if (!term)
-    {
-      sStartupLogger.warn("An error occurred during KAS base application termination");
-    }
-    
-    sStartupLogger.info("KAS/MQ MDB sample shutdown complete");
     return true;
   }
   
   /**
    * Main logic
    */
-  public boolean run()
+  public void appExec()
   {
     int total = 0;
     TimeStamp tsStart = TimeStamp.now();
@@ -191,7 +186,5 @@ mLogger.info("KAS/MQ MDB sample termination in progress");
     
     String runTime = Utils.reportTime(tsStart, tsEnd);
     System.out.println("Total run time.....: " + runTime);
-    
-    return end();
   }
 }

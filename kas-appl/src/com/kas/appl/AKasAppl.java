@@ -49,51 +49,57 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   }
   
   /**
-   * Initializing the KAS/MQ server.<br>
+   * Initializing the base KAS application.<br>
    * <br>
    * Initialization consisting of:
-   * - configuration
-   * - logger
-   * - registering a shutdown hook
+   * - application version
+   * - register a shutdown hook
+   * - get a logger
+   * - invoking the application initialization method
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean init()
   {
-    mVersion = new ProductVersion(this.getClass());
+    sStartupLogger.info("KAS base application startup in progress...");
     
+    mVersion = new ProductVersion(this.getClass());
     mShutdownHook = new KasApplShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
     mLogger = LoggerFactory.getLogger(this.getClass());
-    sStartupLogger.info("Logging services are now active, switching to log file...");
+    sStartupLogger.info("Logging services are now active, switching to log file");
     
-    return true;
+    boolean init = appInit();    
+    String message = getAppName() + " V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    sStartupLogger.info(message);
+    mLogger.info(message);
+    
+    return init;
   }
 
   /**
-   * Terminating the KAS/MQ server.<br>
+   * Terminating the base KAS application.<br>
    * <br>
    * Termination consisting of:
-   * - remove the shutdown hook
-   * - configuration
+   * - invoking the application termination method
    * - thread pool shutdown
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public boolean term()
   {
+    sStartupLogger.info("KAS base application termination in progress...");
+    
+    boolean term = appTerm();
+    if (!term)
+    {
+      sStartupLogger.warn("An error occurred during KAS base application termination");
+    }
+    
     ThreadPool.shutdownNow();
-    return true;
-  }
-  
-  /**
-   * KAS/MQ server's configuration has been refreshed.<br>
-   * <br>
-   * Most {@link AKasAppl} objects have nothing to do with this, so supply a default implementation
-   */
-  public void refresh()
-  {
+    sStartupLogger.info(getAppName() + " shutdown complete");
+    return term;
   }
   
   /**
@@ -103,7 +109,20 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
    * 
    * @see IKasAppl#run()
    */
-  public abstract boolean run();
+  public boolean run()
+  {
+    appExec();
+    return end();
+  }
+  
+  /**
+   * Refreshing the configuration
+   * 
+   * @see IBaseListener#refresh()
+   */
+  public void refresh()
+  {
+  }
   
   /**
    * Finalizing {@link #run() main function} execution.
@@ -114,21 +133,21 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
    */
   protected boolean end()
   {
-    mLogger.debug("AKasMqAppl::end() - IN");
+    mLogger.debug("AKasAppl::end() - IN");
     
     mLogger.info("Try de-registering the shutdown hook...");
     boolean okay = false;
     try
     {
       okay = Runtime.getRuntime().removeShutdownHook(mShutdownHook);
-      mLogger.debug("KasMqServer::run() - Shutdown hook was successfully de-registered");
+      mLogger.debug("AKasAppl::run() - Shutdown hook was successfully de-registered");
     }
     catch (IllegalStateException e)
     {
-      mLogger.debug("KasMqServer::run() - Shutdown hook could not be de-registered. It is probably because JVM is alreadu shutting down");
+      mLogger.debug("AKasAppl::run() - Shutdown hook could not be de-registered. It is probably because JVM is alreadu shutting down");
     }
     
-    mLogger.debug("AKasMqAppl::end() - OUT, Returns=" + okay);
+    mLogger.debug("AKasAppl::end() - OUT, Returns=" + okay);
     return okay;
   }
 }

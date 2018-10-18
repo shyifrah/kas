@@ -11,30 +11,31 @@ import com.kas.infra.config.IBaseListener;
  * 
  * @author Pippo
  */
-public interface IKasAppl extends IBaseListener, IInitializable
+public interface IKasAppl extends IInitializable, IBaseListener
 {
   /**
-   * Initializing the application. 
+   * Get the application name
+   * 
+   * @return the application name
+   */
+  public abstract String getAppName();
+  
+  /**
+   * Initializing the application.  
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise
-   * 
-   * @see IInitializable#init()
    */
-  public abstract boolean init();
+  public abstract boolean appInit();
 
   /**
    * Terminating the application.
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise
-   * 
-   * @see IInitializable#term();
    */
-  public abstract boolean term();
+  public abstract boolean appTerm();
   
   /**
-   * Running the application.
-   * 
-   * @return {@code true} if main thread should execute the termination, {@code false} otherwise 
+   * Running the application. 
    */
-  public abstract boolean run();
+  public abstract void appExec();
 }

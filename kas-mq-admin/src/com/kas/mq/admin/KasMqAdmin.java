@@ -20,8 +20,11 @@ import com.kas.mq.impl.MqContext;
  */
 public class KasMqAdmin extends AKasAppl 
 {
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
+  static final String cAppName = "KAS/MQ admin CLI";
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
+  
+  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
+  
   
   /**
    * KAS/MQ server's configuration
@@ -44,32 +47,38 @@ public class KasMqAdmin extends AKasAppl
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name 
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initializing the KAS/MQ admin CLI.<br>
    * <br>
    * Initialization consisting of:
-   * - super class initialization
+   * - configuration initialization
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public boolean init()
+  public boolean appInit()
   {
-    boolean init = super.init();
-    if (!init)
-    {
-      sStartupLogger.error("KAS base application failed to initialize");
-      return false;
-    }
+    boolean init = true;
     
     mConfig = new MqConfiguration();
     mConfig.init();
     if (!mConfig.isInitialized())
-      return false;
+    {
+      init = false;
+    }
+    else
+    {
+      mConfig.register(this);
+    }
     
-    mConfig.register(this);
-    
-    String message = "KAS/MQ admin CLI V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStartupLogger.info(message);
-    mLogger.info(message);
     return init;
   }
   
@@ -77,23 +86,13 @@ public class KasMqAdmin extends AKasAppl
    * Terminating the KAS/MQ admin CLI.<br>
    * <br>
    * Termination consisting of:
-   * - super class termination
+   * - configuration termination
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public synchronized boolean term()
+  public synchronized boolean appTerm()
   {
-    mLogger.info("KAS/MQ admin CLI termination in progress");
-    
     mConfig.term();
-    
-    boolean term = super.term();
-    if (!term)
-    {
-      sStartupLogger.warn("An error occurred during KAS base application termination");
-    }
-    
-    sStartupLogger.info("KAS/MQ admin CLI shutdown complete");
     return true;
   }
   
@@ -103,13 +102,11 @@ public class KasMqAdmin extends AKasAppl
    * The main logic is quite simple: keep reading commands from the command line until
    * it is terminated via the "exit" or SIGTERM signal.
    * 
-   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
-   * 
-   * @see IKasMqAppl#run()
+   * @see IKasMqAppl#appExec()
    */
-  public boolean run()
+  public void appExec()
   {
-    writeln("KAS/MQ Admin Command Processor started");
+    writeln(cAppName + " started");
     writeln(" ");
     
     try
@@ -136,8 +133,7 @@ public class KasMqAdmin extends AKasAppl
     }
     
     writeln(" ");
-    writeln("KAS/MQ Admin Command Processor ended");
-    return end();
+    writeln(cAppName + " ended");
   }
   
   /**

@@ -26,8 +26,11 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  */
 public class ClientApp extends AKasAppl 
 {
+  static final String cAppName = "ClientApp sample";
+  
   private Thread [] mProducers;
   private Thread [] mConsumers;
+  
   private ClientAppParams mParams;
   
   /**
@@ -50,47 +53,37 @@ public class ClientApp extends AKasAppl
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initialization
    */
-  public boolean init()
+  public boolean appInit()
   {
-    boolean init = super.init();
-    if (!init)
-    {
-      sStartupLogger.error("KAS base application failed to initialize");
-      return false;
-    }
-    
     mProducers = new Thread [mParams.mTotalProducers];
     mConsumers = new Thread [mParams.mTotalConsumers];
-    
-    String message = "KAS/MQ Client App sample V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStartupLogger.info(message);
-    mLogger.info(message);
-    return init;
+    return true;
   }
   
   /**
    * Termination
    */
-  public boolean term()
+  public boolean appTerm()
   {
-    mLogger.info("KAS/MQ Client App sample termination in progress");
-    
-    boolean term = super.term();
-    if (!term)
-    {
-      sStartupLogger.warn("An error occurred during KAS base application termination");
-    }
-    
-    sStartupLogger.info("KAS/MQ Client App sample shutdown complete");
     return true;
   }
   
   /**
    * Main logic
    */
-  public boolean run()
+  public void appExec()
   {
     TimeStamp tsStart = TimeStamp.now();
     MqContext client = new MqContext();
@@ -200,7 +193,5 @@ public class ClientApp extends AKasAppl
     
     String runTime = Utils.reportTime(tsStart, tsEnd);
     System.out.println("Total run time.....: " + runTime);
-    
-    return end();
   }
 }
