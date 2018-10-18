@@ -17,16 +17,27 @@ import com.kas.sec.resources.ResourceClass;
  * It is responsible  for managing all entities, resource classes and permissions.
  * A schematic figure of the relationships between object in this project:
  * 
- *  +----------------------+                  +----------+----------------+
- *  |                      |                  | <uuid_1> | <UserEntity_1> |
- *  | Security Controller  |                  | <uuid_2> | <UserEntity_2> |
- *  |                      |    +--------->>> | <uuid_3> | <UserEntity_3> |
- *  +----------------------+    |             | :        | :              |
- *  | mUsers   >>>-------- | ---+             | <uuid_n> | <UserEntity_n> |
- *  | mGroups              |                  +----------+----------------+
- *  | mResourcesAccessList |
- *  +----------------------+
- *  
+ *  +----------------------------+                             +------------+------------------+
+ *  |                            |                             | <userid_1> | <user-entity_1>  |
+ *  |    Security Controller     |    +-------------------->>> | <userid_2> | <user-entity_2>  |
+ *  |                            |    |                        | <userid_3> | <user-entity_3>  |
+ *  +----------------------------+    |                        | :          | :                |
+ *  | mUsers               >>>---|----+                        | <userid_n> | <user-entity_n>  |
+ *  | mGroups              >>>---|--------------------+        +------------+------------------+
+ *  | mResourcesAccessList >>>---|----+               |
+ *  +----------------------------+    |               |        +------------+------------------+
+ *                                    |               |        | <grpid_1>  | <group-entity_1> |
+ *                                    |               +---->>> | <grpid_2>  | <group-entity_2> |
+ *         +--------------------------+                        | <grpid_3>  | <group-entity_3> |
+ *         |                                                   | :          | :                |
+ *         |                                                   | <grpid_n>  | <group-entity_n> |
+ *         |         +--------------+-----------------+        +------------+------------------+
+ *         |         | <resclass_1> | <access-list_1> |
+ *         +----->>> | <resclass_2> | <access-list_2> |
+ *                   | <resclass_3> | <access-list_3> |
+ *                   | :            | :               |
+ *                   | <resclass_n> | <access-list_n> |
+ *                   +--------------+-----------------+
  * 
  * @author Pippo
  */
@@ -76,7 +87,7 @@ public class SecurityController extends AKasObject
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mResourcesAccessList = new ConcurrentHashMap<ResourceClass, AccessList>();
-    mUsers = new ConcurrentHashMap<UniqueId, UserEntity>();
+    mUsers  = new ConcurrentHashMap<UniqueId, UserEntity>();
     mGroups = new ConcurrentHashMap<UniqueId, GroupEntity>();
   }
   
@@ -110,9 +121,13 @@ public class SecurityController extends AKasObject
    */
   public Entity getEntity(UniqueId id)
   {
+    mLogger.debug("SecurityController::getEntity() - IN");
+    
     Entity entity = getUserEntity(id);
     if (entity == null)
       entity = getGroupEntity(id);
+    
+    mLogger.debug("SecurityController::getEntity() - OUT, Returns=" + entity.toString());
     return entity;
   }
   
