@@ -2,13 +2,13 @@ package com.kas.mq.admin;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.AKasMqAppl;
-import com.kas.mq.IKasMqAppl;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.admin.commands.CliCommandFactory;
 import com.kas.mq.admin.commands.ICliCommand;
 import com.kas.mq.impl.MqContext;
@@ -18,10 +18,15 @@ import com.kas.mq.impl.MqContext;
  * 
  * @author Pippo
  */
-public class KasMqAdmin extends AKasMqAppl 
+public class KasMqAdmin extends AKasAppl 
 {
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
+  
+  /**
+   * KAS/MQ server's configuration
+   */
+  private MqConfiguration mConfig = null;
   
   /**
    * A {@link MqContext} which will act as the client
@@ -54,6 +59,13 @@ public class KasMqAdmin extends AKasMqAppl
       mLogger.info("KAS/MQ base application initialized successfully");
     }
     
+    mConfig = new MqConfiguration();
+    mConfig.init();
+    if (!mConfig.isInitialized())
+      return false;
+    
+    mConfig.register(this);
+    
     String message = "KAS/MQ admin CLI V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
     sStartupLogger.info(message);
     mLogger.info(message);
@@ -71,7 +83,17 @@ public class KasMqAdmin extends AKasMqAppl
   public synchronized boolean term()
   {
     mLogger.info("KAS/MQ admin CLI termination in progress");
-    return super.term();
+    
+    mConfig.term();
+    
+    boolean term = super.term();
+    if (!term)
+    {
+      sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
+    }
+    
+    sStartupLogger.info("KAS/MQ server shutdown complete");
+    return true;
   }
   
   /**

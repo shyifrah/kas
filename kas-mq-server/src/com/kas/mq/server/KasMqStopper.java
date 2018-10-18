@@ -1,12 +1,13 @@
 package com.kas.mq.server;
 
 import java.util.Map;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.KasException;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.AKasMqAppl;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.MqRequestFactory;
@@ -16,12 +17,17 @@ import com.kas.mq.internal.MqRequestFactory;
  * 
  * @author Pippo
  */
-public class KasMqStopper extends AKasMqAppl 
+public class KasMqStopper extends AKasAppl 
 {
   static private final String cKasUserSystemProperty = "kas.user";
   static private final String cKasPassSystemProperty = "kas.pass";
   
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqStopper.class.getName());
+  
+  /**
+   * KAS/MQ server's configuration
+   */
+  private MqConfiguration mConfig = null;
   
   /**
    * Construct the {@link KasMqStopper} passing it the startup arguments
@@ -46,6 +52,13 @@ public class KasMqStopper extends AKasMqAppl
       mLogger.error("KAS/MQ base application failed to initialize");
     }
     
+    mConfig = new MqConfiguration();
+    mConfig.init();
+    if (!mConfig.isInitialized())
+      return false;
+    
+    mConfig.register(this);
+    
     String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
     sStartupLogger.info(message);
     mLogger.info(message);
@@ -59,6 +72,8 @@ public class KasMqStopper extends AKasMqAppl
    */
   public boolean term()
   {
+    mConfig.term();
+    
     boolean term = super.term();
     if (!term)
     {

@@ -1,11 +1,11 @@
 package com.kas.mq.samples.mdbsim;
 
 import java.util.Map;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqBytesMessage;
@@ -27,7 +27,7 @@ import com.kas.mq.samples.Utils;
  * 
  * @author Pippo
  */
-public class MdbSimulator extends AKasMqAppl
+public class MdbSimulator extends AKasAppl
 {
   static final long cConsumerPollingInterval = 1000L;
   static final long cConsumerGetTimeout      = 60000L;

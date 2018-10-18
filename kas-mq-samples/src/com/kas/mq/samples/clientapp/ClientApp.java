@@ -1,9 +1,9 @@
 package com.kas.mq.samples.clientapp;
 
 import java.util.Map;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
-import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.samples.Utils;
 import com.kas.mq.samples.mdbsim.MdbSimulator;
@@ -24,7 +24,7 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  * 
  * @author Pippo
  */
-public class ClientApp extends AKasMqAppl 
+public class ClientApp extends AKasAppl 
 {
   private Thread [] mProducers;
   private Thread [] mConsumers;
