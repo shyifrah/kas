@@ -1,4 +1,4 @@
-package com.kas.mq;
+package com.kas.appl;
 
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
@@ -14,9 +14,9 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
+public abstract class AKasAppl extends AKasObject implements IKasAppl
 {
-  static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasMqAppl.class.getName());
+  static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasAppl.class.getName());
   
   /**
    * Logger
@@ -26,12 +26,7 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
   /**
    * Shutdown hook
    */
-  protected KasMqShutdownHook mShutdownHook = null;
-  
-  /**
-   * The Mq configuration object
-   */
-  protected MqConfiguration mConfig = null;
+  protected KasApplShutdownHook mShutdownHook = null;
   
   /**
    * The product version
@@ -44,11 +39,11 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
   protected Map<String, String> mStartupArgs = null;
   
   /**
-   * Construct the {@link AKasMqAppl application} passing it the startup arguments
+   * Construct the {@link AKasAppl application} passing it the startup arguments
    * 
    * @param args The startup arguments
    */
-  protected AKasMqAppl(Map<String, String> args)
+  protected AKasAppl(Map<String, String> args)
   {
     mStartupArgs = args;
   }
@@ -66,19 +61,13 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
   public boolean init()
   {
     mVersion = new ProductVersion(this.getClass());
-    mConfig = new MqConfiguration();
-    mConfig.init();
-    if (!mConfig.isInitialized())
-      return false;
     
-    mConfig.register(this);
+    mShutdownHook = new KasApplShutdownHook(this);
+    Runtime.getRuntime().addShutdownHook(mShutdownHook);
     
     mLogger = LoggerFactory.getLogger(this.getClass());
     sStartupLogger.info("Logging services are now active, switching to log file...");
-    mLogger.info("Loaded configuration: " + mConfig.toPrintableString());
     
-    mShutdownHook = new KasMqShutdownHook(this);
-    Runtime.getRuntime().addShutdownHook(mShutdownHook);
     return true;
   }
 
@@ -94,10 +83,6 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
    */
   public boolean term()
   {
-    mLogger.info("Terminating configuration object and switching back to Console logging...");
-    if (mConfig.isInitialized())
-      mConfig.term();
-    
     ThreadPool.shutdownNow();
     return true;
   }
@@ -105,7 +90,7 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
   /**
    * KAS/MQ server's configuration has been refreshed.<br>
    * <br>
-   * Most {@link AKasMqAppl} objects have nothing to do with this, so supply a default implementation
+   * Most {@link AKasAppl} objects have nothing to do with this, so supply a default implementation
    */
   public void refresh()
   {
@@ -116,7 +101,7 @@ public abstract class AKasMqAppl extends AKasObject implements IKasMqAppl
    * 
    * @return {@code true} if main thread should execute the termination, {@code false} otherwise
    * 
-   * @see IKasMqAppl#run()
+   * @see IKasAppl#run()
    */
   public abstract boolean run();
   

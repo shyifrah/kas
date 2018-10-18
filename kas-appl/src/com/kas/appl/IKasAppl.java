@@ -1,17 +1,17 @@
-package com.kas.mq;
+package com.kas.appl;
 
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.config.IBaseListener;
 
 /**
- * A KAS/MQ application is one that has initialization/termination phases which occur
+ * A KAS application is one that has initialization/termination phases which occur
  * prior and after the running phase.<br>
  * <br>
  * Also, the application provides means of "stop" state.
  * 
  * @author Pippo
  */
-public interface IKasMqAppl extends IBaseListener, IInitializable
+public interface IKasAppl extends IBaseListener, IInitializable
 {
   /**
    * Initializing the application. 
