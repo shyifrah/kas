@@ -54,12 +54,20 @@ public class ClientApp extends AKasAppl
    */
   public boolean init()
   {
-    super.init();
+    boolean init = super.init();
+    if (!init)
+    {
+      sStartupLogger.error("KAS base application failed to initialize");
+      return false;
+    }
     
     mProducers = new Thread [mParams.mTotalProducers];
     mConsumers = new Thread [mParams.mTotalConsumers];
     
-    return true;
+    String message = "KAS/MQ Client App sample V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    sStartupLogger.info(message);
+    mLogger.info(message);
+    return init;
   }
   
   /**
@@ -67,7 +75,15 @@ public class ClientApp extends AKasAppl
    */
   public boolean term()
   {
-    super.term();
+    mLogger.info("KAS/MQ Client App sample termination in progress");
+    
+    boolean term = super.term();
+    if (!term)
+    {
+      sStartupLogger.warn("An error occurred during KAS base application termination");
+    }
+    
+    sStartupLogger.info("KAS/MQ Client App sample shutdown complete");
     return true;
   }
   

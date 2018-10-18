@@ -54,9 +54,10 @@ public class KasMqAdmin extends AKasAppl
   public boolean init()
   {
     boolean init = super.init();
-    if (init)
+    if (!init)
     {
-      mLogger.info("KAS/MQ base application initialized successfully");
+      sStartupLogger.error("KAS base application failed to initialize");
+      return false;
     }
     
     mConfig = new MqConfiguration();
@@ -89,10 +90,10 @@ public class KasMqAdmin extends AKasAppl
     boolean term = super.term();
     if (!term)
     {
-      sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
+      sStartupLogger.warn("An error occurred during KAS base application termination");
     }
     
-    sStartupLogger.info("KAS/MQ server shutdown complete");
+    sStartupLogger.info("KAS/MQ admin CLI shutdown complete");
     return true;
   }
   
@@ -122,16 +123,6 @@ public class KasMqAdmin extends AKasAppl
         else
           stop = process(command);
       }
-//      TokenDeque command = readClear(cAdminPrompt);
-//      boolean stop = false;
-//      while (!stop)
-//      {
-//        stop = process(command);
-//        if (!stop)
-//        {
-//          command = readClear(cAdminPrompt);
-//        }
-//      }
     }
     catch (NoSuchElementException e)
     {
@@ -146,7 +137,7 @@ public class KasMqAdmin extends AKasAppl
     
     writeln(" ");
     writeln("KAS/MQ Admin Command Processor ended");
-    return !mShutdownHook.isRunning();
+    return end();
   }
   
   /**

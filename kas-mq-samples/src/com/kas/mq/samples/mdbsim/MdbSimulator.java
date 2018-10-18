@@ -55,8 +55,17 @@ public class MdbSimulator extends AKasAppl
    */
   public boolean init()
   {
-    super.init();
-    return true;
+    boolean init = super.init();
+    if (!init)
+    {
+      sStartupLogger.error("KAS base application failed to initialize");
+      return false;
+    }
+    
+    String message = "KAS/MQ MDB sample V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    sStartupLogger.info(message);
+    mLogger.info(message);
+    return init;
   }
   
   /**
@@ -64,7 +73,15 @@ public class MdbSimulator extends AKasAppl
    */
   public boolean term()
   {
-    super.term();
+mLogger.info("KAS/MQ MDB sample termination in progress");
+    
+    boolean term = super.term();
+    if (!term)
+    {
+      sStartupLogger.warn("An error occurred during KAS base application termination");
+    }
+    
+    sStartupLogger.info("KAS/MQ MDB sample shutdown complete");
     return true;
   }
   

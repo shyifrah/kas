@@ -49,7 +49,8 @@ public class KasMqStopper extends AKasAppl
     boolean init = super.init();
     if (!init)
     {
-      mLogger.error("KAS/MQ base application failed to initialize");
+      sStartupLogger.error("KAS base application failed to initialize");
+      return false;
     }
     
     mConfig = new MqConfiguration();
@@ -59,7 +60,7 @@ public class KasMqStopper extends AKasAppl
     
     mConfig.register(this);
     
-    String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
+    String message = "KAS/MQ server-stopper V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
     sStartupLogger.info(message);
     mLogger.info(message);
     return init;
@@ -72,15 +73,18 @@ public class KasMqStopper extends AKasAppl
    */
   public boolean term()
   {
+    mLogger.info("KAS/MQ server-stopper termination in progress");
+    
     mConfig.term();
     
     boolean term = super.term();
     if (!term)
     {
-      mLogger.warn("An error occurred during KAS/MQ base application termination");
+      sStartupLogger.warn("An error occurred during KAS base application termination");
     }
     
-    return term;
+    sStartupLogger.info("KAS/MQ server-stopper shutdown complete");
+    return true;
   }
   
   /**

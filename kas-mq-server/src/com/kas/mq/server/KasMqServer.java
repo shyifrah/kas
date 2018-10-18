@@ -88,7 +88,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
     boolean init = super.init();
     if (!init)
     {
-      sStartupLogger.error("KAS/MQ base application failed to initialize");
+      sStartupLogger.error("KAS base application failed to initialize");
       return false;
     }
     
@@ -99,7 +99,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
     
     mConfig.register(this);
     
-    mLogger.info("KAS/MQ base application initialized successfully");
+    mLogger.info("KAS base application initialized successfully");
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
     mController = new SessionController(this);
@@ -178,7 +178,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
     term = super.term();
     if (!term)
     {
-      sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
+      sStartupLogger.warn("An error occurred during KAS base application termination");
     }
     
     sStartupLogger.info("KAS/MQ server shutdown complete");
