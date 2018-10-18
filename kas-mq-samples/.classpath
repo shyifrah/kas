@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-mq-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kas-appl"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,9 +1,9 @@
 package com.kas.mq.samples.clientapp;
 
 import java.util.Map;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
-import com.kas.mq.AKasMqAppl;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.samples.Utils;
 import com.kas.mq.samples.mdbsim.MdbSimulator;
@@ -24,10 +24,13 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  * 
  * @author Pippo
  */
-public class ClientApp extends AKasMqAppl 
+public class ClientApp extends AKasAppl 
 {
+  static final String cAppName = "ClientApp sample";
+  
   private Thread [] mProducers;
   private Thread [] mConsumers;
+  
   private ClientAppParams mParams;
   
   /**
@@ -50,31 +53,37 @@ public class ClientApp extends AKasMqAppl
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initialization
    */
-  public boolean init()
+  public boolean appInit()
   {
-    super.init();
-    
     mProducers = new Thread [mParams.mTotalProducers];
     mConsumers = new Thread [mParams.mTotalConsumers];
-    
     return true;
   }
   
   /**
    * Termination
    */
-  public boolean term()
+  public boolean appTerm()
   {
-    super.term();
     return true;
   }
   
   /**
    * Main logic
    */
-  public boolean run()
+  public void appExec()
   {
     TimeStamp tsStart = TimeStamp.now();
     MqContext client = new MqContext();
@@ -184,7 +193,5 @@ public class ClientApp extends AKasMqAppl
     
     String runTime = Utils.reportTime(tsStart, tsEnd);
     System.out.println("Total run time.....: " + runTime);
-    
-    return end();
   }
 }

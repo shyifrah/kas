@@ -2,13 +2,13 @@ package com.kas.mq.admin;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.AKasMqAppl;
-import com.kas.mq.IKasMqAppl;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.admin.commands.CliCommandFactory;
 import com.kas.mq.admin.commands.ICliCommand;
 import com.kas.mq.impl.MqContext;
@@ -18,10 +18,18 @@ import com.kas.mq.impl.MqContext;
  * 
  * @author Pippo
  */
-public class KasMqAdmin extends AKasMqAppl 
+public class KasMqAdmin extends AKasAppl 
 {
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
+  static final String cAppName = "KAS/MQ admin CLI";
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
+  
+  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
+  
+  
+  /**
+   * KAS/MQ server's configuration
+   */
+  private MqConfiguration mConfig = null;
   
   /**
    * A {@link MqContext} which will act as the client
@@ -39,24 +47,38 @@ public class KasMqAdmin extends AKasMqAppl
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name 
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initializing the KAS/MQ admin CLI.<br>
    * <br>
    * Initialization consisting of:
-   * - super class initialization
+   * - configuration initialization
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public boolean init()
+  public boolean appInit()
   {
-    boolean init = super.init();
-    if (init)
+    boolean init = true;
+    
+    mConfig = new MqConfiguration();
+    mConfig.init();
+    if (!mConfig.isInitialized())
     {
-      mLogger.info("KAS/MQ base application initialized successfully");
+      init = false;
+    }
+    else
+    {
+      mConfig.register(this);
     }
     
-    String message = "KAS/MQ admin CLI V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStartupLogger.info(message);
-    mLogger.info(message);
     return init;
   }
   
@@ -64,14 +86,14 @@ public class KasMqAdmin extends AKasMqAppl
    * Terminating the KAS/MQ admin CLI.<br>
    * <br>
    * Termination consisting of:
-   * - super class termination
+   * - configuration termination
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public synchronized boolean term()
+  public synchronized boolean appTerm()
   {
-    mLogger.info("KAS/MQ admin CLI termination in progress");
-    return super.term();
+    mConfig.term();
+    return true;
   }
   
   /**
@@ -80,13 +102,11 @@ public class KasMqAdmin extends AKasMqAppl
    * The main logic is quite simple: keep reading commands from the command line until
    * it is terminated via the "exit" or SIGTERM signal.
    * 
-   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
-   * 
-   * @see IKasMqAppl#run()
+   * @see IKasMqAppl#appExec()
    */
-  public boolean run()
+  public void appExec()
   {
-    writeln("KAS/MQ Admin Command Processor started");
+    writeln(cAppName + " started");
     writeln(" ");
     
     try
@@ -100,16 +120,6 @@ public class KasMqAdmin extends AKasMqAppl
         else
           stop = process(command);
       }
-//      TokenDeque command = readClear(cAdminPrompt);
-//      boolean stop = false;
-//      while (!stop)
-//      {
-//        stop = process(command);
-//        if (!stop)
-//        {
-//          command = readClear(cAdminPrompt);
-//        }
-//      }
     }
     catch (NoSuchElementException e)
     {
@@ -123,8 +133,7 @@ public class KasMqAdmin extends AKasMqAppl
     }
     
     writeln(" ");
-    writeln("KAS/MQ Admin Command Processor ended");
-    return !mShutdownHook.isRunning();
+    writeln(cAppName + " ended");
   }
   
   /**

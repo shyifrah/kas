@@ -1,4 +1,4 @@
-package com.kas.mq;
+package com.kas.appl;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -11,20 +11,20 @@ import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
- * MQ launcher.<br>
+ * KAS application launcher.<br>
  * <br>
- * This class has only static methods in order to launch KAS/MQ, server or client all the same.
- * It basically processes the arguments passed to the {@link #main(String[])} function and creates the object that should be executed:
- * KasMqServer for server applications, or KasMqClient for client applications
+ * This class has only static methods in order to launch a KAS application.
+ * It basically processes the arguments passed to the {@link #main(String[])} function and launches
+ * the application (a class named in the "kas.home" property).
  * 
  * @author Pippo
  */
-public class KasMqLauncher
+public class KasApplLauncher
 {
   static private final String cKasHomeSystemProperty = RunTimeUtils.cProductHomeDirProperty;
   static private final String cAppClassSystemProperty = "kas.class";
   
-  static private IBaseLogger sLogger = new ConsoleLogger(KasMqLauncher.class.getName());
+  static private IBaseLogger sLogger = new ConsoleLogger(KasApplLauncher.class.getName());
   
   static public void main(String [] args)
   {
@@ -133,20 +133,20 @@ public class KasMqLauncher
    */
   static private void launchApplication(String className, Map<String, String> args)
   {
-    AKasMqAppl app = null;
+    AKasAppl app = null;
     boolean init = false;
     try
     {
       Class<?> cls = Class.forName(className);
       Constructor<?> ctor = cls.getConstructor(Map.class);
       Object instance = ctor.newInstance(args);
-      if (!(instance instanceof AKasMqAppl))
+      if (!(instance instanceof AKasAppl))
       {
-        sLogger.error("KAS/MQ application not an instance of basic application class: " + AKasMqAppl.class.getName());
+        sLogger.error("KAS/MQ application not an instance of basic application class: " + AKasAppl.class.getName());
       }
       else
       {
-        app = (AKasMqAppl)instance;
+        app = (AKasAppl)instance;
         init = app.init();
         if (!init)
         {

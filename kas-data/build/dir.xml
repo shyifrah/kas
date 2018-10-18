@@ -19,6 +19,7 @@
   <property name="config"     location="../kas-config"/>
   <property name="logging"    location="../kas-logging"/>
   <property name="comm"       location="../kas-comm"/>
+  <property name="appl"       location="../kas-appl"/>
   <property name="mq-core"    location="../kas-mq-core"/>
       
 </project>

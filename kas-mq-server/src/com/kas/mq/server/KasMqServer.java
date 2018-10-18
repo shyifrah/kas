@@ -6,11 +6,10 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.AKasMqAppl;
-import com.kas.mq.IKasMqAppl;
 import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.repo.ServerRepository;
@@ -22,8 +21,10 @@ import com.kas.mq.server.internal.ServerNotifier;
  * 
  * @author Pippo
  */
-public class KasMqServer extends AKasMqAppl implements IMqServer
+public class KasMqServer extends AKasAppl implements IMqServer
 {
+  static final String cAppName = "KAS/MQ server";
+  
   /**
    * Server socket
    */
@@ -50,6 +51,11 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   private ServerNotifier mNotifier = null;
   
   /**
+   * KAS/MQ server's configuration
+   */
+  private MqConfiguration mConfig = null;
+  
+  /**
    * Stop indicator
    */
   private boolean mStop = false;
@@ -65,31 +71,43 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initializing the KAS/MQ server.<br>
    * <br>
    * Initialization consisting of:
    * - super class initialization
-   * - creating session controller
-   * - creating the server's listener socket
+   * - creating and initializing configuration object
    * - creating the server's repository
    * - start the housekeeper
+   * - creating session controller
+   * - creating the server's notifier
+   * - creating the server's listener socket
+   * - notifying remote servers of activation
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public boolean init()
+  public boolean appInit()
   {
-    boolean init = super.init();
-    if (!init)
-    {
-      sStartupLogger.error("KAS/MQ base application failed to initialize");
+    mConfig = new MqConfiguration();
+    mConfig.init();
+    if (!mConfig.isInitialized())
       return false;
-    }
     
-    mLogger.info("KAS/MQ base application initialized successfully");
+    mConfig.register(this);
+    
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
     mController = new SessionController(this);
-    mNotifier = new ServerNotifier( mRepository);
+    mNotifier = new ServerNotifier(mRepository);
     
     try
     {
@@ -103,7 +121,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       return false;
     }
     
-    init = mRepository.init();
+    boolean init = mRepository.init();
     if (!init)
     {
       mLogger.fatal("Server repository failed initialization");
@@ -113,10 +131,6 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
     startHouseKeeper();
     
     mNotifier.notifyServerActivated();
-    
-    String message = "KAS/MQ server V" + mVersion.toString() + " started successfully";
-    sStartupLogger.info(message);
-    mLogger.info(message);
     return true;
   }
   
@@ -127,17 +141,17 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * or by the Shutdown Hook thread, if, for instance, the user sent a SIGTERM signal (via CTRL-C).
    * <br>
    * Termination consisting of:
+   * - notify remote servers of inactivation
    * - stop the housekeeper
-   * - closing server's listener socket
    * - terminate server repository
+   * - closing server's listener socket
+   * - terminate configuration object
    * - super class termination
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
-  public synchronized boolean term()
+  public synchronized boolean appTerm()
   {
-    mLogger.info("KAS/MQ server termination in progress");
-    
     mNotifier.notifyServerDeactivated();
     
     stopHouseKeeper();
@@ -157,13 +171,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       mLogger.warn("An error occurred while trying to close server socket", e);
     }
     
-    term = super.term();
-    if (!term)
-    {
-      sStartupLogger.warn("An error occurred during KAS/MQ base application termination");
-    }
-    
-    sStartupLogger.info("KAS/MQ server shutdown complete");
+    mConfig.term();
     return true;
   }
   
@@ -201,7 +209,7 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
    * 
    * @see IKasMqAppl#run()
    */
-  public boolean run()
+  public void appExec()
   {
     int errors = 0;
     sStartupLogger.info("KAS/MQ server " + mConfig.getManagerName() + " ready for some action...");
@@ -246,8 +254,6 @@ public class KasMqServer extends AKasMqAppl implements IMqServer
       
       mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (mStop ? "yep. Terminating main loop..." : "nope..."));
     }
-    
-    return end();
   }
   
   /**
