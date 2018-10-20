@@ -1,4 +1,4 @@
-package com.kas.mq;
+package com.kas.mq.server;
 
 import java.util.HashSet;
 import java.util.Map;

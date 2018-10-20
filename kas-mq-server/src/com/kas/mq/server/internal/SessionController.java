@@ -12,10 +12,10 @@ import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.MqConfiguration;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IMqServer;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.MqConfiguration;
 
 /**
  * A {@link SessionController} is the object that supervises and manage all {@link SessionHandler}.
