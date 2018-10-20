@@ -1,12 +1,13 @@
 package com.kas.mq.server;
 
 import java.util.Map;
+import com.kas.appl.AKasAppl;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.KasException;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.AKasMqAppl;
+import com.kas.mq.MqConfiguration;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.MqRequestFactory;
@@ -16,12 +17,19 @@ import com.kas.mq.internal.MqRequestFactory;
  * 
  * @author Pippo
  */
-public class KasMqStopper extends AKasMqAppl 
+public class KasMqStopper extends AKasAppl 
 {
+  static final String cAppName = "KAS/MQ server-stopper";
+  
   static private final String cKasUserSystemProperty = "kas.user";
   static private final String cKasPassSystemProperty = "kas.pass";
   
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqStopper.class.getName());
+  
+  /**
+   * KAS/MQ server's configuration
+   */
+  private MqConfiguration mConfig = null;
   
   /**
    * Construct the {@link KasMqStopper} passing it the startup arguments
@@ -34,22 +42,29 @@ public class KasMqStopper extends AKasMqAppl
   }
   
   /**
+   * Get the application name
+   * 
+   * @return the application name
+   */
+  public String getAppName()
+  {
+    return cAppName;
+  }
+  
+  /**
    * Initializing the KAS/MQ stopper
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
-  public boolean init()
+  public boolean appInit()
   {
-    boolean init = super.init();
-    if (!init)
-    {
-      mLogger.error("KAS/MQ base application failed to initialize");
-    }
+    mConfig = new MqConfiguration();
+    mConfig.init();
+    if (!mConfig.isInitialized())
+      return false;
     
-    String message = "KAS/MQ server V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStartupLogger.info(message);
-    mLogger.info(message);
-    return init;
+    mConfig.register(this);
+    return true;
   }
   
   /**
@@ -57,15 +72,10 @@ public class KasMqStopper extends AKasMqAppl
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
-  public boolean term()
+  public boolean appTerm()
   {
-    boolean term = super.term();
-    if (!term)
-    {
-      mLogger.warn("An error occurred during KAS/MQ base application termination");
-    }
-    
-    return term;
+    mConfig.term();
+    return true;
   }
   
   /**
@@ -74,14 +84,13 @@ public class KasMqStopper extends AKasMqAppl
    * The main logic is quite simple: open a new session to the KAS/MQ server and send it
    * a shutdown request. 
    */
-  public boolean run()
+  public void appExec()
   {
     MqContext context = new MqContext();
     int port = mConfig.getPort();
     String user = mStartupArgs.get(cKasUserSystemProperty);
     String pass = mStartupArgs.get(cKasPassSystemProperty);
     String deadq = mConfig.getDeadQueueName();
-    
     
     boolean shouldContinue = true;
     boolean connected = false;
@@ -129,8 +138,6 @@ public class KasMqStopper extends AKasMqAppl
         shouldContinue = false;
       }
     }
-    
-    return !mShutdownHook.isRunning();
   }
   
   /**
