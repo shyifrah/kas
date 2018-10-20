@@ -85,7 +85,7 @@ public class AccessLevel extends AKasObject
    */
   public String toPrintableString(int level)
   {
-    StringBuilder sb = new StringBuilder().append("AccessLevels=");
+    StringBuilder sb = new StringBuilder();
     if (isLevelEnabled(READ)) sb.append("READ,");
     if (isLevelEnabled(WRITE)) sb.append("WRITE,");
     if (isLevelEnabled(ALTER)) sb.append("ALTER,");

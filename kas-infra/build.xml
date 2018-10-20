@@ -13,7 +13,7 @@
   <!-- ===================================================== -->
   
   <!-- main target -->
-  <target name="main" depends="test" description="main target (default)">
+  <target name="main" depends="jar" description="main target (default)">
     <echo>Done building</echo>
   </target>
   

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.sec.resources.ResourceClass;
 
 /**
@@ -16,6 +18,11 @@ import com.kas.sec.resources.ResourceClass;
  */
 public class AccessList extends AKasObject
 {
+  /**
+   * Logger
+   */
+  private ILogger mLogger;
+  
   /**
    * The list of {@link AccessEntry access entries}
    */
@@ -33,25 +40,36 @@ public class AccessList extends AKasObject
    */
   AccessList(AccessLevel defaultAccessLevel)
   {
+    mLogger = LoggerFactory.getLogger(this.getClass());
     mAccessList = new ArrayList<AccessEntry>();
     mDefaultAccessEntry = new AccessEntry(".*");
   }
   
   /**
    * Get the {@link AccessEntry} that will be used to check what level of permissions
-   * will be granted to the specified {@code resource}.
+   * will be granted when accessing the specified {@code resource}.
    * 
    * @param resource The resource checked
    * @return the matching {@link AccessEntry} that protects the specified resource
    */
   public AccessEntry getAccessEntry(String resource)
   {
-    for (AccessEntry ace : mAccessList)
+    mLogger.debug("AccessList::getAccessEntry() - IN");
+    
+    AccessEntry result = mDefaultAccessEntry;
+    boolean found = false;
+    for (int i = 0; !found && i < mAccessList.size(); ++i)
     {
+      AccessEntry ace = mAccessList.get(i);
       if (ace.isMatched(resource))
-        return ace;
+      {
+        found = true;
+        result = ace;
+      }
     }
-    return mDefaultAccessEntry;
+    
+    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.toString());
+    return result;
   }
   
   /**
