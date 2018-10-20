@@ -33,7 +33,6 @@
   <!-- compiling sources -->
   <target name="compile" depends="clean, prepare" description="compile sources">
     <javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
-      <exclude name="module-info.java"/>
       <classpath id="${ant.project.name}-ClassPath">
         <pathelement location="${infra.jar}" />
         <pathelement location="${config.jar}" />
@@ -45,11 +44,7 @@
   
   <!-- creating archive -->
   <target name="jar" depends="compile" description="generate jar file">
-    <jar destfile="${lib}/${ant.project.name}.jar"
-       basedir="${bin}"
-       includes="com/kas/**/*.class"
-       excludes="**/Test*.class">
-    </jar>
+    <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" />
   </target>
 
 </project>

@@ -6,6 +6,7 @@
   <!-- ===================================================== -->
     
   <include file="../kas-data/build/dir.xml"/>
+  <include file="../kas-data/build/jar.xml"/>
   <include file="../kas-data/build/debug.xml"/>
     
   <!-- ===================================================== -->
@@ -32,9 +33,8 @@
   <!-- compiling sources -->
   <target name="compile" depends="clean, prepare" description="compile sources">
   	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
-      <exclude name="module-info.java"/>
       <classpath id="${ant.project.name}-ClassPath">
-        <pathelement location="../kas-infra/lib/kas-infra.jar" />
+        <pathelement location="${infra.jar}" />
       </classpath>
     </javac>
   </target>

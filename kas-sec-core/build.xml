@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="kas-mq-core" default="main" basedir=".">
+<project name="kas-sec-core" default="main" basedir=".">
   
   <!-- ===================================================== -->
   <!-- included files                                        -->
   <!-- ===================================================== -->
   
   <include file="../kas-data/build/dir.xml"/>
-  <include file="../kas-data/build/jar.xml"/>
   <include file="../kas-data/build/debug.xml"/>
   
   <!-- ===================================================== -->
@@ -21,23 +20,37 @@
   <!-- cleaning previous build output -->
   <target name="clean" description="clean up old outputs">
     <delete dir="${bin}"/>
+    <delete dir="${tbin}"/>
     <delete dir="${lib}"/>
+    <delete dir="${reports}"/>
+    <delete dir="${thirdparty}"/>
   </target>
   
   <!-- preparing for build -->
   <target name="prepare" depends="clean" description="prepare output directories">
-    <mkdir dir="${bin}"/>
+  	<mkdir dir="${bin}"/>
+    <mkdir dir="${tbin}"/>
     <mkdir dir="${lib}"/>
+    <mkdir dir="${reports}"/>
+    <mkdir dir="${thirdparty}"/>
+    <copy todir="${thirdparty}">
+      <fileset dir="../kas-data/thirdparty"/>
+    </copy>
   </target>
   
   <!-- compiling sources -->
   <target name="compile" depends="clean, prepare" description="compile sources">
-  	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
-      <classpath id="${ant.project.name}-ClassPath">
+  	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}" >
+  	  <classpath id="${ant.project.name}-ClassPath">
         <pathelement location="${infra.jar}" />
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
-        <pathelement location="${comm.jar}" />
+      </classpath>
+    </javac>
+    <javac includeantruntime="false" srcdir="${test}" destdir="${tbin}" debug="${debug}" debuglevel="${debuglevel}">
+      <classpath id="${ant.project.name}-ClassPath">
+        <pathelement location="${bin}"/>
+        <pathelement location="${thirdparty}/junit-4.10.jar" />
       </classpath>
     </javac>
   </target>
@@ -47,4 +60,23 @@
     <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" />
   </target>
 
+  <!-- unit testings -->
+  <target name="test" depends="jar" description="generate jar file">
+    <junit printsummary="yes" haltonfailure="no">
+      <classpath>
+        <pathelement location="${bin}"/>
+        <pathelement location="${tbin}"/>
+        <pathelement location="${thirdparty}/junit-4.10.jar"/>
+      </classpath>
+      <formatter type="plain"/>
+      <formatter type="xml"/>
+      <batchtest fork="yes" todir="${reports}">
+        <fileset dir="${test}">
+          <include name="**/*.java"/>
+          <exclude name="**/TestRunner.java"/>
+        </fileset>
+      </batchtest>
+    </junit>
+  </target>
+  
 </project>

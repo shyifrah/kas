@@ -53,9 +53,9 @@
   <target name="jar" depends="compile" description="generate jar file">
     <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" />
   </target>
-
-  <!-- unit testings -->
-  <target name="test" depends="jar" description="generate jar file">
+  
+  <!-- unit testing -->
+  <target name="test" depends="jar" description="unit testing">
     <junit printsummary="yes" haltonfailure="no">
       <classpath>
         <pathelement location="${bin}"/>
