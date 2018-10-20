@@ -8,7 +8,6 @@ import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.MqConfiguration;
 import com.kas.mq.admin.commands.CliCommandFactory;
 import com.kas.mq.admin.commands.ICliCommand;
 import com.kas.mq.impl.MqContext;
@@ -24,12 +23,6 @@ public class KasMqAdmin extends AKasAppl
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
   
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
-  
-  
-  /**
-   * KAS/MQ server's configuration
-   */
-  private MqConfiguration mConfig = null;
   
   /**
    * A {@link MqContext} which will act as the client
@@ -58,41 +51,21 @@ public class KasMqAdmin extends AKasAppl
   
   /**
    * Initializing the KAS/MQ admin CLI.<br>
-   * <br>
-   * Initialization consisting of:
-   * - configuration initialization
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean appInit()
   {
-    boolean init = true;
-    
-    mConfig = new MqConfiguration();
-    mConfig.init();
-    if (!mConfig.isInitialized())
-    {
-      init = false;
-    }
-    else
-    {
-      mConfig.register(this);
-    }
-    
-    return init;
+    return true;
   }
   
   /**
    * Terminating the KAS/MQ admin CLI.<br>
-   * <br>
-   * Termination consisting of:
-   * - configuration termination
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public synchronized boolean appTerm()
   {
-    mConfig.term();
     return true;
   }
   
@@ -232,7 +205,6 @@ public class KasMqAdmin extends AKasAppl
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Config=(").append(StringUtils.asPrintableString(mConfig)).append(")\n")
       .append(pad).append("  ShutdownHook=(").append(StringUtils.asPrintableString(mShutdownHook)).append(")\n")
       .append(pad).append("  Context=(").append(mClient.toPrintableString(0)).append(")\n");
     sb.append(pad).append(")\n");
