@@ -1,4 +1,4 @@
-package com.kas.db;
+package com.kas.mq.server.db;
 
 import java.util.HashSet;
 import com.kas.config.impl.AConfiguration;
@@ -12,12 +12,12 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class DbConfiguration extends AConfiguration implements IBaseRegistrar
+public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
 {
   /**
    * Configuration prefixes
    */
-  static private final String  cDbConfigPrefix  = "kas.db.";
+  static private final String  cDbConfigPrefix  = "kas.mq.db.";
   
   /**
    * Default values
