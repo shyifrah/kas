@@ -5,10 +5,10 @@ import org.junit.Test;
 
 public class TestAccessLevel
 {
-  private AccessLevel mReadOnly = new AccessLevel(AccessLevel.READ);
-  private AccessLevel mWriteOnly = new AccessLevel(AccessLevel.WRITE);;
+  private AccessLevel mReadOnly  = new AccessLevel(AccessLevel.READ);
+  private AccessLevel mWriteOnly = new AccessLevel(AccessLevel.WRITE);
   private AccessLevel mReadWrite = new AccessLevel((byte)(AccessLevel.READ | AccessLevel.WRITE));
-  private AccessLevel mReadAlter = new AccessLevel((byte)(AccessLevel.READ | AccessLevel.ALTER));;
+  private AccessLevel mReadAlter = new AccessLevel((byte)(AccessLevel.READ | AccessLevel.ALTER));
   
   
   @Test
