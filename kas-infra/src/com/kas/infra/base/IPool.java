@@ -22,4 +22,9 @@ public interface IPool<T> extends IObject
    * @param pobj The pooled object to release
    */
   public abstract void release(T pobj);
+  
+  /**
+   * Shutdown the pool
+   */
+  public abstract void shutdown();
 }
