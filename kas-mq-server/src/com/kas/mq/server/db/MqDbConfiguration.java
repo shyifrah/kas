@@ -22,12 +22,13 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Default values
    */
-  static public final String  cDefaultDbType     = "mysql";
-  static public final String  cDefaultHostName   = "localhost";
-  static public final int     cDefaultPort       = 3306;
-  static public final String  cDefaultSchemaName = "kas";
-  static public final String  cDefaultUserName   = null;
-  static public final String  cDefaultPassword   = null;
+  static public final String  cDefaultDbType         = "mysql";
+  static public final String  cDefaultHostName       = "localhost";
+  static public final int     cDefaultPort           = 3306;
+  static public final String  cDefaultSchemaName     = "kas";
+  static public final String  cDefaultUserName       = null;
+  static public final String  cDefaultPassword       = null;
+  static public final int     cDefaultMaxConnections = 20;
   
   /**
    * Logger
@@ -65,6 +66,11 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
   private String mPassword = cDefaultPassword;
   
   /**
+   * The maximum number of active DB connections
+   */
+  private int mMaxConnections = cDefaultMaxConnections;
+  
+  /**
    * A set of configuration listener objects.<br>
    * When configuration changes, all listeners are notified
    */
@@ -75,16 +81,17 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
    */
   public void refresh()
   {
-    mLogger.debug("DbConfiguration::refresh() - IN");
+    mLogger.debug("MqDbConfiguration::refresh() - IN");
     
-    mDbType     = mMainConfig.getStringProperty  ( cDbConfigPrefix + "type"     , mDbType     );
-    mHostName   = mMainConfig.getStringProperty  ( cDbConfigPrefix + "host"     , mHostName   );
-    mPort       = mMainConfig.getIntProperty     ( cDbConfigPrefix + "port"     , mPort       );
-    mSchemaName = mMainConfig.getStringProperty  ( cDbConfigPrefix + "schema"   , mSchemaName );
-    mUserName   = mMainConfig.getStringProperty  ( cDbConfigPrefix + "username" , mUserName   );
-    mPassword   = mMainConfig.getStringProperty  ( cDbConfigPrefix + "password" , mPassword   );
+    mDbType         = mMainConfig.getStringProperty  ( cDbConfigPrefix + "type"           , mDbType         );
+    mHostName       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "host"           , mHostName       );
+    mPort           = mMainConfig.getIntProperty     ( cDbConfigPrefix + "port"           , mPort           );
+    mSchemaName     = mMainConfig.getStringProperty  ( cDbConfigPrefix + "schema"         , mSchemaName     );
+    mUserName       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "username"       , mUserName       );
+    mPassword       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "password"       , mPassword       );
+    mMaxConnections = mMainConfig.getIntProperty     ( cDbConfigPrefix + "maxConnections" , mMaxConnections );
     
-    mLogger.debug("DbConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
+    mLogger.debug("MqDbConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
     for (IBaseListener listener : mListeners)
       listener.refresh();
     
@@ -176,6 +183,15 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
   }
   
   /**
+   * Get the maximum number of active DB connections
+   * @return
+   */
+  public int getMaxConnections()
+  {
+    return mMaxConnections;
+  }
+  
+  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -192,6 +208,7 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
       .append(pad).append("  Host=").append(mHostName).append("\n")
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  Schema=").append(mSchemaName).append("\n")
+      .append(pad).append("  MaxConnections=").append(mMaxConnections).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }
