@@ -1,7 +1,6 @@
 package com.kas.mq.server.db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,49 +13,66 @@ import com.kas.mq.server.db.dao.UsersDao;
 
 public class ServerDbController extends AKasObject implements IInitializable
 {
+  /**
+   * Logger
+   */
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
+  /**
+   * Configuration
+   */
   private MqDbConfiguration mConfig = null;
   
+  /**
+   * Connection pool
+   */
+  private DbConnectionPool mPool = null;
+  
+  /**
+   * DAO objects
+   */
   private UsersDao  mUsersDao  = null;
   private GroupsDao mGroupsDao = null;
   
+  /**
+   * Initialize the DB controller
+   * 
+   * @return {@code true} if initialization completed successfully, {@code false} otherwise
+   */
   public boolean init()
   {
-    mLogger.debug("ServerDbController::init() - IN");
-    
-    boolean success = true;
     mConfig = new MqDbConfiguration();
     mConfig.init();
     if (!mConfig.isInitialized())
-      success = false;
-    
-    String dbVersion = getDbVersion();
-    if (dbVersion == null)
-      success = false;
-    else
-      mLogger.info("Server successfully established connection to MySQL V" + dbVersion);
-    
-    if (success)
     {
-      mUsersDao  = new UsersDao(this);
-      mGroupsDao = new GroupsDao(this);
+      mLogger.error("Failed to load KAS/MQ DB configuration");
+      return false;
     }
     
-    mLogger.debug("ServerDbController::init() - OUT, Returns=" + success);
-    return success;
+    mPool = new DbConnectionPool(mConfig);
+    String dbVersion = getDbVersion();
+    if (dbVersion == null)
+    {
+      mLogger.error("Failed to extract DB version");
+      return false;
+    }
+    
+    mUsersDao  = new UsersDao(this);
+    mGroupsDao = new GroupsDao(this);
+    
+    return true;
   }
   
+  /**
+   * Terminate the DB controller
+   * 
+   * @return {@code true} if termination completed successfully, {@code false} otherwise
+   */
   public boolean term()
   {
-    mLogger.debug("ServerDbController::term() - IN");
-    
-    boolean success = true;
-    
+    mPool.shutdown();
     mConfig.term();
-    
-    mLogger.debug("ServerDbController::term() - OUT, Returns=" + success);
-    return success;
+    return true;
   }
   
   /**
@@ -67,39 +83,31 @@ public class ServerDbController extends AKasObject implements IInitializable
   private String getDbVersion()
   {
     String version = null;
-    String url = new StringBuilder()
-        .append("jdbc:")
-        .append(mConfig.getDbType())
-        .append("://)")
-        .append(mConfig.getHost())
-        .append(':')
-        .append(mConfig.getPort())
-        .append('/')
-        .append(mConfig.getSchemaName()).toString();
-    
-    String user = mConfig.getUserName();
-    String password = mConfig.getPassword();
-    String query = "SELECT VERSION() AS VER";
-
+    DbConnection dbConn = mPool.allocate();
+    Connection conn = dbConn.getConnection();
     try
     {
-      Class.forName("com.mysql.jdbc.Driver");
-      Connection con = DriverManager.getConnection(url, user, password);
-      PreparedStatement st = con.prepareStatement(query);
+      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
       ResultSet rs = st.executeQuery();
       if (rs.next())
-      {
         version = rs.getString("VER");
-      }
     }
-    catch (ClassNotFoundException | SQLException ex) {}
+    catch (SQLException ex) {}
+    
+    mPool.release(dbConn);
     return version;
   }
   
-  @Override
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
-    // TODO Auto-generated method stub
     return null;
   }
 }
