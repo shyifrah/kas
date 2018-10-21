@@ -9,5 +9,6 @@
   <property name="comm.jar"       location="../kas-comm/lib/kas-comm.jar"/>
   <property name="appl.jar"       location="../kas-appl/lib/kas-appl.jar"/>
   <property name="mq-core.jar"    location="../kas-mq-core/lib/kas-mq-core.jar"/>
+  <property name="sec-core.jar"   location="../kas-sec-core/lib/kas-sec-core.jar"/>
 
 </project>
