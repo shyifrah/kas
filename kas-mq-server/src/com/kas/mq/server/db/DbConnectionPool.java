@@ -12,6 +12,7 @@ import com.kas.infra.base.IPool;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.mq.server.MqDbConfiguration;
 
 /**
  * A pool of database connections
@@ -45,23 +46,12 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * The connection string as computed after analyzing configuration
    */
-  private String mConnectionString = null;
-  
-  /**
-   * The user name and password that will be used to access the DB
-   */
-  private String mUserName = null;
-  private String mPassword = null;
+  private String mConnUrl = null;
   
   /**
    * The name of the JDBC driver. This is driven from the DB type
    */
   private String mJdbcClassName = null;
-  
-  /**
-   * Maximum number of connections
-   */
-  private int mMaxConnections;
   
   /**
    * The connections map
@@ -73,7 +63,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    * 
    * @param config The configuration object
    */
-  DbConnectionPool(MqDbConfiguration config)
+  public DbConnectionPool(MqDbConfiguration config)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     
@@ -82,14 +72,11 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     String dbType = mConfig.getDbType().toLowerCase();
     String schema = mConfig.getSchemaName().toLowerCase();
     
-    mConnectionString = new StringBuilder()
+    mConnUrl = new StringBuilder()
       .append("jdbc:").append(dbType).append("://)")
       .append(mConfig.getHost()).append(':').append(mConfig.getPort()).append('/')
       .append(schema).append("?useSSL=false&serverTimezone=UTC").toString();
     
-    mUserName = mConfig.getUserName();
-    mPassword = mConfig.getPassword();
-    mMaxConnections = mConfig.getMaxConnections();
     mConnMap = new ConcurrentHashMap<UniqueId, DbConnection>();
     
     switch (dbType)
@@ -122,7 +109,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     
     DbConnection dbConn = null;
     
-    if (mConnMap.size() < mMaxConnections)
+    if (mConnMap.size() < mConfig.getMaxConnections())
     {
       Connection conn = createConnection();
       if (conn != null)
@@ -189,7 +176,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     Connection conn = null;
     try
     {
-      conn = DriverManager.getConnection(mConnectionString, mUserName, mPassword);
+      conn = DriverManager.getConnection(mConnUrl, mConfig.getUserName(), mConfig.getPassword());
     }
     catch (SQLException ex) {}
     return conn;
@@ -208,9 +195,8 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Connection URL=").append(mConnectionString).append("\n")
+      .append(pad).append("  Connection URL=").append(mConnUrl).append("\n")
       .append(pad).append("  Driver=").append(mJdbcClassName).append("\n")
-      .append(pad).append("  Limit=").append(mMaxConnections).append(" connections\n")
       .append(pad).append(")");
     return sb.toString();
   }
