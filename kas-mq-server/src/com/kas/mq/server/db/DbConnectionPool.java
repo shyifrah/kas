@@ -24,6 +24,24 @@ import com.kas.mq.server.MqDbConfiguration;
 public class DbConnectionPool extends AKasObject implements IPool<DbConnection> 
 {
   /**
+   * The pool that will actually be used
+   */
+  static private DbConnectionPool sInstance = null;
+  
+  /**
+   * Get the pool
+   * 
+   * @return the instance previously created
+   */
+  static public DbConnectionPool getPool()
+  {
+    if (sInstance == null)
+      throw new RuntimeException("DbConnectionPool was not initialized");
+    
+    return sInstance;
+  }
+  
+  /**
    * DB types.<br>
    * Currently, only MySQL is supported
    */
@@ -67,6 +85,9 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    */
   public DbConnectionPool(MqDbConfiguration config)
   {
+    if (sInstance != null)
+      throw new RuntimeException("Multiple instances of DbConnectionPool are prohibited");
+    
     mLogger = LoggerFactory.getLogger(this.getClass());
     
     mConfig = config;
@@ -153,7 +174,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    */
   public boolean init()
   {
-    mLogger.debug("DbConnectionPool::startup() - IN");
+    mLogger.debug("DbConnectionPool::init() - IN");
     
     boolean success = true;
     
@@ -174,9 +195,13 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     
     release(dbConn);
     
-    mLogger.info("DbConnectionPool::startup() - Connection pool successfully connected to DB and got its version: " + version);
+    if (success)
+    {
+      mLogger.info("DbConnectionPool::init() - Connection pool successfully connected to DB and got its version: " + version);
+      sInstance = this;
+    }
     
-    mLogger.debug("DbConnectionPool::startup() - OUT, Returns=" + success);
+    mLogger.debug("DbConnectionPool::init() - OUT, Returns=" + success);
     return success;
   }
   
@@ -187,21 +212,22 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    */
   public boolean term()
   {
-    mLogger.debug("DbConnectionPool::shutdown() - IN");
+    mLogger.debug("DbConnectionPool::term() - IN");
     
     Collection<DbConnection> col = mConnMap.values();
     for (Iterator<DbConnection> iter = col.iterator(); iter.hasNext();)
     {
       DbConnection conn = iter.next();
       UniqueId id = conn.getConnId();
-      mLogger.debug("DbConnectionPool::shutdown() - Closing connection ID " + id);
+      mLogger.debug("DbConnectionPool::term() - Closing connection ID " + id);
       conn.close();
       iter.remove();
     }
     
     mConnMap.clear();
+    sInstance = null;
     
-    mLogger.debug("DbConnectionPool::shutdown() - OUT");
+    mLogger.debug("DbConnectionPool::term() - OUT");
     return true;
   }
   

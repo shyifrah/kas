@@ -27,7 +27,7 @@ public interface IDao<T> extends IObject
   public abstract List<T> getAll();
    
   /**
-   * Save current object to the data layer
+   * Save specified object to the data layer
    * 
    * @param t The object to be saved
    */
