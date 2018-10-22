@@ -1,4 +1,4 @@
-package com.kas.mq.server.db;
+package com.kas.mq.server;
 
 import java.util.HashSet;
 import com.kas.config.impl.AConfiguration;
