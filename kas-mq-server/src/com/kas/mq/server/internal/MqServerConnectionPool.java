@@ -102,25 +102,38 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   }
   
   /**
-   * Closing all connections and clearing the map
+   * Initialize the connection pool
+   * 
+   * @return always {@code true}, nothing to initialize
    */
-  public void shutdown()
+  public boolean init()
   {
-    mLogger.debug("MqServerConnectionPool::shutdown() - IN");
+    return true;
+  }
+  
+  /**
+   * Terminate the connection pool
+   * 
+   * @return always {@code true}
+   */
+  public boolean term()
+  {
+    mLogger.debug("MqServerConnectionPool::term() - IN");
     
     Collection<MqServerConnection> col = mConnections.values();
     for (Iterator<MqServerConnection> iter = col.iterator(); iter.hasNext();)
     {
       MqServerConnection conn = iter.next();
       UniqueId id = conn.getConnectionId();
-      mLogger.debug("MqServerConnectionPool::shutdown() - Closing connection ID " + id);
+      mLogger.debug("MqServerConnectionPool::term() - Closing connection ID " + id);
       conn.disconnect();
       iter.remove();
     }
     
     mConnections.clear();
     
-    mLogger.debug("MqServerConnectionPool::shutdown() - OUT");
+    mLogger.debug("MqServerConnectionPool::term() - OUT");
+    return true;
   }
   
   /**
