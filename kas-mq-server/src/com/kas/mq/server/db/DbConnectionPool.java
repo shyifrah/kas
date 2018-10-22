@@ -17,7 +17,10 @@ import com.kas.logging.LoggerFactory;
 import com.kas.mq.server.MqDbConfiguration;
 
 /**
- * A pool of database connections
+ * A pool of database connections.<br>
+ * <br>
+ * The pool is first accessed by {@link com.kas.mq.server.KasMqServer} so it can initialize it
+ * by calling {@link #init()}. Following that access, this class acts just as a regular singleton.
  * 
  * @author Pippo
  */
