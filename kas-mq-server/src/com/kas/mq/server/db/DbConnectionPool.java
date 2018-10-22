@@ -2,6 +2,8 @@ package com.kas.mq.server.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -145,9 +147,45 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   }
   
   /**
-   * Closing all connections and clearing the map
+   * Check DB connectivity and get its version
+   * 
+   * @return {@code true} if connectivity works fine, {@code false} otherwise
    */
-  public void shutdown()
+  public boolean init()
+  {
+    mLogger.debug("DbConnectionPool::startup() - IN");
+    
+    boolean success = true;
+    
+    String version = null;
+    DbConnection dbConn = allocate();
+    Connection conn = dbConn.getConnection();
+    try
+    {
+      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
+      ResultSet rs = st.executeQuery();
+      if (rs.next())
+        version = rs.getString("VER");
+    }
+    catch (SQLException ex)
+    {
+      success = false;
+    }
+    
+    release(dbConn);
+    
+    mLogger.info("DbConnectionPool::startup() - Connection pool successfully connected to DB and got its version: " + version);
+    
+    mLogger.debug("DbConnectionPool::startup() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
+   * Closing all connections and clearing the map
+   * 
+   * @return {@code true} 
+   */
+  public boolean term()
   {
     mLogger.debug("DbConnectionPool::shutdown() - IN");
     
@@ -164,6 +202,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     mConnMap.clear();
     
     mLogger.debug("DbConnectionPool::shutdown() - OUT");
+    return true;
   }
   
   /**
