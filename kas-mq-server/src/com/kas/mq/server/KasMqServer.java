@@ -91,7 +91,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
    * Initialization consisting of:
    * - super class initialization
    * - creating and initializing configuration object
-   * - creating the db connection pool
+   * - creating and initializing the db connection pool
    * - creating the server's repository
    * - start the housekeeper
    * - creating session controller
@@ -111,6 +111,13 @@ public class KasMqServer extends AKasAppl implements IMqServer
     mConfig.register(this);
     
     mDbConnPool = new DbConnectionPool(mConfig.getDbConfiguration());
+    boolean init = mDbConnPool.init();
+    if (!init)
+    {
+      mLogger.fatal("DB connection pool failed initialization");
+      return false;
+    }
+    
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
     mController = new SessionController(this);
@@ -128,7 +135,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
       return false;
     }
     
-    boolean init = mRepository.init();
+    init = mRepository.init();
     if (!init)
     {
       mLogger.fatal("Server repository failed initialization");
@@ -179,7 +186,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
       mLogger.warn("An error occurred while trying to close server socket", e);
     }
     
-    mDbConnPool.shutdown();
+    mDbConnPool.term();
     
     mConfig.term();
     return true;
