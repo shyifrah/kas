@@ -26,6 +26,7 @@
     <delete dir="${conf}"/>
     <delete dir="${logs}"/>
     <delete dir="${repo}"/>
+    <delete dir="${thirdparty}"/>
   </target>
   
   <!-- preparing for build -->
@@ -34,6 +35,10 @@
     <mkdir dir="${lib}"/>
   	<mkdir dir="${logs}"/>
     <mkdir dir="${repo}"/>
+    <mkdir dir="${thirdparty}"/>
+    <copy todir="${thirdparty}">
+      <fileset dir="../kas-data/thirdparty"/>
+    </copy>
     <buildnumber file="${res}/buildnumber.txt"/>
     <subant target="main">
       <fileset dir="${infra}"      includes="build.xml"/>
