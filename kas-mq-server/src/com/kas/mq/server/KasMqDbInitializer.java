@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Map;
 import com.kas.appl.AKasAppl;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.server.db.ResultSetHelper;
 
 public class KasMqDbInitializer extends AKasAppl
 {
@@ -23,7 +24,7 @@ public class KasMqDbInitializer extends AKasAppl
    * 
    * @param args The startup arguments
    */
-  protected KasMqDbInitializer(Map<String, String> args)
+  public KasMqDbInitializer(Map<String, String> args)
   {
     super(args);
   }
@@ -63,23 +64,41 @@ public class KasMqDbInitializer extends AKasAppl
     writeln("kas.mq.db.username...: [" + user + "]");
     writeln("kas.mq.db.password...: [" + pswd + "]");
     
-    // connect to DB
     try
     {
       String url = String.format("jdbc:%s://%s:%s/%s?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&user=%s&password=%s", dbtype, host, port, schema, user, pswd);
       mConnection = DriverManager.getConnection(url);
       
       execute("DROP TABLE IF EXISTS %s.kas_mq_users;", schema);
-      execute("CREATE TABLE %s.kas_mq_users (user_name VARCHAR(20), password VARCHAR(50), uuid BINARY(16));", schema);
+      execute("CREATE TABLE %s.kas_mq_users ( " +
+        "id          INT AUTO_INCREMENT NOT NULL PRIMARY KEY, " +
+        "name        VARCHAR(20) NOT NULL UNIQUE, " +
+        "description VARCHAR(100), " +
+        "password    VARCHAR(50));", schema);
+      
       execute("DROP TABLE IF EXISTS %s.kas_mq_groups;", schema);
-      execute("CREATE TABLE %s.kas_mq_groups (group_name VARCHAR(20), uuid BINARY(16));", schema);
+      execute("CREATE TABLE %s.kas_mq_groups ( " +
+        "id          INT AUTO_INCREMENT NOT NULL PRIMARY KEY, " +
+        "name        VARCHAR(20) NOT NULL UNIQUE, " +
+        "description VARCHAR(100));", schema);
+      
       execute("DROP TABLE IF EXISTS %s.kas_mq_users_to_groups;", schema);
-      execute("CREATE TABLE %s.kas_mq_users_to_groups (user_uuid BINARY(16), group_uuid BINARY(16));", schema);
+      execute("CREATE TABLE %s.kas_mq_users_to_groups ( " +
+        "user_id     INT NOT NULL, " +
+        "group_id    INT NOT NULL, " +
+        "PRIMARY KEY(user_id, group_id));", schema);
+      
+      ResultSet rs = execute("SHOW TABLES;");
+      ResultSetHelper rsh = new ResultSetHelper(rs);
+      while (rsh.next())
+        mLogger.debug("KasMqDbInitializer::appExec() - Found table: " + rsh.getStringCol(1, ""));
     }
     catch (SQLException e)
     {
       e.printStackTrace();
     }
+    
+    mLogger.debug("KasMqDbInitializer::appExec() - OUT");
   }
   
   /**
@@ -93,14 +112,18 @@ public class KasMqDbInitializer extends AKasAppl
   private ResultSet execute(String fmt, Object... args) throws SQLException
   {
     mLogger.debug("KasMqDbInitializer::execute() - IN");
+    
     if (mConnection == null) throw new SQLException("Null connection");
     
     String sql = String.format(fmt, args);
     ResultSet result = null;
 
+    mLogger.debug("KasMqDbInitializer::execute() - Executing SQL: [" + sql + "]");
     PreparedStatement st = mConnection.prepareStatement(sql);
     boolean b = st.execute();
     if (b) result = st.getResultSet();
+    
+    mLogger.debug("KasMqDbInitializer::execute() - HaveResult: [" + b + "]");
     
     mLogger.debug("KasMqDbInitializer::execute() - OUT");
     return result;
