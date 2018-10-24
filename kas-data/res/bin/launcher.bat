@@ -14,9 +14,14 @@ pushd %KAS_HOME%
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-:: determine which JAR should be excluded from CLASS_PATH and construct it
+:: construct CLASS_PATH
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 for %%I in (%KAS_HOME%\lib\*.jar) do (
+  set "JAR_NAME=%%I"
+  set "CLASS_PATH=!JAR_NAME!;!CLASS_PATH!"
+)
+
+for %%I in (%KAS_HOME%\thirdparty\*.jar) do (
   set "JAR_NAME=%%I"
   set "CLASS_PATH=!JAR_NAME!;!CLASS_PATH!"
 )
