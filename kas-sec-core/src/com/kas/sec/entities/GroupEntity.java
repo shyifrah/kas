@@ -20,9 +20,16 @@ public class GroupEntity extends Entity implements IGroupEntity
    * 
    * @param name The name of the group
    */
-  GroupEntity(String name)
+  /**
+   * Construct a group with the specified parameters
+   * 
+   * @param id The entity ID
+   * @param name The entity Name
+   * @param desc The entity description
+   */
+  GroupEntity(int id, String name, String desc)
   {
-    super(name);
+    super(id, name, desc);
     mMembers = new ArrayList<IUserEntity>();
   }
   

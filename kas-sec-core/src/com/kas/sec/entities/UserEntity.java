@@ -27,21 +27,20 @@ public class UserEntity extends Entity implements IUserEntity
    * 
    * @param name The name of the entity
    */
-  UserEntity(String name, String password)
-  {
-    super(name);
-    mPassword = Base64Utils.encode(password.getBytes());
-    mGroups = new ArrayList<IGroupEntity>();
-  }
   
   /**
-   * Construct a user entity with the specified name
+   * Construct a new user entity with the specified parameters and
+   * an empty list of groups attached.
    * 
-   * @param name The name of the entity
+   * @param id The entity ID
+   * @param name The entity Name
+   * @param desc The entity description
+   * @param password The user's password
    */
-  UserEntity(String name)
+  UserEntity(int id, String name, String desc, String password)
   {
-    super(name);
+    super(id, name, desc);
+    mPassword = Base64Utils.encode(password.getBytes());
     mGroups = new ArrayList<IGroupEntity>();
   }
   
