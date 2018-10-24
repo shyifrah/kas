@@ -3,19 +3,11 @@ package com.kas.mq.server.db.dao;
 import java.util.List;
 import com.kas.infra.base.IDao;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.server.db.ServerDbController;
 import com.kas.sec.entities.GroupEntity;
 
 public class GroupsDao implements IDao<GroupEntity>
 {
-  private static final String cKasGroupsTableName = "kas.groups";
-  
-  private ServerDbController mController;
-  
-  public GroupsDao(ServerDbController controller)
-  {
-    mController = controller;
-  }
+  private static final String cKasGroupsTableName = "kas_mq_groups";
   
   @Override
   public GroupEntity get(UniqueId id)

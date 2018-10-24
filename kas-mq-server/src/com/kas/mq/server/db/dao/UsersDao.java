@@ -1,10 +1,7 @@
 package com.kas.mq.server.db.dao;
 
 import java.util.List;
-import com.kas.infra.base.IDao;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.server.db.DbConnectionPool;
-import com.kas.mq.server.db.ServerDbController;
 import com.kas.sec.entities.UserEntity;
 
 /**
@@ -14,8 +11,8 @@ import com.kas.sec.entities.UserEntity;
  */
 public class UsersDao // implements IDao<UserEntity>
 {
-  private static final String cKasUsersTable = "kas.users";
-  private static final String cKasUsersToGroupsTable = "kas.users.to.groups";
+  private static final String cKasUsersTable = "kas_mq_users";
+  private static final String cKasUsersToGroupsTable = "kas_mq_users_to_groups";
   
   static public UserEntity getById(int id)
   {
