@@ -32,6 +32,18 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   static private DbConnectionPool sInstance = null;
   
   /**
+   * Get the pool with specific configuration object so it can be initialized
+   * 
+   * @param config The {@link MqDbConfiguration} object that will initialize the pool
+   * @return the instance previously created
+   */
+  static public void init(MqDbConfiguration config)
+  {
+    sInstance = new DbConnectionPool(config);
+    sInstance.getDbVersion();
+  }
+  
+  /**
    * Get the pool
    * 
    * @return the instance previously created
@@ -86,7 +98,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    * 
    * @param config The configuration object
    */
-  public DbConnectionPool(MqDbConfiguration config)
+  private DbConnectionPool(MqDbConfiguration config)
   {
     if (sInstance != null)
       throw new RuntimeException("Multiple instances of DbConnectionPool are prohibited");
@@ -175,9 +187,9 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    * 
    * @return {@code true} if connectivity works fine, {@code false} otherwise
    */
-  public boolean init()
+  public boolean getDbVersion()
   {
-    mLogger.debug("DbConnectionPool::init() - IN");
+    mLogger.debug("DbConnectionPool::getDbVersion() - IN");
     
     boolean success = true;
     
@@ -200,29 +212,27 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     
     if (success)
     {
-      mLogger.info("DbConnectionPool::init() - Connection pool successfully connected to DB and got its version: " + version);
+      mLogger.info("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB and got its version: " + version);
       sInstance = this;
     }
     
-    mLogger.debug("DbConnectionPool::init() - OUT, Returns=" + success);
+    mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + success);
     return success;
   }
   
   /**
-   * Closing all connections and clearing the map
-   * 
-   * @return {@code true} 
+   * Closing all connections and clearing the map 
    */
-  public boolean term()
+  public void shutdown()
   {
-    mLogger.debug("DbConnectionPool::term() - IN");
+    mLogger.debug("DbConnectionPool::shutdown() - IN");
     
     Collection<DbConnection> col = mConnMap.values();
     for (Iterator<DbConnection> iter = col.iterator(); iter.hasNext();)
     {
       DbConnection conn = iter.next();
       UniqueId id = conn.getConnId();
-      mLogger.debug("DbConnectionPool::term() - Closing connection ID " + id);
+      mLogger.debug("DbConnectionPool::shutdown() - Closing connection ID " + id);
       conn.close();
       iter.remove();
     }
@@ -230,8 +240,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     mConnMap.clear();
     sInstance = null;
     
-    mLogger.debug("DbConnectionPool::term() - OUT");
-    return true;
+    mLogger.debug("DbConnectionPool::shutdown() - OUT");
   }
   
   /**

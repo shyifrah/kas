@@ -110,13 +110,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
     
     mConfig.register(this);
     
-    mDbConnPool = new DbConnectionPool(mConfig.getDbConfiguration());
-    boolean init = mDbConnPool.init();
-    if (!init)
-    {
-      mLogger.fatal("DB connection pool failed initialization");
-      return false;
-    }
+    DbConnectionPool.init(mConfig.getDbConfiguration());
     
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
@@ -135,7 +129,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
       return false;
     }
     
-    init = mRepository.init();
+    boolean init = mRepository.init();
     if (!init)
     {
       mLogger.fatal("Server repository failed initialization");
@@ -186,7 +180,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
       mLogger.warn("An error occurred while trying to close server socket", e);
     }
     
-    mDbConnPool.term();
+    DbConnectionPool.getPool().shutdown();
     
     mConfig.term();
     return true;

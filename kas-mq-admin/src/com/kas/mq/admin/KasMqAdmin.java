@@ -50,26 +50,6 @@ public class KasMqAdmin extends AKasAppl
   }
   
   /**
-   * Initializing the KAS/MQ admin CLI.<br>
-   * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
-   */
-  public boolean appInit()
-  {
-    return true;
-  }
-  
-  /**
-   * Terminating the KAS/MQ admin CLI.<br>
-   * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
-   */
-  public synchronized boolean appTerm()
-  {
-    return true;
-  }
-  
-  /**
    * Run KAS/MQ admin CLI.<br>
    * <br>
    * The main logic is quite simple: keep reading commands from the command line until
@@ -161,7 +141,7 @@ public class KasMqAdmin extends AKasAppl
   
   /**
    * Reading a command (a single line) from STDIN and return it as a queue of tokens.<br>
-   * The read command is clear-text.
+   * The read input is clear-text.
    * 
    * @param prompt The prompt message to print to the user
    * @return a {@link TokenDeque} containing command's tokens 
@@ -175,21 +155,26 @@ public class KasMqAdmin extends AKasAppl
       tdq = new TokenDeque(input);
     }
     catch (Throwable e) {}
-    
     return tdq;
   }
   
   /**
    * Reading a command (a single line) from STDIN and return it as a queue of tokens.<br>
-   * The read command is masked text.
+   * The read input is masked text.
    * 
    * @param prompt The prompt message to print to the user
    * @return a {@link TokenDeque} containing command's tokens 
    */
   protected TokenDeque readMasked(String prompt)
   {
-    String input = ConsoleUtils.readMaskedText(prompt);
-    return new TokenDeque(input);
+    TokenDeque tdq = null;
+    try
+    {
+      String input = ConsoleUtils.readMaskedText(prompt);
+      tdq = new TokenDeque(input);
+    }
+    catch (Throwable e) {}
+    return tdq;
   }
   
   /**

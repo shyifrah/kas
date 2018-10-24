@@ -77,6 +77,30 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
     
     return init;
   }
+  
+  /**
+   * Initializing the application.<br>
+   * <br>
+   * Most application doesn't require real initialization, so we provide default initialization.
+   * 
+   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   */
+  public boolean appInit()
+  {
+    return true;
+  }
+  
+  /**
+   * Terminating the application.<br>
+   * <br>
+   * Most application doesn't require real termination, so we provide default initialization.
+   * 
+   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   */
+  public boolean appTerm()
+  {
+    return true;
+  }
 
   /**
    * Terminating the base KAS application.<br>

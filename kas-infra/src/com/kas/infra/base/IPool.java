@@ -7,7 +7,7 @@ package com.kas.infra.base;
  *
  * @param <T> A pooled object
  */
-public interface IPool<T> extends IInitializable
+public interface IPool<T>
 {
   /**
    * Allocate a new pooled object
@@ -22,4 +22,9 @@ public interface IPool<T> extends IInitializable
    * @param pobj The pooled object to release
    */
   public abstract void release(T pobj);
+  
+  /**
+   * Shutdown the pool
+   */
+  public abstract void shutdown();
 }
