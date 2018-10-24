@@ -75,12 +75,12 @@ public class SecurityController extends AKasObject
   /**
    * A map of all user entities
    */
-  private Map<UniqueId, UserEntity> mUsers;
+  private Map<Integer, UserEntity> mUsers;
   
   /**
    * A map of all group entities
    */
-  private Map<UniqueId, GroupEntity> mGroups;
+  private Map<Integer, GroupEntity> mGroups;
   
   /**
    * Construct an entity using the specified name
@@ -91,8 +91,8 @@ public class SecurityController extends AKasObject
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mResourcesAccessList = new ConcurrentHashMap<ResourceClass, AccessList>();
-    mUsers  = new ConcurrentHashMap<UniqueId, UserEntity>();
-    mGroups = new ConcurrentHashMap<UniqueId, GroupEntity>();
+    mUsers  = new ConcurrentHashMap<Integer, UserEntity>();
+    mGroups = new ConcurrentHashMap<Integer, GroupEntity>();
   }
   
   /**
@@ -101,7 +101,7 @@ public class SecurityController extends AKasObject
    * @param id The {@link UserEntity}'s ID
    * @return the {@link UserEntity}
    */
-  public UserEntity getUserEntity(UniqueId id)
+  public UserEntity getUserEntity(int id)
   {
     return mUsers.get(id);
   }
@@ -112,7 +112,7 @@ public class SecurityController extends AKasObject
    * @param id The {@link GroupEntity}'s ID
    * @return the {@link GroupEntity}
    */
-  public GroupEntity getGroupEntity(UniqueId id)
+  public GroupEntity getGroupEntity(int id)
   {
     return mGroups.get(id);
   }
@@ -123,7 +123,7 @@ public class SecurityController extends AKasObject
    * @param id The {@link Entity}'s ID
    * @return the {@link Entity}
    */
-  public Entity getEntity(UniqueId id)
+  public Entity getEntity(int  id)
   {
     mLogger.debug("SecurityController::getEntity() - IN");
     
