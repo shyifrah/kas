@@ -14,10 +14,10 @@ public interface IDao<T> extends IObject
   /**
    * Get a specific object
    * 
-   * @param id The object ID that is associated with the object to be retrieved
+   * @param name The name associated with the object to be retrieved
    * @return the specific object, if found, or {@code null} if not
    */
-  public abstract T get(UniqueId id);
+  public abstract T get(String name);
   
   /**
    * Get a list of all objects managed by this DAO

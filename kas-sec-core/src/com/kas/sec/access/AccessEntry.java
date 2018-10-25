@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.sec.SecurityController;
+import com.kas.mq.server.security.SecurityController;
 import com.kas.sec.entities.IGroupEntity;
 import com.kas.sec.entities.UserEntity;
 
@@ -71,7 +71,7 @@ public class AccessEntry extends AKasObject
     }
     else
     {
-      UserEntity user = SecurityController.getInstance().getUserEntity(entityId);
+      UserEntity user = mRegulator.getUserEntity(entityId);
       for (IGroupEntity group : user.getGroups())
       {
         level = mPermittedEntities.get(group.getId());

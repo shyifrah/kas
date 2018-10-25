@@ -1,25 +1,24 @@
-package com.kas.sec;
+package com.kas.mq.server.security;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.sec.access.AccessList;
+import com.kas.mq.server.db.dao.GroupsDao;
+import com.kas.mq.server.db.dao.UsersDao;
+import com.kas.sec.IRegulator;
 import com.kas.sec.entities.Entity;
 import com.kas.sec.entities.GroupEntity;
 import com.kas.sec.entities.UserEntity;
-import com.kas.sec.resources.ResourceClass;
 
 /**
- * An {@link SecurityController} is the main object of KAS/SEC.
- * It is responsible  for managing all entities, resource classes and permissions.
+ * An {@link SecurityRegulator} is the main object of KAS/SEC.
+ * It is responsible for managing all entities, resource classes and permissions.
  * A schematic figure of the relationships between object in this project:
  * <code><br>
  *  +----------------------------+                             +------------+------------------+<br>
  *  |                            |    +-------------------->>> | <userid_1> | <user-entity_1>  |<br>
- *  |    Security Controller     |    |                        | <userid_2> | <user-entity_2>  |<br>
+ *  |    Security Regulator      |    |                        | <userid_2> | <user-entity_2>  |<br>
  *  |                            |    |                        | <userid_3> | <user-entity_3>  |<br>
  *  +----------------------------+    |                        | :          | :                |<br>
  *  | mUsers               >>>---|----+                        | <userid_n> | <user-entity_n>  |<br>
@@ -45,19 +44,19 @@ import com.kas.sec.resources.ResourceClass;
  * 
  * @author Pippo
  */
-public class SecurityController extends AKasObject
+public class SecurityRegulator extends AKasObject implements IRegulator
 {
   /**
    * The singleton instance
    */
-  static private SecurityController sInstance = new SecurityController();
+  static private SecurityRegulator sInstance = new SecurityRegulator();
   
   /**
    * Get the singleton instance
    * 
    * @return the singleton instance
    */
-  static public SecurityController getInstance()
+  static public SecurityRegulator getInstance()
   {
     return sInstance;
   }
@@ -67,74 +66,76 @@ public class SecurityController extends AKasObject
    */
   private ILogger mLogger;
   
-  /**
-   * A map of resource classes to their associated access list
-   */
-  private Map<ResourceClass, AccessList> mResourcesAccessList;
-  
-  /**
-   * A map of all user entities
-   */
-  private Map<Integer, UserEntity> mUsers;
-  
-  /**
-   * A map of all group entities
-   */
-  private Map<Integer, GroupEntity> mGroups;
+  private UsersDao mUsersDao;
+  private GroupsDao mGroupsDao;
   
   /**
    * Construct an entity using the specified name
    * 
    * @param name The name of the entity
    */
-  private SecurityController()
+  private SecurityRegulator()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mResourcesAccessList = new ConcurrentHashMap<ResourceClass, AccessList>();
-    mUsers  = new ConcurrentHashMap<Integer, UserEntity>();
-    mGroups = new ConcurrentHashMap<Integer, GroupEntity>();
   }
   
-  /**
-   * Get a {@link UserEntity} by its {@link UniqueId}
-   * 
-   * @param id The {@link UserEntity}'s ID
-   * @return the {@link UserEntity}
-   */
-  public UserEntity getUserEntity(int id)
+  public void init()
   {
-    return mUsers.get(id);
-  }
-  
-  /**
-   * Get a {@link GroupEntity} by its {@link UniqueId}
-   * 
-   * @param id The {@link GroupEntity}'s ID
-   * @return the {@link GroupEntity}
-   */
-  public GroupEntity getGroupEntity(int id)
-  {
-    return mGroups.get(id);
-  }
-  
-  /**
-   * Get a {@link Entity} by its {@link UniqueId}
-   * 
-   * @param id The {@link Entity}'s ID
-   * @return the {@link Entity}
-   */
-  public Entity getEntity(int  id)
-  {
-    mLogger.debug("SecurityController::getEntity() - IN");
     
-    Entity entity = getUserEntity(id);
-    if (entity == null)
-      entity = getGroupEntity(id);
-    
-    mLogger.debug("SecurityController::getEntity() - OUT, Returns=" + entity.toString());
-    return entity;
   }
   
+  public UsersDao getUsersDao()
+  {
+    return mUsersDao;
+  }
+  
+  public GroupsDao getGroupsDao()
+  {
+    return mGroupsDao;
+  }
+  
+//  /**
+//   * Get a {@link UserEntity} by its {@link UniqueId}
+//   * 
+//   * @param id The {@link UserEntity}'s ID
+//   * @return the {@link UserEntity}
+//   */
+//  public UserEntity getUserEntity(int id)
+//  {
+//    UserEntity ue = null;
+//    return ue;
+//  }
+//  
+//  /**
+//   * Get a {@link GroupEntity} by its {@link UniqueId}
+//   * 
+//   * @param id The {@link GroupEntity}'s ID
+//   * @return the {@link GroupEntity}
+//   */
+//  public GroupEntity getGroupEntity(int id)
+//  {
+//    GroupEntity ge = null;
+//    return ge;
+//  }
+//  
+//  /**
+//   * Get a {@link Entity} by its {@link UniqueId}
+//   * 
+//   * @param id The {@link Entity}'s ID
+//   * @return the {@link Entity}
+//   */
+//  public Entity getEntity(int  id)
+//  {
+//    mLogger.debug("SecurityController::getEntity() - IN");
+//    
+//    Entity entity = getUserEntity(id);
+//    if (entity == null)
+//      entity = getGroupEntity(id);
+//    
+//    mLogger.debug("SecurityController::getEntity() - OUT, Returns=" + entity.toString());
+//    return entity;
+//  }
+//  
   /**
    * Get the object's detailed string representation
    * 
@@ -148,8 +149,6 @@ public class SecurityController extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      //.append(pad).append("  Name=").append(mName).append("\n")
-      //.append(pad).append("  Id=").append(mEntityId.toString()).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

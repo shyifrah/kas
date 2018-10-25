@@ -10,16 +10,16 @@ import com.kas.infra.base.IObject;
 public interface IEntity extends IObject
 {
   /**
-   * Get the entity ID
-   * 
-   * @return the entity ID
-   */
-  public abstract int getId();
-  
-  /**
    * Get the entity name
    * 
    * @return the entity name
    */
   public abstract String getName();
+  
+  /**
+   * Get the entity description
+   * 
+   * @return the entity description
+   */
+  public abstract String getDescription();
 }

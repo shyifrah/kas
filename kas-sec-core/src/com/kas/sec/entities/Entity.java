@@ -7,13 +7,8 @@ import com.kas.infra.base.AKasObject;
  * 
  * @author Pippo
  */
-public class Entity extends AKasObject
+public class Entity extends AKasObject implements IEntity
 {
-  /**
-   * The entity ID
-   */
-  protected int mEntityId;
-  
   /**
    * The name of the entity
    */
@@ -31,21 +26,10 @@ public class Entity extends AKasObject
    * @param name Name of the entity
    * @param desc Description
    */
-  protected Entity(int id, String name, String desc)
+  protected Entity(String name, String desc)
   {
-    mEntityId = id;
     mName = name;
     mDescription = desc;
-  }
-  
-  /**
-   * Get the entity ID
-   * 
-   * @return the entity ID
-   */
-  public int getId()
-  {
-    return mEntityId;
   }
   
   /**
@@ -75,7 +59,7 @@ public class Entity extends AKasObject
    */
   public String toString()
   {
-    return String.format("%s (%d)", mName, mEntityId);
+    return mName;
   }
   
   /**
@@ -92,7 +76,6 @@ public class Entity extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append("  Id=").append(mEntityId).append(")\n")
       .append(pad).append("  Description=").append(mDescription).append(")\n")
       .append(pad).append(")");
     return sb.toString();
