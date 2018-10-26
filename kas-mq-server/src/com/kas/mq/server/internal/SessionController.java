@@ -68,7 +68,7 @@ public class SessionController extends AKasObject implements IController
     mServer = server;
     mConfig = mServer.getConfig();
     mRepository = mServer.getRepository();
-    mEntityManager = new EntityManager(mConfig.getDbConfiguration());
+    mEntityManager = new EntityManager();
   }
   
   /**
@@ -173,6 +173,18 @@ public class SessionController extends AKasObject implements IController
   public IRepository getRepository()
   {
     return mRepository;
+  }
+  
+  /**
+   * Get the {@link EntityManager}
+   * 
+   * @return the the {@link EntityManager}
+   * 
+   * @see com.kas.mq.server.IController#getEntityManager()
+   */
+  public EntityManager getEntityManager()
+  {
+    return mEntityManager;
   }
   
   /**
