@@ -1,6 +1,7 @@
 package com.kas.infra.base;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A DAO interface for managing object in a data layer
@@ -17,7 +18,7 @@ public interface IDao<T> extends IObject
    * @param name The name associated with the object to be retrieved
    * @return the specific object, if found, or {@code null} if not
    */
-  public abstract T get(String name);
+  public abstract T get(int id);
   
   /**
    * Get a list of all objects managed by this DAO
@@ -37,9 +38,9 @@ public interface IDao<T> extends IObject
    * Update a specific object
    * 
    * @param t The object to be updated
-   * @param params A list of parameters to be updated within the object
+   * @param params A map of fields-to-values to be updated within the object
    */
-  public abstract void update(T t, String[] params);
+  public abstract void update(T t, Map<String, String> params);
    
   /**
    * Delete the specified object

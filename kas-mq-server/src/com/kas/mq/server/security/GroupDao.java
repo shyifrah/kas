@@ -1,29 +1,40 @@
-package com.kas.mq.server.db.dao;
+package com.kas.mq.server.security;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import com.kas.infra.base.IDao;
+import com.kas.infra.base.IObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.server.db.DbConnection;
 import com.kas.mq.server.db.DbConnectionPool;
-import com.kas.sec.entities.GroupEntity;
 
-public class GroupsDao
+/**
+ * An implementation layer for {@link GroupEntity}
+ * 
+ * @author Pippo
+ */
+public class GroupDao implements IGroupDao
 {
-  private static final String cKasGroupsTableName = "kas_mq_groups";
-  private static final Set<String> cTableStringColumns = new HashSet<String>();
+  /**
+   * Table name
+   */
+  private static final String cKasTableName = "kas_mq_groups";
+  
+  /**
+   * Table columns and types
+   */
+  private static final Map<String, Class<?>> cTableColumns = new HashMap<String, Class<?>>();
   static
   {
-    cTableStringColumns.add("name");
-    cTableStringColumns.add("description");
+    cTableColumns.put("id", int.class);
+    cTableColumns.put("name", String.class);
+    cTableColumns.put("description", String.class);
   }
   
   /**
@@ -32,14 +43,14 @@ public class GroupsDao
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
-   * Get {@link GroupEntity} associated with the specific name
+   * Get {@link IGroupEntity} associated with the specific name
    * 
    * @param name The group's name
-   * @return The {@link GroupEntity} that matches the query
+   * @return The {@link IGroupEntity} that matches the query
    */
-  public GroupEntity get(String name)
+  public IGroupEntity get(int id)
   {
-    mLogger.debug("GroupsDao::get() - IN");
+    mLogger.debug("GroupDao::get() - IN");
     GroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getPool();
@@ -48,35 +59,38 @@ public class GroupsDao
     Connection conn = dbConn.getConnection();
     try
     {
-      String sql = "SELECT name, description FROM " + cKasGroupsTableName + " WHERE name = '" + name + "';";
+      String sql = "SELECT id, name, description FROM " + cKasTableName + " WHERE id = " + id + ";";
       PreparedStatement ps = conn.prepareStatement(sql);
+      
+      mLogger.debug("GroupDao::get() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
       
       if (rs.next())
       {
+        String name = rs.getString("name");
         String desc = rs.getString("description");
-        ge = new GroupEntity(name, desc);
+        ge = new GroupEntity(id, name, desc);
       }
     }
     catch (SQLException e)
     {
-      mLogger.debug("GroupsDao::get() - Exception caught: ", e);
+      mLogger.debug("GroupDao::get() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("GroupsDao::get() - OUT, Returns=" + ge.toString());
+    mLogger.debug("GroupDao::get() - OUT, Returns=" + ge.toString());
     return ge;
   }
 
   /**
-   * Get a list of all {@link GroupEntity} objects
+   * Get a list of all {@link IGroupEntity} objects
    * 
-   * @return a list of all {@link GroupEntity} objects
+   * @return a list of all {@link IGroupEntity} objects
    */
-  public List<GroupEntity> getAll()
+  public List<IGroupEntity> getAll()
   {
-    mLogger.debug("GroupsDao::getAll() - IN");
-    List<GroupEntity> list = new ArrayList<GroupEntity>();
+    mLogger.debug("GroupDao::getAll() - IN");
+    List<IGroupEntity> list = new ArrayList<IGroupEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getPool();
     DbConnection dbConn = dbPool.allocate();
@@ -84,55 +98,30 @@ public class GroupsDao
     Connection conn = dbConn.getConnection();
     try
     {
-      String sql = "SELECT name, description FROM " + cKasGroupsTableName + ';';
+      String sql = "SELECT id, name, description FROM " + cKasTableName + ';';
       PreparedStatement ps = conn.prepareStatement(sql);
+      
+      mLogger.debug("GroupDao::getAll() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
     
       GroupEntity ge = null;
       while (rs.next())
       {
+        int id = rs.getInt("id");
         String name = rs.getString("name");
         String desc = rs.getString("description");
-        ge = new GroupEntity(name, desc);
+        ge = new GroupEntity(id, name, desc);
         list.add(ge);
       }
     }
     catch (SQLException e)
     {
-      mLogger.debug("GroupsDao::getAll() - Exception caught: ", e);
+      mLogger.debug("GroupDao::getAll() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("GroupsDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    mLogger.debug("GroupDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
     return list;
-  }
-
-  /**
-   * Insert the {@link GroupEntity} to the table
-   * 
-   * @param t The {@link GroupEntity} to be inserted
-   */
-  public void insert(GroupEntity t)
-  {
-    mLogger.debug("GroupsDao::insert() - IN");
-    
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
-    DbConnection dbConn = dbPool.allocate();
-    
-    Connection conn = dbConn.getConnection();
-    try
-    {
-      String sql = "INSERT INTO " + cKasGroupsTableName + " (name, description) VALUES('" + t.getName() + "', '" + t.getDescription() + "';";
-      PreparedStatement ps = conn.prepareStatement(sql);
-      ps.execute();
-    }
-    catch (SQLException e)
-    {
-      mLogger.debug("GroupsDao::insert() - Exception caught: ", e);
-    }
-    
-    dbPool.release(dbConn);
-    mLogger.debug("GroupsDao::insert() - OUT");
   }
 
   /**
@@ -141,9 +130,9 @@ public class GroupsDao
    * @param t The {@link GroupEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
-  public void update(GroupEntity t, Map<Object, Object> map)
+  public void update(IGroupEntity t, Map<String, String> map)
   {
-    mLogger.debug("GroupsDao::update() - IN");
+    mLogger.debug("GroupDao::update() - IN");
     
     DbConnectionPool dbPool = DbConnectionPool.getPool();
     DbConnection dbConn = dbPool.allocate();
@@ -153,16 +142,17 @@ public class GroupsDao
     {
       StringBuilder sb = new StringBuilder();
       sb.append("UPDATE ")
-        .append(cKasGroupsTableName)
+        .append(cKasTableName)
         .append(" SET ");
       
-      for (Map.Entry<Object, Object> entry : map.entrySet())
+      for (Map.Entry<String, String> entry : map.entrySet())
       {
         String col = entry.getKey().toString();
         String val = entry.getValue().toString();
         
         sb.append(col);
-        if (cTableStringColumns.contains(col))
+        Class<?> cls = cTableColumns.get(col);
+        if (String.class.equals(cls))
           sb.append("='").append(val).append("',");
         else
           sb.append("=").append(val).append(",");
@@ -170,33 +160,107 @@ public class GroupsDao
       
       String sql = sb.toString();
       sql = sql.substring(0, sql.length()-1);
+      mLogger.debug("GroupDao::update() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.execute();
     }
     catch (SQLException e)
     {
-      mLogger.debug("GroupsDao::update() - Exception caught: ", e);
+      mLogger.debug("GroupDao::update() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("GroupsDao::update() - OUT");
+    mLogger.debug("GroupDao::update() - OUT");
   }
 
-  @Override
-  public void delete(GroupEntity t)
+  /**
+   * Save specified {@link GroupEntity} to the data layer
+   * 
+   * @param t The object to be saved
+   */
+  public void save(IGroupEntity t)
   {
+    mLogger.debug("GroupDao::save() - IN");
+    
+    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnection dbConn = dbPool.allocate();
+    
+    Connection conn = dbConn.getConnection();
+    try
+    {
+      String sql = "INSERT INTO " + cKasTableName + " (id, name, description) " +
+        "VALUES (" + t.getId() + ", '" + t.getName() + "', '"+ t.getDescription() + "');";
+      mLogger.debug("GroupDao::save() - Execute SQL: [" + sql + "]");
+      
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.execute();
+    }
+    catch (SQLException e)
+    {
+      mLogger.debug("GroupDao::save() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    mLogger.debug("GroupDao::save() - OUT");
+  }
+
+  /**
+   * Delete the specified {@link GroupEntity}
+   * 
+   * @param t The object to be deleted
+   */
+  public void delete(IGroupEntity t)
+  {
+    mLogger.debug("GroupDao::delete() - IN");
+    
+    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnection dbConn = dbPool.allocate();
+    
+    Connection conn = dbConn.getConnection();
+    try
+    {
+      String sql = "DELETE FROM " + cKasTableName + " WHERE ID = " + t.getId() + ";";
+      mLogger.debug("GroupDao::delete() - Execute SQL: [" + sql + "]");
+      
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.execute();
+    }
+    catch (SQLException e)
+    {
+      mLogger.debug("GroupDao::delete() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    mLogger.debug("GroupDao::delete() - OUT");
   }
   
-  @Override
+  /**
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
+   * 
+   * @return class name enclosed with chevrons.
+   * 
+   * @see com.kas.infra.base.IObject#name()
+   */
   public String name()
   {
-    return null;
+    StringBuilder sb = new StringBuilder();
+    sb.append("<")
+      .append(this.getClass().getSimpleName())
+      .append(">");
+    return sb.toString();
   }
 
-  @Override
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
-    return null;
-  }  
+    return toString();
+  }
 }

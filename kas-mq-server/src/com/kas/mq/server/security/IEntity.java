@@ -1,4 +1,4 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 import com.kas.infra.base.IObject;
 
@@ -9,6 +9,13 @@ import com.kas.infra.base.IObject;
  */
 public interface IEntity extends IObject
 {
+  /**
+   * Get the entity ID
+   * 
+   * @return the entity ID
+   */
+  public abstract int getId();
+  
   /**
    * Get the entity name
    * 

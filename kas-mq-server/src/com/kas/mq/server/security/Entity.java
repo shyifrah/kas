@@ -1,4 +1,4 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 import com.kas.infra.base.AKasObject;
 
@@ -9,6 +9,11 @@ import com.kas.infra.base.AKasObject;
  */
 public class Entity extends AKasObject implements IEntity
 {
+  /**
+   * The entity ID
+   */
+  protected int mId;
+  
   /**
    * The name of the entity
    */
@@ -26,10 +31,21 @@ public class Entity extends AKasObject implements IEntity
    * @param name Name of the entity
    * @param desc Description
    */
-  protected Entity(String name, String desc)
+  protected Entity(int id, String name, String desc)
   {
+    mId = id;
     mName = name;
     mDescription = desc;
+  }
+  
+  /**
+   * Get the entity ID
+   * 
+   * @return the entity ID
+   */
+  public int getId()
+  {
+    return mId;
   }
   
   /**
@@ -59,7 +75,9 @@ public class Entity extends AKasObject implements IEntity
    */
   public String toString()
   {
-    return mName;
+    StringBuilder sb = new StringBuilder();
+    sb.append(mName).append(" (").append(mId).append(')');
+    return sb.toString();
   }
   
   /**

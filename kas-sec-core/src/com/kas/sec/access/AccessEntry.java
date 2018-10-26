@@ -5,9 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.server.db.dao.IGroupEntity;
 import com.kas.mq.server.security.SecurityController;
-import com.kas.sec.entities.IGroupEntity;
-import com.kas.sec.entities.UserEntity;
+import com.kas.mq.server.security.UserEntity;
 
 /**
  * An access entry is a an entry in an access list that grants certain permissions to

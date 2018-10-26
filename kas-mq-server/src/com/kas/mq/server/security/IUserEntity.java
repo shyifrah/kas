@@ -1,6 +1,4 @@
-package com.kas.sec.entities;
-
-import java.util.List;
+package com.kas.mq.server.security;
 
 /**
  * A user entity interface
@@ -10,9 +8,9 @@ import java.util.List;
 public interface IUserEntity extends IEntity
 {
   /**
-   * Get the list of groups this user is member of
+   * Get the user's password
    * 
-   * @return the list of groups this user is member of
+   * @return the user's password
    */
-  public abstract List<IGroupEntity> getGroups();
+  public abstract byte [] getPassword();
 }

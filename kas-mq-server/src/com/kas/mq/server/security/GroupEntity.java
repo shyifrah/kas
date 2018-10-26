@@ -1,4 +1,4 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 /**
  * A group entity
@@ -10,11 +10,12 @@ public class GroupEntity extends Entity implements IGroupEntity
   /**
    * Construct a group with the specified parameters
    * 
+   * @param id The entity ID
    * @param name The entity Name
    * @param desc The entity description
    */
-  public GroupEntity(String name, String desc)
+  GroupEntity(int id, String name, String desc)
   {
-    super(name, desc);
+    super(id, name, desc);
   }
 }

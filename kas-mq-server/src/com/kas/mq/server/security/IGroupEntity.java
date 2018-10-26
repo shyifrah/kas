@@ -1,4 +1,4 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 /**
  * A group entity interface
