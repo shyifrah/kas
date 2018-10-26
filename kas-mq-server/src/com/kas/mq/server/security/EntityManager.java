@@ -1,10 +1,8 @@
 package com.kas.mq.server.security;
 
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.server.MqDbConfiguration;
 import com.kas.sec.IRegulator;
 
 /**
@@ -48,11 +46,6 @@ public class EntityManager extends AKasObject implements IRegulator
   private ILogger mLogger;
   
   /**
-   * KAS/MQ DB configuration
-   */
-  private MqDbConfiguration mDbConfig;
-  
-  /**
    * Entity DAOs
    */
   private UserDao mUsers;
@@ -63,10 +56,31 @@ public class EntityManager extends AKasObject implements IRegulator
    * 
    * @param name The name of the entity
    */
-  public EntityManager(MqDbConfiguration dbConfig)
+  public EntityManager()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mDbConfig = dbConfig;
+    mUsers = new UserDao();
+    mGroups = new GroupDao();
+  }
+  
+  /**
+   * Get user by its name
+   * 
+   * @return the {@link IUserEntity}
+   */
+  public IUserEntity getUserByName(String name)
+  {
+    mLogger.debug("EntityManager::getUserByName() - IN");
+    
+    IUserEntity result = null;
+    try
+    {
+      result = mUsers.get(name);
+    }
+    catch (Throwable e) {}
+    
+    mLogger.debug("EntityManager::getUserByName() - OUT, Returns=" + result);
+    return result;
   }
   
   /**
