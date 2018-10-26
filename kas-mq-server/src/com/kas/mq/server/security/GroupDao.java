@@ -43,6 +43,46 @@ public class GroupDao implements IGroupDao
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
+   * Get a {@link IGroupEntity} by its name
+   * 
+   * @param name The name of the {@link IGroupEntity}
+   * @return the {@link IGroupEntity} with the specified name or {@code null} if not found
+   */
+  public IGroupEntity get(String name)
+  {
+    mLogger.debug("GroupDao::get() - IN");
+    GroupEntity ge = null;
+    
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+    DbConnection dbConn = dbPool.allocate();
+    
+    Connection conn = dbConn.getConnection();
+    try
+    {
+      String sql = "SELECT id, name, description FROM " + cKasTableName + " WHERE name = '" + name + "';";
+      PreparedStatement ps = conn.prepareStatement(sql);
+      
+      mLogger.debug("GroupDao::get() - Execute SQL: [" + sql + "]");
+      ResultSet rs = ps.executeQuery();
+      
+      if (rs.next())
+      {
+        int id = rs.getInt("id");
+        String desc = rs.getString("description");
+        ge = new GroupEntity(id, name, desc);
+      }
+    }
+    catch (SQLException e)
+    {
+      mLogger.debug("GroupDao::get() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    mLogger.debug("GroupDao::get() - OUT, Returns=" + ge.toString());
+    return ge;
+  }
+  
+  /**
    * Get {@link IGroupEntity} associated with the specific name
    * 
    * @param name The group's name
@@ -53,7 +93,7 @@ public class GroupDao implements IGroupDao
     mLogger.debug("GroupDao::get() - IN");
     GroupEntity ge = null;
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -92,7 +132,7 @@ public class GroupDao implements IGroupDao
     mLogger.debug("GroupDao::getAll() - IN");
     List<IGroupEntity> list = new ArrayList<IGroupEntity>();
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -134,7 +174,7 @@ public class GroupDao implements IGroupDao
   {
     mLogger.debug("GroupDao::update() - IN");
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -183,7 +223,7 @@ public class GroupDao implements IGroupDao
   {
     mLogger.debug("GroupDao::save() - IN");
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -214,7 +254,7 @@ public class GroupDao implements IGroupDao
   {
     mLogger.debug("GroupDao::delete() - IN");
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();

@@ -45,6 +45,47 @@ public class UserDao implements IUserDao
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
+   * Get a {@link IUserEntity} by its name
+   * 
+   * @param name The name of the {@link IUserEntity}
+   * @return the {@link IUserEntity} with the specified name or {@code null} if not found
+   */
+  public IUserEntity get(String name)
+  {
+    mLogger.debug("UserDao::get() - IN");
+    UserEntity ue = null;
+    
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+    DbConnection dbConn = dbPool.allocate();
+    
+    Connection conn = dbConn.getConnection();
+    try
+    {
+      String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE name = '" + name + "';";
+      PreparedStatement ps = conn.prepareStatement(sql);
+      
+      mLogger.debug("UserDao::get() - Execute SQL: [" + sql + "]");
+      ResultSet rs = ps.executeQuery();
+      
+      if (rs.next())
+      {
+        int id = rs.getInt("id");
+        String desc = rs.getString("description");
+        String pswd = rs.getString("password");
+        ue = new UserEntity(id, name, desc, pswd);
+      }
+    }
+    catch (SQLException e)
+    {
+      mLogger.debug("UserDao::get() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    mLogger.debug("UserDao::get() - OUT, Returns=" + ue.toString());
+    return ue;
+  }
+  
+  /**
    * Get {@link IUserEntity} associated with the specific name
    * 
    * @param name The group's name
@@ -55,7 +96,7 @@ public class UserDao implements IUserDao
     mLogger.debug("UserDao::get() - IN");
     UserEntity ue = null;
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -95,7 +136,7 @@ public class UserDao implements IUserDao
     mLogger.debug("UserDao::getAll() - IN");
     List<IUserEntity> list = new ArrayList<IUserEntity>();
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -138,7 +179,7 @@ public class UserDao implements IUserDao
   {
     mLogger.debug("UserDao::update() - IN");
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -187,7 +228,7 @@ public class UserDao implements IUserDao
   {
     mLogger.debug("UserDao::save() - IN");
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
@@ -219,7 +260,7 @@ public class UserDao implements IUserDao
   {
     mLogger.debug("UserDao::delete() - IN");
     
-    DbConnectionPool dbPool = DbConnectionPool.getPool();
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
     Connection conn = dbConn.getConnection();
