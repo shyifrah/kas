@@ -32,15 +32,15 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   static private DbConnectionPool sInstance = null;
   
   /**
-   * Get the pool with specific configuration object so it can be initialized
+   * Initialize the pool. This method must be called prior to {@link #getInstance()}
    * 
    * @param config The {@link MqDbConfiguration} object that will initialize the pool
-   * @return the instance previously created
+   * @return {@code true} if the pool was initialized successfully, {@code false} otherwise
    */
-  static public void init(MqDbConfiguration config)
+  static public boolean init(MqDbConfiguration config)
   {
     sInstance = new DbConnectionPool(config);
-    sInstance.getDbVersion();
+    return sInstance.getDbVersion();
   }
   
   /**
@@ -48,7 +48,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    * 
    * @return the instance previously created
    */
-  static public DbConnectionPool getPool()
+  static public DbConnectionPool getInstance()
   {
     if (sInstance == null)
       throw new RuntimeException("DbConnectionPool was not initialized");
@@ -125,15 +125,6 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
       default:
         throw new RuntimeException("Unknown DB type: " + dbType);
     }
-    
-    try
-    {
-      Class.forName(mJdbcClassName);
-    }
-    catch (ClassNotFoundException e)
-    {
-      throw new RuntimeException(mJdbcClassName);
-    }
   }
   
   /**
@@ -192,28 +183,33 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     mLogger.debug("DbConnectionPool::getDbVersion() - IN");
     
     boolean success = true;
-    
-    String version = null;
-    DbConnection dbConn = allocate();
-    Connection conn = dbConn.getConnection();
     try
     {
-      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
-      ResultSet rs = st.executeQuery();
-      if (rs.next())
-        version = rs.getString("VER");
+      Class.forName(mJdbcClassName);
     }
-    catch (SQLException ex)
+    catch (ClassNotFoundException e)
     {
       success = false;
     }
     
-    release(dbConn);
-    
+    String version = null;
     if (success)
     {
+      DbConnection dbConn = allocate();
+      Connection conn = dbConn.getConnection();
+      try
+      {
+        PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
+        ResultSet rs = st.executeQuery();
+        if (rs.next())
+          version = rs.getString("VER");
+      }
+      catch (SQLException ex)
+      {
+        success = false;
+      }
+      release(dbConn);
       mLogger.info("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB and got its version: " + version);
-      sInstance = this;
     }
     
     mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + success);
