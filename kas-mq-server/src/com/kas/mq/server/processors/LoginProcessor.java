@@ -8,6 +8,8 @@ import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.security.EntityManager;
+import com.kas.mq.server.security.IUserEntity;
 
 /**
  * Processor for login requests
@@ -63,21 +65,33 @@ public class LoginProcessor extends AProcessor
       mSb64Pass = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginPassword, null);
       mLogger.debug("LoginProcessor::process() - User=" + mUser + "; Pass=" + mSb64Pass);
       
-      byte [] confPwd = mController.getConfig().getUserPassword(mUser);
-      String sb64ConfPass = StringUtils.asHexString(confPwd);
+      EntityManager emgr = mController.getEntityManager();
+      IUserEntity ue = emgr.getUserByName(mUser);
       
       if ((mUser == null) || (mUser.length() == 0))
+      {
         mDesc = "Invalid user name";
-      else if (confPwd == null)
+      }
+      else if (ue == null)
+      {
         mDesc = "User " + mUser + " is not defined";
-      else if (!mSb64Pass.equals(sb64ConfPass))
-        mDesc = "Incorrect password for " + mUser;
+      }
       else
       {
-        mDesc = "User " + mUser + " successfully authenticated";
-        mCode = EMqCode.cOkay;
-        mHandler.setActiveUserName(mUser);
-        props.setStringProperty(IMqConstants.cKasPropertyLoginSession, mHandler.getSessionId().toString());
+        byte [] userpwd = ue.getPassword();
+        String strUserpwd = StringUtils.asHexString(userpwd);
+        
+        if (!mSb64Pass.equals(strUserpwd))
+        {
+          mDesc = "Incorrect password for " + mUser;
+        }
+        else
+        {
+          mDesc = "User " + mUser + " successfully authenticated";
+          mCode = EMqCode.cOkay;
+          mHandler.setActiveUserName(mUser);
+          props.setStringProperty(IMqConstants.cKasPropertyLoginSession, mHandler.getSessionId().toString());
+        }
       }
     }
     
