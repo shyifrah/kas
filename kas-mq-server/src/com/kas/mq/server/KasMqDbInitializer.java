@@ -127,7 +127,9 @@ public class KasMqDbInitializer extends AKasAppl
     String sql = String.format(fmt, args);
     ResultSet result = null;
 
+    sql = StringUtils.clearBlanks(sql);
     mLogger.debug("KasMqDbInitializer::execute() - Executing SQL: [" + sql + "]");
+    writeln("Executing SQL: [" + sql + "]");
     PreparedStatement st = mConnection.prepareStatement(sql);
     boolean b = st.execute();
     if (b) result = st.getResultSet();
@@ -143,7 +145,7 @@ public class KasMqDbInitializer extends AKasAppl
    * 
    * @param message The message to print
    */
-  protected void writeln(String message)
+  static private void writeln(String message)
   {
     System.out.println(message);
   }
