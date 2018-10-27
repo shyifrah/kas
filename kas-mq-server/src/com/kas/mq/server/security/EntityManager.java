@@ -3,7 +3,6 @@ package com.kas.mq.server.security;
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.sec.IRegulator;
 
 /**
  * An {@link EntityManager} is the main object of KAS/SEC.
@@ -38,7 +37,7 @@ import com.kas.sec.IRegulator;
  * 
  * @author Pippo
  */
-public class EntityManager extends AKasObject implements IRegulator
+public class EntityManager extends AKasObject
 {
   /**
    * Logger
