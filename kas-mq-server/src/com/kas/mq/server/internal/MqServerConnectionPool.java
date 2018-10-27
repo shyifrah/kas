@@ -102,7 +102,7 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   }
   
   /**
-   * Closing all connections and clearing the map
+   * Terminate the connection pool
    */
   public void shutdown()
   {

@@ -1,19 +1,18 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
 
 /**
  * An {@link Entity} is an object that can be permitted to a resource
  * 
  * @author Pippo
  */
-public class Entity extends AKasObject
+public class Entity extends AKasObject implements IEntity
 {
   /**
-   * The entity unique ID
+   * The entity ID
    */
-  protected UniqueId mEntityId;
+  protected int mId;
   
   /**
    * The name of the entity
@@ -21,14 +20,22 @@ public class Entity extends AKasObject
   protected String mName;
   
   /**
+   * Free text description
+   */
+  protected String mDescription;
+  
+  /**
    * Construct an entity using the specified name
    * 
-   * @param name The name of the entity
+   * @param id The entity ID
+   * @param name Name of the entity
+   * @param desc Description
    */
-  protected Entity(String name)
+  protected Entity(int id, String name, String desc)
   {
-    mEntityId = UniqueId.generate();
+    mId = id;
     mName = name;
+    mDescription = desc;
   }
   
   /**
@@ -36,9 +43,9 @@ public class Entity extends AKasObject
    * 
    * @return the entity ID
    */
-  public UniqueId getId()
+  public int getId()
   {
-    return mEntityId;
+    return mId;
   }
   
   /**
@@ -52,13 +59,25 @@ public class Entity extends AKasObject
   }
   
   /**
+   * Get the entity description
+   * 
+   * @return the entity description
+   */
+  public String getDescription()
+  {
+    return mDescription;
+  }
+  
+  /**
    * Get the entity's string representation
    * 
    * @return the entity's string representation
    */
   public String toString()
   {
-    return String.format("%s (%s)", mName, mEntityId.toString());
+    StringBuilder sb = new StringBuilder();
+    sb.append(mName).append(" (").append(mId).append(')');
+    return sb.toString();
   }
   
   /**
@@ -75,7 +94,7 @@ public class Entity extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append("  Id=").append(mEntityId.toString()).append(")\n")
+      .append(pad).append("  Description=").append(mDescription).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

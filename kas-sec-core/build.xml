@@ -6,6 +6,7 @@
   <!-- ===================================================== -->
   
   <include file="../kas-data/build/dir.xml"/>
+  <include file="../kas-data/build/jar.xml"/>
   <include file="../kas-data/build/debug.xml"/>
   
   <!-- ===================================================== -->
@@ -49,7 +50,10 @@
     </javac>
     <javac includeantruntime="false" srcdir="${test}" destdir="${tbin}" debug="${debug}" debuglevel="${debuglevel}">
       <classpath id="${ant.project.name}-ClassPath">
-        <pathelement location="${bin}"/>
+        <pathelement location="${bin}" />
+        <pathelement location="${infra.jar}" />
+        <pathelement location="${config.jar}" />
+        <pathelement location="${logging.jar}" />
         <pathelement location="${thirdparty}/junit-4.10.jar" />
       </classpath>
     </javac>

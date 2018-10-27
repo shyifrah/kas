@@ -4,11 +4,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
-import com.kas.sec.SecurityController;
-import com.kas.sec.entities.IGroupEntity;
-import com.kas.sec.entities.UserEntity;
+import com.kas.mq.server.db.dao.IGroupEntity;
+import com.kas.mq.server.security.SecurityController;
+import com.kas.mq.server.security.UserEntity;
 
 /**
  * An access entry is a an entry in an access list that grants certain permissions to
@@ -29,7 +28,7 @@ public class AccessEntry extends AKasObject
   /**
    * The list of entity IDs that are permitted to the resource(s) designated by the regular expression
    */
-  private Map<UniqueId, AccessLevel> mPermittedEntities;
+  private Map<Integer, AccessLevel> mPermittedEntities;
   
   /**
    * Construct an access-entry
@@ -40,7 +39,7 @@ public class AccessEntry extends AKasObject
   AccessEntry(String resource)
   {
     mResourceRegEx = Pattern.compile(resource);
-    mPermittedEntities = new ConcurrentHashMap<UniqueId, AccessLevel>();
+    mPermittedEntities = new ConcurrentHashMap<Integer, AccessLevel>();
   }
   
   /**
@@ -57,10 +56,10 @@ public class AccessEntry extends AKasObject
   /**
    * Get the access level allowed for the specified entityId
    * 
-   * @param entityId a {@link UniqueId} representing the entity
+   * @param entityId The ID representing the entity
    * @return the allowed {@link AccessLevel}
    */
-  public AccessLevel getAllowedAccessLevel(UniqueId entityId)
+  public AccessLevel getAllowedAccessLevel(int entityId)
   {
     AccessLevel result = AccessLevel.NONE_ACCESS;
     
@@ -72,7 +71,7 @@ public class AccessEntry extends AKasObject
     }
     else
     {
-      UserEntity user = SecurityController.getInstance().getUserEntity(entityId);
+      UserEntity user = mRegulator.getUserEntity(entityId);
       for (IGroupEntity group : user.getGroups())
       {
         level = mPermittedEntities.get(group.getId());

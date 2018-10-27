@@ -279,4 +279,41 @@ public class StringUtils
     }
     return sb.toString();
   }
+  
+  /**
+   * Return the byte array contents as hex string
+   * 
+   * @param bytearray The byte array
+   * @return the hex-string
+   */
+  static public String clearBlanks(String str)
+  {
+    if (str == null)
+      return null;
+    
+    if (str.length() == 0)
+      return str;
+    
+    StringBuilder sb = new StringBuilder();
+    char [] strAsCharArray = str.toCharArray();
+    boolean prevIsBlank = false;
+    for (int i = 0; i < strAsCharArray.length; ++i)
+    {
+      char cchar = strAsCharArray[i];
+      if (cchar == ' ')
+      {
+        if (!prevIsBlank)
+        {
+          sb.append(cchar);
+          prevIsBlank = true;
+        }
+      }
+      else
+      {
+        sb.append(cchar);
+        prevIsBlank = false;
+      }
+    }
+    return sb.toString();
+  }
 }

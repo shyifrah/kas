@@ -1,7 +1,6 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 import com.kas.infra.base.IObject;
-import com.kas.infra.base.UniqueId;
 
 /**
  * A general purpose entity interface
@@ -15,7 +14,7 @@ public interface IEntity extends IObject
    * 
    * @return the entity ID
    */
-  public abstract UniqueId getId();
+  public abstract int getId();
   
   /**
    * Get the entity name
@@ -23,4 +22,11 @@ public interface IEntity extends IObject
    * @return the entity name
    */
   public abstract String getName();
+  
+  /**
+   * Get the entity description
+   * 
+   * @return the entity description
+   */
+  public abstract String getDescription();
 }

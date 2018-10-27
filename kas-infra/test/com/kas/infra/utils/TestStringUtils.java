@@ -116,4 +116,60 @@ public class TestStringUtils
     byte [] bytes = { 0x0d, 0x0e , 0x0a, 0x0d, 0x0c, 0x00, 0x0d, 0x0e };
     Assert.assertEquals( StringUtils.asHexString(bytes), "0D0E0A0D0C000D0E" );
   }
+  
+  @Test
+  public void testClearBlanks()
+  {
+    String str01 = null;        // return null
+    String str02 = "";          // return ""
+    String str03 = " ";         // return " ";
+    String str04 = "  ";        // return " ";
+    String str05 = "   ";       // return " ";
+    String str06 = "a";         // return "a";
+    String str07 = "aa";        // return "aa";
+    String str08 = "a a";       // return "a a";
+    String str09 = "a  a";      // return "a a";
+    String str10 = "aa a";      // return "aa a";
+    String str11 = "a aa";      // return "a aa";
+    String str12 = "a a a";     // return "a a a";
+    String str13 = "aa  a";     // return "aa a";
+    String str14 = "a  aa";     // return "a aa";
+    String str15 = "a  a a";    // return "a a a";
+    String str16 = "a  a  a";   // return "a a a";
+    String str17 = "aa aa";     // return "aa aa";
+    String str18 = "aa  aa";    // return "aa aa";
+    String str19 = "aa     aa"; // return "aa aa";
+    String str20 = "aaaa ";     // return "aaaa ";
+    String str21 = "aaaa  ";    // return "aaaa ";
+    String str22 = " aaaa";     // return " aaaa";
+    String str23 = "  aaaa";    // return " aaaa";
+    String str24 = " aaaa ";    // return " aaaa ";
+    String str25 = "  aaaa  ";  // return " aaaa ";
+    
+    Assert.assertEquals( StringUtils.clearBlanks(str01), null );
+    Assert.assertEquals( StringUtils.clearBlanks(str02), "" );
+    Assert.assertEquals( StringUtils.clearBlanks(str03), " " );
+    Assert.assertEquals( StringUtils.clearBlanks(str04), " " );
+    Assert.assertEquals( StringUtils.clearBlanks(str05), " " );
+    Assert.assertEquals( StringUtils.clearBlanks(str06), "a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str07), "aa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str08), "a a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str09), "a a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str10), "aa a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str11), "a aa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str12), "a a a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str13), "aa a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str14), "a aa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str15), "a a a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str16), "a a a" );
+    Assert.assertEquals( StringUtils.clearBlanks(str17), "aa aa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str18), "aa aa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str19), "aa aa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str20), "aaaa " );
+    Assert.assertEquals( StringUtils.clearBlanks(str21), "aaaa " );
+    Assert.assertEquals( StringUtils.clearBlanks(str22), " aaaa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str23), " aaaa" );
+    Assert.assertEquals( StringUtils.clearBlanks(str24), " aaaa " );
+    Assert.assertEquals( StringUtils.clearBlanks(str25), " aaaa " );
+  }
 }

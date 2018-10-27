@@ -12,6 +12,8 @@ import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.repo.ServerRepository;
+import com.kas.mq.server.db.DbConfiguration;
+import com.kas.mq.server.db.DbConnectionPool;
 import com.kas.mq.server.internal.ServerHouseKeeper;
 import com.kas.mq.server.internal.ServerNotifier;
 
@@ -30,22 +32,22 @@ public class KasMqServer extends AKasAppl implements IMqServer
   private ServerSocket mListenSocket = null;
   
   /**
-   * Server repository
+   * {@link ServerRepository}
    */
   private IRepository mRepository = null;
   
   /**
-   * {@link Session controller}
+   * {@link SessionController}
    */
   private SessionController mController = null;
   
   /**
-   * Housekeeper task
+   * {@link ServerHouseKeeper housekeeping task}
    */
   private ServerHouseKeeper mHousekeeper = null;
   
   /**
-   * Server notifier
+   * {@ServerNotifier}
    */
   private ServerNotifier mNotifier = null;
   
@@ -53,6 +55,16 @@ public class KasMqServer extends AKasAppl implements IMqServer
    * KAS/MQ server's configuration
    */
   private MqConfiguration mConfig = null;
+  
+  /**
+   * DB configuration
+   */
+  private DbConfiguration mDbConfig = null;
+  
+  /**
+   * DB connection pool
+   */
+  private DbConnectionPool mDbConnPool = null;
   
   /**
    * Stop indicator
@@ -83,8 +95,8 @@ public class KasMqServer extends AKasAppl implements IMqServer
    * Initializing the KAS/MQ server.<br>
    * <br>
    * Initialization consisting of:
-   * - super class initialization
    * - creating and initializing configuration object
+   * - creating and initializing the db connection pool
    * - creating the server's repository
    * - start the housekeeper
    * - creating session controller
@@ -96,12 +108,20 @@ public class KasMqServer extends AKasAppl implements IMqServer
    */
   public boolean appInit()
   {
+    mDbConfig = new DbConfiguration();
     mConfig = new MqConfiguration();
     mConfig.init();
     if (!mConfig.isInitialized())
       return false;
     
     mConfig.register(this);
+    
+    boolean init = DbConnectionPool.init(mConfig.getDbConfiguration());
+    if (!init)
+    {
+      mLogger.fatal("Server DB connection pool failed initialization");
+      return false;
+    }
     
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
@@ -120,7 +140,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
       return false;
     }
     
-    boolean init = mRepository.init();
+    init = mRepository.init();
     if (!init)
     {
       mLogger.fatal("Server repository failed initialization");
@@ -144,8 +164,8 @@ public class KasMqServer extends AKasAppl implements IMqServer
    * - stop the housekeeper
    * - terminate server repository
    * - closing server's listener socket
+   * - shutdown the db connection pool
    * - terminate configuration object
-   * - super class termination
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
@@ -169,6 +189,8 @@ public class KasMqServer extends AKasAppl implements IMqServer
     {
       mLogger.warn("An error occurred while trying to close server socket", e);
     }
+    
+    DbConnectionPool.getInstance().shutdown();
     
     mConfig.term();
     return true;
@@ -295,6 +317,18 @@ public class KasMqServer extends AKasAppl implements IMqServer
   public MqConfiguration getConfig()
   {
     return mConfig;
+  }
+  
+  /**
+   * Get the {@link DbConnectionPool} object
+   * 
+   * @return the {@link DbConnectionPool} object
+   * 
+   * @see IMqServer#getDbConnectionPool()
+   */
+  public DbConnectionPool getDbConnectionPool()
+  {
+    return mDbConnPool;
   }
   
   /**
