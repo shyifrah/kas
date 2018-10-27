@@ -13,6 +13,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.server.db.DbConfiguration;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -106,7 +107,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * DB related configuration
    */
-  private MqDbConfiguration mDbConfig = new MqDbConfiguration();
+  private DbConfiguration mDbConfig = new DbConfiguration();
   
   /**
    * A set of configuration listener objects.<br>
@@ -362,7 +363,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    * 
    * @return DB-related configuration
    */
-  public MqDbConfiguration getDbConfiguration()
+  public DbConfiguration getDbConfiguration()
   {
     return mDbConfig;
   }

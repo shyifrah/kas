@@ -1,4 +1,4 @@
-package com.kas.mq.server;
+package com.kas.mq.server.db;
 
 import java.util.HashSet;
 import com.kas.config.impl.AConfiguration;
@@ -12,12 +12,12 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
+public class DbConfiguration extends AConfiguration implements IBaseRegistrar
 {
   /**
    * Configuration prefixes
    */
-  static private final String  cDbConfigPrefix  = "kas.mq.db.";
+  static private final String  cDbConfigPrefix  = "kas.db.";
   
   /**
    * Default values
@@ -81,7 +81,7 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
    */
   public void refresh()
   {
-    mLogger.debug("MqDbConfiguration::refresh() - IN");
+    mLogger.debug("DbConfiguration::refresh() - IN");
     
     mDbType         = mMainConfig.getStringProperty  ( cDbConfigPrefix + "type"           , mDbType         );
     mHostName       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "host"           , mHostName       );
@@ -91,7 +91,7 @@ public class MqDbConfiguration extends AConfiguration implements IBaseRegistrar
     mPassword       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "password"       , mPassword       );
     mMaxConnections = mMainConfig.getIntProperty     ( cDbConfigPrefix + "maxConnections" , mMaxConnections );
     
-    mLogger.debug("MqDbConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
+    mLogger.debug("DbConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
     for (IBaseListener listener : mListeners)
       listener.refresh();
     
