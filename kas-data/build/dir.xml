@@ -21,6 +21,5 @@
   <property name="comm"       location="../kas-comm"/>
   <property name="appl"       location="../kas-appl"/>
   <property name="mq-core"    location="../kas-mq-core"/>
-  <property name="sec-core"   location="../kas-sec-core"/>
       
 </project>
