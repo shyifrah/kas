@@ -14,7 +14,6 @@ import com.kas.infra.base.IPool;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.server.MqDbConfiguration;
 
 /**
  * A pool of database connections.<br>
@@ -34,10 +33,10 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Initialize the pool. This method must be called prior to {@link #getInstance()}
    * 
-   * @param config The {@link MqDbConfiguration} object that will initialize the pool
+   * @param config The {@link DbConfiguration} object that will initialize the pool
    * @return {@code true} if the pool was initialized successfully, {@code false} otherwise
    */
-  static public boolean init(MqDbConfiguration config)
+  static public boolean init(DbConfiguration config)
   {
     sInstance = new DbConnectionPool(config);
     return sInstance.getDbVersion();
@@ -76,7 +75,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Configuration object
    */
-  private MqDbConfiguration mConfig = null;
+  private DbConfiguration mConfig = null;
   
   /**
    * The connection string as computed after analyzing configuration
@@ -98,7 +97,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    * 
    * @param config The configuration object
    */
-  private DbConnectionPool(MqDbConfiguration config)
+  private DbConnectionPool(DbConfiguration config)
   {
     if (sInstance != null)
       throw new RuntimeException("Multiple instances of DbConnectionPool are prohibited");
