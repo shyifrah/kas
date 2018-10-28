@@ -152,13 +152,23 @@ public class ConnectCommand extends ACliCommand
     input = readMasked("Enter password: ");
     String password = input.getOriginalString();
     
+    String resp = null;
     try
     {
       mClient.connect(host, port, username, password);
+      resp = mClient.getResponse();
     }
-    catch (KasException e) {} 
+    catch (KasException e)
+    {
+      resp = mClient.getResponse();
+      try
+      {
+        mClient.disconnect();
+      }
+      catch (KasException e2) {}
+    } 
     
-    writeln(mClient.getResponse());
+    writeln(resp);
     writeln(" ");
     return false;
   }
