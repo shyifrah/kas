@@ -56,18 +56,6 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   }
   
   /**
-   * DB types.<br>
-   * Currently, only MySQL is supported
-   */
-  static private final String cMySqlDbType = "mysql";
-  
-  /**
-   * DB drivers.<br>
-   * Currently, only MySQL is supported
-   */
-  static private final String cMySqlJdbcDriver = "com.mysql.jdbc.Driver";
-  
-  /**
    * Logger
    */
   private ILogger mLogger;
@@ -110,20 +98,11 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     String schema = mConfig.getSchemaName().toLowerCase();
     
     mConnUrl = new StringBuilder()
-      .append("jdbc:").append(dbType).append("://)")
+      .append("jdbc:").append(dbType).append("://")
       .append(mConfig.getHost()).append(':').append(mConfig.getPort()).append('/')
       .append(schema).append("?useSSL=false&serverTimezone=UTC").toString();
     
     mConnMap = new ConcurrentHashMap<UniqueId, DbConnection>();
-    
-    switch (dbType)
-    {
-      case cMySqlDbType:
-        mJdbcClassName = cMySqlJdbcDriver;
-        break;
-      default:
-        throw new RuntimeException("Unknown DB type: " + dbType);
-    }
   }
   
   /**
@@ -162,7 +141,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     
     mConnMap.remove(dbConn.getConnId());
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       conn.close();
@@ -182,34 +161,24 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     mLogger.debug("DbConnectionPool::getDbVersion() - IN");
     
     boolean success = true;
+    
+    String version = null;
+    DbConnection dbConn = allocate();
+    Connection conn = dbConn.getConn();
     try
     {
-      Class.forName(mJdbcClassName);
+      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
+      ResultSet rs = st.executeQuery();
+      if (rs.next())
+        version = rs.getString("VER");
     }
-    catch (ClassNotFoundException e)
+    catch (SQLException ex)
     {
       success = false;
     }
+    release(dbConn);
+    mLogger.info("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB and got its version: " + version);
     
-    String version = null;
-    if (success)
-    {
-      DbConnection dbConn = allocate();
-      Connection conn = dbConn.getConnection();
-      try
-      {
-        PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
-        ResultSet rs = st.executeQuery();
-        if (rs.next())
-          version = rs.getString("VER");
-      }
-      catch (SQLException ex)
-      {
-        success = false;
-      }
-      release(dbConn);
-      mLogger.info("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB and got its version: " + version);
-    }
     
     mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + success);
     return success;

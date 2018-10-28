@@ -38,7 +38,7 @@ public class DbConnection extends AKasObject
    * 
    * @return the Connection object
    */
-  public Connection getConnection()
+  public Connection getConn()
   {
     return mConn;
   }

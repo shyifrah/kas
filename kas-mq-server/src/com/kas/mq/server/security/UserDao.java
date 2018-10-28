@@ -58,7 +58,7 @@ public class UserDao implements IUserDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE name = '" + name + "';";
@@ -99,7 +99,7 @@ public class UserDao implements IUserDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE id = " + id + ";";
@@ -139,7 +139,7 @@ public class UserDao implements IUserDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + ';';
@@ -182,7 +182,7 @@ public class UserDao implements IUserDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       StringBuilder sb = new StringBuilder();
@@ -231,7 +231,7 @@ public class UserDao implements IUserDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String pswd = new String(Base64Utils.decode(t.getPassword()));
@@ -263,7 +263,7 @@ public class UserDao implements IUserDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "DELETE FROM " + cKasTableName + " WHERE ID = " + t.getId() + ";";

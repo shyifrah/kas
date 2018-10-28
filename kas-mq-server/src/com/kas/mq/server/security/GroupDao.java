@@ -56,7 +56,7 @@ public class GroupDao implements IGroupDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "SELECT id, name, description FROM " + cKasTableName + " WHERE name = '" + name + "';";
@@ -96,7 +96,7 @@ public class GroupDao implements IGroupDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "SELECT id, name, description FROM " + cKasTableName + " WHERE id = " + id + ";";
@@ -135,7 +135,7 @@ public class GroupDao implements IGroupDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "SELECT id, name, description FROM " + cKasTableName + ';';
@@ -177,7 +177,7 @@ public class GroupDao implements IGroupDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       StringBuilder sb = new StringBuilder();
@@ -226,7 +226,7 @@ public class GroupDao implements IGroupDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "INSERT INTO " + cKasTableName + " (id, name, description) " +
@@ -257,7 +257,7 @@ public class GroupDao implements IGroupDao
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
     
-    Connection conn = dbConn.getConnection();
+    Connection conn = dbConn.getConn();
     try
     {
       String sql = "DELETE FROM " + cKasTableName + " WHERE ID = " + t.getId() + ";";
