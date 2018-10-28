@@ -13,7 +13,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.internal.IMqConstants;
-import com.kas.mq.server.db.DbConfiguration;
+//import com.kas.mq.server.db.DbConfiguration;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -104,10 +104,10 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    */
   private Map<String, Integer> mPredefQueuesMap = new ConcurrentHashMap<String, Integer>();
   
-  /**
-   * DB related configuration
-   */
-  private DbConfiguration mDbConfig = new DbConfiguration();
+//  /**
+//   * DB related configuration
+//   */
+//  private DbConfiguration mDbConfig = new DbConfiguration();
   
   /**
    * A set of configuration listener objects.<br>
@@ -135,7 +135,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
     refreshRemoteManagersMap();
     refreshPredefQueuesMap();
     
-    mDbConfig.refresh();
+//    mDbConfig.refresh();
     
     mLogger.debug("MqConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
     for (IBaseListener listener : mListeners)
@@ -358,15 +358,15 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
     return mPredefQueuesMap;
   }
   
-  /**
-   * Get DB-related configuration
-   * 
-   * @return DB-related configuration
-   */
-  public DbConfiguration getDbConfiguration()
-  {
-    return mDbConfig;
-  }
+//  /**
+//   * Get DB-related configuration
+//   * 
+//   * @return DB-related configuration
+//   */
+//  public DbConfiguration getDbConfiguration()
+//  {
+//    return mDbConfig;
+//  }
   
   /**
    * Get the object's detailed string representation
@@ -399,7 +399,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
       .append(pad).append("  PredefinedQueues=(\n")
       .append(StringUtils.asPrintableString(mPredefQueuesMap, level+2)).append("\n")
       .append(pad).append("  )\n")
-      .append(pad).append("  DbConfig=(").append(mDbConfig.toPrintableString(level+1)).append(")\n")
+//      .append(pad).append("  DbConfig=(").append(mDbConfig.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

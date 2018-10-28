@@ -109,14 +109,14 @@ public class KasMqServer extends AKasAppl implements IMqServer
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
+    mDbConfig.init();
+    
     mConfig = new MqConfiguration();
     mConfig.init();
-    if (!mConfig.isInitialized())
-      return false;
     
     mConfig.register(this);
     
-    boolean init = DbConnectionPool.init(mConfig.getDbConfiguration());
+    boolean init = DbConnectionPool.init(mDbConfig);
     if (!init)
     {
       mLogger.fatal("Server DB connection pool failed initialization");
