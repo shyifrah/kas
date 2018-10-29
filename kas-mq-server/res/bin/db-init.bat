@@ -16,9 +16,9 @@ title KAS/MQ Database initialization utility
 
 set "BATCH_DIR=%~dp0"
 call %BATCH_DIR%/launcher.bat kas.class=com.kas.mq.server.KasMqDbInitializer ^
-  kas.mq.db.type=mysql ^
-  kas.mq.db.username=kas ^
-  kas.mq.db.password=kas ^
-  kas.mq.db.host=localhost ^
-  kas.mq.db.port=3306 ^
-  kas.mq.db.schema=kas
+  kas.db.type=mysql ^
+  kas.db.username=kas ^
+  kas.db.password=kas ^
+  kas.db.host=localhost ^
+  kas.db.port=3306 ^
+  kas.db.schema=kas

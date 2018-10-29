@@ -56,24 +56,24 @@ public class KasMqDbInitializer extends AKasAppl
     
     Properties props = new Properties();
     props.putAll(mStartupArgs);
-    String dbtype = mStartupArgs.getOrDefault("kas.mq.db.type", "mysql");
-    String host   = mStartupArgs.getOrDefault("kas.mq.db.host", "localhost");
-    String port   = mStartupArgs.getOrDefault("kas.mq.db.port", "3306");
-    String schema = mStartupArgs.getOrDefault("kas.mq.db.schema", "kas");
-    String user   = mStartupArgs.getOrDefault("kas.mq.db.username", "kas");
-    String pswd   = mStartupArgs.getOrDefault("kas.mq.db.password", "kas");
+    String dbtype = mStartupArgs.getOrDefault("kas.db.type", "mysql");
+    String host   = mStartupArgs.getOrDefault("kas.db.host", "localhost");
+    String port   = mStartupArgs.getOrDefault("kas.db.port", "3306");
+    String schema = mStartupArgs.getOrDefault("kas.db.schema", "kas");
+    String user   = mStartupArgs.getOrDefault("kas.db.username", "kas");
+    String pswd   = mStartupArgs.getOrDefault("kas.db.password", "kas");
     
     writeln(cAppName + " is executed with the following properties:");
-    writeln("kas.mq.db.type.......: [" + dbtype + "]");
-    writeln("kas.mq.db.host.......: [" + host + "]");
-    writeln("kas.mq.db.port.......: [" + port + "]");
-    writeln("kas.mq.db.schema.....: [" + schema + "]");
-    writeln("kas.mq.db.username...: [" + user + "]");
-    writeln("kas.mq.db.password...: [" + pswd + "]");
+    writeln("kas.db.type.......: [" + dbtype + "]");
+    writeln("kas.db.host.......: [" + host + "]");
+    writeln("kas.db.port.......: [" + port + "]");
+    writeln("kas.db.schema.....: [" + schema + "]");
+    writeln("kas.db.username...: [" + user + "]");
+    writeln("kas.db.password...: [" + pswd + "]");
     
     try
     {
-      String url = String.format("jdbc:%s://%s:%s/%s?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&user=%s&password=%s", dbtype, host, port, schema, user, pswd);
+      String url = String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC", dbtype, host, port, schema, user, pswd);
       mConnection = DriverManager.getConnection(url);
       
       File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "db-init-" + dbtype + ".sql");
@@ -91,7 +91,7 @@ public class KasMqDbInitializer extends AKasAppl
         }
         else
         {
-          sb.append(line);
+          sb.append(' ').append(line);
         }
         
         if (line.endsWith(";"))
