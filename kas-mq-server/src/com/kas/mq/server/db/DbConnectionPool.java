@@ -100,7 +100,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     mConnUrl = new StringBuilder()
       .append("jdbc:").append(dbType).append("://")
       .append(mConfig.getHost()).append(':').append(mConfig.getPort()).append('/')
-      .append(schema).append("?useSSL=false&serverTimezone=UTC").toString();
+      .append(schema).toString();
     
     mConnMap = new ConcurrentHashMap<UniqueId, DbConnection>();
   }
