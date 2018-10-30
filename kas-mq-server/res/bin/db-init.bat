@@ -22,3 +22,11 @@ call %BATCH_DIR%/launcher.bat kas.class=com.kas.mq.server.KasMqDbInitializer ^
   kas.db.host=localhost ^
   kas.db.port=3306 ^
   kas.db.schema=kas
+
+call %BATCH_DIR%/launcher.bat kas.class=com.kas.mq.server.KasMqDbInitializer ^
+  kas.db.type=postgresql ^
+  kas.db.username=kas ^
+  kas.db.password=kas ^
+  kas.db.host=localhost ^
+  kas.db.port=5432 ^
+  kas.db.schema=kas
