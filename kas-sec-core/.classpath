@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry kind="lib" path="/kas-data/thirdparty/junit-4.10.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kas-db"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

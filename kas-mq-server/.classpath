@@ -9,5 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-comm"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-appl"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-db"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/kas-sec-core"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
