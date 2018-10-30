@@ -16,7 +16,6 @@ import com.kas.mq.server.IController;
 import com.kas.mq.server.IMqServer;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.MqConfiguration;
-import com.kas.mq.server.security.EntityManager;
 
 /**
  * A {@link SessionController} is the object that supervises and manage all {@link SessionHandler}.
@@ -46,11 +45,6 @@ public class SessionController extends AKasObject implements IController
   private IRepository mRepository;
   
   /**
-   * KAS/MQ entity manager
-   */
-  private EntityManager mEntityManager;
-  
-  /**
    * KAS/MQ server
    */
   private IMqServer mServer;
@@ -68,7 +62,6 @@ public class SessionController extends AKasObject implements IController
     mServer = server;
     mConfig = mServer.getConfig();
     mRepository = mServer.getRepository();
-    mEntityManager = new EntityManager();
   }
   
   /**
@@ -173,18 +166,6 @@ public class SessionController extends AKasObject implements IController
   public IRepository getRepository()
   {
     return mRepository;
-  }
-  
-  /**
-   * Get the {@link EntityManager}
-   * 
-   * @return the the {@link EntityManager}
-   * 
-   * @see com.kas.mq.server.IController#getEntityManager()
-   */
-  public EntityManager getEntityManager()
-  {
-    return mEntityManager;
   }
   
   /**

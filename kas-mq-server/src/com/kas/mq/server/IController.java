@@ -5,7 +5,6 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.config.IBaseListener;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.mq.server.security.EntityManager;
 
 /**
  * {@link IController} is an interface that will mediate between the {@link IMqServer}
@@ -48,13 +47,6 @@ public interface IController extends IBaseListener, IObject
    * @return the controller's MQ configuration
    */
   public abstract MqConfiguration getConfig();
-  
-  /**
-   * Get the {@link EntityManager}
-   * 
-   * @return the the {@link EntityManager}
-   */
-  public abstract EntityManager getEntityManager();
   
   /**
    * Shutdown all handlers and mark the main server's thread it should terminate
