@@ -14,6 +14,7 @@ import com.kas.infra.base.PropertyResolver;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.server.db.DbUtils;
 
 public class KasMqDbInitializer extends AKasAppl
 {
@@ -54,8 +55,8 @@ public class KasMqDbInitializer extends AKasAppl
   {
     mLogger.debug("KasMqDbInitializer::appExec() - IN");
     
-    Properties props = new Properties();
-    props.putAll(mStartupArgs);
+    Properties args = new Properties();
+    args.putAll(mStartupArgs);
     String dbtype = mStartupArgs.getOrDefault("kas.db.type", "mysql");
     String host   = mStartupArgs.getOrDefault("kas.db.host", "localhost");
     String port   = mStartupArgs.getOrDefault("kas.db.port", "3306");
@@ -73,7 +74,7 @@ public class KasMqDbInitializer extends AKasAppl
     
     try
     {
-      String url = String.format("jdbc:%s://%s:%s/%s?user=%s&password=%s&useSSL=false&serverTimezone=UTC", dbtype, host, port, schema, user, pswd);
+      String url = DbUtils.createConnUrl(dbtype, host, Integer.valueOf(port), schema, user, pswd);
       mConnection = DriverManager.getConnection(url);
       
       File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "db-init-" + dbtype + ".sql");
@@ -96,7 +97,7 @@ public class KasMqDbInitializer extends AKasAppl
         
         if (line.endsWith(";"))
         {
-          String cmd = PropertyResolver.resolve(sb.toString(), props);
+          String cmd = PropertyResolver.resolve(sb.toString(), args);
           execute(cmd);
           newcmd = true;
         }

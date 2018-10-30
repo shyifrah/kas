@@ -97,7 +97,15 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     String dbType = mConfig.getDbType().toLowerCase();
     String schema = mConfig.getSchemaName().toLowerCase();
     
-    mConnUrl = new StringBuilder()
+    mConnUrl = DbUtils.createConnUrl(
+      mConfig.getDbType().toLowerCase(), 
+      mConfig.getHost().toLowerCase(), 
+      mConfig.getPort(), 
+      mConfig.getSchemaName().toLowerCase(), 
+      mConfig.getUserName().toLowerCase(), 
+      mConfig.getPassword());
+        
+        new StringBuilder()
       .append("jdbc:").append(dbType).append("://")
       .append(mConfig.getHost()).append(':').append(mConfig.getPort()).append('/')
       .append(schema).toString();
