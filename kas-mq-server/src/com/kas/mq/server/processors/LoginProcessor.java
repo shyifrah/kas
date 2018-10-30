@@ -25,10 +25,11 @@ public class LoginProcessor extends AProcessor
   
   /**
    * Extracted input from the request:
-   * user's name and the BASE-64 encoded password (in string format)
+   * user's name, the BASE-64 encoded password (in string format), the client application name
    */
   private String mUser;
   private String mSb64Pass;
+  private String mClientApp;
   
   /**
    * Construct a {@link LoginProcessor}
@@ -63,7 +64,8 @@ public class LoginProcessor extends AProcessor
     {
       mUser = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginUserName, null);
       mSb64Pass = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginPassword, null);
-      mLogger.debug("LoginProcessor::process() - User=" + mUser + "; Pass=" + mSb64Pass);
+      mClientApp = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginAppName, null);
+      mLogger.debug("LoginProcessor::process() - ClientApp=" + mClientApp + "; User=" + mUser + "; Pass=" + mSb64Pass);
       
       EntityManager emgr = mController.getEntityManager();
       IUserEntity ue = emgr.getUserByName(mUser);

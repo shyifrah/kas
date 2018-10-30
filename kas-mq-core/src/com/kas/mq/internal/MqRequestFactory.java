@@ -10,13 +10,14 @@ import com.kas.mq.impl.messages.MqMessageFactory;
 
 public class MqRequestFactory
 {
-  static public MqMessage createLoginRequest(String user, String pass)
+  static public MqMessage createLoginRequest(String user, String pass, String appName)
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cLogin);
     message.setStringProperty(IMqConstants.cKasPropertyLoginUserName, user);
     byte [] b64pass = Base64Utils.encode(pass.getBytes());
     message.setStringProperty(IMqConstants.cKasPropertyLoginPassword, StringUtils.asHexString(b64pass));
+    message.setStringProperty(IMqConstants.cKasPropertyLoginAppName, appName);
     return message;
   }
   

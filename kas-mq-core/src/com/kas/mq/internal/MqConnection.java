@@ -34,6 +34,11 @@ public class MqConnection extends AKasObject implements IMqConnection
   protected IMessenger mMessenger;
   
   /**
+   * Client Application name
+   */
+  protected String mClientName;
+  
+  /**
    * Active user.<br>
    * This data member is set after each successful {@link #login(String, String) login}.
    */
@@ -56,12 +61,15 @@ public class MqConnection extends AKasObject implements IMqConnection
   
   /**
    * Constructing the connection
+   * 
+   * @param clientName A name used by the client application
    */
-  public MqConnection()
+  public MqConnection(String clientName)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConnectionId = UniqueId.generate();
     mMessenger = null;
+    mClientName = clientName;
   }
   
   /**
@@ -161,7 +169,7 @@ public class MqConnection extends AKasObject implements IMqConnection
     }
     else
     {
-      IMqMessage request = MqRequestFactory.createLoginRequest(user, pwd);
+      IMqMessage request = MqRequestFactory.createLoginRequest(user, pwd, mClientName);
       mLogger.debug("MqConnection::login() - sending login request: " + request.toPrintableString(0));
       try
       {
@@ -349,6 +357,7 @@ public class MqConnection extends AKasObject implements IMqConnection
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  ConnectionId=").append(mConnectionId).append("\n")
+      .append(pad).append("  ClientAppName=").append(mClientName).append("\n")
       .append(pad).append("  SessionId=").append(StringUtils.asString(mSessionId)).append("\n")
       .append(pad).append("  User=").append(StringUtils.asString(mUser)).append("\n")
       .append(pad).append("  Messenger=").append(StringUtils.asPrintableString(mMessenger, level+1)).append("\n")

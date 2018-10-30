@@ -85,7 +85,7 @@ public class KasMqStopper extends AKasAppl
    */
   public void appExec()
   {
-    MqContext context = new MqContext();
+    MqContext context = new MqContext(cAppName);
     int port = mConfig.getPort();
     String user = mStartupArgs.get(cKasUserSystemProperty);
     String pass = mStartupArgs.get(cKasPassSystemProperty);

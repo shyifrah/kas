@@ -14,7 +14,7 @@ public abstract class GenThread extends Thread
   public GenThread(String name, ParamsContainer params)
   {
     super(name);
-    mContext = new MqContext();
+    mContext = new MqContext(name);
     mParams = params;
     mLogger = LoggerFactory.getLogger(this.getClass());
   }

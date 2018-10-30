@@ -19,10 +19,12 @@ public class MqContextConnection extends MqConnection
 {
   /**
    * Constructing the connection
+   * 
+   * @param clientName A name used by the client application
    */
-  protected MqContextConnection()
+  protected MqContextConnection(String clientName)
   {
-    super();
+    super(clientName);
   }
 
   /**

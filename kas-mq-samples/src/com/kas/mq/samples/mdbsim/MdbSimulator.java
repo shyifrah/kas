@@ -87,7 +87,7 @@ public class MdbSimulator extends AKasAppl
   {
     int total = 0;
     TimeStamp tsStart = TimeStamp.now();
-    MqContext client = new MqContext();
+    MqContext client = new MqContext(cAppName);
     
     mParams.print();
     

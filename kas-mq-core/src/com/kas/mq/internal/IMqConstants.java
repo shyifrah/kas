@@ -50,6 +50,7 @@ public interface IMqConstants
   
   static public final String cKasPropertyLoginUserName = cKasPropertyPrefix + "login.username";
   static public final String cKasPropertyLoginPassword = cKasPropertyPrefix + "login.password";
+  static public final String cKasPropertyLoginAppName  = cKasPropertyPrefix + "login.appname";
   static public final String cKasPropertyLoginSession  = cKasPropertyPrefix + "login.sessionid";
   
   static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";

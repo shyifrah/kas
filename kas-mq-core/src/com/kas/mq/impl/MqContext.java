@@ -28,7 +28,17 @@ public final class MqContext extends AKasObject
   /**
    * The actual client
    */
-  private MqContextConnection mConnection = new MqContextConnection();
+  private MqContextConnection mConnection;
+  
+  /**
+   * Construct the client
+   * 
+   * @param clientName The client application name
+   */
+  public MqContext(String clientName)
+  {
+    mConnection = new MqContextConnection(clientName);
+  }
   
   /**
    * Connect client to the KAS/MQ server.

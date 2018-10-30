@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.Sequence;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -40,6 +41,11 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   private ILogger mLogger;
   
   /**
+   * Sequence object used to name connections
+   */
+  private Sequence mSequence;
+  
+  /**
    * Map of all allocated connections
    */
   private Map<UniqueId, MqServerConnection> mConnections = new ConcurrentHashMap<UniqueId, MqServerConnection>();
@@ -50,6 +56,7 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   private MqServerConnectionPool()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
+    mSequence = new Sequence();
   }
   
   /**
@@ -61,7 +68,8 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   {
     mLogger.debug("MqServerConnectionPool::allocate() - IN");
     
-    MqServerConnection conn = new MqServerConnection();
+    String clientApp = String.format("ServerConn%05d", mSequence.getAndIncrement());
+    MqServerConnection conn = new MqServerConnection(clientApp);
     UniqueId uid = conn.getConnectionId();
     mConnections.put(uid, conn);
     

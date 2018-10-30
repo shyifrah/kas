@@ -86,7 +86,7 @@ public class ClientApp extends AKasAppl
   public void appExec()
   {
     TimeStamp tsStart = TimeStamp.now();
-    MqContext client = new MqContext();
+    MqContext client = new MqContext(cAppName);
     
     mParams.print();
     
