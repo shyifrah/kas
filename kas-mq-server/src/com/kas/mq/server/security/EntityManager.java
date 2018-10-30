@@ -83,26 +83,6 @@ public class EntityManager extends AKasObject
   }
   
   /**
-   * Get the {@link UserDao}
-   * 
-   * @return the {@link UserDao}
-   */
-  public UserDao getUserDao()
-  {
-    return mUsers;
-  }
-  
-  /**
-   * Get the {@link GroupDao}
-   * 
-   * @return the {@link GroupDao}
-   */
-  public GroupDao getGroupDao()
-  {
-    return mGroups;
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
