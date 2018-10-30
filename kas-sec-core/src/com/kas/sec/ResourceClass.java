@@ -1,4 +1,4 @@
-package com.kas.sec.resources;
+package com.kas.sec;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.sec.access.AccessLevel;

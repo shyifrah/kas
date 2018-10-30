@@ -5,9 +5,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.server.db.dao.IGroupEntity;
-import com.kas.mq.server.security.SecurityController;
-import com.kas.mq.server.security.UserEntity;
+import com.kas.sec.ProtectionManager;
+import com.kas.sec.entities.IGroupEntity;
+import com.kas.sec.entities.IUserEntity;
 
 /**
  * An access entry is a an entry in an access list that grants certain permissions to
@@ -71,10 +71,10 @@ public class AccessEntry extends AKasObject
     }
     else
     {
-      UserEntity user = mRegulator.getUserEntity(entityId);
-      for (IGroupEntity group : user.getGroups())
+      IUserEntity ue = ProtectionManager.getInstance().getUserById(entityId);
+      for (IGroupEntity ge: ue.getGroups())
       {
-        level = mPermittedEntities.get(group.getId());
+        level = mPermittedEntities.get(ge.getId());
         if (level != null)
         {
           result = level;

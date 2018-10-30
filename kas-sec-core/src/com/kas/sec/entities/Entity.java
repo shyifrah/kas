@@ -1,4 +1,4 @@
-package com.kas.mq.server.security;
+package com.kas.sec.entities;
 
 import com.kas.infra.base.AKasObject;
 

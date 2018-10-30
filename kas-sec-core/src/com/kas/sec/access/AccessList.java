@@ -6,7 +6,7 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.sec.resources.ResourceClass;
+import com.kas.sec.ResourceClass;
 
 /**
  * An access-list is an object that holds a {@link List} of {@link AccessEntry access entries}.<br>

@@ -1,5 +1,6 @@
-package com.kas.mq.server.security;
+package com.kas.sec.entities;
 
+import java.util.List;
 import com.kas.infra.utils.Base64Utils;
 
 /**
@@ -37,5 +38,15 @@ public class UserEntity extends Entity implements IUserEntity
   public byte[] getPassword()
   {
     return mPassword;
+  }
+  
+  /**
+   * Get the groups in which a user is member
+   * 
+   * @return list of {@link IGroupEntity}
+   */
+  public List<IGroupEntity> getGroups()
+  {
+    return null;
   }
 }

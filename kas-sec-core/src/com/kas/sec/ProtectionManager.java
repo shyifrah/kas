@@ -1,11 +1,17 @@
-package com.kas.mq.server.security;
+package com.kas.sec;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.entities.GroupDao;
+import com.kas.sec.entities.IUserEntity;
+import com.kas.sec.entities.UserDao;
 
 /**
- * An {@link EntityManager} is the main object of KAS/SEC.
+ * An {@link ProtectionManager} is the main object of KAS/SEC.
  * It is responsible for managing all entities, resource classes and permissions.
  * A schematic figure of the relationships between object in this project:
  * <code><br>
@@ -37,8 +43,23 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class EntityManager extends AKasObject
+public class ProtectionManager extends AKasObject
 {
+  /**
+   * Singleton instance
+   */
+  static private ProtectionManager sInstance = new ProtectionManager();
+  
+  /**
+   * Get the singleton instance
+   * 
+   * @return the singleton instance
+   */
+  static public ProtectionManager getInstance()
+  {
+    return sInstance;
+  }
+  
   /**
    * Logger
    */
@@ -51,15 +72,22 @@ public class EntityManager extends AKasObject
   private GroupDao mGroups;
   
   /**
+   * Resource Table
+   */
+  private Map<String, ResourceClass> mResourceTable;
+  
+  /**
    * Construct an entity using the specified name
    * 
    * @param name The name of the entity
    */
-  public EntityManager()
+  private ProtectionManager()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mUsers = new UserDao();
     mGroups = new GroupDao();
+    mResourceTable = new ConcurrentHashMap<String, ResourceClass>();
+    mResourceTable.put("application", new ResourceClass("application", "access to applications", AccessLevel.READ_ACCESS));
   }
   
   /**
@@ -79,6 +107,26 @@ public class EntityManager extends AKasObject
     catch (Throwable e) {}
     
     mLogger.debug("EntityManager::getUserByName() - OUT, Returns=" + result);
+    return result;
+  }
+  
+  /**
+   * Get user by its ID
+   * 
+   * @return the {@link IUserEntity}
+   */
+  public IUserEntity getUserById(int id)
+  {
+    mLogger.debug("EntityManager::getUserById() - IN");
+    
+    IUserEntity result = null;
+    try
+    {
+      result = mUsers.get(id);
+    }
+    catch (Throwable e) {}
+    
+    mLogger.debug("EntityManager::getUserById() - OUT, Returns=" + result);
     return result;
   }
   
