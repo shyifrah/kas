@@ -27,6 +27,7 @@ Each project relies on the output of other projects. Dependecies is shown below.
 | kas-config     | Base Configuration |
 | kas-logging    | Logger |
 | kas-comm       | Communication and Serialization |
+| kas-db         | DataBase access |
 | kas-appl       | Base Application |
 | kas-mq-core    | Core KAS/MQ |
 | kas-mq-server  | KAS/MQ Server     |
@@ -43,6 +44,8 @@ Each level in the following tree represents a dependency on the previous level<b
 `+----- kas-logging`<br>
 `|`<br>
 `+-------- kas-comm`<br>
+`|`<br>
+`+-------- kas-db`<br>
 `|`<br>
 `+-------- kas-appl`<br>
 `|`<br>
