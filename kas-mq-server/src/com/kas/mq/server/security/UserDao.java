@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import com.kas.db.DbConnection;
+import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.mq.server.db.DbConnection;
-import com.kas.mq.server.db.DbConnectionPool;
 
 /**
  * An implementation layer for {@link UserEntity}

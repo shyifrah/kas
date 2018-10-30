@@ -1,4 +1,4 @@
-package com.kas.mq.server.db;
+package com.kas.db;
 
 /**
  * A set of DB-related utility functions

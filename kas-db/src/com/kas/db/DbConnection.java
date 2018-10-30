@@ -1,4 +1,4 @@
-package com.kas.mq.server.db;
+package com.kas.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;

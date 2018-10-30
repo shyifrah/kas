@@ -53,6 +53,7 @@
       <fileset file="${config.jar}"/>
       <fileset file="${logging.jar}"/>
       <fileset file="${comm.jar}" />
+      <fileset file="${db.jar}" />
       <fileset file="${appl.jar}" />
       <fileset file="${mq-core.jar}"/>
     </copy>
@@ -66,6 +67,7 @@
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
         <pathelement location="${comm.jar}" />
+        <pathelement location="${db.jar}" />
         <pathelement location="${appl.jar}" />
         <pathelement location="${mq-core.jar}" />
       </classpath>

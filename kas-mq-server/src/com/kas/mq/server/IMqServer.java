@@ -1,8 +1,8 @@
 package com.kas.mq.server;
 
 import com.kas.appl.IKasAppl;
+import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.IStoppable;
-import com.kas.mq.server.db.DbConnectionPool;
 import com.kas.mq.server.repo.ServerRepository;
 
 public interface IMqServer extends IKasAppl, IStoppable

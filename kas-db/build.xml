@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="kas-db" default="main" basedir=".">
+  
+  <!-- ===================================================== -->
+  <!-- included files                                        -->
+  <!-- ===================================================== -->
+  
+  <include file="../kas-data/build/dir.xml"/>
+  <include file="../kas-data/build/jar.xml"/>
+  <include file="../kas-data/build/debug.xml"/>
+  
+  <!-- ===================================================== -->
+  <!-- list of targets                                       -->
+  <!-- ===================================================== -->
+  
+  <!-- main target -->
+  <target name="main" depends="jar" description="main target (default)">
+    <echo>Done building</echo>
+  </target>
+  
+  <!-- cleaning previous build output -->
+  <target name="clean" description="clean up old outputs">
+    <delete dir="${bin}"/>
+    <delete dir="${lib}"/>
+  </target>
+  
+  <!-- preparing for build -->
+  <target name="prepare" depends="clean" description="prepare output directories">
+    <mkdir dir="${bin}"/>
+    <mkdir dir="${lib}"/>
+  </target>
+  
+  <!-- compiling sources -->
+  <target name="compile" depends="clean, prepare" description="compile sources">
+  	<javac includeantruntime="false" srcdir="${src}" destdir="${bin}" debug="${debug}" debuglevel="${debuglevel}">
+      <classpath id="${ant.project.name}-ClassPath">
+        <pathelement location="${infra.jar}" />
+        <pathelement location="${config.jar}" />
+        <pathelement location="${logging.jar}" />
+      </classpath>
+    </javac>
+  </target>
+  
+  <!-- creating archive -->
+  <target name="jar" depends="compile" description="generate jar file">
+    <jar destfile="${lib}/${ant.project.name}.jar" basedir="${bin}" />
+  </target>
+
+</project>

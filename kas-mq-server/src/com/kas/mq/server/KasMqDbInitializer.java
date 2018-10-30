@@ -9,12 +9,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import com.kas.appl.AKasAppl;
+import com.kas.db.DbUtils;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.PropertyResolver;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.server.db.DbUtils;
 
 public class KasMqDbInitializer extends AKasAppl
 {
