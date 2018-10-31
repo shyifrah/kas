@@ -45,6 +45,7 @@
       <fileset dir="${config}"     includes="build.xml"/>
       <fileset dir="${logging}"    includes="build.xml"/>
       <fileset dir="${comm}"       includes="build.xml"/>
+      <fileset dir="${db}"         includes="build.xml"/>
       <fileset dir="${appl}"       includes="build.xml"/>
       <fileset dir="${mq-core}"    includes="build.xml"/>
       <fileset dir="${sec-core}"   includes="build.xml"/>
