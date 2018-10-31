@@ -22,19 +22,20 @@ public class AccessLevel extends AKasObject
   /**
    * Access bits
    */
-  static public final byte READ  = 1;   // 00000001
-  static public final byte WRITE = 2;   // 00000010
-  static public final byte ALTER = 4;   // 00000100
-  static public final byte PH_01 = 8;   // 00001000
-  static public final byte PH_02 = 16;  // 00010000
-  static public final byte PH_03 = 32;  // 00100000
-  static public final byte PH_04 = 64;  // 01000000
-  static public final byte PH_05 = -1;  // 10000000
+  static public final int NONE  = 0;   // 00000000
+  static public final int READ  = 1;   // 00000001
+  static public final int WRITE = 2;   // 00000010
+  static public final int ALTER = 4;   // 00000100
+  static public final int PH_01 = 8;   // 00001000
+  static public final int PH_02 = 16;  // 00010000
+  static public final int PH_03 = 32;  // 00100000
+  static public final int PH_04 = 64;  // 01000000
+  static public final int PH_05 = -1;  // 10000000
   
   /**
    * Access levels
    */
-  static public final AccessLevel NONE_ACCESS  = new AccessLevel((byte)0);
+  static public final AccessLevel NONE_ACCESS  = new AccessLevel(NONE);
   static public final AccessLevel READ_ACCESS  = new AccessLevel(READ);
   static public final AccessLevel WRITE_ACCESS = new AccessLevel(WRITE);
   static public final AccessLevel ALTER_ACCESS = new AccessLevel(ALTER);
@@ -42,14 +43,14 @@ public class AccessLevel extends AKasObject
   /**
    * The access level
    */
-  private byte mAccessLevel;
+  private int mAccessLevel;
   
   /**
    * Construct an access level with the specified byte.
    * 
    * @param accessLevel The bit-string that should be turned on 
    */
-  AccessLevel(byte accessLevel)
+  public AccessLevel(int accessLevel)
   {
     mAccessLevel = accessLevel;
   }
@@ -60,7 +61,7 @@ public class AccessLevel extends AKasObject
    * @param levels A bit-string of access levels
    * @return {@code true} if all bits of {@code levels} are turned on, {@code false} otherwise
    */
-  public boolean isLevelEnabled(byte levels)
+  public boolean isLevelEnabled(int levels)
   {
     return (mAccessLevel & levels) != 0;
   }
@@ -70,9 +71,19 @@ public class AccessLevel extends AKasObject
    * 
    * @return the bit-string as a hexa-decimal character.
    */
+  public boolean equals(Object other)
+  {
+    return ((AccessLevel)other).mAccessLevel == mAccessLevel;
+  }
+  
+  /**
+   * Get the bit-string as a hexa-decimal character.
+   * 
+   * @return the bit-string as a hexa-decimal character.
+   */
   public String toString()
   {
-    return StringUtils.asHexString(new byte [] {mAccessLevel});
+    return StringUtils.asHexString(new byte [] {(byte)mAccessLevel});
   }
   
   /**
