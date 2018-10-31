@@ -46,6 +46,7 @@
         <pathelement location="${infra.jar}" />
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
+        <pathelement location="${db.jar}" />
       </classpath>
     </javac>
     <javac includeantruntime="false" srcdir="${test}" destdir="${tbin}" debug="${debug}" debuglevel="${debuglevel}">
@@ -54,6 +55,7 @@
         <pathelement location="${infra.jar}" />
         <pathelement location="${config.jar}" />
         <pathelement location="${logging.jar}" />
+        <pathelement location="${db.jar}" />
         <pathelement location="${thirdparty}/junit-4.10.jar" />
       </classpath>
     </javac>
