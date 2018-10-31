@@ -8,7 +8,8 @@ import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.sec.ProtectionManager;
+import com.kas.mq.server.security.ProtectionManager;
+import com.kas.sec.IProtectionManager;
 import com.kas.sec.entities.IUserEntity;
 
 /**
@@ -67,7 +68,7 @@ public class LoginProcessor extends AProcessor
       mClientApp = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginAppName, null);
       mLogger.debug("LoginProcessor::process() - ClientApp=" + mClientApp + "; User=" + mUser + "; Pass=" + mSb64Pass);
       
-      ProtectionManager pmgr = ProtectionManager.getInstance();
+      IProtectionManager pmgr = ProtectionManager.getInstance();
       IUserEntity ue = pmgr.getUserByName(mUser);
       
       if ((mUser == null) || (mUser.length() == 0))

@@ -14,6 +14,7 @@ import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.server.internal.SessionController;
 import com.kas.mq.server.repo.ServerRepository;
+import com.kas.mq.server.security.ProtectionManager;
 import com.kas.mq.server.internal.ServerHouseKeeper;
 import com.kas.mq.server.internal.ServerNotifier;
 
@@ -97,6 +98,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
    * Initialization consisting of:
    * - creating and initializing configuration object
    * - creating and initializing the db connection pool
+   * - creating and initializing the protection manager
    * - creating the server's repository
    * - start the housekeeper
    * - creating session controller
@@ -120,6 +122,13 @@ public class KasMqServer extends AKasAppl implements IMqServer
     if (!init)
     {
       mLogger.fatal("Server DB connection pool failed initialization");
+      return false;
+    }
+    
+    init = ProtectionManager.init();
+    if (!init)
+    {
+      mLogger.fatal("Protection manager failed initialization");
       return false;
     }
     
