@@ -27,7 +27,7 @@ public class FileUtils
    */
   static public List<String> load(File file)
   {
-    return load(file, '#');
+    return load(file, "#");
   }
   
   /**
@@ -40,7 +40,7 @@ public class FileUtils
    * @param comment The character that designates commented lines
    * @return A {@link List} of strings. Each entry is a non-comment, non-blank line in the file
    */
-  static public List<String> load(File file, char comment)
+  static public List<String> load(File file, String comment)
   {
     List<String> result = new ArrayList<String>();
     try
@@ -53,8 +53,13 @@ public class FileUtils
         while (( line = br.readLine()) != null)
         {
           line = line.trim();
-          if ((line.length() > 0) && (line.charAt(0) != comment))
-            result.add(line);
+          
+          if (line.startsWith(comment))
+            continue;
+          if (line.length() == 0)
+            continue;
+          
+          result.add(line);
         }
       }
       finally
