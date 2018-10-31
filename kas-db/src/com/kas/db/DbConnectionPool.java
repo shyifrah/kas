@@ -225,7 +225,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     Connection conn = null;
     try
     {
-      conn = DriverManager.getConnection(mConnUrl, mConfig.getUserName(), mConfig.getPassword());
+      conn = DriverManager.getConnection(mConnUrl);
     }
     catch (SQLException ex) {}
     return conn;
