@@ -78,7 +78,7 @@ public class KasMqDbInitializer extends AKasAppl
       mConnection = DriverManager.getConnection(url);
       
       File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "db-init-" + dbtype + ".sql");
-      List<String> input = FileUtils.load(dbInitFile);
+      List<String> input = FileUtils.load(dbInitFile, "--");
       
       boolean newcmd = true;
       StringBuilder sb = null;
