@@ -175,7 +175,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     Connection conn = dbConn.getConn();
     try
     {
-      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER");
+      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER;");
       ResultSet rs = st.executeQuery();
       if (rs.next())
         version = rs.getString("VER");
