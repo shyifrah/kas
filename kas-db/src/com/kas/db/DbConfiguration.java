@@ -17,7 +17,7 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Configuration prefixes
    */
-  static private final String  cDbConfigPrefix  = "kas.db.";
+  static public final String  cDbConfigPrefix  = "kas.db.";
   
   /**
    * Default values
