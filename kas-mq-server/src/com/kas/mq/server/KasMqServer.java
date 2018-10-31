@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import com.kas.appl.AKasAppl;
 import com.kas.db.DbConfiguration;
 import com.kas.db.DbConnectionPool;
+import com.kas.db.DbUtils;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -97,7 +98,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
    * <br>
    * Initialization consisting of:
    * - creating and initializing configuration object
-   * - creating and initializing the db connection pool
+   * - creating and initializing the db connection pool, and initialize schema if necessary
    * - creating and initializing the protection manager
    * - creating the server's repository
    * - start the housekeeper
@@ -123,6 +124,12 @@ public class KasMqServer extends AKasAppl implements IMqServer
     {
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
+    }
+    
+    if (!DbUtils.isSchemaInitialized())
+    {
+      mLogger.info("Server schema was not initialized yet, running initialization commands... This might take some time, be patient");
+      DbUtils.initSchema();
     }
     
     init = ProtectionManager.init();
