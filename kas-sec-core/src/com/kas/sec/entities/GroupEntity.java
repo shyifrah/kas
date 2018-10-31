@@ -14,7 +14,7 @@ public class GroupEntity extends Entity implements IGroupEntity
    * @param name The entity Name
    * @param desc The entity description
    */
-  GroupEntity(int id, String name, String desc)
+  public GroupEntity(int id, String name, String desc)
   {
     super(id, name, desc);
   }

@@ -24,7 +24,7 @@ public class UserEntity extends Entity implements IUserEntity
    * @param desc The entity description
    * @param password The user's password
    */
-  UserEntity(int id, String name, String desc, String password)
+  public UserEntity(int id, String name, String desc, String password)
   {
     super(id, name, desc);
     mPassword = Base64Utils.encode(password.getBytes());
