@@ -5,9 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.sec.ProtectionManager;
-import com.kas.sec.entities.IGroupEntity;
-import com.kas.sec.entities.IUserEntity;
 
 /**
  * An access entry is a an entry in an access list that grants certain permissions to
@@ -51,39 +48,6 @@ public class AccessEntry extends AKasObject
   public boolean isMatched(String resource)
   {
     return mResourceRegEx.matcher(resource).matches();
-  }
-  
-  /**
-   * Get the access level allowed for the specified entityId
-   * 
-   * @param entityId The ID representing the entity
-   * @return the allowed {@link AccessLevel}
-   */
-  public AccessLevel getAllowedAccessLevel(int entityId)
-  {
-    AccessLevel result = AccessLevel.NONE_ACCESS;
-    
-    // if user has an entry of its own in the map -- that's the access level he will get
-    AccessLevel level = mPermittedEntities.get(entityId);
-    if (level != null)
-    {
-      result = level;
-    }
-    else
-    {
-      IUserEntity ue = ProtectionManager.getInstance().getUserById(entityId);
-      for (IGroupEntity ge: ue.getGroups())
-      {
-        level = mPermittedEntities.get(ge.getId());
-        if (level != null)
-        {
-          result = level;
-          break;
-        }
-      } 
-    }
-    
-    return result;
   }
   
   /**
