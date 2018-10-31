@@ -3,7 +3,7 @@ USE ${kas.db.schema};
 DROP TABLE IF EXISTS kas_mq_users_to_groups;
 DROP TABLE IF EXISTS kas_mq_users CASCADE;
 DROP TABLE IF EXISTS kas_mq_groups CASCADE;
-
+DROP TABLE IF EXISTS kas_mq_resource_classes; 
 
 CREATE TABLE kas_mq_users (
   id          INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
@@ -33,7 +33,7 @@ CREATE TABLE kas_mq_users_to_groups (
 );
 
 INSERT INTO kas_mq_users_to_groups
-SELECT user_id, group_id FROM 
+  SELECT user_id, group_id FROM 
   (
     SELECT id user_id
     FROM kas_mq_users
@@ -44,3 +44,14 @@ SELECT user_id, group_id FROM
     FROM kas_mq_groups 
     WHERE name = 'system'
   ) groups;
+
+CREATE TABLE kas_mq_resource_classes (
+  id            INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  name          VARCHAR(32) NOT NULL UNIQUE,
+  access_levels INT
+);
+
+INSERT INTO kas_mq_resource_classes
+  VALUES('application', 1);
+INSERT INTO kas_mq_resource_classes
+  VALUES('queue', 7);
