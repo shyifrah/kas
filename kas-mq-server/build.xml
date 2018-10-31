@@ -47,6 +47,7 @@
       <fileset dir="${comm}"       includes="build.xml"/>
       <fileset dir="${appl}"       includes="build.xml"/>
       <fileset dir="${mq-core}"    includes="build.xml"/>
+      <fileset dir="${sec-core}"   includes="build.xml"/>
     </subant>
     <copy todir="${lib}" overwrite="true" >
       <fileset file="${infra.jar}"/>
@@ -56,6 +57,7 @@
       <fileset file="${db.jar}" />
       <fileset file="${appl.jar}" />
       <fileset file="${mq-core.jar}"/>
+      <fileset file="${sec-core.jar}"/>
     </copy>
   </target>
   
@@ -70,6 +72,7 @@
         <pathelement location="${db.jar}" />
         <pathelement location="${appl.jar}" />
         <pathelement location="${mq-core.jar}" />
+        <pathelement location="${sec-core.jar}" />
       </classpath>
     </javac>
   </target>
