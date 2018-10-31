@@ -1,4 +1,4 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,17 +10,20 @@ import java.util.List;
 import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
-import com.kas.infra.base.IObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.sec.entities.IUserDao;
+import com.kas.sec.entities.IUserEntity;
+import com.kas.sec.entities.UserEntity;
 
 /**
  * An implementation layer for {@link UserEntity}
  * 
  * @author Pippo
  */
-public class UserDao implements IUserDao
+public class UserDao extends AKasObject implements IUserDao
 {
   /**
    * Table name
@@ -53,7 +56,7 @@ public class UserDao implements IUserDao
   public IUserEntity get(String name)
   {
     mLogger.debug("UserDao::get() - IN");
-    UserEntity ue = null;
+    IUserEntity ue = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -88,13 +91,13 @@ public class UserDao implements IUserDao
   /**
    * Get {@link IUserEntity} associated with the specific name
    * 
-   * @param name The group's name
-   * @return The {@link IGroupEntity} that matches the query
+   * @param id The ID of the {@link IUserEntity}
+   * @return The {@link IUserEntity} that matches the query
    */
   public IUserEntity get(int id)
   {
     mLogger.debug("UserDao::get() - IN");
-    UserEntity ue = null;
+    IUserEntity ue = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -148,7 +151,7 @@ public class UserDao implements IUserDao
       mLogger.debug("UserDao::getAll() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
     
-      UserEntity ue = null;
+      IUserEntity ue = null;
       while (rs.next())
       {
         int id = rs.getInt("id");
@@ -172,7 +175,7 @@ public class UserDao implements IUserDao
   /**
    * Update values of {@code t} with the {@code map}
    * 
-   * @param t The {@link UserEntity} to update
+   * @param t The {@link IUserEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
   public void update(IUserEntity t, Map<String, String> map)
@@ -220,7 +223,7 @@ public class UserDao implements IUserDao
   }
 
   /**
-   * Save specified {@link UserEntity} to the data layer
+   * Save specified {@link IUserEntity} to the data layer
    * 
    * @param t The object to be saved
    */
@@ -235,8 +238,8 @@ public class UserDao implements IUserDao
     try
     {
       String pswd = new String(Base64Utils.decode(t.getPassword()));
-      String sql = "INSERT INTO " + cKasTableName + " (id, name, description, password) " +
-        "VALUES (" + t.getId() + ", '" + t.getName() + "', '"+ t.getDescription() + "', '" + pswd + "');";
+      String sql = "INSERT INTO " + cKasTableName + " (name, description, password) " +
+        "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "', '" + pswd + "');";
       mLogger.debug("UserDao::save() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
@@ -252,7 +255,7 @@ public class UserDao implements IUserDao
   }
 
   /**
-   * Delete the specified {@link GroupEntity}
+   * Delete the specified {@link IUserEntity}
    * 
    * @param t The object to be deleted
    */
@@ -281,22 +284,6 @@ public class UserDao implements IUserDao
     mLogger.debug("UserDao::delete() - OUT");
   }
   
-  /**
-   * Returns the {@link IObject} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public String name()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
-  }
-
   /**
    * Get the object's detailed string representation
    * 

@@ -1,4 +1,4 @@
-package com.kas.sec.entities;
+package com.kas.mq.server.security;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,16 +10,19 @@ import java.util.List;
 import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
-import com.kas.infra.base.IObject;
+import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
+import com.kas.sec.entities.GroupEntity;
+import com.kas.sec.entities.IGroupDao;
+import com.kas.sec.entities.IGroupEntity;
 
 /**
  * An implementation layer for {@link GroupEntity}
  * 
  * @author Pippo
  */
-public class GroupDao implements IGroupDao
+public class GroupDao extends AKasObject implements IGroupDao
 {
   /**
    * Table name
@@ -51,7 +54,7 @@ public class GroupDao implements IGroupDao
   public IGroupEntity get(String name)
   {
     mLogger.debug("GroupDao::get() - IN");
-    GroupEntity ge = null;
+    IGroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -85,13 +88,13 @@ public class GroupDao implements IGroupDao
   /**
    * Get {@link IGroupEntity} associated with the specific name
    * 
-   * @param name The group's name
+   * @param id The ID of the {@link IGroupEntity}
    * @return The {@link IGroupEntity} that matches the query
    */
   public IGroupEntity get(int id)
   {
     mLogger.debug("GroupDao::get() - IN");
-    GroupEntity ge = null;
+    IGroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -144,7 +147,7 @@ public class GroupDao implements IGroupDao
       mLogger.debug("GroupDao::getAll() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
     
-      GroupEntity ge = null;
+      IGroupEntity ge = null;
       while (rs.next())
       {
         int id = rs.getInt("id");
@@ -167,7 +170,7 @@ public class GroupDao implements IGroupDao
   /**
    * Update values of {@code t} with the {@code map}
    * 
-   * @param t The {@link GroupEntity} to update
+   * @param t The {@link IGroupEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
   public void update(IGroupEntity t, Map<String, String> map)
@@ -215,7 +218,7 @@ public class GroupDao implements IGroupDao
   }
 
   /**
-   * Save specified {@link GroupEntity} to the data layer
+   * Save specified {@link IGroupEntity} to the data layer
    * 
    * @param t The object to be saved
    */
@@ -229,8 +232,8 @@ public class GroupDao implements IGroupDao
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "INSERT INTO " + cKasTableName + " (id, name, description) " +
-        "VALUES (" + t.getId() + ", '" + t.getName() + "', '"+ t.getDescription() + "');";
+      String sql = "INSERT INTO " + cKasTableName + " (name, description) " +
+        "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "');";
       mLogger.debug("GroupDao::save() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
@@ -275,22 +278,6 @@ public class GroupDao implements IGroupDao
     mLogger.debug("GroupDao::delete() - OUT");
   }
   
-  /**
-   * Returns the {@link IObject} simple class name enclosed with chevrons.
-   * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
-   */
-  public String name()
-  {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
-  }
-
   /**
    * Get the object's detailed string representation
    * 
