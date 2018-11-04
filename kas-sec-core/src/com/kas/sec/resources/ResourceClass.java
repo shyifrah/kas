@@ -133,17 +133,17 @@ public class ResourceClass extends AKasObject
     return String.format("%s (%d)", mName, mId);
   }
   
-  /**
-   * Get access entry that matches the resource name
-   * 
-   * @param resName The name of the resource
-   * @return the {@link AccessEntry} that protects the specified resource
-   */
-  public Enumeration<AccessEntry> getAccessEntryFor(String resName)
-  {
-    return mAccessList.getAccessEntry(resName);
-  }
-  
+//  /**
+//   * Get access entry that matches the resource name
+//   * 
+//   * @param resName The name of the resource
+//   * @return the {@link AccessEntry} that protects the specified resource
+//   */
+//  public Enumeration<AccessEntry> getAccessEntryFor(String resName)
+//  {
+//    return mAccessList.getAccessEntry(resName);
+//  }
+//  
   /**
    * Get the object's detailed string representation
    * 
