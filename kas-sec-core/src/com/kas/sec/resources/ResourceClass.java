@@ -5,6 +5,7 @@ import com.kas.infra.base.AKasObject;
 import com.kas.sec.access.AccessEntry;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.access.AccessList;
+import com.kas.sec.entities.UserEntity;
 
 /**
  * An implementation of {@link IResourceClass}
@@ -40,17 +41,18 @@ public class ResourceClass extends AKasObject
    * 
    * @param id The Id of the resource class
    * @param name The name of the resource class
-   * @param accessLevels A list of logically-ORed access-levels (bytes)
+   * @param accessLevels A list of logically-ORed access-levels (integers)
+   * that are supported by this resource class
    * 
    * @throws RuntimeException if name or description are invalid
    */
   public ResourceClass(int id, String name, int accessLevels)
   {
     if ((name == null) || (name.length() == 0) || (name.length() > cMaxResourceNameLength))
-      throw new RuntimeException("Invalid resource class name. Null, empty or too long resource name: [" + name + "]");
+      throw new IllegalArgumentException("Invalid resource class name. Null, empty or too long resource name: [" + name + "]");
     
     if (AccessLevel.NONE == accessLevels)
-      throw new RuntimeException("Invalid enabled access levels. Too long: [" + accessLevels + "]");
+      throw new IllegalArgumentException("Invalid enabled access levels. At least one bit should be turned on");
     
     mId = id;
     mName = name;
@@ -133,17 +135,27 @@ public class ResourceClass extends AKasObject
     return String.format("%s (%d)", mName, mId);
   }
   
-//  /**
-//   * Get access entry that matches the resource name
-//   * 
-//   * @param resName The name of the resource
-//   * @return the {@link AccessEntry} that protects the specified resource
-//   */
-//  public Enumeration<AccessEntry> getAccessEntryFor(String resName)
-//  {
-//    return mAccessList.getAccessEntry(resName);
-//  }
-//  
+  /**
+   * Get the access level in which {@code user} can access the {@code resName}
+   * 
+   * @param resName The name of the resource
+   * @param user The {@link UserEntity}
+   * @return the {@link AccessLevel} allowed for the specified user
+   */
+  public AccessLevel getAccessLevelFor(String resName, UserEntity user)
+  {
+    AccessLevel level = null;
+    Enumeration<AccessEntry> aces = mAccessList.getAccessEntries(resName);
+    while ((aces.hasMoreElements()) && (level == null))
+    {
+      AccessEntry ace = aces.nextElement();
+      level = ace.getAccessLevelFor(user);
+    }
+    
+    if (level == null) level = mAccessList.getDefaultAccessLevel();
+    return level;
+  }
+  
   /**
    * Get the object's detailed string representation
    * 
