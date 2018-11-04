@@ -140,9 +140,9 @@ public class DbUtils
    * @return A result set, if one was generated
    * @throws SQLException if thrown by java.sql.* classes
    */
-  static public ResultSet execute(String sql) throws SQLException
+  static public void execute(String sql) throws SQLException
   {
-    return execute(sql, new Object [] {});
+    execute(sql, new Object [] {});
   }
   
   /**
@@ -153,13 +153,46 @@ public class DbUtils
    * @return A result set, if one was generated
    * @throws SQLException if thrown by java.sql.* classes
    */
-  static public ResultSet execute(String fmt, Object... args) throws SQLException
+  static public void execute(String fmt, Object... args) throws SQLException
   {
     sLogger.debug("DbUtils::execute() - IN");
     
     DbConnectionPool pool = DbConnectionPool.getInstance();
     DbConnection dbConn = pool.allocate();
     Connection conn = dbConn.getConn();
+
+    execute(conn, fmt, args);
+    
+    pool.release(dbConn);
+    
+    sLogger.debug("DbUtils::execute() - OUT");
+  }
+  
+  /**
+   * Execute a SQL statement using the specified connection
+   * 
+   * @param conn The {@link Connection} that will be used
+   * @param sql The SQL statement
+   * @return A result set, if one was generated
+   * @throws SQLException if thrown by java.sql.* classes
+   */
+  static public ResultSet execute(Connection conn, String sql) throws SQLException
+  {
+    return execute(conn, sql, new Object [] {});
+  }
+  
+  /**
+   * Execute a SQL statement using the specified connection
+   * 
+   * @param conn The {@link Connection} that will be used
+   * @param fmt The SQL statement base format
+   * @param args Arguments to format the SQL
+   * @return A result set, if one was generated
+   * @throws SQLException if thrown by java.sql.* classes
+   */
+  static public ResultSet execute(Connection conn, String fmt, Object... args) throws SQLException
+  {
+    sLogger.debug("DbUtils::execute() - IN");
     
     String sql = String.format(fmt, args);
     ResultSet result = null;
@@ -169,10 +202,7 @@ public class DbUtils
     PreparedStatement st = conn.prepareStatement(sql);
     boolean b = st.execute();
     if (b) result = st.getResultSet();
-    
     sLogger.trace("DbUtils::execute() - HaveResult: [" + b + "]");
-    
-    pool.release(dbConn);
     
     sLogger.debug("DbUtils::execute() - OUT");
     return result;

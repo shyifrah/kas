@@ -1,51 +1,82 @@
-package com.kas.mq.server.security;
+package com.kas.sec;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import com.kas.infra.base.AKasObject;
-import com.kas.sec.IProtectionManager;
-import com.kas.sec.entities.IUserEntity;
-import com.kas.sec.resources.ResourceClass;
+import com.kas.sec.entities.GroupDao;
+import com.kas.sec.entities.UserDao;
+import com.kas.sec.entities.UserEntity;
 
+/**
+ * The protection manager is a single point of contact for all access and
+ * authentication requests.
+ * 
+ * @author Pippo
+ */
 public class ProtectionManager extends AKasObject implements IProtectionManager
 {
+  /**
+   * The singleton instance
+   */
   static private ProtectionManager sInstance = null;
   
-  static public boolean init()
+  /**
+   * Get the singleton instance
+   * 
+   * @return the singleton instance
+   */
+  static public ProtectionManager getInstance()
   {
-    sInstance = new ProtectionManager();
-    return true;
-  }
-  
-  static public IProtectionManager getInstance()
-  {
-    if (sInstance == null)
-      throw new RuntimeException("ProtectionManager was not initialized");
-    
     return sInstance;
   }
-  
-  private Map<String, ResourceClass> mResourceTable;
+
+  /**
+   * The users
+   */
   private UserDao mUsers;
+  
+  /**
+   * The groups
+   */
   private GroupDao mGroups;
   
+  /**
+   * Construct the Protection Manager
+   */
   private ProtectionManager()
   {
-    mResourceTable = new ConcurrentHashMap<String, ResourceClass>();
     mUsers = new UserDao();
     mGroups = new GroupDao();
   }
   
-  public IUserEntity getUserByName(String name)
+  /**
+   * Get a user by its name
+   * 
+   * @param name The name of the user
+   * @return the {@link IUserEntity} representing the user
+   */
+  public UserEntity getUserByName(String name)
   {
     return mUsers.get(name);
   }
 
-  public IUserEntity getUserById(int id)
+  /**
+   * Get a user by its ID
+   * 
+   * @param id The ID of the user
+   * @return the {@link IUserEntity} representing the user
+   */
+  public UserEntity getUserById(int id)
   {
     return mUsers.get(id);
   }
-
+  
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
     return null;

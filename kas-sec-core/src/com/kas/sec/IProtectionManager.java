@@ -1,6 +1,6 @@
 package com.kas.sec;
 
-import com.kas.sec.entities.IUserEntity;
+import com.kas.sec.entities.UserEntity;
 
 /**
  * An {@link IProtectionManager} is the main object of KAS/SEC.
@@ -42,12 +42,12 @@ public interface IProtectionManager
    * 
    * @return the {@link IUserEntity}
    */
-  public abstract IUserEntity getUserByName(String name);
+  public abstract UserEntity getUserByName(String name);
   
   /**
    * Get user by its ID
    * 
    * @return the {@link IUserEntity}
    */
-  public abstract IUserEntity getUserById(int id);
+  public abstract UserEntity getUserById(int id);
 }

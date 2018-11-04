@@ -358,16 +358,6 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
     return mPredefQueuesMap;
   }
   
-//  /**
-//   * Get DB-related configuration
-//   * 
-//   * @return DB-related configuration
-//   */
-//  public DbConfiguration getDbConfiguration()
-//  {
-//    return mDbConfig;
-//  }
-  
   /**
    * Get the object's detailed string representation
    * 

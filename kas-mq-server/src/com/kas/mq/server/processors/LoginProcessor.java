@@ -1,16 +1,14 @@
 package com.kas.mq.server.processors;
 
 import com.kas.infra.base.Properties;
-import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.mq.server.security.ProtectionManager;
-import com.kas.sec.IProtectionManager;
-import com.kas.sec.entities.IUserEntity;
+import com.kas.sec.ProtectionManager;
+import com.kas.sec.entities.UserEntity;
 
 /**
  * Processor for login requests
@@ -29,7 +27,7 @@ public class LoginProcessor extends AProcessor
    * user's name, the BASE-64 encoded password (in string format), the client application name
    */
   private String mUser;
-  private String mSb64Pass;
+  private String mPass;
   private String mClientApp;
   
   /**
@@ -64,37 +62,25 @@ public class LoginProcessor extends AProcessor
     else
     {
       mUser = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginUserName, null);
-      mSb64Pass = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginPassword, null);
+      mPass = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginPassword, null);
       mClientApp = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginAppName, null);
-      mLogger.debug("LoginProcessor::process() - ClientApp=" + mClientApp + "; User=" + mUser + "; Pass=" + mSb64Pass);
+      mLogger.debug("LoginProcessor::process() - ClientApp=" + mClientApp + "; User=" + mUser + "; Pass=" + mPass);
       
-      IProtectionManager pmgr = ProtectionManager.getInstance();
-      IUserEntity ue = pmgr.getUserByName(mUser);
+      ProtectionManager pmgr = ProtectionManager.getInstance();
+      UserEntity ue = pmgr.getUserByName(mUser);
       
       if ((mUser == null) || (mUser.length() == 0))
-      {
         mDesc = "Invalid user name";
-      }
       else if (ue == null)
-      {
         mDesc = "User " + mUser + " is not defined";
-      }
+      else if (!ue.isPasswordMatch(mPass))
+        mDesc = "Incorrect password for " + mUser;
       else
       {
-        byte [] userpwd = ue.getPassword();
-        String strUserpwd = StringUtils.asHexString(userpwd);
-        
-        if (!mSb64Pass.equals(strUserpwd))
-        {
-          mDesc = "Incorrect password for " + mUser;
-        }
-        else
-        {
-          mDesc = "User " + mUser + " successfully authenticated";
-          mCode = EMqCode.cOkay;
-          mHandler.setActiveUserName(mUser);
-          props.setStringProperty(IMqConstants.cKasPropertyLoginSession, mHandler.getSessionId().toString());
-        }
+        mDesc = "User " + mUser + " successfully authenticated";
+        mCode = EMqCode.cOkay;
+        mHandler.setActiveUser(ue);
+        props.setStringProperty(IMqConstants.cKasPropertyLoginSession, mHandler.getSessionId().toString());
       }
     }
     

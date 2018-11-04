@@ -20,6 +20,7 @@ import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.processors.IProcessor;
 import com.kas.mq.server.processors.ProcessorFactory;
+import com.kas.sec.entities.UserEntity;
 
 /**
  * A {@link SessionHandler} is the object that handles the traffic in and from a remote client.
@@ -54,9 +55,9 @@ public class SessionHandler extends AKasObject implements Runnable
   private UniqueId mSessionId;
   
   /**
-   * Active user name
+   * Active user
    */
-  private String mActiveUserName;
+  private UserEntity mActiveUser;
   
   /**
    * Indicator whether handler is still running
@@ -81,7 +82,7 @@ public class SessionHandler extends AKasObject implements Runnable
     
     mLogger = LoggerFactory.getLogger(this.getClass());
     mSessionId = UniqueId.generate();
-    mActiveUserName = null;
+    mActiveUser = null;
   }
   
   /**
@@ -144,23 +145,23 @@ public class SessionHandler extends AKasObject implements Runnable
   }
   
   /**
-   * Set the active user name to {@code user}
+   * Set the active user to {@code userEntity}
    * 
    * @param user The new active user name
    */
-  public void setActiveUserName(String user)
+  public void setActiveUser(UserEntity userEntity)
   {
-    mActiveUserName = user;
+    mActiveUser = userEntity;
   }
   
   /**
-   * Get the active user name
+   * Get the active user
    * 
-   * @return the active user name
+   * @return the active user
    */
-  public String getActiveUserName()
+  public UserEntity getActiveUser()
   {
-    return mActiveUserName;
+    return mActiveUser;
   }
   
   /**
@@ -234,7 +235,7 @@ public class SessionHandler extends AKasObject implements Runnable
     sb.append(name()).append("(\n")
       .append(pad).append("  IsRunning=").append(mIsRunning).append("\n")
       .append(pad).append("  SessionId=").append(mSessionId.toString()).append("\n")
-      .append(pad).append("  ActiveUser=").append(mActiveUserName).append("\n")
+      .append(pad).append("  ActiveUser=").append(mActiveUser).append("\n")
       .append(pad).append("  Messenger=").append(mMessenger.toPrintableString(level+1)).append("\n")
       .append(pad).append(")");
     return sb.toString();
