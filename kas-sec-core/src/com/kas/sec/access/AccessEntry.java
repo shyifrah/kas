@@ -1,10 +1,10 @@
 package com.kas.sec.access;
 
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.sec.entities.UserEntity;
 
 /**
  * An access entry is a an entry in an access list that grants certain permissions to
@@ -18,11 +18,6 @@ import com.kas.infra.utils.StringUtils;
 public class AccessEntry extends AKasObject
 {
   /**
-   * Resource regular expression
-   */
-  private Pattern mResourceRegEx;
-  
-  /**
    * The list of entity IDs that are permitted to the resource(s) designated by the regular expression
    */
   private Map<Integer, AccessLevel> mPermittedEntities;
@@ -30,24 +25,31 @@ public class AccessEntry extends AKasObject
   /**
    * Construct an access-entry
    * 
-   * @param resource A regular expression that identifies the resources protected by this entry
-   * @param accessLevel The permitted level of access
+   * @param map A map of group IDs to their allowed access level
    */
-  AccessEntry(String resource)
+  AccessEntry(Map<Integer, AccessLevel> map)
   {
-    mResourceRegEx = Pattern.compile(resource);
-    mPermittedEntities = new ConcurrentHashMap<Integer, AccessLevel>();
+    mPermittedEntities = map;
   }
   
   /**
-   * Test if {@code resource} is protected by this {@link AccessEntry}.
+   * Get the access level allowed for {@code user}
    * 
-   * @param resource The resource tested
-   * @return {@code true} if this {@link AccessEntry} protects {@code resource}.
+   * @param user The user entity
+   * @return The first {@link AccessLevel} that maps to one of the user's groups,
+   * or {@code null} if none found
    */
-  boolean isMatched(String resource)
+  public AccessLevel getAccessLevelFor(UserEntity user)
   {
-    return mResourceRegEx.matcher(resource).matches();
+    AccessLevel level = null;
+    List<Integer> gids = user.getGroups();
+    for (int i = 0; (level == null) && (i < gids.size()); ++i)
+    {
+      Integer groupId = gids.get(i);
+      level = mPermittedEntities.get(groupId);
+    }
+    
+    return level;
   }
   
   /**
@@ -63,7 +65,6 @@ public class AccessEntry extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  RegEx=").append(mResourceRegEx.toString()).append("\n")
       .append(pad).append("  Access=").append(StringUtils.asPrintableString(mPermittedEntities, level+2)).append("\n")
       .append(pad).append(")");
     return sb.toString();
