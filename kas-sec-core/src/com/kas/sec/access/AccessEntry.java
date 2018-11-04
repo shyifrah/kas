@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.sec.entities.UserEntity;
 
 /**
@@ -17,6 +19,11 @@ import com.kas.sec.entities.UserEntity;
  */
 public class AccessEntry extends AKasObject
 {
+  /**
+   * Logger
+   */
+  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  
   /**
    * The list of entity IDs that are permitted to the resource(s) designated by the regular expression
    */
@@ -41,6 +48,8 @@ public class AccessEntry extends AKasObject
    */
   public AccessLevel getAccessLevelFor(UserEntity user)
   {
+    mLogger.debug("AccessEntry::getAccessLevelFor() - IN, UE=" + user);
+    
     AccessLevel level = null;
     List<Integer> gids = user.getGroups();
     for (int i = 0; (level == null) && (i < gids.size()); ++i)
@@ -49,6 +58,7 @@ public class AccessEntry extends AKasObject
       level = mPermittedEntities.get(groupId);
     }
     
+    mLogger.debug("AccessEntry::getAccessLevelFor() - OUT, Level=" + level);
     return level;
   }
   

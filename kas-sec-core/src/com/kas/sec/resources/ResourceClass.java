@@ -2,6 +2,8 @@ package com.kas.sec.resources;
 
 import java.util.Enumeration;
 import com.kas.infra.base.AKasObject;
+import com.kas.logging.ILogger;
+import com.kas.logging.LoggerFactory;
 import com.kas.sec.access.AccessEntry;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.access.AccessList;
@@ -15,6 +17,11 @@ import com.kas.sec.entities.UserEntity;
 public class ResourceClass extends AKasObject
 {
   static private final int cMaxResourceNameLength = 32;
+  
+  /**
+   * Logger
+   */
+  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
    * The resource class ID
@@ -90,42 +97,6 @@ public class ResourceClass extends AKasObject
   }
   
   /**
-   * Compare to another resource class
-   * 
-   * @return the value returned by {@link String#compareTo(String)}
-   * 
-   * @see Comparable#compareTo(Object)
-   */
-  public int compareTo(ResourceClass other)
-  {
-    return mName.compareTo(other.getName());
-  }
-  
-  /**
-   * Compare two Objects for equality
-   * 
-   * @return the value returned by {@link String#equals(Object)}
-   * 
-   * @see Comparable#equals(Object)
-   */
-  public boolean equals(Object other)
-  {
-    return mName.equals(((ResourceClass)other).mName);
-  }
-  
-  /**
-   * Get the hash code of the resource class
-   * 
-   * @return the value returned by {@link String#hashCode()}
-   * 
-   * @see Comparable#hashCode()}
-   */
-  public int hashCode()
-  {
-    return mName.hashCode();
-  }
-  
-  /**
    * Get a one-line string representation of this resource class
    * 
    * @return a one-line string representation of this resource class
@@ -144,6 +115,8 @@ public class ResourceClass extends AKasObject
    */
   public AccessLevel getAccessLevelFor(String resName, UserEntity user)
   {
+    mLogger.debug("ResourceClass::getAccessLevelFor() - IN, UE=" + user + "; Res=" + resName);
+    
     AccessLevel level = null;
     Enumeration<AccessEntry> aces = mAccessList.getAccessEntries(resName);
     while ((aces.hasMoreElements()) && (level == null))
@@ -153,6 +126,8 @@ public class ResourceClass extends AKasObject
     }
     
     if (level == null) level = mAccessList.getDefaultAccessLevel();
+    
+    mLogger.debug("ResourceClass::getAccessLevelFor() - OUT, Level=" + level);
     return level;
   }
   
@@ -172,6 +147,7 @@ public class ResourceClass extends AKasObject
       .append(pad).append("  Id=").append(mId).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
       .append(pad).append("  EnabledAccessLevels=").append(mEnabledAccessLevels.toPrintableString()).append("\n")
+      .append(pad).append("  AccessList=(").append(mAccessList.toPrintableString(level)).append("\n")
       .append(pad).append(")");
     return sb.toString();
   }
