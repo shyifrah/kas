@@ -3,7 +3,10 @@ package com.kas.sec.access;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -25,10 +28,19 @@ public class AccessList extends AKasObject
    */
   private ILogger mLogger;
   
+//  /**
+//   * The list of {@link AccessEntry access entries}
+//   */
+//  private List<AccessEntry> mAccessList;
   /**
-   * The list of {@link AccessEntry access entries}
+   * The RegEx-to-AccessEntry map
    */
-  private List<AccessEntry> mAccessList;
+  private Map<String, AccessEntry> mAccessEntriesMap;
+  
+  /**
+   * The RegEx-to-Pattern map
+   */
+  private Map<String, Pattern> mPatternsMap;
   
   /**
    * The default {@link AccessEntry access entry}
@@ -43,31 +55,32 @@ public class AccessList extends AKasObject
   AccessList(AccessLevel defaultAccessLevel)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mAccessList = new ArrayList<AccessEntry>();
     mDefaultAccessEntry = new AccessEntry(".*");
+    mPatternsMap = new ConcurrentHashMap<String, Pattern>();
+    mAccessEntriesMap = new ConcurrentHashMap<String, AccessEntry>();
   }
   
-  /**
-   * Get an enumeration of {@link AccessEntry access entries} that protect {@code resource}.
-   * 
-   * @param resource The resource checked
-   * @return the matching {@link AccessEntry access entries} that protects the specified resource
-   */
-  public Enumeration<AccessEntry> getAccessEntry(String resource)
-  {
-    mLogger.debug("AccessList::getAccessEntry() - IN");
-    
-    Vector<AccessEntry> result = new Vector<AccessEntry>();
-    for (int i = 0; i < mAccessList.size(); ++i)
-    {
-      AccessEntry ace = mAccessList.get(i);
-      if (ace.isMatched(resource))
-        result.add(ace);
-    }
-    
-    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
-    return result.elements();
-  }
+//  /**
+//   * Get an enumeration of {@link AccessEntry access entries} that protect {@code resource}.
+//   * 
+//   * @param resource The resource checked
+//   * @return the matching {@link AccessEntry access entries} that protects the specified resource
+//   */
+//  public Enumeration<AccessEntry> getAccessEntry(String resource)
+//  {
+//    mLogger.debug("AccessList::getAccessEntry() - IN");
+//    
+//    Vector<AccessEntry> result = new Vector<AccessEntry>();
+//    for (int i = 0; i < mAccessList.size(); ++i)
+//    {
+//      AccessEntry ace = mAccessList.get(i);
+//      if (ace.isMatched(resource))
+//        result.add(ace);
+//    }
+//    
+//    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
+//    return result.elements();
+//  }
   
   /**
    * Get the object's detailed string representation
@@ -83,7 +96,7 @@ public class AccessList extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  DefaultAccess=").append(mDefaultAccessEntry.toPrintableString(level+1)).append("\n")
-      .append(pad).append("  List=(").append(StringUtils.asPrintableString(mAccessList, level+1)).append(")\n")
+      //.append(pad).append("  List=(").append(StringUtils.asPrintableString(mAccessList, level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
