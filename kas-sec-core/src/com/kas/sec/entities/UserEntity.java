@@ -96,7 +96,7 @@ public class UserEntity extends Entity
   }
   
   /**
-   * Test if this user is permitted to access {@code resName} of {@code resClass}
+   * Test if this user is permitted to access {@code resName} of {@code resClass} class
    * with access level {@code level}.<br>
    * If {@code level} is not supported by this {@code resClass} an exception is thrown.
    * 
@@ -107,10 +107,19 @@ public class UserEntity extends Entity
    */
   public boolean isAccessPermitted(ResourceClass resClass, String resName, AccessLevel level)
   {
+    if (resClass == null)
+      throw new IllegalArgumentException("Null resource class");
+    
+    if (resName == null)
+      throw new IllegalArgumentException("Null resource name");
+    
+    if (level == null)
+      throw new IllegalArgumentException("Null access level");
+    
     if (!resClass.getEnabledAccessLevels().isLevelEnabled(level.getAccessLevel()))
       throw new IllegalArgumentException("Access level " + level + " is not supported by resource class " + resClass.getName());
     
-    Enumeration<AccessEntry> aces = resClass.getAccessEntryFor(resName);
+    //Enumeration<AccessEntry> aces = resClass.getAccessEntryFor(resName);
     
     return true; /// TODO: complete
   }
