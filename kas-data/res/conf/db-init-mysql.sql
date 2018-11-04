@@ -51,8 +51,7 @@ CREATE TABLE kas_mq_resource_classes (
   access_levels INT
 );
 
--- INSERT INTO kas_mq_resource_classes
---   VALUES('application', 1);
--- INSERT INTO kas_mq_resource_classes
---   VALUES('queue', 7);
--- 
+INSERT INTO kas_mq_resource_classes (name, access_levels)
+  VALUES('application', 1);
+INSERT INTO kas_mq_resource_classes (name, access_levels)
+  VALUES('queue', 7);
