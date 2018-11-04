@@ -16,7 +16,7 @@ public class ProtectionManager extends AKasObject implements IProtectionManager
   /**
    * The singleton instance
    */
-  static private ProtectionManager sInstance = null;
+  static private ProtectionManager sInstance = new ProtectionManager();
   
   /**
    * Get the singleton instance
