@@ -1,6 +1,5 @@
 package com.kas.sec.access;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +7,6 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.sec.resources.ResourceClass;
@@ -28,24 +26,15 @@ public class AccessList extends AKasObject
    */
   private ILogger mLogger;
   
-//  /**
-//   * The list of {@link AccessEntry access entries}
-//   */
-//  private List<AccessEntry> mAccessList;
   /**
    * The RegEx-to-AccessEntry map
    */
-  private Map<String, AccessEntry> mAccessEntriesMap;
+  private Map<Pattern, AccessEntry> mAccessEntriesMap;
   
   /**
-   * The RegEx-to-Pattern map
+   * The default {@link AccessLevel access level}
    */
-  private Map<String, Pattern> mPatternsMap;
-  
-  /**
-   * The default {@link AccessEntry access entry}
-   */
-  private AccessEntry mDefaultAccessEntry;
+  private AccessLevel mDefaultAccessLevel;
   
   /**
    * Construct an {@link AccessList}
@@ -55,32 +44,42 @@ public class AccessList extends AKasObject
   AccessList(AccessLevel defaultAccessLevel)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mDefaultAccessEntry = new AccessEntry(".*");
-    mPatternsMap = new ConcurrentHashMap<String, Pattern>();
-    mAccessEntriesMap = new ConcurrentHashMap<String, AccessEntry>();
+    mAccessEntriesMap = new ConcurrentHashMap<Pattern, AccessEntry>();
+    mDefaultAccessLevel = defaultAccessLevel;
+    // TODO: Need to load the map
   }
   
-//  /**
-//   * Get an enumeration of {@link AccessEntry access entries} that protect {@code resource}.
-//   * 
-//   * @param resource The resource checked
-//   * @return the matching {@link AccessEntry access entries} that protects the specified resource
-//   */
-//  public Enumeration<AccessEntry> getAccessEntry(String resource)
-//  {
-//    mLogger.debug("AccessList::getAccessEntry() - IN");
-//    
-//    Vector<AccessEntry> result = new Vector<AccessEntry>();
-//    for (int i = 0; i < mAccessList.size(); ++i)
-//    {
-//      AccessEntry ace = mAccessList.get(i);
-//      if (ace.isMatched(resource))
-//        result.add(ace);
-//    }
-//    
-//    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
-//    return result.elements();
-//  }
+  /**
+   * Get an enumeration of {@link AccessEntry access entries} that protect {@code resource}.
+   * 
+   * @param resource The resource checked
+   * @return the matching {@link AccessEntry access entries} that protects the specified resource
+   */
+  public Enumeration<AccessEntry> getAccessEntries(String resource)
+  {
+    mLogger.debug("AccessList::getAccessEntry() - IN");
+    
+    Vector<AccessEntry> result = new Vector<AccessEntry>();
+    for (Map.Entry<Pattern, AccessEntry> entry : mAccessEntriesMap.entrySet())
+    {
+      Pattern pat = entry.getKey();
+      if (pat.matcher(resource).matches())
+        result.add(entry.getValue());
+    }
+    
+    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
+    return result.elements();
+  }
+  
+  /**
+   * Get the default access level assigned
+   * 
+   * @return the default access level assigned
+   */
+  public AccessLevel getDefaultAccessLevel()
+  {
+    return mDefaultAccessLevel;
+  }
   
   /**
    * Get the object's detailed string representation
@@ -95,7 +94,7 @@ public class AccessList extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  DefaultAccess=").append(mDefaultAccessEntry.toPrintableString(level+1)).append("\n")
+      .append(pad).append("  DefaultAccess=").append(mDefaultAccessLevel.toPrintableString(level+1)).append("\n")
       //.append(pad).append("  List=(").append(StringUtils.asPrintableString(mAccessList, level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
