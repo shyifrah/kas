@@ -13,12 +13,20 @@ import java.util.Map;
 public interface IDao<T> extends IObject
 {
   /**
-   * Get a specific object
+   * Get a specific object by its ID
+   * 
+   * @param id The ID associated with the object to be retrieved
+   * @return the specific object, if found, or {@code null} if not
+   */
+  public abstract T get(int id);
+  
+  /**
+   * Get a specific object by its name
    * 
    * @param name The name associated with the object to be retrieved
    * @return the specific object, if found, or {@code null} if not
    */
-  public abstract T get(int id);
+  public abstract T get(String name);
   
   /**
    * Get a list of all objects managed by this DAO
