@@ -45,7 +45,7 @@ public class AccessEntry extends AKasObject
    * @param resource The resource tested
    * @return {@code true} if this {@link AccessEntry} protects {@code resource}.
    */
-  public boolean isMatched(String resource)
+  boolean isMatched(String resource)
   {
     return mResourceRegEx.matcher(resource).matches();
   }

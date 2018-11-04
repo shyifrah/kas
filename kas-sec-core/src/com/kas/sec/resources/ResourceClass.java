@@ -1,14 +1,17 @@
 package com.kas.sec.resources;
 
+import java.util.Enumeration;
 import com.kas.infra.base.AKasObject;
+import com.kas.sec.access.AccessEntry;
 import com.kas.sec.access.AccessLevel;
+import com.kas.sec.access.AccessList;
 
 /**
  * An implementation of {@link IResourceClass}
  * 
  * @author Pippo
  */
-public class ResourceClass extends AKasObject implements IResourceClass
+public class ResourceClass extends AKasObject
 {
   static private final int cMaxResourceNameLength = 32;
   
@@ -26,6 +29,11 @@ public class ResourceClass extends AKasObject implements IResourceClass
    * List of access levels
    */
   private AccessLevel mEnabledAccessLevels;
+  
+  /**
+   * The access list attached to this resource class
+   */
+  private AccessList mAccessList;
   
   /**
    * Construct a {@link ResourceClass}
@@ -86,7 +94,7 @@ public class ResourceClass extends AKasObject implements IResourceClass
    * 
    * @see Comparable#compareTo(Object)
    */
-  public int compareTo(IResourceClass other)
+  public int compareTo(ResourceClass other)
   {
     return mName.compareTo(other.getName());
   }
@@ -123,6 +131,17 @@ public class ResourceClass extends AKasObject implements IResourceClass
   public String toString()
   {
     return String.format("%s (%d)", mName, mId);
+  }
+  
+  /**
+   * Get access entry that matches the resource name
+   * 
+   * @param resName The name of the resource
+   * @return the {@link AccessEntry} that protects the specified resource
+   */
+  public Enumeration<AccessEntry> getAccessEntryFor(String resName)
+  {
+    return mAccessList.getAccessEntry(resName);
   }
   
   /**

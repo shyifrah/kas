@@ -1,4 +1,4 @@
-package com.kas.mq.server.security;
+package com.kas.sec.entities;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,25 +10,25 @@ import java.util.List;
 import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
+import com.kas.db.DbUtils;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IDao;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.sec.entities.IUserDao;
-import com.kas.sec.entities.IUserEntity;
-import com.kas.sec.entities.UserEntity;
 
 /**
  * An implementation layer for {@link UserEntity}
  * 
  * @author Pippo
  */
-public class UserDao extends AKasObject implements IUserDao
+public class UserDao extends AKasObject implements IDao<UserEntity>
 {
   /**
    * Table name
    */
   private static final String cKasTableName = "kas_mq_users";
+  private static final String cKasUsersToGroupsTableName = "kas_mq_users_to_groups";
   
   /**
    * Table columns and types
@@ -53,29 +53,37 @@ public class UserDao extends AKasObject implements IUserDao
    * @param name The name of the {@link IUserEntity}
    * @return the {@link IUserEntity} with the specified name or {@code null} if not found
    */
-  public IUserEntity get(String name)
+  public UserEntity get(String name)
   {
     mLogger.debug("UserDao::get() - IN");
-    IUserEntity ue = null;
+    UserEntity ue = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
-    
     Connection conn = dbConn.getConn();
+    
     try
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE name = '" + name + "';";
-      PreparedStatement ps = conn.prepareStatement(sql);
-      
-      mLogger.debug("UserDao::get() - Execute SQL: [" + sql + "]");
-      ResultSet rs = ps.executeQuery();
-      
+      ResultSet rs = DbUtils.execute(conn, sql);
       if (rs.next())
       {
-        int id = rs.getInt("id");
-        String desc = rs.getString("description");
-        String pswd = rs.getString("password");
-        ue = new UserEntity(id, name, desc, pswd);
+        int uid = rs.getInt("id");
+        String uname = rs.getString("name");
+        String udesc = rs.getString("description");
+        String upswd = rs.getString("password");
+        rs.close();
+        
+        sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + uid;
+        rs = DbUtils.execute(conn, sql);
+        List<Integer> ugids = new ArrayList<Integer>();
+        while (rs.next())
+        {
+          int gid = rs.getInt("group_id");
+          ugids.add(gid);
+        }
+        
+        ue = new UserEntity(uid, uname, udesc, upswd, ugids);
       }
     }
     catch (SQLException e)
@@ -94,29 +102,37 @@ public class UserDao extends AKasObject implements IUserDao
    * @param id The ID of the {@link IUserEntity}
    * @return The {@link IUserEntity} that matches the query
    */
-  public IUserEntity get(int id)
+  public UserEntity get(int id)
   {
     mLogger.debug("UserDao::get() - IN");
-    IUserEntity ue = null;
+    UserEntity ue = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
-    
     Connection conn = dbConn.getConn();
+    
     try
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE id = " + id + ";";
-      PreparedStatement ps = conn.prepareStatement(sql);
-      
-      mLogger.debug("UserDao::get() - Execute SQL: [" + sql + "]");
-      ResultSet rs = ps.executeQuery();
-      
+      ResultSet rs = DbUtils.execute(conn, sql);
       if (rs.next())
       {
-        String name = rs.getString("name");
-        String desc = rs.getString("description");
-        String pswd = rs.getString("password");
-        ue = new UserEntity(id, name, desc, pswd);
+        int uid = rs.getInt("id");
+        String uname = rs.getString("name");
+        String udesc = rs.getString("description");
+        String upswd = rs.getString("password");
+        rs.close();
+        
+        sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + uid;
+        rs = DbUtils.execute(conn, sql);
+        List<Integer> ugids = new ArrayList<Integer>();
+        while (rs.next())
+        {
+          int gid = rs.getInt("group_id");
+          ugids.add(gid);
+        }
+        
+        ue = new UserEntity(uid, uname, udesc, upswd, ugids);
       }
     }
     catch (SQLException e)
@@ -134,10 +150,10 @@ public class UserDao extends AKasObject implements IUserDao
    * 
    * @return a list of all {@link IUserEntity} objects
    */
-  public List<IUserEntity> getAll()
+  public List<UserEntity> getAll()
   {
     mLogger.debug("UserDao::getAll() - IN");
-    List<IUserEntity> list = new ArrayList<IUserEntity>();
+    List<UserEntity> list = new ArrayList<UserEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -151,7 +167,7 @@ public class UserDao extends AKasObject implements IUserDao
       mLogger.debug("UserDao::getAll() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
     
-      IUserEntity ue = null;
+      UserEntity ue = null;
       while (rs.next())
       {
         int id = rs.getInt("id");
@@ -178,7 +194,7 @@ public class UserDao extends AKasObject implements IUserDao
    * @param t The {@link IUserEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
-  public void update(IUserEntity t, Map<String, String> map)
+  public void update(UserEntity t, Map<String, String> map)
   {
     mLogger.debug("UserDao::update() - IN");
     
@@ -227,7 +243,7 @@ public class UserDao extends AKasObject implements IUserDao
    * 
    * @param t The object to be saved
    */
-  public void save(IUserEntity t)
+  public void save(UserEntity t)
   {
     mLogger.debug("UserDao::save() - IN");
     
@@ -259,7 +275,7 @@ public class UserDao extends AKasObject implements IUserDao
    * 
    * @param t The object to be deleted
    */
-  public void delete(IUserEntity t)
+  public void delete(UserEntity t)
   {
     mLogger.debug("UserDao::delete() - IN");
     

@@ -1,4 +1,4 @@
-package com.kas.mq.server.security;
+package com.kas.sec.entities;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,18 +11,16 @@ import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IDao;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.sec.entities.GroupEntity;
-import com.kas.sec.entities.IGroupDao;
-import com.kas.sec.entities.IGroupEntity;
 
 /**
  * An implementation layer for {@link GroupEntity}
  * 
  * @author Pippo
  */
-public class GroupDao extends AKasObject implements IGroupDao
+public class GroupDao extends AKasObject implements IDao<GroupEntity>
 {
   /**
    * Table name
@@ -51,10 +49,10 @@ public class GroupDao extends AKasObject implements IGroupDao
    * @param name The name of the {@link IGroupEntity}
    * @return the {@link IGroupEntity} with the specified name or {@code null} if not found
    */
-  public IGroupEntity get(String name)
+  public GroupEntity get(String name)
   {
     mLogger.debug("GroupDao::get() - IN");
-    IGroupEntity ge = null;
+    GroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -91,10 +89,10 @@ public class GroupDao extends AKasObject implements IGroupDao
    * @param id The ID of the {@link IGroupEntity}
    * @return The {@link IGroupEntity} that matches the query
    */
-  public IGroupEntity get(int id)
+  public GroupEntity get(int id)
   {
     mLogger.debug("GroupDao::get() - IN");
-    IGroupEntity ge = null;
+    GroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -130,10 +128,10 @@ public class GroupDao extends AKasObject implements IGroupDao
    * 
    * @return a list of all {@link IGroupEntity} objects
    */
-  public List<IGroupEntity> getAll()
+  public List<GroupEntity> getAll()
   {
     mLogger.debug("GroupDao::getAll() - IN");
-    List<IGroupEntity> list = new ArrayList<IGroupEntity>();
+    List<GroupEntity> list = new ArrayList<GroupEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -147,7 +145,7 @@ public class GroupDao extends AKasObject implements IGroupDao
       mLogger.debug("GroupDao::getAll() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
     
-      IGroupEntity ge = null;
+      GroupEntity ge = null;
       while (rs.next())
       {
         int id = rs.getInt("id");
@@ -173,7 +171,7 @@ public class GroupDao extends AKasObject implements IGroupDao
    * @param t The {@link IGroupEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
-  public void update(IGroupEntity t, Map<String, String> map)
+  public void update(GroupEntity t, Map<String, String> map)
   {
     mLogger.debug("GroupDao::update() - IN");
     
@@ -222,7 +220,7 @@ public class GroupDao extends AKasObject implements IGroupDao
    * 
    * @param t The object to be saved
    */
-  public void save(IGroupEntity t)
+  public void save(GroupEntity t)
   {
     mLogger.debug("GroupDao::save() - IN");
     
@@ -253,7 +251,7 @@ public class GroupDao extends AKasObject implements IGroupDao
    * 
    * @param t The object to be deleted
    */
-  public void delete(IGroupEntity t)
+  public void delete(GroupEntity t)
   {
     mLogger.debug("GroupDao::delete() - IN");
     

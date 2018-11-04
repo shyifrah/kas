@@ -5,7 +5,7 @@ package com.kas.sec.entities;
  * 
  * @author Pippo
  */
-public class GroupEntity extends Entity implements IGroupEntity
+public class GroupEntity extends Entity
 {
   /**
    * Construct a group with the specified parameters

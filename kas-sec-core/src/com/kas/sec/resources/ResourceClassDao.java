@@ -1,4 +1,4 @@
-package com.kas.mq.server.security;
+package com.kas.sec.resources;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,16 +11,13 @@ import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IDao;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.sec.entities.GroupEntity;
-import com.kas.sec.resources.IResourceClass;
-import com.kas.sec.resources.IResourceClassDao;
-import com.kas.sec.resources.ResourceClass;
 
-public class ResourceClassDao extends AKasObject implements IResourceClassDao
+public class ResourceClassDao extends AKasObject implements IDao<ResourceClass>
 {
-  
   /**
    * Table name
    */
@@ -48,10 +45,10 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
    * @param name The name of the {@link IResourceClass}
    * @return the {@link IResourceClass} with the specified name or {@code null} if not found
    */
-  public IResourceClass get(String name)
+  public ResourceClass get(String name)
   {
     mLogger.debug("ResourceClassDao::get() - IN");
-    IResourceClass rc = null;
+    ResourceClass rc = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -88,10 +85,10 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
    * @param name The resource class name
    * @return The {@link IResourceClass} that matches the query
    */
-  public IResourceClass get(int id)
+  public ResourceClass get(int id)
   {
     mLogger.debug("ResourceClassDao::get() - IN");
-    IResourceClass rc = null;
+    ResourceClass rc = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -127,10 +124,10 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
    * 
    * @return a list of all {@link IResourceClass} objects
    */
-  public List<IResourceClass> getAll()
+  public List<ResourceClass> getAll()
   {
     mLogger.debug("ResourceClassDao::getAll() - IN");
-    List<IResourceClass> list = new ArrayList<IResourceClass>();
+    List<ResourceClass> list = new ArrayList<ResourceClass>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -144,7 +141,7 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
       mLogger.debug("ResourceClassDao::getAll() - Execute SQL: [" + sql + "]");
       ResultSet rs = ps.executeQuery();
     
-      IResourceClass rc = null;
+      ResourceClass rc = null;
       while (rs.next())
       {
         int id = rs.getInt("id");
@@ -170,7 +167,7 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
    * @param t The {@link IResourceClass} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
-  public void update(IResourceClass t, Map<String, String> map)
+  public void update(ResourceClass t, Map<String, String> map)
   {
     mLogger.debug("ResourceClassDao::update() - IN");
     
@@ -219,7 +216,7 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
    * 
    * @param t The object to be saved
    */
-  public void save(IResourceClass t)
+  public void save(ResourceClass t)
   {
     mLogger.debug("ResourceClassDao::save() - IN");
     
@@ -250,7 +247,7 @@ public class ResourceClassDao extends AKasObject implements IResourceClassDao
    * 
    * @param t The object to be deleted
    */
-  public void delete(IResourceClass t)
+  public void delete(ResourceClass t)
   {
     mLogger.debug("ResourceClassDao::delete() - IN");
     

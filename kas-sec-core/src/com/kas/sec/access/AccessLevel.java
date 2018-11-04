@@ -56,6 +56,16 @@ public class AccessLevel extends AKasObject
   }
   
   /**
+   * Get the integer value of the access level 
+   *  
+   * @return the access level in its integer value
+   */
+  public int getAccessLevel()
+  {
+    return mAccessLevel;
+  }
+  
+  /**
    * Get an indication if access levels are enabled or not 
    *  
    * @param levels A bit-string of access levels

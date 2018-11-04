@@ -1,7 +1,9 @@
 package com.kas.sec.access;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -46,30 +48,25 @@ public class AccessList extends AKasObject
   }
   
   /**
-   * Get the {@link AccessEntry} that will be used to check what level of permissions
-   * will be granted when accessing the specified {@code resource}.
+   * Get an enumeration of {@link AccessEntry access entries} that protect {@code resource}.
    * 
    * @param resource The resource checked
-   * @return the matching {@link AccessEntry} that protects the specified resource
+   * @return the matching {@link AccessEntry access entries} that protects the specified resource
    */
-  public AccessEntry getAccessEntry(String resource)
+  public Enumeration<AccessEntry> getAccessEntry(String resource)
   {
     mLogger.debug("AccessList::getAccessEntry() - IN");
     
-    AccessEntry result = mDefaultAccessEntry;
-    boolean found = false;
-    for (int i = 0; !found && i < mAccessList.size(); ++i)
+    Vector<AccessEntry> result = new Vector<AccessEntry>();
+    for (int i = 0; i < mAccessList.size(); ++i)
     {
       AccessEntry ace = mAccessList.get(i);
       if (ace.isMatched(resource))
-      {
-        found = true;
-        result = ace;
-      }
+        result.add(ace);
     }
     
-    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.toString());
-    return result;
+    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
+    return result.elements();
   }
   
   /**

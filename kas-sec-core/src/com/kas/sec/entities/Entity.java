@@ -7,7 +7,7 @@ import com.kas.infra.base.AKasObject;
  * 
  * @author Pippo
  */
-public class Entity extends AKasObject implements IEntity
+public class Entity extends AKasObject
 {
   /**
    * The entity ID
