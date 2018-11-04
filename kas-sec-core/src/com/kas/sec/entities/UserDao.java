@@ -66,25 +66,8 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE name = '" + name + "';";
       ResultSet rs = DbUtils.execute(conn, sql);
-      if (rs.next())
-      {
-        int uid = rs.getInt("id");
-        String uname = rs.getString("name");
-        String udesc = rs.getString("description");
-        String upswd = rs.getString("password");
-        rs.close();
-        
-        sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + uid;
-        rs = DbUtils.execute(conn, sql);
-        List<Integer> ugids = new ArrayList<Integer>();
-        while (rs.next())
-        {
-          int gid = rs.getInt("group_id");
-          ugids.add(gid);
-        }
-        
-        ue = new UserEntity(uid, uname, udesc, upswd, ugids);
-      }
+      if (rs.next()) ue = createUserEntity(rs, conn);
+      rs.close();
     }
     catch (SQLException e)
     {
@@ -115,25 +98,8 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE id = " + id + ";";
       ResultSet rs = DbUtils.execute(conn, sql);
-      if (rs.next())
-      {
-        int uid = rs.getInt("id");
-        String uname = rs.getString("name");
-        String udesc = rs.getString("description");
-        String upswd = rs.getString("password");
-        rs.close();
-        
-        sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + uid;
-        rs = DbUtils.execute(conn, sql);
-        List<Integer> ugids = new ArrayList<Integer>();
-        while (rs.next())
-        {
-          int gid = rs.getInt("group_id");
-          ugids.add(gid);
-        }
-        
-        ue = new UserEntity(uid, uname, udesc, upswd, ugids);
-      }
+      if (rs.next()) ue = createUserEntity(rs, conn);
+      rs.close();
     }
     catch (SQLException e)
     {
@@ -162,21 +128,14 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
     try
     {
       String sql = "SELECT id, name, description, password FROM " + cKasTableName + ';';
-      PreparedStatement ps = conn.prepareStatement(sql);
-      
-      mLogger.debug("UserDao::getAll() - Execute SQL: [" + sql + "]");
-      ResultSet rs = ps.executeQuery();
-    
+      ResultSet rs = DbUtils.execute(conn, sql);
       UserEntity ue = null;
       while (rs.next())
       {
-        int id = rs.getInt("id");
-        String name = rs.getString("name");
-        String desc = rs.getString("description");
-        String pswd = rs.getString("password");
-        ue = new UserEntity(id, name, desc, pswd);
+        ue = createUserEntity(rs, conn);
         list.add(ue);
       }
+      rs.close();
     }
     catch (SQLException e)
     {
@@ -298,6 +257,48 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
     
     dbPool.release(dbConn);
     mLogger.debug("UserDao::delete() - OUT");
+  }
+  
+  /**
+   * Extract a list of groups in which a user participates
+   * 
+   * @param conn The connection to be used to query the DB
+   * @param id The {@link UserEntity user entity's} ID
+   * @return a list of group IDs 
+   * @throws SQLException
+   */
+  private List<Integer> getUserGroups(Connection conn, int id) throws SQLException
+  {
+    String sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + id;
+    ResultSet rs2 = DbUtils.execute(conn, sql);
+    List<Integer> ugids = new ArrayList<Integer>();
+    while (rs2.next())
+    {
+      int gid = rs2.getInt("group_id");
+      ugids.add(gid);
+    }
+    rs2.close();
+    
+    return ugids;
+  }
+  
+  /**
+   * Create a user entity based on the output of a query
+   * 
+   * @param rs The output of a query
+   * @param conn An open Connection to the DB for further queries
+   * @return a {@link UserEntity} 
+   * @throws SQLException
+   */
+  private UserEntity createUserEntity(ResultSet rs, Connection conn) throws SQLException
+  {
+    int uid = rs.getInt("id");
+    String uname = rs.getString("name");
+    String udesc = rs.getString("description");
+    String upass = rs.getString("password");
+    
+    List<Integer> ugids = getUserGroups(conn, uid);
+    return new UserEntity(uid, uname, udesc, upass, ugids);
   }
   
   /**
