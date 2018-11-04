@@ -269,6 +269,8 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
    */
   private List<Integer> getUserGroups(Connection conn, int id) throws SQLException
   {
+    mLogger.debug("UserDao::getUserGroups() - IN");
+    
     String sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + id;
     ResultSet rs2 = DbUtils.execute(conn, sql);
     List<Integer> ugids = new ArrayList<Integer>();
@@ -279,6 +281,7 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
     }
     rs2.close();
     
+    mLogger.debug("UserDao::getUserGroups() - OUT, List.size()=" + ugids.size());
     return ugids;
   }
   
@@ -292,13 +295,18 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
    */
   private UserEntity createUserEntity(ResultSet rs, Connection conn) throws SQLException
   {
+    mLogger.debug("UserDao::createUserEntity() - IN");
+    
     int uid = rs.getInt("id");
     String uname = rs.getString("name");
     String udesc = rs.getString("description");
     String upass = rs.getString("password");
     
     List<Integer> ugids = getUserGroups(conn, uid);
-    return new UserEntity(uid, uname, udesc, upass, ugids);
+    
+    UserEntity ue = new UserEntity(uid, uname, udesc, upass, ugids);
+    mLogger.debug("UserDao::createUserEntity() - OUT, UserEntity=" + ue.toString());
+    return ue;
   }
   
   /**
