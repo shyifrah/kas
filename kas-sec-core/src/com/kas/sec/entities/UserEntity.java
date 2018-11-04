@@ -1,11 +1,10 @@
 package com.kas.sec.entities;
 
-import java.util.Enumeration;
 import java.util.List;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.sec.access.AccessEntry;
 import com.kas.sec.access.AccessLevel;
+import com.kas.sec.resources.EResourceType;
 import com.kas.sec.resources.ResourceClass;
 
 /**
@@ -90,25 +89,26 @@ public class UserEntity extends Entity
    * @param resName The name of the resource
    * @return {@code true} if access is permitted, {@code false} if access is prohibited
    */
-  public boolean isAccessPermitted(ResourceClass resClass, String resName)
+  public boolean isAccessPermitted(EResourceType resType, String resName)
   {
-    return isAccessPermitted(resClass, resName, AccessLevel.READ_ACCESS);
+    return isAccessPermitted(resType, resName, AccessLevel.READ_ACCESS);
   }
   
   /**
-   * Test if this user is permitted to access {@code resName} of {@code resClass} class
+   * Test if this user is permitted to access {@code resName} of {@code resType} class
    * with access level {@code level}.<br>
-   * If {@code level} is not supported by this {@code resClass} an exception is thrown.
+   * If {@code level} is not supported by this {@code resType} an exception is thrown.
    * 
-   * @param resClass The class of the resource
+   * @param resType The type of the resource
    * @param resName The name of the resource
    * @param level The requested access level
    * @return {@code true} if access is permitted, {@code false} if access is prohibited
    */
-  public boolean isAccessPermitted(ResourceClass resClass, String resName, AccessLevel level)
+  public boolean isAccessPermitted(EResourceType resType, String resName, AccessLevel level)
   {
-    if (resClass == null)
-      throw new IllegalArgumentException("Null resource class");
+    // verify arguments validity
+    if (resType == null)
+      throw new IllegalArgumentException("Null resource type");
     
     if (resName == null)
       throw new IllegalArgumentException("Null resource name");
@@ -116,11 +116,16 @@ public class UserEntity extends Entity
     if (level == null)
       throw new IllegalArgumentException("Null access level");
     
-    if (!resClass.getEnabledAccessLevels().isLevelEnabled(level.getAccessLevel()))
-      throw new IllegalArgumentException("Access level " + level + " is not supported by resource class " + resClass.getName());
+    ResourceClass resClass = resType.getResourceClass();
+    AccessLevel resAccessLevels = resClass.getEnabledAccessLevels();
     
-    //Enumeration<AccessEntry> aces = resClass.getAccessEntryFor(resName);
+    if ((resAccessLevels.getAccessLevel() & level.getAccessLevel()) == 0)
+      throw new IllegalArgumentException("Access level is not supported by resource class " + resType.toString());
     
-    return true; /// TODO: complete
+    AccessLevel definedLevel = resClass.getAccessLevelFor(resName, this);
+    if (definedLevel.isLevelEnabled(level.getAccessLevel()))
+      return true;
+    
+    return false;
   }
 }
