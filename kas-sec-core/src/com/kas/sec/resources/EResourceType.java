@@ -4,28 +4,21 @@ import com.kas.sec.access.AccessLevel;
 
 public enum EResourceType
 {
-  APPLICATION,
-  QUEUE,
-  ;
-  
-  static private EResourceType [] cValues = EResourceType.values();
+  /**
+   * Protects server shutdown
+   */
+  SERVER(AccessLevel.READ),
   
   /**
-   * Get the enum value by its ordinal.
-   * 
-   * @param id The ordinal of the enum
-   * @return the enum value
+   * Protects the usage of specific application
    */
-  static public EResourceType fromInt(int id)
-  {
-    EResourceType t = null;
-    try
-    {
-      t = cValues[id];
-    }
-    catch (Throwable e) {}
-    return t;
-  }
+  APPLICATION(AccessLevel.READ),
+  
+  /**
+   * Protects queues
+   */
+  QUEUE(AccessLevel.READ | AccessLevel.WRITE | AccessLevel.ALTER),
+  ;
   
   /**
    * The resource class
@@ -35,9 +28,9 @@ public enum EResourceType
   /**
    * Construct the Resource type
    */
-  private EResourceType()
+  private EResourceType(int enabledAccessLevels)
   {
-    mResourceClass = new ResourceClass(this.ordinal(), this.name(), AccessLevel.READ);
+    mResourceClass = new ResourceClass(this.ordinal(), this.name(), enabledAccessLevels);
   }
   
   /**
