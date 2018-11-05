@@ -44,8 +44,9 @@ public class AccessList extends AKasObject
   AccessList(AccessLevel defaultAccessLevel)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mAccessEntriesMap = new ConcurrentHashMap<Pattern, AccessEntry>();
     mDefaultAccessLevel = defaultAccessLevel;
+    
+    mAccessEntriesMap = new ConcurrentHashMap<Pattern, AccessEntry>();
     // TODO: Need to load the map
   }
   
