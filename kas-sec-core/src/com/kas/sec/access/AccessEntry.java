@@ -75,7 +75,7 @@ public class AccessEntry extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Access=").append(StringUtils.asPrintableString(mPermittedEntities, level+2)).append("\n")
+      .append(pad).append("  PermittedEntries=(").append(StringUtils.asPrintableString(mPermittedEntities, level+2)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
