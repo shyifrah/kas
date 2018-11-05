@@ -44,10 +44,10 @@ public class GroupDao extends AKasObject implements IDao<GroupEntity>
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
-   * Get a {@link IGroupEntity} by its name
+   * Get a {@link GroupEntity} by its name
    * 
-   * @param name The name of the {@link IGroupEntity}
-   * @return the {@link IGroupEntity} with the specified name or {@code null} if not found
+   * @param name The name of the {@link GroupEntity}
+   * @return the {@link GroupEntity} with the specified name or {@code null} if not found
    */
   public GroupEntity get(String name)
   {
@@ -84,10 +84,10 @@ public class GroupDao extends AKasObject implements IDao<GroupEntity>
   }
   
   /**
-   * Get {@link IGroupEntity} associated with the specific name
+   * Get {@link GroupEntity} associated with the specific name
    * 
-   * @param id The ID of the {@link IGroupEntity}
-   * @return The {@link IGroupEntity} that matches the query
+   * @param id The ID of the {@link GroupEntity}
+   * @return The {@link GroupEntity} that matches the query
    */
   public GroupEntity get(int id)
   {
@@ -124,9 +124,9 @@ public class GroupDao extends AKasObject implements IDao<GroupEntity>
   }
 
   /**
-   * Get a list of all {@link IGroupEntity} objects
+   * Get a list of all {@link GroupEntity} objects
    * 
-   * @return a list of all {@link IGroupEntity} objects
+   * @return a list of all {@link GroupEntity} objects
    */
   public List<GroupEntity> getAll()
   {
@@ -168,7 +168,7 @@ public class GroupDao extends AKasObject implements IDao<GroupEntity>
   /**
    * Update values of {@code t} with the {@code map}
    * 
-   * @param t The {@link IGroupEntity} to update
+   * @param t The {@link GroupEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
   public void update(GroupEntity t, Map<String, String> map)
@@ -216,7 +216,7 @@ public class GroupDao extends AKasObject implements IDao<GroupEntity>
   }
 
   /**
-   * Save specified {@link IGroupEntity} to the data layer
+   * Save specified {@link GroupEntity} to the data layer
    * 
    * @param t The object to be saved
    */

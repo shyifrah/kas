@@ -51,7 +51,7 @@ public class ProtectionManager extends AKasObject implements IProtectionManager
    * Get a user by its name
    * 
    * @param name The name of the user
-   * @return the {@link IUserEntity} representing the user
+   * @return the {@link UserEntity} representing the user
    */
   public UserEntity getUserByName(String name)
   {
@@ -62,7 +62,7 @@ public class ProtectionManager extends AKasObject implements IProtectionManager
    * Get a user by its ID
    * 
    * @param id The ID of the user
-   * @return the {@link IUserEntity} representing the user
+   * @return the {@link UserEntity} representing the user
    */
   public UserEntity getUserById(int id)
   {

@@ -48,10 +48,10 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
-   * Get a {@link IUserEntity} by its name
+   * Get a {@link UserEntity} by its name
    * 
-   * @param name The name of the {@link IUserEntity}
-   * @return the {@link IUserEntity} with the specified name or {@code null} if not found
+   * @param name The name of the {@link UserEntity}
+   * @return the {@link UserEntity} with the specified name or {@code null} if not found
    */
   public UserEntity get(String name)
   {
@@ -80,10 +80,10 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
   }
   
   /**
-   * Get {@link IUserEntity} associated with the specific name
+   * Get {@link UserEntity} associated with the specific name
    * 
-   * @param id The ID of the {@link IUserEntity}
-   * @return The {@link IUserEntity} that matches the query
+   * @param id The ID of the {@link UserEntity}
+   * @return The {@link UserEntity} that matches the query
    */
   public UserEntity get(int id)
   {
@@ -112,9 +112,9 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
   }
 
   /**
-   * Get a list of all {@link IUserEntity} objects
+   * Get a list of all {@link UserEntity} objects
    * 
-   * @return a list of all {@link IUserEntity} objects
+   * @return a list of all {@link UserEntity} objects
    */
   public List<UserEntity> getAll()
   {
@@ -150,7 +150,7 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
   /**
    * Update values of {@code t} with the {@code map}
    * 
-   * @param t The {@link IUserEntity} to update
+   * @param t The {@link UserEntity} to update
    * @param map Map of key-value pairs that indicate which fields should be updated with their new values
    */
   public void update(UserEntity t, Map<String, String> map)
@@ -198,7 +198,7 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
   }
 
   /**
-   * Save specified {@link IUserEntity} to the data layer
+   * Save specified {@link UserEntity} to the data layer
    * 
    * @param t The object to be saved
    */
@@ -230,7 +230,7 @@ public class UserDao extends AKasObject implements IDao<UserEntity>
   }
 
   /**
-   * Delete the specified {@link IUserEntity}
+   * Delete the specified {@link UserEntity}
    * 
    * @param t The object to be deleted
    */

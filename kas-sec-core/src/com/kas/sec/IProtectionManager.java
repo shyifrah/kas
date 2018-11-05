@@ -56,14 +56,14 @@ public interface IProtectionManager
   /**
    * Get user by its name
    * 
-   * @return the {@link IUserEntity}
+   * @return the {@link UserEntity}
    */
   public abstract UserEntity getUserByName(String name);
   
   /**
    * Get user by its ID
    * 
-   * @return the {@link IUserEntity}
+   * @return the {@link UserEntity}
    */
   public abstract UserEntity getUserById(int id);
 }
