@@ -1,0 +1,27 @@
+allprojects {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+
+	version = '1.0'
+	group='com.kas'
+
+
+	repositories {
+	    mavenCentral()
+	}
+}
+
+project(':kas-db') {
+	dependencies {
+        	compile(':kas-logging')
+        	compile(':kas-config')
+		compile('mysql-connector-java:8.0.12')
+                compile('postgresql:42.2.5')
+	}
+}
+
+project(':kas-infra') {
+	dependencies {
+		testCompile 'junit:junit:4.10'
+	}
+}
