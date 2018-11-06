@@ -64,6 +64,7 @@ public class ResourceClass extends AKasObject
     mId = id;
     mName = name;
     mEnabledAccessLevels = new AccessLevel(accessLevels);
+    mAccessList = new AccessList(mName);
   }
   
   /**
@@ -125,7 +126,7 @@ public class ResourceClass extends AKasObject
       level = ace.getAccessLevelFor(user);
     }
     
-    if (level == null) level = mAccessList.getDefaultAccessLevel();
+    if (level == null) level = AccessLevel.NONE_ACCESS;
     
     mLogger.debug("ResourceClass::getAccessLevelFor() - OUT, Level=" + level);
     return level;
