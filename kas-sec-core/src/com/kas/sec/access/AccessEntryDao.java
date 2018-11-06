@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
@@ -14,7 +15,6 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IDao;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
-import com.kas.sec.entities.UserEntity;
 
 public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
 {
@@ -35,8 +35,16 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
    */
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
+  /**
+   * Name of table that holds ACEs data
+   */
   private String mTableName;
   
+  /**
+   * Construct the the DAO object
+   * 
+   * @param resTypeName Name of the resource
+   */
   AccessEntryDao(String resTypeName)
   {
     mTableName = "kas_mq_" + resTypeName + "_permissions";
@@ -82,12 +90,11 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "SELECT pattern, group_id, access_level FROM " + mTableName + ';';
+      String sql = "SELECT DISTINCT pattern FROM " + mTableName + ";";
       ResultSet rs = DbUtils.execute(conn, sql);
-      AccessEntry ace = null;
       while (rs.next())
       {
-        ace = createAccessEntry(rs, conn);
+        AccessEntry ace = createAccessEntry(rs, conn);
         list.add(ace);
       }
       rs.close();
@@ -124,11 +131,11 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
   }
 
   /**
-   * Create a user entity based on the output of a query
+   * Create a ACE based on the output of a query
    * 
    * @param rs The output of a query
    * @param conn An open Connection to the DB for further queries
-   * @return a {@link UserEntity} 
+   * @return a {@link AccessEntry}
    * @throws SQLException
    */
   private AccessEntry createAccessEntry(ResultSet rs, Connection conn) throws SQLException
@@ -136,17 +143,19 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
     mLogger.debug("AccessEntryDao::createAccessEntry() - IN");
     
     // TODO: COMPLETE
+    //String regex = rs.getString("pattern");
+    String pat = rs.getString("pattern");
+    String sql = "SELECT group_id, access_level FROM " + mTableName + " WHERE pattern = '" + pat + "';";
+    ResultSet rs2 = DbUtils.execute(conn, sql);
+    Map<Integer, AccessLevel> permissions = new ConcurrentHashMap<Integer, AccessLevel>();
+    while (rs2.next())
+    {
+      int gid = rs2.getInt("group_id");
+      int lev = rs2.getInt("access_level");
+      permissions.put(gid, new AccessLevel(lev));
+    }
     
-    //int uid = rs.getInt("id");
-    //String uname = rs.getString("name");
-    //String udesc = rs.getString("description");
-    //String upass = rs.getString("password");
-    
-    Map<Integer, AccessLevel> map = null;
-    
-    //List<Integer> ugids = getUserGroups(conn, uid);
-    
-    AccessEntry ace = new AccessEntry(map);
+    AccessEntry ace = new AccessEntry(pat, permissions);
     mLogger.debug("AccessEntryDao::createAccessEntry() - OUT, UserEntity=" + ace.toString());
     return ace;
   }
