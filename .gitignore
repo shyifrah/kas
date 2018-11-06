@@ -7,4 +7,5 @@ reports/
 .metadata/ 
 .recommenders/ 
 RemoteSystemsTempFiles/ 
-
+*/build
+*/.gradle
