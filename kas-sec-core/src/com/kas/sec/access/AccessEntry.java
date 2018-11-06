@@ -25,6 +25,11 @@ public class AccessEntry extends AKasObject
   private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
   
   /**
+   * The regular expression that matches the resources controlled by this ACE
+   */
+  private String mResourceRegEx;
+  
+  /**
    * The list of entity IDs that are permitted to the resource(s) designated by the regular expression
    */
   private Map<Integer, AccessLevel> mPermittedEntities;
@@ -34,9 +39,20 @@ public class AccessEntry extends AKasObject
    * 
    * @param map A map of group IDs to their allowed access level
    */
-  AccessEntry(Map<Integer, AccessLevel> map)
+  AccessEntry(String regex, Map<Integer, AccessLevel> map)
   {
+    mResourceRegEx = regex;
     mPermittedEntities = map;
+  }
+  
+  /**
+   * Get the regular expression
+   * 
+   * @return the regular expression
+   */
+  public String getResourceRegEx()
+  {
+    return mResourceRegEx;
   }
   
   /**
