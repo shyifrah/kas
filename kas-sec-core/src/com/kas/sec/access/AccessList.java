@@ -7,6 +7,7 @@ import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.sec.resources.ResourceClass;
@@ -27,27 +28,31 @@ public class AccessList extends AKasObject
   private ILogger mLogger;
   
   /**
+   * Resource class name
+   */
+  private String mResourceClassName;
+  
+  /**
    * The RegEx-to-AccessEntry map
    */
   private Map<Pattern, AccessEntry> mAccessEntriesMap;
   
   /**
-   * The default {@link AccessLevel access level}
-   */
-  private AccessLevel mDefaultAccessLevel;
-  
-  /**
    * Construct an {@link AccessList}
    * 
-   * @param defaultAccessLevel The default access level that will be granted via the default access entry
+   * @param name The name of the resource class on which this access list controls
    */
-  AccessList(AccessLevel defaultAccessLevel)
+  public AccessList(String name)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mDefaultAccessLevel = defaultAccessLevel;
-    
     mAccessEntriesMap = new ConcurrentHashMap<Pattern, AccessEntry>();
-    // TODO: Need to load the map
+    List<AccessEntry> aces = new AccessEntryDao(name).getAll();
+    for (AccessEntry ace : aces)
+    {
+      String regex = ace.getResourceRegEx();
+      Pattern pat = Pattern.compile(regex);
+      mAccessEntriesMap.put(pat, ace);
+    }
   }
   
   /**
@@ -73,16 +78,6 @@ public class AccessList extends AKasObject
   }
   
   /**
-   * Get the default access level assigned
-   * 
-   * @return the default access level assigned
-   */
-  public AccessLevel getDefaultAccessLevel()
-  {
-    return mDefaultAccessLevel;
-  }
-  
-  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level
@@ -95,8 +90,8 @@ public class AccessList extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  DefaultAccess=").append(mDefaultAccessLevel.toPrintableString(level+1)).append("\n")
-      //.append(pad).append("  List=(").append(StringUtils.asPrintableString(mAccessList, level+1)).append(")\n")
+      .append(pad).append("  ForResourceClass=").append(mResourceClassName).append('\n')
+      .append(pad).append("  Entries=(").append(StringUtils.asPrintableString(mAccessEntriesMap, level+2)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
