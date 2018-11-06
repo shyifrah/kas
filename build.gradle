@@ -16,6 +16,7 @@ project(':kas-db') {
         	compile(':kas-logging')
         	compile(':kas-config')
 		compile('mysql-connector-java:8.0.12')
+                compile('postgresql:42.2.5')
 	}
 }
 
