@@ -13,7 +13,6 @@ build/
 
 # Eclipse
 /.classpath
-/.settings
 /*.project
-/.settings/
+.settings/
 /*.springBeans
