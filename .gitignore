@@ -11,4 +11,5 @@ RemoteSystemsTempFiles/
 */.gradle
 /.gradle/
 .settings
-*/.project
+**/.project
+**/.classpath
