@@ -14,7 +14,7 @@ subprojects {
     testCompile 'junit:junit:4.10'
   }
   
-  mainClassName = 'com.kas.appl.KasAppLauncher'
+  mainClassName = 'com.kas.appl.KasApplLauncher'
 }
 
 project(':kas-config') {
