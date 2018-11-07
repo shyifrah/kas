@@ -12,7 +12,5 @@ build/
 .gradle/
 
 # Eclipse
-/.classpath
-/*.project
 .settings/
 /*.springBeans
