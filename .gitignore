@@ -15,5 +15,5 @@ build/
 /.classpath
 /.settings
 /*.project
-/.settings
+/.settings/
 /*.springBeans
