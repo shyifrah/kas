@@ -4,19 +4,19 @@ KAS
 # What is KAS?
 KAS is (or, better yet, will be) an open source Message Bus.
 
-# Development Guide
-1. Development is done over Eclipse IDE with jdk1.8. Download and install both.
+# Setting up your development environment
+1. Development is done over Eclipse IDE (Photon) with jdk-1.8_u151. Download and install both.
 2. Clone the repository to c:\dev\kas.
-3. Start Eclipse. The local git repository folder serves as Eclipse's workspace folder.
+3. Start Eclipse. Point Eclipse to c:\dev\kas_ws for its workspace folder.
 4. Configure your workspace (Window > Preferences):<br>
-  a. Under Java > Installed JRE > Add the previously installed jdk1.8.<br>
+  a. Under Java > Installed JRE > Add the previously installed JDK.<br>
   b. Under Java > Code Style > Clean up > IMPORT - Select c:\dev\kas\cleanup.xml<br>
-  c. Under Java > Code Style > Formattter > IMPORT - Select c:\dev\kas\formatter.xml
-5. Import Java projects (all projects reside under c:\dev\kas)
+  c. Under Java > Code Style > Formattter > IMPORT - Select c:\dev\kas\formatter.xml<br>
+  d. Under General > Editors > Text Editors > Set Displayed tab width = 2; Check Insert spaces for tabs.<br>
+5. Import Existing Gradle projects and point Eclipse to c:\dev\kas.
 
 # Projects
-Development is splitted into several projects, the output of each is a JAR file.
-Building is done using Apache's ANT (yeah, yeah, an oldie, but works).
+Development is splitted into several projects, the output of each is a JAR file. Building is done using Gradle.
 Each project relies on the output of other projects. Dependecies is shown below.
 
 ## Project descriptions
