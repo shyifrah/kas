@@ -59,7 +59,7 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
   public AccessEntry get(String name)
   {
     mLogger.debug("AccessEntryDao::get() - IN/OUT");
-    throw new RuntimeException("AccessEntry.get(String) not supported");
+    throw new RuntimeException("AccessEntryDao.get(String) not supported");
   }
   
   /**
@@ -71,7 +71,7 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
   public AccessEntry get(int id)
   {
     mLogger.debug("AccessEntryDao::get() - IN/OUT");
-    throw new RuntimeException("AccessEntry.get(int) not supported");
+    throw new RuntimeException("AccessEntryDao.get(int) not supported");
   }
 
   /**
@@ -109,25 +109,22 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
     return list;
   }
 
-  @Override
   public void save(AccessEntry t)
   {
-    // TODO Auto-generated method stub
-
+    mLogger.debug("AccessEntryDao::save() - IN/OUT");
+    throw new RuntimeException("AccessEntryDao.save(AccessEntry) not supported");
   }
 
-  @Override
   public void update(AccessEntry t, Map<String, String> params)
   {
-    // TODO Auto-generated method stub
-
+    mLogger.debug("AccessEntryDao::update() - IN/OUT");
+    throw new RuntimeException("AccessEntryDao.update(AccessEntry, Map) not supported");
   }
 
-  @Override
   public void delete(AccessEntry t)
   {
-    // TODO Auto-generated method stub
-
+    mLogger.debug("AccessEntryDao::delete() - IN/OUT");
+    throw new RuntimeException("AccessEntryDao.delete(AccessEntry) not supported");
   }
 
   /**
@@ -142,8 +139,6 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
   {
     mLogger.debug("AccessEntryDao::createAccessEntry() - IN");
     
-    // TODO: COMPLETE
-    //String regex = rs.getString("pattern");
     String pat = rs.getString("pattern");
     String sql = "SELECT group_id, access_level FROM " + mTableName + " WHERE pattern = '" + pat + "';";
     ResultSet rs2 = DbUtils.execute(conn, sql);
@@ -154,16 +149,23 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
       int lev = rs2.getInt("access_level");
       permissions.put(gid, new AccessLevel(lev));
     }
+    rs2.close();
     
     AccessEntry ace = new AccessEntry(pat, permissions);
     mLogger.debug("AccessEntryDao::createAccessEntry() - OUT, UserEntity=" + ace.toString());
     return ace;
   }
   
-  @Override
+  /**
+   * Get the object's detailed string representation
+   * 
+   * @param level The string padding level
+   * @return the string representation with the specified level of padding
+   * 
+   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   */
   public String toPrintableString(int level)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return toString();
   }
 }
