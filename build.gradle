@@ -1,83 +1,82 @@
 subprojects {
-	apply plugin: 'java'
-	apply plugin: 'eclipse'
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
 
-	version = '1.0'
-	group='com.kas'
+  version = '1.0'
+  group = 'com.kas'
 
-	repositories {
-	    mavenCentral()
-	}
+  repositories {
+    mavenCentral()
+  }
 
-	dependencies {
-                testCompile 'junit:junit:4.10'
-        }
+  dependencies {
+    testCompile 'junit:junit:4.10'
+  }
 }
 
 project(':kas-config') {
-	dependencies {
-		compile project(':kas-infra')
-	}
+  dependencies {
+    compile project(':kas-infra')
+  }
 }
 
 project(':kas-logging') {
-	dependencies {
-		compile project(':kas-config')
-	}
+  dependencies {
+    compile project(':kas-config')
+  }
 }
 
 configure(subprojects - project(':kas-infra') - project(':kas-config') - project(':kas-logging')) {
-	dependencies {
-		compile project(':kas-logging')
-	}
+  dependencies {
+    compile project(':kas-logging')
+  }
 }
 
 project(':kas-db') {
-        dependencies {
-                compile('mysql:mysql-connector-java:8.0.12')
-                compile('org.postgresql:postgresql:42.2.5')
-        }
+  dependencies {
+    compile('mysql:mysql-connector-java:8.0.12')
+    compile('org.postgresql:postgresql:42.2.5')
+  }
 }
 
 project(':kas-mq-core')  {
-	dependencies {
-		compile project(':kas-comm')
-	}
+  dependencies {
+    compile project(':kas-comm')
+  }
 }
 
 
 project(':kas-mq-admin') {
-	dependencies {
-		compile project(':kas-comm')
-		compile project(':kas-appl')
-		compile project(':kas-mq-core')
-	}
+  dependencies {
+    compile project(':kas-comm')
+    compile project(':kas-appl')
+    compile project(':kas-mq-core')
+  }
 }
 
 project('kas-sec-core') {
-	dependencies {
-		compile project(':kas-db')
-	}
+  dependencies {
+    compile project(':kas-db')
+  }
 }
 
 
 project(':kas-mq-samples') {
-	 dependencies {
-                compile project(':kas-comm')
-                compile project(':kas-db')
-                compile project(':kas-appl')
-		compile project(':kas-sec-core')
-                compile project(':kas-mq-core')
-        }
+  dependencies {
+    compile project(':kas-comm')
+    compile project(':kas-db')
+    compile project(':kas-appl')
+    compile project(':kas-sec-core')
+    compile project(':kas-mq-core')
+  }
 }
 
 project(':kas-mq-server') {
-         dependencies {
-                compile project(':kas-comm')
-                compile project(':kas-db')
-                compile project(':kas-appl')
-                compile project(':kas-sec-core')
-                compile project(':kas-mq-core')
-        }
+  dependencies {
+    compile project(':kas-comm')
+    compile project(':kas-db')
+    compile project(':kas-appl')
+    compile project(':kas-sec-core')
+    compile project(':kas-mq-core')
+  }
 }
-
