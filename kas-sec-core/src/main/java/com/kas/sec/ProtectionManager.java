@@ -1,7 +1,7 @@
 package com.kas.sec;
 
 import com.kas.infra.base.AKasObject;
-import com.kas.sec.entities.UserDao;
+import com.kas.sec.entities.UserEntityDao;
 import com.kas.sec.entities.UserEntity;
 
 /**
@@ -30,14 +30,14 @@ public class ProtectionManager extends AKasObject implements IProtectionManager
   /**
    * The users
    */
-  private UserDao mUsers;
+  private UserEntityDao mUsers;
   
   /**
    * Construct the Protection Manager
    */
   private ProtectionManager()
   {
-    mUsers = new UserDao();
+    mUsers = new UserEntityDao();
   }
   
   /**

@@ -6,10 +6,9 @@ import com.kas.sec.access.AccessLevel;
  * This ENUM is used to simplify the the code when requesting to check
  * permissions for a user against a specific resource.<br>
  * 
- * The values of this ENUM <b>must</b> match the contents of {@code table kas_mq_resource_types}.
  * @author Pippo
  */
-public enum EResourceType
+public enum EResourceClass
 {
   /**
    * Unknown resource type
@@ -40,7 +39,7 @@ public enum EResourceType
   /**
    * Construct the Resource type
    */
-  private EResourceType(int enabledAccessLevels)
+  private EResourceClass(int enabledAccessLevels)
   {
     mResourceClass = new ResourceClass(this.ordinal(), this.name(), enabledAccessLevels);
   }

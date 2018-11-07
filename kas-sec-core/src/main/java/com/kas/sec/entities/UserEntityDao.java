@@ -22,7 +22,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class UserDao extends AKasObject implements IDao<UserEntity>
+public class UserEntityDao extends AKasObject implements IDao<UserEntity>
 {
   /**
    * Table name

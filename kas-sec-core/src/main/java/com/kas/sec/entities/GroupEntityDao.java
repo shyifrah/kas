@@ -20,7 +20,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class GroupDao extends AKasObject implements IDao<GroupEntity>
+public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
 {
   /**
    * Table name

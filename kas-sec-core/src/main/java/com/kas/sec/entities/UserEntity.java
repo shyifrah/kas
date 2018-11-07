@@ -4,7 +4,7 @@ import java.util.List;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.sec.access.AccessLevel;
-import com.kas.sec.resources.EResourceType;
+import com.kas.sec.resources.EResourceClass;
 import com.kas.sec.resources.ResourceClass;
 
 /**
@@ -89,7 +89,7 @@ public class UserEntity extends Entity
    * @param resName The name of the resource
    * @return {@code true} if access is permitted, {@code false} if access is prohibited
    */
-  public boolean isAccessPermitted(EResourceType resType, String resName)
+  public boolean isAccessPermitted(EResourceClass resType, String resName)
   {
     return isAccessPermitted(resType, resName, AccessLevel.READ_ACCESS);
   }
@@ -104,7 +104,7 @@ public class UserEntity extends Entity
    * @param level The requested access level
    * @return {@code true} if access is permitted, {@code false} if access is prohibited
    */
-  public boolean isAccessPermitted(EResourceType resType, String resName, AccessLevel level)
+  public boolean isAccessPermitted(EResourceClass resType, String resName, AccessLevel level)
   {
     // verify arguments validity
     if (resType == null)
