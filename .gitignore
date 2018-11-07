@@ -8,3 +8,9 @@ reports/
 .recommenders/ 
 RemoteSystemsTempFiles/ 
 
+# Gradle
+build/
+.gradle/
+
+# Eclipse
+.settings/
