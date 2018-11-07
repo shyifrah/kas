@@ -7,10 +7,10 @@ reports/
 .metadata/ 
 .recommenders/ 
 RemoteSystemsTempFiles/ 
+
+# Gradle
 build/
-/*.gradle
 .gradle/
 
 # Eclipse
 .settings/
-/*.springBeans
