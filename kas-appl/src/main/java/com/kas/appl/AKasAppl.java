@@ -64,10 +64,9 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
     sStartupLogger.info("KAS base application startup in progress...");
     
     mVersion = new ProductVersion(this.getClass());
+    mLogger = LoggerFactory.getLogger(this.getClass());
     mShutdownHook = new KasApplShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
-    
-    mLogger = LoggerFactory.getLogger(this.getClass());
     sStartupLogger.info("Logging services are now active, switching to log file");
     
     boolean init = appInit();    

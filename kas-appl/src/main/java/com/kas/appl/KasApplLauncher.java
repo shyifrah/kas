@@ -15,7 +15,8 @@ import com.kas.infra.utils.RunTimeUtils;
  * <br>
  * This class has only static methods in order to launch a KAS application.
  * It basically processes the arguments passed to the {@link #main(String[])} function and launches
- * the application (a class named in the "kas.home" property).
+ * the application (a class named in the "kas.class" property).<br>
+ * The class application is a class that is driven from AKasAppl.
  * 
  * @author Pippo
  */
@@ -26,10 +27,15 @@ public class KasApplLauncher
   
   static private IBaseLogger sLogger = new ConsoleLogger(KasApplLauncher.class.getName());
   
+  /**
+   * Main function
+   * 
+   * @param args The list of arguments passed to the application
+   */
   static public void main(String [] args)
   {
     TimeStamp start = TimeStamp.now();
-    sLogger.info(ConsoleUtils.GREEN + "KAS/MQ launcher started at " + start.toString() + ConsoleUtils.RESET);
+    sLogger.info(ConsoleUtils.GREEN + "KAS launcher started at " + start.toString() + ConsoleUtils.RESET);
     
     Map<String, String> pArgumentsMap = getAndProcessStartupArguments(args);
     
@@ -42,7 +48,7 @@ public class KasApplLauncher
     
     String appClass = pArgumentsMap.get(cAppClassSystemProperty);
     if (appClass == null)
-      sLogger.info("KAS/MQ launcher terminates. Could not determine which application should be launched...");
+      sLogger.info("KAS launcher terminated. Could not determine which application should be launched...");
     else
       launchApplication(appClass, pArgumentsMap);
   }
@@ -100,7 +106,7 @@ public class KasApplLauncher
       kasHome = RunTimeUtils.getProductHomeDir();
     }
     RunTimeUtils.setProperty(cKasHomeSystemProperty, kasHome, true);
-    sLogger.info("KAS/MQ launcher set system property '" + cKasHomeSystemProperty + "' to '" + kasHome + "'");
+    sLogger.info("KAS launcher set system property '" + cKasHomeSystemProperty + "' to '" + kasHome + "'");
   }
   
  /**
@@ -142,7 +148,7 @@ public class KasApplLauncher
       Object instance = ctor.newInstance(args);
       if (!(instance instanceof AKasAppl))
       {
-        sLogger.error("KAS/MQ application not an instance of basic application class: " + AKasAppl.class.getName());
+        sLogger.error("KAS application not an instance of basic application class: " + AKasAppl.class.getName());
       }
       else
       {
@@ -150,7 +156,7 @@ public class KasApplLauncher
         init = app.init();
         if (!init)
         {
-          sLogger.error(ConsoleUtils.RED + "KAS/MQ application failed initialization. See previous error messages. Terminating..." + ConsoleUtils.RESET);
+          sLogger.error(ConsoleUtils.RED + "KAS application failed initialization. See previous error messages. Terminating..." + ConsoleUtils.RESET);
         }
         else
         {
@@ -160,15 +166,15 @@ public class KasApplLauncher
     }
     catch (ClassNotFoundException e)
     {
-      sLogger.fatal(ConsoleUtils.RED + "KAS/MQ launcher failed to locate application class: " + className + ConsoleUtils.RESET);
+      sLogger.fatal(ConsoleUtils.RED + "KAS launcher failed to locate application class: " + className + ConsoleUtils.RESET);
     }
     catch (NoSuchMethodException e)
     {
-      sLogger.fatal(ConsoleUtils.RED + "KAS/MQ launcher failed to locate appropriate constructor for class: " + className + ConsoleUtils.RESET);
+      sLogger.fatal(ConsoleUtils.RED + "KAS launcher failed to locate appropriate constructor for class: " + className + ConsoleUtils.RESET);
     }
     catch (Exception e)
     {
-      sLogger.fatal(ConsoleUtils.RED + "KAS/MQ launcher failed. Exception encountered: " + ConsoleUtils.RESET, e);
+      sLogger.fatal(ConsoleUtils.RED + "KAS launcher failed. Exception encountered: " + ConsoleUtils.RESET, e);
     }
     finally
     {
