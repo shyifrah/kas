@@ -1,27 +1,83 @@
-allprojects {
+subprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 
 	version = '1.0'
 	group='com.kas'
 
-
 	repositories {
 	    mavenCentral()
+	}
+
+	dependencies {
+                testCompile 'junit:junit:4.10'
+        }
+}
+
+project(':kas-config') {
+	dependencies {
+		compile project(':kas-infra')
+	}
+}
+
+project(':kas-logging') {
+	dependencies {
+		compile project(':kas-config')
+	}
+}
+
+configure(subprojects - project(':kas-infra') - project(':kas-config') - project(':kas-logging')) {
+	dependencies {
+		compile project(':kas-logging')
 	}
 }
 
 project(':kas-db') {
+        dependencies {
+                compile('mysql:mysql-connector-java:8.0.12')
+                compile('org.postgresql:postgresql:42.2.5')
+        }
+}
+
+project(':kas-mq-core')  {
 	dependencies {
-        	compile(':kas-logging')
-        	compile(':kas-config')
-		compile('mysql-connector-java:8.0.12')
-                compile('postgresql:42.2.5')
+		compile project(':kas-comm')
 	}
 }
 
-project(':kas-infra') {
+
+project(':kas-mq-admin') {
 	dependencies {
-		testCompile 'junit:junit:4.10'
+		compile project(':kas-comm')
+		compile project(':kas-appl')
+		compile project(':kas-mq-core')
 	}
 }
+
+project('kas-sec-core') {
+	dependencies {
+		compile project(':kas-db')
+	}
+}
+
+
+project(':kas-mq-samples') {
+	 dependencies {
+                compile project(':kas-comm')
+                compile project(':kas-db')
+                compile project(':kas-appl')
+		compile project(':kas-sec-core')
+                compile project(':kas-mq-core')
+        }
+}
+
+project(':kas-mq-server') {
+         dependencies {
+                compile project(':kas-comm')
+                compile project(':kas-db')
+                compile project(':kas-appl')
+                compile project(':kas-sec-core')
+                compile project(':kas-mq-core')
+        }
+}
+
