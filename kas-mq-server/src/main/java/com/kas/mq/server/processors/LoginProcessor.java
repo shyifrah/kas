@@ -9,7 +9,7 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.sec.ProtectionManager;
 import com.kas.sec.entities.UserEntity;
-import com.kas.sec.resources.EResourceType;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for login requests
@@ -76,7 +76,7 @@ public class LoginProcessor extends AProcessor
         mDesc = "User " + mUser + " is not defined";
       else if (!ue.isPasswordMatch(mPass))
         mDesc = "Incorrect password for " + mUser;
-      else if (!ue.isAccessPermitted(EResourceType.APPLICATION, mClientApp))
+      else if (!ue.isAccessPermitted(EResourceClass.APPLICATION, mClientApp))
         mDesc = mUser + " is not permitted to access " + mClientApp;
       else
       {
