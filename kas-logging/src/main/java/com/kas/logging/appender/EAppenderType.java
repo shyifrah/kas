@@ -8,6 +8,8 @@ import com.kas.infra.base.IObject;
  * This enum is used to categorize appenders' types
  * 
  * @author Pippo
+ * 
+ * @deprecated
  */
 public enum EAppenderType implements IObject
 {
