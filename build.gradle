@@ -45,9 +45,13 @@ project(':kas-mq-core')  {
   }
 }
 
+project('kas-sec-core') {
+  dependencies {
+    compile project(':kas-db')
+  }
+}
 
 project(':kas-mq-admin') {
-  
   apply plugin: 'application'
   
   dependencies {
@@ -57,31 +61,68 @@ project(':kas-mq-admin') {
   }
   
   mainClassName = 'com.kas.appl.KasApplLauncher'
-}
-
-project('kas-sec-core') {
-  dependencies {
-    compile project(':kas-db')
+  
+  startScripts.enabled = false
+  
+  distributions {
+    main {
+      contents {
+        from {
+          '../kas-appl/src/main/dist'
+        }
+      }
+    }
   }
 }
 
-
 project(':kas-mq-samples') {
+  apply plugin: 'application'
+
   dependencies {
     compile project(':kas-comm')
     compile project(':kas-db')
     compile project(':kas-appl')
     compile project(':kas-sec-core')
     compile project(':kas-mq-core')
+  }
+  
+  mainClassName = 'com.kas.appl.KasApplLauncher'
+  
+  startScripts.enabled = false
+  
+  distributions {
+    main {
+      contents {
+        from {
+          '../kas-appl/src/main/dist'
+        }
+      }
+    }
   }
 }
 
 project(':kas-mq-server') {
+  apply plugin: 'application'
+  
   dependencies {
     compile project(':kas-comm')
     compile project(':kas-db')
     compile project(':kas-appl')
     compile project(':kas-sec-core')
     compile project(':kas-mq-core')
+  }
+  
+  mainClassName = 'com.kas.appl.KasApplLauncher'
+  
+  startScripts.enabled = false
+  
+  distributions {
+    main {
+      contents {
+        from {
+          '../kas-appl/src/main/dist'
+        }
+      }
+    }
   }
 }
