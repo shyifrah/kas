@@ -1,7 +1,6 @@
 subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
-  apply plugin: 'application'
 
   version = '1.0'
   group = 'com.kas'
@@ -13,8 +12,6 @@ subprojects {
   dependencies {
     testCompile 'junit:junit:4.10'
   }
-  
-  mainClassName = 'com.kas.appl.KasApplLauncher'
 }
 
 project(':kas-config') {
@@ -50,11 +47,16 @@ project(':kas-mq-core')  {
 
 
 project(':kas-mq-admin') {
+  
+  apply plugin: 'application'
+  
   dependencies {
     compile project(':kas-comm')
     compile project(':kas-appl')
     compile project(':kas-mq-core')
   }
+  
+  mainClassName = 'com.kas.appl.KasApplLauncher'
 }
 
 project('kas-sec-core') {
