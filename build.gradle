@@ -51,34 +51,14 @@ project('kas-sec-core') {
   }
 }
 
-project(':kas-mq-admin') {
-  dependencies {
-    compile project(':kas-comm')
-    compile project(':kas-appl')
-    compile project(':kas-mq-core')
-  }
-}
-
-project(':kas-mq-samples') {
-  dependencies {
-    compile project(':kas-comm')
-    compile project(':kas-appl')
-    compile project(':kas-mq-core')
-  }
-}
-
-project(':kas-mq-server') {
-  dependencies {
-    compile project(':kas-comm')
-    compile project(':kas-db')
-    compile project(':kas-appl')
-    compile project(':kas-sec-core')
-    compile project(':kas-mq-core')
-  }
-}
-
 configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':kas-mq-server') ]) {
   apply plugin: 'application'
+  
+  dependencies {
+    compile project(':kas-comm')
+    compile project(':kas-appl')
+    compile project(':kas-mq-core')
+  }
   
   jar {
     ant.buildnumber()
@@ -101,5 +81,12 @@ configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':ka
         }
       }
     }
+  }
+}
+
+project(':kas-mq-server') {
+  dependencies {
+    compile project(':kas-db')
+    compile project(':kas-sec-core')
   }
 }
