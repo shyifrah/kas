@@ -12,6 +12,16 @@ subprojects {
   dependencies {
     testCompile 'junit:junit:4.10'
   }
+
+  task incrementBuildNumber << {
+  	Properties props = new Properties()
+  	File versionFile = new File(project.projectDir.toString() + '/build.number')
+  	props.load(versionFile.newDataInputStream())
+ 	Integer nextbuildnum = ( ((props.getProperty('build.number')) as BigDecimal) + 1 )
+	props.setProperty('build.number', nextbuildnum.toString())
+	props.store(versionFile.newWriter(), null)
+	props.load(versionFile.newDataInputStream())
+  }
 }
 
 project(':kas-config') {
@@ -61,10 +71,10 @@ configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':ka
   }
   
   jar {
-    ant.buildnumber()
+   incrementBuildNumber
     manifest {
       attributes(
-        "Kas-Version": version + '.' + ant.antProject.properties['build.number']
+        "Kas-Version": version + '.'
       )
     }
   }
