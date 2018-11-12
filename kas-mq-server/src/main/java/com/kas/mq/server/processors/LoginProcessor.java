@@ -77,7 +77,7 @@ public class LoginProcessor extends AProcessor
       else if (!ue.isPasswordMatch(mPass))
         mDesc = "Incorrect password for " + mUser;
       else if (!ue.isAccessPermitted(EResourceClass.APPLICATION, mClientApp))
-        mDesc = mUser + " is not permitted to access " + mClientApp;
+        mDesc = mUser + " is not permitted to access application " + mClientApp;
       else
       {
         mDesc = "User " + mUser + " successfully authenticated";
