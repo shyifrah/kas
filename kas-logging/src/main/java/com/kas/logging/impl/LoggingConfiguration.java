@@ -8,7 +8,6 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
 import com.kas.logging.appender.AAppenderConfiguration;
-import com.kas.logging.appender.EAppenderType;
 import com.kas.logging.appender.IAppenderConfiguration;
 /**
  * The logging configuration
@@ -19,6 +18,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
 {
   static public final String  cLogConfigPrefix         = "kas.logging.";
   static public final String  cLogAppenderConfigPrefix = cLogConfigPrefix + "appender.";
+  static private final String cNoOpAppenderName = "noop";
   
   static public final boolean cDefaultEnabled = true;
   
@@ -68,6 +68,8 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   {
     Map<String, IAppenderConfiguration> appenderConfigs = new ConcurrentHashMap<String, IAppenderConfiguration>();
     
+    appenderConfigs.put(cNoOpAppenderName, new NoOpAppenderConfiguration(cNoOpAppenderName, this));
+    
     Properties props = mMainConfig.getSubset(cLogAppenderConfigPrefix, ".type");
     for (Map.Entry<Object, Object> oentry : props.entrySet())
     {
@@ -76,23 +78,25 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
       int endindex = key.lastIndexOf(".type");
       String name = key.substring(beginindex, endindex);
       
-      String type = (String)oentry.getValue();
-      EAppenderType appenderType = EAppenderType.fromString(type);
-      
       AAppenderConfiguration config = null;
-      switch (appenderType)
+      
+      String type = (String)oentry.getValue();
+      switch (type.toLowerCase())
       {
-        case File:
+        case "file":
           config = new FileAppenderConfiguration(name, this);
           break;
-        case Stdout:
+        case "stdout":
           config = new StdoutAppenderConfiguration(name, this);
           break;
-        case Stderr:
+        case "stderr":
           config = new StderrAppenderConfiguration(name, this);
           break;
-        case Unknown:
+        case "noop":
+          config = new StderrAppenderConfiguration(name, this);
+          break;
         default:
+          break;
       }
       
       if (config != null) appenderConfigs.put(name, config);
@@ -147,6 +151,8 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   public IAppenderConfiguration getAppenderConfig(String requestorClassName)
   {
     String appenderName = getAppenderName(requestorClassName);
+    if (appenderName == null)
+      appenderName = cNoOpAppenderName;
     return mAppenderConfigs.get(appenderName);
   }
   

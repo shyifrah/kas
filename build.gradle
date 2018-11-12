@@ -2,7 +2,7 @@ subprojects {
   apply plugin: 'java'
   apply plugin: 'eclipse'
 
-  version = '1.0'
+  version = '1.0.0'
   group = 'com.kas'
 
   repositories {
@@ -45,38 +45,60 @@ project(':kas-mq-core')  {
   }
 }
 
-
-project(':kas-mq-admin') {
-  dependencies {
-    compile project(':kas-comm')
-    compile project(':kas-appl')
-    compile project(':kas-mq-core')
-  }
-}
-
 project('kas-sec-core') {
   dependencies {
     compile project(':kas-db')
   }
 }
 
+configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':kas-mq-server') ]) {
+  apply plugin: 'application'
+  def buildnumber = '0'
 
-project(':kas-mq-samples') {
   dependencies {
     compile project(':kas-comm')
-    compile project(':kas-db')
     compile project(':kas-appl')
-    compile project(':kas-sec-core')
     compile project(':kas-mq-core')
+  }
+ 
+  task incrementBuildNumber { 
+    File versionFile = new File(project.projectDir.toString() + '/build.number')
+    Properties props = new Properties()
+    props.load(versionFile.newDataInputStream())
+    Integer nextbuildnum = ( ((props.getProperty('build.number')) as BigDecimal) + 1 )
+    props.setProperty('build.number', nextbuildnum.toString())
+    props.store(versionFile.newWriter(), null)
+    props.load(versionFile.newDataInputStream())
+    buildnumber = props.getProperty('build.number')
+  }
+
+  jar {
+    incrementBuildNumber
+    manifest {
+      attributes(
+        "Kas-Version": version + '.' + buildnumber
+      )
+    }
+  }
+  
+  mainClassName = 'com.kas.appl.KasApplLauncher'
+  
+  startScripts.enabled = false
+  
+  distributions {
+    main {
+      contents {
+        from {
+          '../kas-appl/src/main/dist'
+        }
+      }
+    }
   }
 }
 
 project(':kas-mq-server') {
   dependencies {
-    compile project(':kas-comm')
     compile project(':kas-db')
-    compile project(':kas-appl')
     compile project(':kas-sec-core')
-    compile project(':kas-mq-core')
   }
 }

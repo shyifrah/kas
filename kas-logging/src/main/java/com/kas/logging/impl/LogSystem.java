@@ -74,8 +74,9 @@ public class LogSystem extends AKasObject
     if (!mConfig.isInitialized())
       mConfig.init();
     
-    IAppenderConfiguration config = mConfig.getAppenderConfig(requestorClass.getName());
     IAppender appender = null;
+    
+    IAppenderConfiguration config = mConfig.getAppenderConfig(requestorClass.getName());
     if (config != null)
     {
       appender = mAppenders.get(config.getName());

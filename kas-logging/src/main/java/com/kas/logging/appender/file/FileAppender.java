@@ -333,7 +333,7 @@ public class FileAppender extends AAppender implements IMessageDataWriter
   }
   
   /**
-   * Returns the {@link FileAppender} string representation.
+   * Returns the object's detailed string representation.
    * 
    * @param level the required level padding
    * @return the object's printable string representation
