@@ -1,5 +1,4 @@
 subprojects {
-  
   apply plugin: 'java'
   apply plugin: 'eclipse'
 
@@ -13,7 +12,6 @@ subprojects {
   dependencies {
     testCompile 'junit:junit:4.10'
   }
-
 }
 
 project(':kas-config') {
@@ -64,15 +62,15 @@ configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':ka
   }
  
   task incrementBuildNumber { 
-        File versionFile = new File(project.projectDir.toString() + '/build.number')
-        Properties props = new Properties()
-        props.load(versionFile.newDataInputStream())
-        Integer nextbuildnum = ( ((props.getProperty('build.number')) as BigDecimal) + 1 )
-        props.setProperty('build.number', nextbuildnum.toString())
-        props.store(versionFile.newWriter(), null)
-        props.load(versionFile.newDataInputStream())
-        buildnumber = props.getProperty('build.number')
- }
+    File versionFile = new File(project.projectDir.toString() + '/build.number')
+    Properties props = new Properties()
+    props.load(versionFile.newDataInputStream())
+    Integer nextbuildnum = ( ((props.getProperty('build.number')) as BigDecimal) + 1 )
+    props.setProperty('build.number', nextbuildnum.toString())
+    props.store(versionFile.newWriter(), null)
+    props.load(versionFile.newDataInputStream())
+    buildnumber = props.getProperty('build.number')
+  }
 
   jar {
     incrementBuildNumber
@@ -96,7 +94,6 @@ configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':ka
       }
     }
   }
-
 }
 
 project(':kas-mq-server') {
