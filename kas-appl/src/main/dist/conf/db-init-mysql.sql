@@ -57,7 +57,9 @@ CREATE TABLE kas_mq_command_permissions (
 );
 
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
-  VALUES('.*', 1, 1);
+  SELECT '.*', id, 1
+  FROM   kas_mq_groups
+  WHERE name ='system';
 
 CREATE TABLE kas_mq_application_permissions (
   pattern      VARCHAR(100) NOT NULL,
@@ -68,7 +70,9 @@ CREATE TABLE kas_mq_application_permissions (
 );
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
-  VALUES('.*', 1, 1);
+  SELECT '.*', id, 1
+  FROM   kas_mq_groups
+  WHERE name ='system';
 
 CREATE TABLE kas_mq_queue_permissions (
   pattern      VARCHAR(100) NOT NULL,
@@ -79,4 +83,6 @@ CREATE TABLE kas_mq_queue_permissions (
 );
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
-  VALUES('.*', 1, 7);
+  SELECT '.*', id, 7
+  FROM   kas_mq_groups
+  WHERE name ='system';
