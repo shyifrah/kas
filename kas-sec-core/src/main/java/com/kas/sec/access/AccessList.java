@@ -2,12 +2,9 @@ package com.kas.sec.access;
 
 import java.util.Enumeration;
 import java.util.List;
-import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.sec.resources.ResourceClass;
@@ -31,11 +28,11 @@ public class AccessList extends AKasObject
    * Resource class name
    */
   private String mResourceClassName;
-  
+
   /**
-   * The RegEx-to-AccessEntry map
+   * Access Entry DAO
    */
-  private Map<Pattern, AccessEntry> mAccessEntriesMap;
+  private AccessEntryDao mEntries;
   
   /**
    * Construct an {@link AccessList}
@@ -45,14 +42,7 @@ public class AccessList extends AKasObject
   public AccessList(String name)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mAccessEntriesMap = new ConcurrentHashMap<Pattern, AccessEntry>();
-    List<AccessEntry> aces = new AccessEntryDao(name).getAll();
-    for (AccessEntry ace : aces)
-    {
-      String regex = ace.getResourceRegEx();
-      Pattern pat = Pattern.compile(regex);
-      mAccessEntriesMap.put(pat, ace);
-    }
+    mEntries = new AccessEntryDao(name);
   }
   
   /**
@@ -65,12 +55,12 @@ public class AccessList extends AKasObject
   {
     mLogger.debug("AccessList::getAccessEntry() - IN");
     
+    List<AccessEntry> entries = mEntries.getAll();
     Vector<AccessEntry> result = new Vector<AccessEntry>();
-    for (Map.Entry<Pattern, AccessEntry> entry : mAccessEntriesMap.entrySet())
+    for (AccessEntry ace : entries)
     {
-      Pattern pat = entry.getKey();
-      if (pat.matcher(resource).matches())
-        result.add(entry.getValue());
+      if (ace.isResourceMatch(resource))
+        result.add(ace);
     }
     
     mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
@@ -91,7 +81,7 @@ public class AccessList extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  ForResourceClass=").append(mResourceClassName).append('\n')
-      .append(pad).append("  Entries=(").append(StringUtils.asPrintableString(mAccessEntriesMap, level+2)).append(")\n")
+      .append(pad).append("  Entries=").append(mEntries.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

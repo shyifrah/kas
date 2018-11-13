@@ -1,9 +1,12 @@
 USE ${kas.db.schema};
 
+DROP TABLE IF EXISTS kas_mq_command_permissions;
+DROP TABLE IF EXISTS kas_mq_application_permissions;
+DROP TABLE IF EXISTS kas_mq_queue_permissions;
+
 DROP TABLE IF EXISTS kas_mq_users_to_groups;
 DROP TABLE IF EXISTS kas_mq_users CASCADE;
 DROP TABLE IF EXISTS kas_mq_groups CASCADE;
--- DROP TABLE IF EXISTS kas_mq_resource_classes; 
 
 CREATE TABLE kas_mq_users (
   id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -45,14 +48,35 @@ INSERT INTO kas_mq_users_to_groups
     WHERE name = 'system'
   ) groups;
 
--- CREATE TABLE kas_mq_resource_types (
---   id            INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
---   table_name    VARCHAR(32) NOT NULL UNIQUE,
---   access_levels INT
--- );
--- 
--- INSERT INTO kas_mq_resource_classes (name, access_levels)
---   VALUES('application', 1);
--- INSERT INTO kas_mq_resource_classes (name, access_levels)
---   VALUES('queue', 7);
--- 
+CREATE TABLE kas_mq_command_permissions (
+  pattern      VARCHAR(100) NOT NULL,
+  group_id     INT NOT NULL,
+  access_level INT NOT NULL,
+  PRIMARY KEY(pattern, group_id),
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
+  VALUES('.*', 1, 1);
+
+CREATE TABLE kas_mq_application_permissions (
+  pattern      VARCHAR(100) NOT NULL,
+  group_id     INT NOT NULL,
+  access_level INT NOT NULL,
+  PRIMARY KEY(pattern, group_id),
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
+  VALUES('.*', 1, 1);
+
+CREATE TABLE kas_mq_queue_permissions (
+  pattern      VARCHAR(100) NOT NULL,
+  group_id     INT NOT NULL,
+  access_level INT NOT NULL,
+  PRIMARY KEY(pattern, group_id),
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
+  VALUES('.*', 1, 7);
