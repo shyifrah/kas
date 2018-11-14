@@ -1,16 +1,9 @@
 package com.kas.db;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import com.kas.config.MainConfiguration;
-import com.kas.infra.base.Properties;
-import com.kas.infra.base.PropertyResolver;
-import com.kas.infra.utils.FileUtils;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -54,82 +47,25 @@ public class DbUtils
   }
   
   /**
-   * Check if the schema was initialized
-   * 
-   * @return {@code true} if the schema was initialized, {@code false} otherwise
-   */
-  static public boolean isSchemaInitialized()
-  {
-    sLogger.debug("DbUtils::isSchemaInitialized() - IN");
-    boolean init = false;
-    
-    DbConnectionPool pool = DbConnectionPool.getInstance();
-    DbConnection dbConn = pool.allocate();
-    Connection conn = dbConn.getConn();
-    
-    String sql = "select column_name, data_type from information_schema.columns where table_name = 'kas_mq_users';";
-    try
-    {
-      PreparedStatement ps = conn.prepareStatement(sql);
-      ResultSet rs =  ps.executeQuery();
-      if (rs.next()) init = true;
-    }
-    catch (SQLException e)
-    {
-      init = false;
-    }
-    
-    pool.release(dbConn);
-    sLogger.debug("DbUtils::isSchemaInitialized() - OUT, Returns=" + init);
-    return init;
-  }
-  
-  /**
    * Initialize KAS/MQ database schema
    */
   static public void initSchema()
   {
     sLogger.debug("DbUtils::initSchema() - IN");
     
-    Properties props = MainConfiguration.getInstance().getSubset(DbConfiguration.cDbConfigPrefix);
-    String dbtype = props.getStringProperty(DbConfiguration.cDbConfigPrefix + "dbtype", DbConfiguration.cDefaultDbType);
+    DbConnectionPool pool = DbConnectionPool.getInstance();
+    DbConnection dbConn = pool.allocate();
     
-    sLogger.debug("DbUtils::initSchema() - Database type is " + dbtype);
-    
-    File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "db-init-" + dbtype + ".sql");
-    List<String> input = FileUtils.load(dbInitFile, "--");
-    
-    boolean newcmd = true;
-    StringBuilder sb = null;
-    for (String line : input)
+    SchemaHelper schema = new SchemaHelper(dbConn.getConn());
+    boolean exists = schema.isExist();
+    sLogger.debug("DbUtils::initSchema() - Check if schema exists: " + exists);
+    if (!exists)
     {
-      line = line.trim();
-      sLogger.diag("DbUtils::initSchema() - Current line: [" + line + "]");
-      
-      if (newcmd)
-      {
-        sLogger.diag("DbUtils::initSchema() - Current line is the start of a new command");
-        sb = new StringBuilder(line);
-        newcmd = false;
-      }
-      else
-      {
-        sLogger.diag("DbUtils::initSchema() - Current line is a continuation of the previous command, concatenating...");
-        sb.append(' ').append(line);
-      }
-      
-      if (line.endsWith(";"))
-      {
-        sLogger.diag("DbUtils::initSchema() - End of command detected. Execute it...");
-        String cmd = PropertyResolver.resolve(sb.toString(), props);
-        try
-        {
-          execute(cmd);
-        }
-        catch (SQLException e) {}
-        newcmd = true;
-      }
+      sLogger.debug("DbUtils::initSchema() - Schema does not exist, initializing it");
+      schema.init();
     }
+    pool.release(dbConn);
+    
     sLogger.debug("DbUtils::initSchema() - OUT");
   }
   

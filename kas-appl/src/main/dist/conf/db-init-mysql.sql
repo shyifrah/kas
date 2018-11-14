@@ -8,6 +8,16 @@ DROP TABLE IF EXISTS kas_mq_users_to_groups;
 DROP TABLE IF EXISTS kas_mq_users CASCADE;
 DROP TABLE IF EXISTS kas_mq_groups CASCADE;
 
+DROP TABLE IF EXISTS kas_mq_parameters;
+
+CREATE TABLE kas_mq_parameters (
+  param_name  VARCHAR(100) NOT NULL UNIQUE PRIMARY KEY,
+  param_value VARCHAR(100)
+);
+
+INSERT INTO kas_mq_parameters (param_name, param_value)
+  VALUES('schema_version', '1');
+
 CREATE TABLE kas_mq_users (
   id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(20) NOT NULL UNIQUE,
