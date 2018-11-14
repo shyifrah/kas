@@ -15,6 +15,12 @@ import com.kas.logging.LoggerFactory;
  */
 public class DbUtils
 {
+  static final public String cDbTypeMySql      = "mysql";
+  static final public String cDbTypePostgreSql = "postgresql";
+  
+  /**
+   * Logger
+   */
   static private ILogger sLogger = LoggerFactory.getLogger(DbUtils.class);
   
   /**
@@ -35,10 +41,10 @@ public class DbUtils
     
     switch (dbtype)
     {
-      case "mysql":
+      case cDbTypeMySql:
         sb.append("&serverTimezone=UTC&useSSL=false");
         break;
-      case "postgresql":
+      case cDbTypePostgreSql:
         sb.append("&ssl=false");
         break;
     }
@@ -67,41 +73,6 @@ public class DbUtils
     pool.release(dbConn);
     
     sLogger.debug("DbUtils::initSchema() - OUT");
-  }
-  
-  /**
-   * Execute a SQL statement
-   * 
-   * @param sql The SQL statement
-   * @return A result set, if one was generated
-   * @throws SQLException if thrown by java.sql.* classes
-   */
-  static public void execute(String sql) throws SQLException
-  {
-    execute(sql, new Object [] {});
-  }
-  
-  /**
-   * Execute a SQL statement
-   * 
-   * @param fmt The SQL statement base format
-   * @param args Arguments to format the SQL
-   * @return A result set, if one was generated
-   * @throws SQLException if thrown by java.sql.* classes
-   */
-  static public void execute(String fmt, Object... args) throws SQLException
-  {
-    sLogger.debug("DbUtils::execute() - IN");
-    
-    DbConnectionPool pool = DbConnectionPool.getInstance();
-    DbConnection dbConn = pool.allocate();
-    Connection conn = dbConn.getConn();
-
-    execute(conn, fmt, args);
-    
-    pool.release(dbConn);
-    
-    sLogger.debug("DbUtils::execute() - OUT");
   }
   
   /**
