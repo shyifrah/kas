@@ -10,6 +10,10 @@ DROP TABLE IF EXISTS kas_mq_groups CASCADE;
 
 DROP TABLE IF EXISTS kas_mq_parameters;
 
+
+--
+-- parameters
+--
 CREATE TABLE kas_mq_parameters (
   param_name  VARCHAR(100) NOT NULL UNIQUE PRIMARY KEY,
   param_value VARCHAR(100)
@@ -18,6 +22,9 @@ CREATE TABLE kas_mq_parameters (
 INSERT INTO kas_mq_parameters (param_name, param_value)
   VALUES('schema_version', '1');
 
+--
+-- users
+--
 CREATE TABLE kas_mq_users (
   id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(20) NOT NULL UNIQUE,
@@ -27,7 +34,16 @@ CREATE TABLE kas_mq_users (
 
 INSERT INTO kas_mq_users (name, description, password)
   VALUES('root', 'system root', 'root');
+  
+INSERT INTO kas_mq_users (name, description, password)
+  VALUES('oper', 'system operator', 'oper');
+  
+INSERT INTO kas_mq_users (name, description, password)
+  VALUES('guest', 'guest user', 'guest');
 
+--
+-- groups
+--
 CREATE TABLE kas_mq_groups (
   id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   name        VARCHAR(20) NOT NULL UNIQUE,
@@ -35,8 +51,14 @@ CREATE TABLE kas_mq_groups (
 );
 
 INSERT INTO kas_mq_groups (name, description)
-  VALUES('system', 'system');
+  VALUES('administrators', 'administrators');
+  
+INSERT INTO kas_mq_groups (name, description)
+  VALUES('moderators', 'moderators');
 
+--
+-- group assignment
+--
 CREATE TABLE kas_mq_users_to_groups (
   user_id     INT NOT NULL,
   group_id    INT NOT NULL,
@@ -50,14 +72,31 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT id user_id
     FROM kas_mq_users
-    WHERE name ='root'
+    WHERE name = 'root'
   ) users,
   (
     SELECT id group_id
     FROM kas_mq_groups 
-    WHERE name = 'system'
+    WHERE name = 'administrators'
+  ) groups;
+  
+INSERT INTO kas_mq_users_to_groups
+  SELECT user_id, group_id FROM 
+  (
+    SELECT id user_id
+    FROM kas_mq_users
+    WHERE name = 'oper'
+  ) users,
+  (
+    SELECT id group_id
+    FROM kas_mq_groups 
+    WHERE name = 'moderators'
   ) groups;
 
+--
+-- command permissions:
+--   administrators and moderators can issue all commands
+--
 CREATE TABLE kas_mq_command_permissions (
   pattern      VARCHAR(100) NOT NULL,
   group_id     INT NOT NULL,
@@ -69,8 +108,18 @@ CREATE TABLE kas_mq_command_permissions (
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT '.*', id, 1
   FROM   kas_mq_groups
-  WHERE name ='system';
+  WHERE name = 'administrators';
 
+INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
+  SELECT '.*', id, 1
+  FROM   kas_mq_groups
+  WHERE name = 'moderators';
+
+--
+-- application permissions:
+--   administrators can login from all applications
+--   moderators can login from all KAS applications
+--
 CREATE TABLE kas_mq_application_permissions (
   pattern      VARCHAR(100) NOT NULL,
   group_id     INT NOT NULL,
@@ -82,8 +131,18 @@ CREATE TABLE kas_mq_application_permissions (
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT '.*', id, 1
   FROM   kas_mq_groups
-  WHERE name ='system';
+  WHERE name = 'administrators';
 
+INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
+  SELECT 'kas.*', id, 1
+  FROM   kas_mq_groups
+  WHERE name = 'moderators';
+
+--
+-- queue permissions:
+--   administrators can perform all actions against all queues
+--   moderators can alter all queues
+--
 CREATE TABLE kas_mq_queue_permissions (
   pattern      VARCHAR(100) NOT NULL,
   group_id     INT NOT NULL,
@@ -95,4 +154,9 @@ CREATE TABLE kas_mq_queue_permissions (
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT '.*', id, 7
   FROM   kas_mq_groups
-  WHERE name ='system';
+  WHERE name = 'administrators';
+
+INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
+  SELECT '.*', id, 4
+  FROM   kas_mq_groups
+  WHERE name = 'moderators';
