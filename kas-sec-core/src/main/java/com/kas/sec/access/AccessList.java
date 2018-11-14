@@ -3,7 +3,6 @@ package com.kas.sec.access;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
