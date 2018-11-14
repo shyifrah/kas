@@ -37,10 +37,10 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
   private static final Map<String, Class<?>> cTableColumns = new HashMap<String, Class<?>>();
   static
   {
-    cTableColumns.put("id", int.class);
-    cTableColumns.put("name", String.class);
-    cTableColumns.put("description", String.class);
-    cTableColumns.put("password", String.class);
+    cTableColumns.put("user_id", int.class);
+    cTableColumns.put("user_name", String.class);
+    cTableColumns.put("user_description", String.class);
+    cTableColumns.put("user_password", String.class);
   }
   
   /**
@@ -65,7 +65,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     
     try
     {
-      String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE name = '" + name + "';";
+      String sql = "SELECT user_id, user_name, user_description, user_password FROM " + cKasTableName + " WHERE user_name = '" + name + "';";
       ResultSet rs = DbUtils.execute(conn, sql);
       if (rs.next()) ue = createUserEntity(rs, conn);
       rs.close();
@@ -97,7 +97,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     
     try
     {
-      String sql = "SELECT id, name, description, password FROM " + cKasTableName + " WHERE id = " + id + ";";
+      String sql = "SELECT user_id, user_name, user_description, user_password FROM " + cKasTableName + " WHERE user_id = " + id + ";";
       ResultSet rs = DbUtils.execute(conn, sql);
       if (rs.next()) ue = createUserEntity(rs, conn);
       rs.close();
@@ -128,7 +128,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "SELECT id, name, description, password FROM " + cKasTableName + ';';
+      String sql = "SELECT user_id, user_name, user_description, user_password FROM " + cKasTableName + ';';
       ResultSet rs = DbUtils.execute(conn, sql);
       UserEntity ue = null;
       while (rs.next())
@@ -214,7 +214,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     try
     {
       String pswd = new String(Base64Utils.decode(t.getPassword()));
-      String sql = "INSERT INTO " + cKasTableName + " (name, description, password) " +
+      String sql = "INSERT INTO " + cKasTableName + " (user_name, user_description, user_password) " +
         "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "', '" + pswd + "');";
       mLogger.debug("UserDao::save() - Execute SQL: [" + sql + "]");
       
@@ -245,7 +245,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "DELETE FROM " + cKasTableName + " WHERE ID = " + t.getId() + ";";
+      String sql = "DELETE FROM " + cKasTableName + " WHERE user_id = " + t.getId() + ";";
       mLogger.debug("UserDao::delete() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
@@ -298,10 +298,10 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
   {
     mLogger.debug("UserDao::createUserEntity() - IN");
     
-    int uid = rs.getInt("id");
-    String uname = rs.getString("name");
-    String udesc = rs.getString("description");
-    String upass = rs.getString("password");
+    int uid = rs.getInt("user_id");
+    String uname = rs.getString("user_name");
+    String udesc = rs.getString("user_description");
+    String upass = rs.getString("user_password");
     
     List<Integer> ugids = getUserGroups(conn, uid);
     

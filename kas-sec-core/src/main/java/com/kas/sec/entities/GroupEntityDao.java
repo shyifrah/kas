@@ -33,9 +33,9 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
   private static final Map<String, Class<?>> cTableColumns = new HashMap<String, Class<?>>();
   static
   {
-    cTableColumns.put("id", int.class);
-    cTableColumns.put("name", String.class);
-    cTableColumns.put("description", String.class);
+    cTableColumns.put("group_id", int.class);
+    cTableColumns.put("group_name", String.class);
+    cTableColumns.put("group_description", String.class);
   }
   
   /**
@@ -60,7 +60,7 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "SELECT id, name, description FROM " + cKasTableName + " WHERE name = '" + name + "';";
+      String sql = "SELECT group_id, group_name, group_description FROM " + cKasTableName + " WHERE group_name = '" + name + "';";
       PreparedStatement ps = conn.prepareStatement(sql);
       
       mLogger.debug("GroupDao::get() - Execute SQL: [" + sql + "]");
@@ -68,8 +68,8 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
       
       if (rs.next())
       {
-        int id = rs.getInt("id");
-        String desc = rs.getString("description");
+        int id = rs.getInt("group_id");
+        String desc = rs.getString("group_description");
         ge = new GroupEntity(id, name, desc);
       }
     }
@@ -100,7 +100,7 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "SELECT id, name, description FROM " + cKasTableName + " WHERE id = " + id + ";";
+      String sql = "SELECT group_id, group_name, group_description FROM " + cKasTableName + " WHERE group_id = " + id + ";";
       PreparedStatement ps = conn.prepareStatement(sql);
       
       mLogger.debug("GroupDao::get() - Execute SQL: [" + sql + "]");
@@ -108,8 +108,8 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
       
       if (rs.next())
       {
-        String name = rs.getString("name");
-        String desc = rs.getString("description");
+        String name = rs.getString("group_name");
+        String desc = rs.getString("group_description");
         ge = new GroupEntity(id, name, desc);
       }
     }
@@ -139,7 +139,7 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "SELECT id, name, description FROM " + cKasTableName + ';';
+      String sql = "SELECT group_id, group_name, group_description FROM " + cKasTableName + ';';
       PreparedStatement ps = conn.prepareStatement(sql);
       
       mLogger.debug("GroupDao::getAll() - Execute SQL: [" + sql + "]");
@@ -148,9 +148,9 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
       GroupEntity ge = null;
       while (rs.next())
       {
-        int id = rs.getInt("id");
-        String name = rs.getString("name");
-        String desc = rs.getString("description");
+        int id = rs.getInt("group_id");
+        String name = rs.getString("group_name");
+        String desc = rs.getString("group_description");
         ge = new GroupEntity(id, name, desc);
         list.add(ge);
       }
@@ -230,7 +230,7 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "INSERT INTO " + cKasTableName + " (name, description) " +
+      String sql = "INSERT INTO " + cKasTableName + " (group_name, group_description) " +
         "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "');";
       mLogger.debug("GroupDao::save() - Execute SQL: [" + sql + "]");
       
@@ -261,7 +261,7 @@ public class GroupEntityDao extends AKasObject implements IDao<GroupEntity>
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "DELETE FROM " + cKasTableName + " WHERE ID = " + t.getId() + ";";
+      String sql = "DELETE FROM " + cKasTableName + " WHERE group_id = " + t.getId() + ";";
       mLogger.debug("GroupDao::delete() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
