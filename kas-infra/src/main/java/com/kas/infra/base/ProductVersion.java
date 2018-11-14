@@ -86,7 +86,7 @@ public class ProductVersion extends AKasObject implements Serializable
           String version = mainAttribs.getValue("Kas-Version");
           if (version != null)
           {
-            String [] versionSegments = version.split(".");
+            String [] versionSegments = version.split("\\.");
             try
             {
               mMajorVersion = Integer.valueOf(versionSegments[0]);
