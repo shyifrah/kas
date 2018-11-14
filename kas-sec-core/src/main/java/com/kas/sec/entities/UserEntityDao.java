@@ -14,6 +14,7 @@ import com.kas.db.DbUtils;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.IDao;
 import com.kas.infra.utils.Base64Utils;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -75,7 +76,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("UserDao::get() - OUT, Returns=" + ue.toString());
+    mLogger.debug("UserDao::get() - OUT, Returns=" + StringUtils.asString(ue));
     return ue;
   }
   
@@ -107,7 +108,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("UserDao::get() - OUT, Returns=" + ue.toString());
+    mLogger.debug("UserDao::get() - OUT, Returns=" + StringUtils.asString(ue));
     return ue;
   }
 
@@ -305,7 +306,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     List<Integer> ugids = getUserGroups(conn, uid);
     
     UserEntity ue = new UserEntity(uid, uname, udesc, upass, ugids);
-    mLogger.debug("UserDao::createUserEntity() - OUT, UserEntity=" + ue.toString());
+    mLogger.debug("UserDao::createUserEntity() - OUT, UserEntity=" + StringUtils.asString(ue));
     return ue;
   }
   
