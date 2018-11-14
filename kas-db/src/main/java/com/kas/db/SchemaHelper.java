@@ -75,7 +75,7 @@ final public class SchemaHelper
     
     mLogger.debug("SchemaHelper::initSchema() - Database type is " + dbtype);
     
-    File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "db-init-" + dbtype + ".sql");
+    File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "sql" + File.separator + "db-init-" + dbtype + ".sql");
     List<String> input = FileUtils.load(dbInitFile, "--");
     
     boolean newcmd = true;
