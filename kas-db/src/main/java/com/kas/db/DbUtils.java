@@ -36,6 +36,8 @@ public class DbUtils
    */
   static public String createConnUrl(String dbtype, String host, int port, String schema, String user, String pswd)
   {
+    sLogger.debug("DbUtils::createConnUrl() - IN");
+    
     StringBuilder sb = new StringBuilder();
     sb.append(String.format("jdbc:%s://%s:%d/%s?user=%s&password=%s", dbtype, host, port, schema, user, pswd));
     
@@ -49,7 +51,9 @@ public class DbUtils
         break;
     }
     
-    return sb.toString();
+    String curl = sb.toString();
+    sLogger.debug("DbUtils::createConnUrl() - OUT, Returns=[" + curl + "]");
+    return curl;
   }
   
   /**
