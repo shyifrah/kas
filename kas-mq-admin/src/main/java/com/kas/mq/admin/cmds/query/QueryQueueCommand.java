@@ -63,7 +63,7 @@ public class QueryQueueCommand extends ACliCommand
     if (name.endsWith("*"))
     {
       name = name.substring(0, name.length()-1);
-      qprops.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
+      qprops.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, true);
     }
     
     if ((name.length() > 0) && (!Validators.isQueueName(name)))
@@ -73,14 +73,14 @@ public class QueryQueueCommand extends ACliCommand
       return false;
     }
     
-    qprops.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
+    qprops.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, name);
     
     boolean all = false;
     String opt = mCommandArgs.poll();
     if ((opt != null) && (opt.equalsIgnoreCase("ALL")))
       all = true;
     
-    qprops.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);
+    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryAllData, all);
     
     if (mCommandArgs.size() > 0)
     {

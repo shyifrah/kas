@@ -53,12 +53,12 @@ public interface IMqConstants
   static public final String cKasPropertyLoginAppName  = cKasPropertyPrefix + "login.appname";
   static public final String cKasPropertyLoginSession  = cKasPropertyPrefix + "login.sessionid";
   
-  static public final String cKasPropertyDefqQueueName = cKasPropertyPrefix + "defq.queue";
-  static public final String cKasPropertyDefqThreshold = cKasPropertyPrefix + "defq.threshold";
-  static public final String cKasPropertyDefqPermanent = cKasPropertyPrefix + "defq.permanent";
+  static public final String cKasPropertyDefQueueName = cKasPropertyPrefix + "def.q.queue";
+  static public final String cKasPropertyDefThreshold = cKasPropertyPrefix + "def.q.threshold";
+  static public final String cKasPropertyDefPermanent = cKasPropertyPrefix + "def.q.permanent";
   
-  static public final String cKasPropertyDelqQueueName = cKasPropertyPrefix + "delq.queue";
-  static public final String cKasPropertyDelqForce     = cKasPropertyPrefix + "delq.force";
+  static public final String cKasPropertyDelQueueName = cKasPropertyPrefix + "del.q.queue";
+  static public final String cKasPropertyDelForce     = cKasPropertyPrefix + "del.q.force";
   
   static public final String cKasPropertyGetTimeout   = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval  = cKasPropertyPrefix + "get.interval";
@@ -70,8 +70,6 @@ public interface IMqConstants
   static public final String cKasPropertyPutQueueName = cKasPropertyPrefix + "put.queue";
   static public final String cKasPropertyPutTimeStamp = cKasPropertyPrefix + "put.timestamp";
   
-  static public final String cKasPropertyShutUserName = cKasPropertyPrefix + "shut.username";
-  
   static public final String cKasPropertySyssQmgrName      = cKasPropertyPrefix + "sysstate.qmgr";
   static public final String cKasPropertySyssActive        = cKasPropertyPrefix + "sysstate.active";
   static public final String cKasPropertySyssSessionPrefix = cKasPropertyPrefix + "sysstate.sessid";
@@ -80,16 +78,17 @@ public interface IMqConstants
   static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";
   static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
   
-  static public final String cKasPropertyQrysQueryType    = cKasPropertyPrefix + "qrys.type";
-  static public final String cKasPropertyQrysSessionId    = cKasPropertyPrefix + "qrys.sessid";
-  static public final String cKasPropertyQrysConnId       = cKasPropertyPrefix + "qrys.connid";
-  static public final String cKasPropertyQryqQmgrName     = cKasPropertyPrefix + "qryq.qmgr";
-  static public final String cKasPropertyQryqQueueName    = cKasPropertyPrefix + "qryq.queue";
-  static public final String cKasPropertyQryqPrefix       = cKasPropertyPrefix + "qryq.prefix";
-  static public final String cKasPropertyQryqAllData      = cKasPropertyPrefix + "qryq.alldata";
-  static public final String cKasPropertyQryqOutOnlyProps = cKasPropertyPrefix + "qryq.output.only.props";
-  static public final String cKasPropertyQryqResultPrefix = cKasPropertyPrefix + "qryq.result";
+  static public final String cKasPropertyQueryType         = cKasPropertyPrefix + "qry.type";
+  static public final String cKasPropertyQuerySessId       = cKasPropertyPrefix + "qry.sessid";
+  static public final String cKasPropertyQueryConnId       = cKasPropertyPrefix + "qry.connid";
+  static public final String cKasPropertyQueryQmgrName     = cKasPropertyPrefix + "qry.qmgr";
+  static public final String cKasPropertyQueryQueueName    = cKasPropertyPrefix + "qry.queue";
+  static public final String cKasPropertyQueryPrefix       = cKasPropertyPrefix + "qry.prefix";
+  static public final String cKasPropertyQueryAllData      = cKasPropertyPrefix + "qry.alldata";
+  static public final String cKasPropertyQueryOutOnlyProps = cKasPropertyPrefix + "qry.output.only.props";
+  static public final String cKasPropertyQueryResultPrefix = cKasPropertyPrefix + "qry.result";
   
-  static public final String cKasPropertyTermConnId = cKasPropertyPrefix + "term.connid";
-  static public final String cKasPropertyTermSessId = cKasPropertyPrefix + "term.sessid";
+  static public final String cKasPropertyTermConnId   = cKasPropertyPrefix + "term.connid";
+  static public final String cKasPropertyTermSessId   = cKasPropertyPrefix + "term.sessid";
+  static public final String cKasPropertyTermUserName = cKasPropertyPrefix + "term.username";
 }

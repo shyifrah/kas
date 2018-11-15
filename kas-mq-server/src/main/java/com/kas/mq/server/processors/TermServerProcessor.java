@@ -7,51 +7,51 @@ import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 
 /**
- * Processor for shutting down the KAS/MQ server
+ * Processor for terminating the KAS/MQ server
  * 
  * @author Pippo
  */
-public class ShutdownProcessor extends AProcessor
+public class TermServerProcessor extends AProcessor
 {
   /**
-   * Construct a {@link ShutdownProcessor}
+   * Construct a {@link TermServerProcessor}
    * 
    * @param request The request message
    * @param controller The session controller
    * @param repository The server's repository
    */
-  ShutdownProcessor(IMqMessage request, IController controller, IRepository repository)
+  TermServerProcessor(IMqMessage request, IController controller, IRepository repository)
   {
     super(request, controller, repository);
   }
   
   /**
-   * Process shutdown request
+   * Process the terminate request
    * 
    * @return {@code null} if there's no reply, a {@link IMqMessage} if there is one
    */
   public IMqMessage process()
   {
-    mLogger.debug("ShutdownProcessor::process() - IN");
+    mLogger.debug("TermServerProcessor::process() - IN");
     
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
-      mLogger.debug("ShutdownProcessor::process() - " + mDesc);
+      mLogger.debug("TermServerProcessor::process() - " + mDesc);
     }
     else
     {
-      String user = mRequest.getStringProperty(IMqConstants.cKasPropertyShutUserName, IMqConstants.cSystemUserName);
+      String user = mRequest.getStringProperty(IMqConstants.cKasPropertyTermUserName, IMqConstants.cSystemUserName);
       mDesc = "Cannot shutdown KAS/MQ server with non-admin user";
       if ("admin".equalsIgnoreCase(user))
       {
         mCode = EMqCode.cOkay;
         mDesc = "Shutdown request was successfully posted";
-        mLogger.debug("ShutdownProcessor::process() - " + mDesc);
+        mLogger.debug("TermServerProcessor::process() - " + mDesc);
       }
     }
     
-    mLogger.debug("ShutdownProcessor::process() - OUT");
+    mLogger.debug("TermServerProcessor::process() - OUT");
     return respond();
   }
   

@@ -55,9 +55,9 @@ public class DefineQueueProcessor extends AProcessor
     }
     else
     {
-      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDefqQueueName, null);
-      mThreshold = mRequest.getIntProperty(IMqConstants.cKasPropertyDefqThreshold, IMqConstants.cDefaultQueueThreshold);
-      mPermanent = mRequest.getBoolProperty(IMqConstants.cKasPropertyDefqPermanent, IMqConstants.cDefaultQueuePermanent);
+      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
+      mThreshold = mRequest.getIntProperty(IMqConstants.cKasPropertyDefThreshold, IMqConstants.cDefaultQueueThreshold);
+      mPermanent = mRequest.getBoolProperty(IMqConstants.cKasPropertyDefPermanent, IMqConstants.cDefaultQueuePermanent);
       mLogger.debug("DefineQueueProcessor::process() - Queue=" + mQueue + "; Threshold=" + mThreshold + "; Permanent=" + mPermanent);
       
       MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);

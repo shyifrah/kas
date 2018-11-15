@@ -67,7 +67,7 @@ public class SysStateProcessor extends AProcessor
       else if (mActivated && !manager.isActive())
       {
         manager.activate();
-        Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+        Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQueryResultPrefix);
         ((MqRemoteManager)manager).setQueues(remoteQueues);
         
         props = mRepository.queryLocalQueues("", true, false);

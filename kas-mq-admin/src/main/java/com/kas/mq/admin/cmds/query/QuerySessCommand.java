@@ -62,7 +62,7 @@ public class QuerySessCommand extends ACliCommand
       try
       {
         uuid = UniqueId.fromString(opt);
-        qprops.put(IMqConstants.cKasPropertyQrysSessionId, uuid.toString());
+        qprops.put(IMqConstants.cKasPropertyQuerySessId, uuid.toString());
       }
       catch (IllegalArgumentException e)
       {

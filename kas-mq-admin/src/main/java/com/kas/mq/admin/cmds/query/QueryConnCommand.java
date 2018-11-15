@@ -62,7 +62,7 @@ public class QueryConnCommand extends ACliCommand
       try
       {
         uuid = UniqueId.fromString(opt);
-        qprops.put(IMqConstants.cKasPropertyQrysConnId, uuid.toString());
+        qprops.put(IMqConstants.cKasPropertyQueryConnId, uuid.toString());
       }
       catch (IllegalArgumentException e)
       {

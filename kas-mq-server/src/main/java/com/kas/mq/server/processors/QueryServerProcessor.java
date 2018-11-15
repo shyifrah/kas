@@ -70,7 +70,7 @@ public class QueryServerProcessor extends AProcessor
     }
     else
     {
-      int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQrysQueryType, EQueryType.cUnknown.ordinal());
+      int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQueryType, EQueryType.cUnknown.ordinal());
       mQueryType = EQueryType.fromInt(temp);
       mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString());
       
@@ -163,7 +163,7 @@ public class QueryServerProcessor extends AProcessor
    */
   private String querySession()
   {
-    String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysSessionId, null);
+    String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQuerySessId, null);
     if (sessid != null) mQuerySessionId = UniqueId.fromString(sessid);
     
     StringBuilder sb = new StringBuilder();
@@ -197,7 +197,7 @@ public class QueryServerProcessor extends AProcessor
    */
   private String queryConnection()
   {
-    String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysConnId, null);
+    String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryConnId, null);
     if (connid != null) mQueryConnectionId = UniqueId.fromString(connid);
     
     StringBuilder sb = new StringBuilder();
@@ -231,11 +231,11 @@ public class QueryServerProcessor extends AProcessor
    */
   private Properties queryQueue()
   {
-    mQueryOriginQmgr = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQmgrName, null);
-    mQueryQueuePrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
-    mQueryAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
-    mQueryOutProps = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqOutOnlyProps, false);
-    mQueryQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
+    mQueryOriginQmgr = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQmgrName, null);
+    mQueryQueuePrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
+    mQueryAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryAllData, false);
+    mQueryOutProps = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryOutOnlyProps, false);
+    mQueryQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQueueName, "");
     if (mQueryQueue == null) mQueryQueue = "";
     
     Properties props = mRepository.queryQueues(mQueryQueue, mQueryQueuePrefix, mQueryAllData);

@@ -48,8 +48,8 @@ public class ProcessorFactory
       case cSysState:
         processor = new SysStateProcessor(request, controller, repository);
         break;
-      case cShutdown:
-        processor = new ShutdownProcessor(request, controller, repository);
+      case cTermServer:
+        processor = new TermServerProcessor(request, controller, repository);
         break;
       case cGet:
         processor = new MessageGetProcessor(request, controller, repository);

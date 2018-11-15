@@ -53,8 +53,8 @@ public class DeleteQueueProcessor extends AProcessor
     }
     else
     {
-      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDelqQueueName, null);
-      mForce = mRequest.getBoolProperty(IMqConstants.cKasPropertyDelqForce, false);
+      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDelQueueName, null);
+      mForce = mRequest.getBoolProperty(IMqConstants.cKasPropertyDelForce, false);
       mLogger.debug("DeleteQueueProcessor::process() - Queue=" + mQueue + "; Force=" + mForce);
       
       MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);

@@ -41,7 +41,7 @@ public class MqRemoteManager extends MqManager
     for (Map.Entry<Object, Object> entry : props.entrySet())
     {
       String key = (String)entry.getKey();
-      String qname = key.substring(IMqConstants.cKasPropertyQryqResultPrefix.length()+1);
+      String qname = key.substring(IMqConstants.cKasPropertyQueryResultPrefix.length()+1);
       if (qname.length() > 0)
       {
         MqRemoteQueue queue = new MqRemoteQueue(this, qname, MqServerConnectionPool.getInstance());
@@ -78,7 +78,7 @@ public class MqRemoteManager extends MqManager
       mLogger.debug("MqRemoteManager::queryQueue() - Checking if current queue [" + mqrq.getName() + "] matches query: " + include);
       if (include)
       {
-        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqrq.getName();
+        String key = IMqConstants.cKasPropertyQueryResultPrefix + "." + mqrq.getName();
         props.setStringProperty(key, mqrq.queryResponse(all));
       }
     }
