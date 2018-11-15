@@ -9,7 +9,6 @@ import com.kas.mq.admin.cmds.other.ConnectCommand;
 import com.kas.mq.admin.cmds.other.DisconnectCommand;
 import com.kas.mq.admin.cmds.other.ExitCommand;
 import com.kas.mq.admin.cmds.other.HelpCommand;
-import com.kas.mq.admin.cmds.other.ShutdownCommand;
 import com.kas.mq.admin.cmds.query.QueryCommand;
 import com.kas.mq.admin.cmds.term.TermCommand;
 import com.kas.mq.impl.MqContext;
@@ -61,9 +60,6 @@ public class CliCommandFactory
     
     if (TermCommand.sCommandVerbs.contains(verb))
       return new TermCommand(cmdWords, client);
-    
-    if (ShutdownCommand.sCommandVerbs.contains(verb))
-      return new ShutdownCommand(cmdWords, client);
     
     // Unknown command
     return null;

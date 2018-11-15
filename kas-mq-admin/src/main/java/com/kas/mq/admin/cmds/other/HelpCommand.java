@@ -70,8 +70,6 @@ public class HelpCommand extends ACliCommand
     writeln("                   +--- GET -----------------------+");
     writeln("                   |                               |");
     writeln("                   +--- TERMINATE|TERM ------------+");
-    writeln("                   |                               |");
-    writeln("                   +--- SHUTDOWN ------------------+");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");
@@ -132,8 +130,6 @@ public class HelpCommand extends ACliCommand
       writeln("          +--- GET ------------------+");
       writeln("          |                          |");
       writeln("          +--- TERMINATE|TERM -------+");
-      writeln("          |                          |");
-      writeln("          +--- SHUTDOWN -------------+");
       writeln(" ");
       writelnGreen("Description: ");
       writeln(" ");

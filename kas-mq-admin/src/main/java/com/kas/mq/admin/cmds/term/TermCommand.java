@@ -52,12 +52,14 @@ public class TermCommand extends ACliCommand
     writelnGreen("Format: ");
     writeln(" ");
     writeln("     >>--- TERMINATE|TERM ---+--- CONNECTION|CONN ---+---+--- connection-id ---+---><");
-    writeln("                             |                       |   |                     |");
-    writeln("                             +--- SESSION|SESS ------+   +--- session-id ------+");
+    writeln("                             |                                                 |");
+    writeln("                             +--- SESSION|SESS ------+---+--- session-id ------+");
+    writeln("                             |                                                 |");
+    writeln("                             +--- SERVER --------------------------------------+");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");
-    writeln("     Terminate an active session or connection.");
+    writeln("     Terminate an active session, connection or the entire server.");
     writeln("     This command is very useful for troubleshooting cases, where you suspect a connection");
     writeln("     is hung or a session is spinning out of control.");
     writeln(" ");
@@ -68,6 +70,10 @@ public class TermCommand extends ACliCommand
     writeln("     -- For SESSION --");
     writeln("     Terminate the active session.");
     writeln("     Active sessions can be shown via Q SESS command.");
+    writeln(" ");
+    writeln("     -- For SERVER --");
+    writeln("     Terminate the KAS/MQ server.");
+    writeln("     This command was previously known as the SHUTDOWN command.");
     writeln(" ");
     writelnGreen("Examples:");
     writeln(" ");
@@ -107,6 +113,9 @@ public class TermCommand extends ACliCommand
       return new TermSessCommand(mCommandArgs, mClient).run();
     if (type.equals("SESS"))
       return new TermSessCommand(mCommandArgs, mClient).run();
+    
+    if (type.equals("SERVER"))
+      return new TermServerCommand(mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");
