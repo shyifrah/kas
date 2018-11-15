@@ -51,10 +51,10 @@ CREATE TABLE kas_mq_groups (
 );
 
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('administrators', 'administrators');
+  VALUES('admins', 'administrators');
   
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('moderators', 'moderators');
+  VALUES('mods', 'moderators');
 
 --
 -- group assignment
@@ -77,7 +77,7 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'administrators'
+    WHERE group_name = 'admins'
   ) groups;
   
 INSERT INTO kas_mq_users_to_groups
@@ -90,7 +90,7 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'moderators'
+    WHERE group_name = 'mods'
   ) groups;
 
 --
@@ -108,12 +108,12 @@ CREATE TABLE kas_mq_command_permissions (
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'administrators';
+  WHERE group_name = 'admins';
 
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'moderators';
+  WHERE group_name = 'mods';
 
 --
 -- application permissions:
@@ -131,12 +131,12 @@ CREATE TABLE kas_mq_application_permissions (
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'administrators';
+  WHERE group_name = 'admins';
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT 'KAS.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'moderators';
+  WHERE group_name = 'mods';
 
 --
 -- queue permissions:
@@ -154,9 +154,11 @@ CREATE TABLE kas_mq_queue_permissions (
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'administrators';
+  WHERE group_name = 'admins';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 4
   FROM   kas_mq_groups
-  WHERE group_name = 'moderators';
+  WHERE group_name = 'mods';
+
+COMMIT;
