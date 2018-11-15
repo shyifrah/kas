@@ -68,12 +68,12 @@ final public class SchemaHelper
    */
   public void init()
   {
-    mLogger.debug("SchemaHelper::initSchema() - IN");
+    mLogger.debug("SchemaHelper::init() - IN");
     
     Properties props = MainConfiguration.getInstance().getSubset(DbConfiguration.cDbConfigPrefix);
-    String dbtype = props.getStringProperty(DbConfiguration.cDbConfigPrefix + "dbtype", DbConfiguration.cDefaultDbType);
+    String dbtype = props.getStringProperty(DbConfiguration.cDbConfigPrefix + "type", DbConfiguration.cDefaultDbType);
     
-    mLogger.debug("SchemaHelper::initSchema() - Database type is " + dbtype);
+    mLogger.debug("SchemaHelper::init() - Database type is " + dbtype);
     
     File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "sql" + File.separator + "db-init-" + dbtype + ".sql");
     List<String> input = FileUtils.load(dbInitFile, "--");
@@ -83,23 +83,23 @@ final public class SchemaHelper
     for (String line : input)
     {
       line = line.trim();
-      mLogger.diag("SchemaHelper::initSchema() - Current line: [" + line + "]");
+      mLogger.diag("SchemaHelper::init() - Current line: [" + line + "]");
       
       if (newcmd)
       {
-        mLogger.diag("SchemaHelper::initSchema() - Current line is the start of a new command");
+        mLogger.diag("SchemaHelper::init() - Current line is the start of a new command");
         sb = new StringBuilder(line);
         newcmd = false;
       }
       else
       {
-        mLogger.diag("SchemaHelper::initSchema() - Current line is a continuation of the previous command, concatenating...");
+        mLogger.diag("SchemaHelper::init() - Current line is a continuation of the previous command, concatenating...");
         sb.append(' ').append(line);
       }
       
       if (line.endsWith(";"))
       {
-        mLogger.diag("SchemaHelper::initSchema() - End of command detected. Execute it...");
+        mLogger.diag("SchemaHelper::init() - End of command detected. Execute it...");
         String cmd = PropertyResolver.resolve(sb.toString(), props);
         try
         {
@@ -109,6 +109,6 @@ final public class SchemaHelper
         newcmd = true;
       }
     }
-    mLogger.debug("DbUtils::initSchema() - OUT");
+    mLogger.debug("DbUtils::init() - OUT");
   }
 }
