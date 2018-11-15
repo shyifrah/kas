@@ -22,7 +22,7 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Default values
    */
-  static public final String  cDefaultDbType         = DbUtils.cDbTypePostgreSql;
+  static public final String  cDefaultDbType         = DbUtils.cDbTypeMySql;
   static public final String  cDefaultHostName       = "localhost";
   static public final int     cDefaultPort           = 3306;
   static public final String  cDefaultSchemaName     = "kas";
