@@ -44,6 +44,7 @@ public class TermCommand extends ACliCommand
       return;
     }
     
+    
     writelnGreen("Purpose: ");
     writeln(" ");
     writeln("     Terminate an active session or connection");
