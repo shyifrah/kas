@@ -134,7 +134,7 @@ INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   WHERE group_name = 'administrators';
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
-  SELECT 'kas.*', group_id, 1
+  SELECT 'KAS.*', group_id, 1
   FROM   kas_mq_groups
   WHERE group_name = 'moderators';
 
