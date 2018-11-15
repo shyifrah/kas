@@ -20,40 +20,40 @@ CREATE TABLE kas_mq_parameters (
 );
 
 INSERT INTO kas_mq_parameters (param_name, param_value)
-  VALUES('schema_version', '1');
+  VALUES('schema_version', '2');
 
 --
 -- users
 --
 CREATE TABLE kas_mq_users (
-  id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(20) NOT NULL UNIQUE,
-  description VARCHAR(100),
-  password    VARCHAR(50)
+  user_id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_name        VARCHAR(20) NOT NULL UNIQUE,
+  user_description VARCHAR(100),
+  user_password    VARCHAR(50)
 );
 
-INSERT INTO kas_mq_users (name, description, password)
+INSERT INTO kas_mq_users (user_name, user_description, user_password)
   VALUES('root', 'system root', 'root');
   
-INSERT INTO kas_mq_users (name, description, password)
+INSERT INTO kas_mq_users (user_name, user_description, user_password)
   VALUES('oper', 'system operator', 'oper');
   
-INSERT INTO kas_mq_users (name, description, password)
+INSERT INTO kas_mq_users (user_name, user_description, user_password)
   VALUES('guest', 'guest user', 'guest');
 
 --
 -- groups
 --
 CREATE TABLE kas_mq_groups (
-  id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  name        VARCHAR(20) NOT NULL UNIQUE,
-  description VARCHAR(100)
+  group_id          INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  group_name        VARCHAR(20) NOT NULL UNIQUE,
+  group_description VARCHAR(100)
 );
 
-INSERT INTO kas_mq_groups (name, description)
+INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('administrators', 'administrators');
   
-INSERT INTO kas_mq_groups (name, description)
+INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('moderators', 'moderators');
 
 --
@@ -63,34 +63,34 @@ CREATE TABLE kas_mq_users_to_groups (
   user_id     INT NOT NULL,
   group_id    INT NOT NULL,
   PRIMARY KEY(user_id, group_id),
-  FOREIGN KEY fk_user_id(user_id)   REFERENCES kas_mq_users(id)  ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY fk_user_id(user_id)   REFERENCES kas_mq_users(user_id)   ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(group_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO kas_mq_users_to_groups
   SELECT user_id, group_id FROM 
   (
-    SELECT id user_id
+    SELECT user_id
     FROM kas_mq_users
-    WHERE name = 'root'
+    WHERE user_name = 'root'
   ) users,
   (
-    SELECT id group_id
+    SELECT group_id
     FROM kas_mq_groups 
-    WHERE name = 'administrators'
+    WHERE group_name = 'administrators'
   ) groups;
   
 INSERT INTO kas_mq_users_to_groups
   SELECT user_id, group_id FROM 
   (
-    SELECT id user_id
+    SELECT user_id
     FROM kas_mq_users
-    WHERE name = 'oper'
+    WHERE user_name = 'oper'
   ) users,
   (
-    SELECT id group_id
+    SELECT group_id
     FROM kas_mq_groups 
-    WHERE name = 'moderators'
+    WHERE group_name = 'moderators'
   ) groups;
 
 --
@@ -102,18 +102,18 @@ CREATE TABLE kas_mq_command_permissions (
   group_id     INT NOT NULL,
   access_level INT NOT NULL,
   PRIMARY KEY(pattern, group_id),
-  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(group_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
-  SELECT '.*', id, 1
+  SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE name = 'administrators';
+  WHERE group_name = 'administrators';
 
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
-  SELECT '.*', id, 1
+  SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE name = 'moderators';
+  WHERE group_name = 'moderators';
 
 --
 -- application permissions:
@@ -125,18 +125,18 @@ CREATE TABLE kas_mq_application_permissions (
   group_id     INT NOT NULL,
   access_level INT NOT NULL,
   PRIMARY KEY(pattern, group_id),
-  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(group_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
-  SELECT '.*', id, 1
+  SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE name = 'administrators';
+  WHERE group_name = 'administrators';
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
-  SELECT 'kas.*', id, 1
+  SELECT 'kas.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE name = 'moderators';
+  WHERE group_name = 'moderators';
 
 --
 -- queue permissions:
@@ -148,15 +148,15 @@ CREATE TABLE kas_mq_queue_permissions (
   group_id     INT NOT NULL,
   access_level INT NOT NULL,
   PRIMARY KEY(pattern, group_id),
-  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(id) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(group_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
-  SELECT '.*', id, 7
+  SELECT '.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE name = 'administrators';
+  WHERE group_name = 'administrators';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
-  SELECT '.*', id, 4
+  SELECT '.*', group_id, 4
   FROM   kas_mq_groups
-  WHERE name = 'moderators';
+  WHERE group_name = 'moderators';
