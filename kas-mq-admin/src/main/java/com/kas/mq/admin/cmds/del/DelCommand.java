@@ -1,8 +1,9 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.del;
 
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**
@@ -10,7 +11,7 @@ import com.kas.mq.impl.MqContext;
  * 
  * @author Pippo
  */
-public class DeleteCommand extends ACliCommand
+public class DelCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
@@ -20,13 +21,13 @@ public class DeleteCommand extends ACliCommand
   }
   
   /**
-   * Construct a {@link DeleteCommand} passing the command arguments and the client object
+   * Construct a {@link DelCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DeleteCommand(TokenDeque args, MqContext client)
+  public DelCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }

@@ -1,9 +1,10 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.other;
 
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**
@@ -26,7 +27,7 @@ public class ShutdownCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected ShutdownCommand(TokenDeque args, MqContext client)
+  public ShutdownCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }

@@ -1,8 +1,9 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.term;
 
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**
@@ -10,7 +11,7 @@ import com.kas.mq.impl.MqContext;
  * 
  * @author Pippo
  */
-public class TerminateCommand extends ACliCommand
+public class TermCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
@@ -20,13 +21,13 @@ public class TerminateCommand extends ACliCommand
   }
   
   /**
-   * Construct a {@link TerminateCommand} passing the command arguments and the client object
+   * Construct a {@link TermCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected TerminateCommand(TokenDeque args, MqContext client)
+  public TermCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
@@ -97,14 +98,14 @@ public class TerminateCommand extends ACliCommand
     String type = mCommandArgs.poll().toUpperCase();
     
     if (type.equals("CONNECTION"))
-      return new TrmConnectionCommand(mCommandArgs, mClient).run();
+      return new TermConnCommand(mCommandArgs, mClient).run();
     if (type.equals("CONN"))
-      return new TrmConnectionCommand(mCommandArgs, mClient).run();
+      return new TermConnCommand(mCommandArgs, mClient).run();
     
     if (type.equals("SESSION"))
-      return new TrmSessionCommand(mCommandArgs, mClient).run();
+      return new TermSessCommand(mCommandArgs, mClient).run();
     if (type.equals("SESS"))
-      return new TrmSessionCommand(mCommandArgs, mClient).run();
+      return new TermSessCommand(mCommandArgs, mClient).run();
     
     
     writeln("Invalid entity type \"" + type + "\"");

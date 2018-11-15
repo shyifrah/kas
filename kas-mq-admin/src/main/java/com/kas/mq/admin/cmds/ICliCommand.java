@@ -1,4 +1,4 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds;
 
 import com.kas.infra.base.IObject;
 

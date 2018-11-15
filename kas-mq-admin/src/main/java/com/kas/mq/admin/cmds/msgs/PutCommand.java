@@ -1,9 +1,10 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.msgs;
 
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.MqMessageFactory;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -28,7 +29,7 @@ public class PutCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected PutCommand(TokenDeque args, MqContext client)
+  public PutCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
