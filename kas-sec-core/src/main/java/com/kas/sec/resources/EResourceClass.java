@@ -41,7 +41,10 @@ public enum EResourceClass
    */
   private EResourceClass(int enabledAccessLevels)
   {
-    mResourceClass = new ResourceClass(this.ordinal(), this.name(), enabledAccessLevels);
+    if (enabledAccessLevels > 0)
+      mResourceClass = new ResourceClass(this.ordinal(), this.name(), enabledAccessLevels);
+    else
+      mResourceClass = null;
   }
   
   /**

@@ -1,16 +1,9 @@
 package com.kas.db;
 
-import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import com.kas.config.MainConfiguration;
-import com.kas.infra.base.Properties;
-import com.kas.infra.base.PropertyResolver;
-import com.kas.infra.utils.FileUtils;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -22,6 +15,12 @@ import com.kas.logging.LoggerFactory;
  */
 public class DbUtils
 {
+  static final public String cDbTypeMySql      = "mysql";
+  static final public String cDbTypePostgreSql = "postgresql";
+  
+  /**
+   * Logger
+   */
   static private ILogger sLogger = LoggerFactory.getLogger(DbUtils.class);
   
   /**
@@ -37,51 +36,24 @@ public class DbUtils
    */
   static public String createConnUrl(String dbtype, String host, int port, String schema, String user, String pswd)
   {
+    sLogger.debug("DbUtils::createConnUrl() - IN");
+    
     StringBuilder sb = new StringBuilder();
     sb.append(String.format("jdbc:%s://%s:%d/%s?user=%s&password=%s", dbtype, host, port, schema, user, pswd));
     
     switch (dbtype)
     {
-      case "mysql":
+      case cDbTypeMySql:
         sb.append("&serverTimezone=UTC&useSSL=false");
         break;
-      case "postgresql":
+      case cDbTypePostgreSql:
         sb.append("&ssl=false");
         break;
     }
     
-    return sb.toString();
-  }
-  
-  /**
-   * Check if the schema was initialized
-   * 
-   * @return {@code true} if the schema was initialized, {@code false} otherwise
-   */
-  static public boolean isSchemaInitialized()
-  {
-    sLogger.debug("DbUtils::isSchemaInitialized() - IN");
-    boolean init = false;
-    
-    DbConnectionPool pool = DbConnectionPool.getInstance();
-    DbConnection dbConn = pool.allocate();
-    Connection conn = dbConn.getConn();
-    
-    String sql = "select column_name, data_type from information_schema.columns where table_name = 'kas_mq_users';";
-    try
-    {
-      PreparedStatement ps = conn.prepareStatement(sql);
-      ResultSet rs =  ps.executeQuery();
-      if (rs.next()) init = true;
-    }
-    catch (SQLException e)
-    {
-      init = false;
-    }
-    
-    pool.release(dbConn);
-    sLogger.debug("DbUtils::isSchemaInitialized() - OUT, Returns=" + init);
-    return init;
+    String curl = sb.toString();
+    sLogger.debug("DbUtils::createConnUrl() - OUT, Returns=[" + curl + "]");
+    return curl;
   }
   
   /**
@@ -91,81 +63,20 @@ public class DbUtils
   {
     sLogger.debug("DbUtils::initSchema() - IN");
     
-    Properties props = MainConfiguration.getInstance().getSubset(DbConfiguration.cDbConfigPrefix);
-    String dbtype = props.getStringProperty(DbConfiguration.cDbConfigPrefix + "dbtype", DbConfiguration.cDefaultDbType);
-    
-    sLogger.debug("DbUtils::initSchema() - Database type is " + dbtype);
-    
-    File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "db-init-" + dbtype + ".sql");
-    List<String> input = FileUtils.load(dbInitFile, "--");
-    
-    boolean newcmd = true;
-    StringBuilder sb = null;
-    for (String line : input)
-    {
-      line = line.trim();
-      sLogger.diag("DbUtils::initSchema() - Current line: [" + line + "]");
-      
-      if (newcmd)
-      {
-        sLogger.diag("DbUtils::initSchema() - Current line is the start of a new command");
-        sb = new StringBuilder(line);
-        newcmd = false;
-      }
-      else
-      {
-        sLogger.diag("DbUtils::initSchema() - Current line is a continuation of the previous command, concatenating...");
-        sb.append(' ').append(line);
-      }
-      
-      if (line.endsWith(";"))
-      {
-        sLogger.diag("DbUtils::initSchema() - End of command detected. Execute it...");
-        String cmd = PropertyResolver.resolve(sb.toString(), props);
-        try
-        {
-          execute(cmd);
-        }
-        catch (SQLException e) {}
-        newcmd = true;
-      }
-    }
-    sLogger.debug("DbUtils::initSchema() - OUT");
-  }
-  
-  /**
-   * Execute a SQL statement
-   * 
-   * @param sql The SQL statement
-   * @return A result set, if one was generated
-   * @throws SQLException if thrown by java.sql.* classes
-   */
-  static public void execute(String sql) throws SQLException
-  {
-    execute(sql, new Object [] {});
-  }
-  
-  /**
-   * Execute a SQL statement
-   * 
-   * @param fmt The SQL statement base format
-   * @param args Arguments to format the SQL
-   * @return A result set, if one was generated
-   * @throws SQLException if thrown by java.sql.* classes
-   */
-  static public void execute(String fmt, Object... args) throws SQLException
-  {
-    sLogger.debug("DbUtils::execute() - IN");
-    
     DbConnectionPool pool = DbConnectionPool.getInstance();
     DbConnection dbConn = pool.allocate();
-    Connection conn = dbConn.getConn();
-
-    execute(conn, fmt, args);
     
+    SchemaHelper schema = new SchemaHelper(dbConn.getConn());
+    boolean exists = schema.isExist();
+    sLogger.debug("DbUtils::initSchema() - Check if schema exists: " + exists);
+    if (!exists)
+    {
+      sLogger.debug("DbUtils::initSchema() - Schema does not exist, initializing it");
+      schema.init();
+    }
     pool.release(dbConn);
     
-    sLogger.debug("DbUtils::execute() - OUT");
+    sLogger.debug("DbUtils::initSchema() - OUT");
   }
   
   /**

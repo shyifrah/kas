@@ -24,10 +24,9 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
   private static final Map<String, Class<?>> cTableColumns = new HashMap<String, Class<?>>();
   static
   {
-    cTableColumns.put("id", int.class);
-    cTableColumns.put("name", String.class);
-    cTableColumns.put("description", String.class);
-    cTableColumns.put("password", String.class);
+    cTableColumns.put("pattern", String.class);
+    cTableColumns.put("group_id", int.class);
+    cTableColumns.put("access_level", int.class);
   }
   
   /**

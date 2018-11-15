@@ -120,10 +120,10 @@ public class UserEntity extends Entity
     AccessLevel resAccessLevels = resClass.getEnabledAccessLevels();
     
     if ((resAccessLevels.getAccessLevel() & level.getAccessLevel()) == 0)
-      throw new IllegalArgumentException("Access level is not supported by resource class " + resType.toString());
+      throw new IllegalArgumentException("Access level " + level.toString() + " is not supported by resource class " + resType.toString());
     
-    AccessLevel definedLevel = resClass.getAccessLevelFor(resName, this);
-    if (definedLevel.isLevelEnabled(level.getAccessLevel()))
+    AccessLevel permittedLevels = resClass.getAccessLevelFor(resName, this);
+    if (permittedLevels.isLevelEnabled(level.getAccessLevel()))
       return true;
     
     return false;

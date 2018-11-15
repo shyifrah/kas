@@ -124,11 +124,7 @@ public class KasMqServer extends AKasAppl implements IMqServer
       return false;
     }
     
-    if (!DbUtils.isSchemaInitialized())
-    {
-      mLogger.info("Server schema was not initialized yet, running initialization commands... This might take some time, be patient");
-      DbUtils.initSchema();
-    }
+    DbUtils.initSchema();
     
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
