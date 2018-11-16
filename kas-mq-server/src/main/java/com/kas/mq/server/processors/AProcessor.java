@@ -12,13 +12,25 @@ import com.kas.mq.internal.MqResponse;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.MqConfiguration;
+import com.kas.mq.server.internal.SessionHandler;
 
+/**
+ * Abstract processor.<br>
+ * Base class for processing client requests
+ * 
+ * @author Pippo
+ */
 public abstract class AProcessor extends AKasObject implements IProcessor
 {
   /**
    * Logger
    */
   protected ILogger mLogger;
+  
+  /**
+   * Session handler under which the processor executes.
+   */
+  protected SessionHandler mHandler;
   
   /**
    * Session controller
@@ -53,15 +65,16 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * Construct abstract {@link IProcessor}
    * 
    * @param request The request message to be processed
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  AProcessor(IMqMessage request, IController controller, IRepository repository)
+  AProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
     mRequest = request;
-    mController = controller;
-    mConfig = controller.getConfig();
+    mHandler = handler;
+    mController = handler.getController();
+    mConfig = mController.getConfig();
     mRepository = repository;
   }
   

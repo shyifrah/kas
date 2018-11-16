@@ -89,9 +89,9 @@ public class UserEntity extends Entity
    * @param resName The name of the resource
    * @return {@code true} if access is permitted, {@code false} if access is prohibited
    */
-  public boolean isAccessPermitted(EResourceClass resType, String resName)
+  public boolean isAccessPermitted(EResourceClass resClass, String resName)
   {
-    return isAccessPermitted(resType, resName, AccessLevel.READ_ACCESS);
+    return isAccessPermitted(resClass, resName, AccessLevel.READ_ACCESS);
   }
   
   /**

@@ -5,8 +5,8 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqQueue;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.internal.SessionHandler;
 
 /**
  * Processor for putting a message into a queue
@@ -25,12 +25,12 @@ public class MessagePutProcessor extends AProcessor
    * Construct a {@link MessagePutProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  MessagePutProcessor(IMqMessage request, IController controller, IRepository repository)
+  MessagePutProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
+    super(request, handler, repository);
   }
   
   /**

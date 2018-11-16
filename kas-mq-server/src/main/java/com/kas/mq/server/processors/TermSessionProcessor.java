@@ -4,7 +4,6 @@ import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 
@@ -25,12 +24,12 @@ public class TermSessionProcessor extends AProcessor
    * Construct a {@link TermSessionProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  TermSessionProcessor(IMqMessage request, IController controller, IRepository repository)
+  TermSessionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
+    super(request, handler, repository);
   }
   
   /**

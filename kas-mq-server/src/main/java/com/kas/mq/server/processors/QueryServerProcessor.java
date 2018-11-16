@@ -13,7 +13,6 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqRequestFactory;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
@@ -43,12 +42,12 @@ public class QueryServerProcessor extends AProcessor
    * Construct a {@link QueryServerProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  QueryServerProcessor(IMqMessage request, IController controller, IRepository repository)
+  QueryServerProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
+    super(request, handler, repository);
   }
   
   /**
@@ -81,27 +80,21 @@ public class QueryServerProcessor extends AProcessor
         case cQueryConfigAll:
           body = MainConfiguration.getInstance().toPrintableString();
           break;
-          
         case cQueryConfigLogging:
           body = LogSystem.getInstance().getConfig().toPrintableString();
           break;
-          
         case cQueryConfigMq:
           body = mConfig.toPrintableString();
           break;
-          
         case cQueryConfigSerializer:
           body = Deserializer.getInstance().getConfig().toPrintableString();
           break;
-          
         case cQuerySession:
           body = querySession();
           break;
-          
         case cQueryConnection:
           body = queryConnection();
           break;
-          
         case cQueryQueue:
           props = queryQueue();
           if (!mQueryOutProps)
@@ -112,7 +105,6 @@ public class QueryServerProcessor extends AProcessor
             body = sb.toString();
           }
           break;
-          
         case cUnknown:
         default:
           mCode = EMqCode.cError;
@@ -147,7 +139,7 @@ public class QueryServerProcessor extends AProcessor
       if (!manager.isActive())
       {
         IMqMessage sysStateRequest = MqRequestFactory.createSystemStateMessage(mQueryOriginQmgr, true);
-        IProcessor processor = new SysStateProcessor(sysStateRequest, mController, mRepository);
+        IProcessor processor = new SysStateProcessor(sysStateRequest, mHandler, mRepository);
         processor.process();
       }
     }
