@@ -1,6 +1,16 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds;
 
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.def.DefCommand;
+import com.kas.mq.admin.cmds.del.DelCommand;
+import com.kas.mq.admin.cmds.msgs.GetCommand;
+import com.kas.mq.admin.cmds.msgs.PutCommand;
+import com.kas.mq.admin.cmds.other.ConnectCommand;
+import com.kas.mq.admin.cmds.other.DisconnectCommand;
+import com.kas.mq.admin.cmds.other.ExitCommand;
+import com.kas.mq.admin.cmds.other.HelpCommand;
+import com.kas.mq.admin.cmds.query.QueryCommand;
+import com.kas.mq.admin.cmds.term.TermCommand;
 import com.kas.mq.impl.MqContext;
 
 /**
@@ -33,11 +43,11 @@ public class CliCommandFactory
     if (DisconnectCommand.sCommandVerbs.contains(verb))
       return new DisconnectCommand(cmdWords, client);
     
-    if (DefineCommand.sCommandVerbs.contains(verb))
-      return new DefineCommand(cmdWords, client);
+    if (DefCommand.sCommandVerbs.contains(verb))
+      return new DefCommand(cmdWords, client);
     
-    if (DeleteCommand.sCommandVerbs.contains(verb))
-      return new DeleteCommand(cmdWords, client);
+    if (DelCommand.sCommandVerbs.contains(verb))
+      return new DelCommand(cmdWords, client);
     
     if (QueryCommand.sCommandVerbs.contains(verb))
       return new QueryCommand(cmdWords, client);
@@ -48,11 +58,8 @@ public class CliCommandFactory
     if (GetCommand.sCommandVerbs.contains(verb))
       return new GetCommand(cmdWords, client);
     
-    if (TerminateCommand.sCommandVerbs.contains(verb))
-      return new TerminateCommand(cmdWords, client);
-    
-    if (ShutdownCommand.sCommandVerbs.contains(verb))
-      return new ShutdownCommand(cmdWords, client);
+    if (TermCommand.sCommandVerbs.contains(verb))
+      return new TermCommand(cmdWords, client);
     
     // Unknown command
     return null;

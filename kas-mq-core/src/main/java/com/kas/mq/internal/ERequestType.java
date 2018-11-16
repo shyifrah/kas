@@ -52,7 +52,7 @@ public enum ERequestType implements IObject
   /**
    * Shutdown KAS/MQ server
    */
-  cShutdown,
+  cTermServer,
   
   /**
    * Notify system state changed

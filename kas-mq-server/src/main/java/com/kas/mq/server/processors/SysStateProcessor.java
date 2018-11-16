@@ -5,8 +5,8 @@ import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqManager;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.internal.SessionHandler;
 import com.kas.mq.server.repo.MqRemoteManager;
 
 /**
@@ -27,12 +27,12 @@ public class SysStateProcessor extends AProcessor
    * Construct a {@link SysStateProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  SysStateProcessor(IMqMessage request, IController controller, IRepository repository)
+  SysStateProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
+    super(request, handler, repository);
   }
   
   /**
@@ -67,7 +67,7 @@ public class SysStateProcessor extends AProcessor
       else if (mActivated && !manager.isActive())
       {
         manager.activate();
-        Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+        Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQueryResultPrefix);
         ((MqRemoteManager)manager).setQueues(remoteQueues);
         
         props = mRepository.queryLocalQueues("", true, false);

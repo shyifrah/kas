@@ -1,7 +1,8 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.term;
 
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**
@@ -9,16 +10,16 @@ import com.kas.mq.impl.MqContext;
  * 
  * @author Pippo
  */
-public class TrmConnectionCommand extends ACliCommand
+public class TermConnCommand extends ACliCommand
 {
   /**
-   * Construct a {@link TrmConnectionCommand} passing the command arguments and the client object
+   * Construct a {@link TermConnCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected TrmConnectionCommand(TokenDeque args, MqContext client)
+  protected TermConnCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }

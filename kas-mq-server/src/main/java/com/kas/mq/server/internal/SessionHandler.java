@@ -109,7 +109,7 @@ public class SessionHandler extends AKasObject implements Runnable
           ERequestType requestType = request.getRequestType();
           mLogger.debug("SessionHandler::run() - Received request of type: " + StringUtils.asPrintableString(requestType));
           
-          IProcessor processor = ProcessorFactory.newProcessor(mController, mRepository, this, request);
+          IProcessor processor = ProcessorFactory.newProcessor(request, this, mRepository);
           IMqMessage reply = processor.process();
           
           mLogger.debug("SessionHandler::run() - Responding with the message: " + StringUtils.asPrintableString(reply));
@@ -144,6 +144,16 @@ public class SessionHandler extends AKasObject implements Runnable
     mLogger.debug("SessionHandler::run() - OUT");
   }
   
+  /**
+   * Get the sessions controller
+   * 
+   * @return the sessions controller
+   */
+  public IController getController()
+  {
+    return mController;
+  }
+
   /**
    * Set the active user to {@code userEntity}
    * 
@@ -219,7 +229,7 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mMessenger.cleanup();
   }
-
+  
   /**
    * Get the object's detailed string representation
    * 

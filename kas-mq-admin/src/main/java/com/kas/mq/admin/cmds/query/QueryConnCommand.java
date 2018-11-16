@@ -1,8 +1,9 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.query;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -13,16 +14,16 @@ import com.kas.mq.internal.IMqConstants;
  * 
  * @author Pippo
  */
-public class QryConnectionCommand extends ACliCommand
+public class QueryConnCommand extends ACliCommand
 {
   /**
-   * Construct a {@link QryConnectionCommand} passing the command arguments and the client object
+   * Construct a {@link QueryConnCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QryConnectionCommand(TokenDeque args, MqContext client)
+  protected QueryConnCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
@@ -61,7 +62,7 @@ public class QryConnectionCommand extends ACliCommand
       try
       {
         uuid = UniqueId.fromString(opt);
-        qprops.put(IMqConstants.cKasPropertyQrysConnId, uuid.toString());
+        qprops.put(IMqConstants.cKasPropertyQueryConnId, uuid.toString());
       }
       catch (IllegalArgumentException e)
       {

@@ -192,7 +192,7 @@ public class MqLocalManager extends MqManager
       mLogger.debug("MqLocalManager::queryQueue() - Checking if current queue [" + mqlq.getName() + "] matches query: " + include);
       if (include)
       {
-        String key = IMqConstants.cKasPropertyQryqResultPrefix + "." + mqlq.getName();
+        String key = IMqConstants.cKasPropertyQueryResultPrefix + "." + mqlq.getName();
         props.setStringProperty(key, mqlq.queryResponse(all));
       }
     }

@@ -1,7 +1,8 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.del;
 
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**

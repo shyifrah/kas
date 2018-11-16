@@ -21,6 +21,11 @@ public enum EResourceClass
   SERVER(AccessLevel.READ),
   
   /**
+   * Protects server shutdown
+   */
+  COMMAND(AccessLevel.READ),
+  
+  /**
    * Protects the usage of specific application
    */
   APPLICATION(AccessLevel.READ),

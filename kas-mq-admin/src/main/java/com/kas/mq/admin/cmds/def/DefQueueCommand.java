@@ -1,32 +1,33 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.def;
 
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.internal.IMqConstants;
 
 /**
- * A DEFINE TEMPQUEUE command
+ * A DEFINE QUEUE command
  * 
  * @author Pippo
  */
-public class DefTempQueueCommand extends ACliCommand
+public class DefQueueCommand extends ACliCommand
 {
   /**
-   * Construct a {@link DefTempQueueCommand} passing the command arguments and the client object
+   * Construct a {@link DefQueueCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DefTempQueueCommand(TokenDeque args, MqContext client)
+  protected DefQueueCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
 
   /**
    * Display help screen for this command.
-   * Not in use for DEFINE TEMPQUEUE.
+   * Not in use for DEFINE QUEUE.
    */
   public void help()
   {
@@ -34,9 +35,9 @@ public class DefTempQueueCommand extends ACliCommand
   }
   
   /**
-   * A Define temporary queue command.<br>
+   * A Define queue command.<br>
    * <br>
-   * For only the "DEFINE TEMPQUEUE" verb, the command will fail with a missing queue name message.
+   * For only the "DEFINE QUEUE" verb, the command will fail with a missing queue name message.
    * The next argument is the queue name followed by the queue threshold. If queue threshold is missing,
    * than the default threshold is used.
    * If more arguments exist, the command will fail with excessive arguments message.
@@ -85,7 +86,7 @@ public class DefTempQueueCommand extends ACliCommand
       return false;
     }
     
-    mClient.defineQueue(queue, threshold, false);
+    mClient.defineQueue(queue, threshold, true);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

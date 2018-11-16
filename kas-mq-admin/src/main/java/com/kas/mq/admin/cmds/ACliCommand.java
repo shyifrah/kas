@@ -1,4 +1,4 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds;
 
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.typedef.TokenDeque;
@@ -29,7 +29,7 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
    * @param cmdWords The command arguments
    * @param client The client
    */
-  ACliCommand(TokenDeque args, MqContext client)
+  protected ACliCommand(TokenDeque args, MqContext client)
   {
     mCommandArgs = args;
     mClient = client;

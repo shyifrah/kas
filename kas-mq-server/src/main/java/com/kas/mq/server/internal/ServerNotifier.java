@@ -109,7 +109,7 @@ public class ServerNotifier extends AKasObject
         
         IMqMessage reply = conn.notifySysState(message);
         
-        Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQryqResultPrefix);
+        Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQueryResultPrefix);
         if (!remoteManager.isActive())
         {
           remoteManager.activate();

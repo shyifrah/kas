@@ -1,34 +1,34 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.msgs;
 
 import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.messages.MqMessageFactory;
-import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.IMqConstants;
 
 /**
- * A PUT command
+ * A GET command
  * 
  * @author Pippo
  */
-public class PutCommand extends ACliCommand
+public class GetCommand extends ACliCommand
 {
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
-    sCommandVerbs.add("PUT");
+    sCommandVerbs.add("GET");
   }
   
   /**
-   * Construct a {@link PutCommand} passing the command arguments and the client object
+   * Construct a {@link GetCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected PutCommand(TokenDeque args, MqContext client)
+  public GetCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
@@ -40,36 +40,36 @@ public class PutCommand extends ACliCommand
   {
     if (mCommandArgs.size() > 0)
     {
-      writeln("Execssive command arguments are ignored for HELP PUT");
+      writeln("Execssive command arguments are ignored for HELP GET");
       writeln(" ");
       return;
     }
     
     writelnGreen("Purpose: ");
     writeln(" ");
-    writeln("     Put a text message into queue");
+    writeln("     Get a message from queue");
     writeln(" ");
     writelnGreen("Format: ");
     writeln(" ");
-    writeln("     >>--- PUT ---+--- queue ---+---+--- text ---+---><");
+    writeln("     >>--- GET ---+--- queue ---+---><");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");
-    writeln("     The command will create a text message with a body holding the specified text,");
-    writeln("     and then will put it into the specified queue.");
+    writeln("     Get a message from the specified queue.");
+    writeln("     If no message is available, the command will block until one is put to the queue.");
     writeln(" ");
     writelnGreen("Examples:");
     writeln(" ");
-    writeln("     Put the text \"shy\" as a message into queue TEMP1Q:");
-    writeln("          KAS/MQ Admin> PUT TEMP1Q shy");
+    writeln("     Get a message from queue TEMP1Q:");
+    writeln("          KAS/MQ Admin> GET TEMP1Q");
     writeln(" ");
   }
   
   /**
-   * A put command.<br>
+   * A get command.<br>
    * <br>
    * First token is the queue name.
-   * All remaining tokens (at least one) are the message text.
+   * If any excessive tokens follow the queue name, the command will fail.
    * 
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
@@ -90,20 +90,14 @@ public class PutCommand extends ACliCommand
       return false;
     }
     
-    if (mCommandArgs.size() == 0)
+    if (mCommandArgs.size() > 0)
     {
-      writeln("Missing message text");
+      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
       writeln(" ");
       return false;
     }
     
-    StringBuilder sb = new StringBuilder();
-    for (String token : mCommandArgs)
-      sb.append(token).append(' ');
-    String text = sb.toString().trim();
-    MqStringMessage message = MqMessageFactory.createStringMessage(text);
-    
-    mClient.put(queue, message);
+    mClient.get(queue, IMqConstants.cDefaultTimeout, IMqConstants.cDefaultPollingInterval);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

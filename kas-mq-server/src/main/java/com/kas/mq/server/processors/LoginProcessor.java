@@ -4,7 +4,6 @@ import com.kas.infra.base.Properties;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.sec.ProtectionManager;
@@ -19,11 +18,6 @@ import com.kas.sec.resources.EResourceClass;
 public class LoginProcessor extends AProcessor
 {
   /**
-   * The session's handler
-   */
-  private SessionHandler mHandler;
-  
-  /**
    * Extracted input from the request:
    * user's name, the BASE-64 encoded password (in string format), the client application name
    */
@@ -35,14 +29,12 @@ public class LoginProcessor extends AProcessor
    * Construct a {@link LoginProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
-   * @param repository The server's repository
    * @param handler The session handler
+   * @param repository The server's repository
    */
-  LoginProcessor(IMqMessage request, IController controller, IRepository repository, SessionHandler handler)
+  LoginProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
-    mHandler = handler;
+    super(request, handler, repository);
   }
   
   /**
@@ -71,13 +63,22 @@ public class LoginProcessor extends AProcessor
       UserEntity ue = pmgr.getUserByName(mUser);
       
       if ((mUser == null) || (mUser.length() == 0))
+      {
         mDesc = "Invalid user name";
+      }
       else if (ue == null)
+      {
         mDesc = "User " + mUser + " is not defined";
+      }
       else if (!ue.isPasswordMatch(mPass))
+      {
         mDesc = "Incorrect password for " + mUser;
+      }
       else if (!ue.isAccessPermitted(EResourceClass.APPLICATION, mClientApp))
-        mDesc = mUser + " is not permitted to access application " + mClientApp;
+      {
+        mDesc = "User " + ue.toString() + " is not permitted to access application " + mClientApp;
+        mLogger.warn(mDesc);
+      }
       else
       {
         mDesc = "User " + mUser + " successfully authenticated";

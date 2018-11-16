@@ -1,8 +1,9 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.query;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -13,16 +14,16 @@ import com.kas.mq.internal.IMqConstants;
  * 
  * @author Pippo
  */
-public class QryQueueCommand extends ACliCommand
+public class QueryQueueCommand extends ACliCommand
 {
   /**
-   * Construct a {@link QryQueueCommand} passing the command arguments and the client object
+   * Construct a {@link QueryQueueCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QryQueueCommand(TokenDeque args, MqContext client)
+  protected QueryQueueCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
@@ -62,7 +63,7 @@ public class QryQueueCommand extends ACliCommand
     if (name.endsWith("*"))
     {
       name = name.substring(0, name.length()-1);
-      qprops.setBoolProperty(IMqConstants.cKasPropertyQryqPrefix, true);
+      qprops.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, true);
     }
     
     if ((name.length() > 0) && (!Validators.isQueueName(name)))
@@ -72,14 +73,14 @@ public class QryQueueCommand extends ACliCommand
       return false;
     }
     
-    qprops.setStringProperty(IMqConstants.cKasPropertyQryqQueueName, name);
+    qprops.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, name);
     
     boolean all = false;
     String opt = mCommandArgs.poll();
     if ((opt != null) && (opt.equalsIgnoreCase("ALL")))
       all = true;
     
-    qprops.setBoolProperty(IMqConstants.cKasPropertyQryqAllData, all);
+    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryAllData, all);
     
     if (mCommandArgs.size() > 0)
     {

@@ -1,7 +1,8 @@
-package com.kas.mq.admin.commands;
+package com.kas.mq.admin.cmds.query;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
+import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.IMqGlobals.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -11,16 +12,16 @@ import com.kas.mq.impl.messages.MqStringMessage;
  * 
  * @author Pippo
  */
-public class QryConfigCommand extends ACliCommand
+public class QueryConfCommand extends ACliCommand
 {
   /**
-   * Construct a {@link QryConfigCommand} passing the command arguments and the client object
+   * Construct a {@link QueryConfCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QryConfigCommand(TokenDeque args, MqContext client)
+  protected QueryConfCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }

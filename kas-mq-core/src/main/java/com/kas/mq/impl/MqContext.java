@@ -262,7 +262,7 @@ public final class MqContext extends AKasObject
   {
     mLogger.debug("MqContext::put() - IN");
     
-    boolean success = mConnection.shutdown();
+    boolean success = mConnection.termServer();
     
     mLogger.debug("MqContext::put() - OUT, Returns=" + success);
     return success;
