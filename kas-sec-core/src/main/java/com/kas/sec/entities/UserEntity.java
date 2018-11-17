@@ -89,9 +89,9 @@ public class UserEntity extends Entity
    * @param resName The name of the resource
    * @return {@code true} if access is permitted, {@code false} if access is prohibited
    */
-  public boolean isAccessPermitted(EResourceClass resType, String resName)
+  public boolean isAccessPermitted(EResourceClass resClass, String resName)
   {
-    return isAccessPermitted(resType, resName, AccessLevel.READ_ACCESS);
+    return isAccessPermitted(resClass, resName, AccessLevel.READ_ACCESS);
   }
   
   /**
@@ -120,10 +120,10 @@ public class UserEntity extends Entity
     AccessLevel resAccessLevels = resClass.getEnabledAccessLevels();
     
     if ((resAccessLevels.getAccessLevel() & level.getAccessLevel()) == 0)
-      throw new IllegalArgumentException("Access level is not supported by resource class " + resType.toString());
+      throw new IllegalArgumentException("Access level " + level.toString() + " is not supported by resource class " + resType.toString());
     
-    AccessLevel definedLevel = resClass.getAccessLevelFor(resName, this);
-    if (definedLevel.isLevelEnabled(level.getAccessLevel()))
+    AccessLevel permittedLevels = resClass.getAccessLevelFor(resName, this);
+    if (permittedLevels.isLevelEnabled(level.getAccessLevel()))
       return true;
     
     return false;

@@ -8,8 +8,8 @@ import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.admin.commands.CliCommandFactory;
-import com.kas.mq.admin.commands.ICliCommand;
+import com.kas.mq.admin.cmds.CliCommandFactory;
+import com.kas.mq.admin.cmds.ICliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**

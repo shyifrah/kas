@@ -1,9 +1,0 @@
-<project name="debug" basedir=".">
-  
-  <!-- ===================================================== -->
-  <!-- debugging information                                 -->
-  <!-- ===================================================== -->
-  <property name="debug"      value="true" />
-  <property name="debuglevel" value="lines,vars,source" />
-
-</project>

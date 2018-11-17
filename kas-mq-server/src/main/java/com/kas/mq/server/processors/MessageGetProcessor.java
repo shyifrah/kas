@@ -4,8 +4,11 @@ import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqQueue;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
+import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for getting a message from a queue
@@ -26,12 +29,12 @@ public class MessageGetProcessor extends AProcessor
    * Construct a {@link MessageGetProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  MessageGetProcessor(IMqMessage request, IController controller, IRepository repository)
+  MessageGetProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
+    super(request, handler, repository);
   }
   
   /**
@@ -43,11 +46,18 @@ public class MessageGetProcessor extends AProcessor
   {
     mLogger.debug("MessageGetProcessor::process() - IN");
     
+    UserEntity ue = mHandler.getActiveUser();
+    
     IMqMessage result = null;
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
       mLogger.debug("MessageGetProcessor::process() - " + mDesc);
+    }
+    else if (!ue.isAccessPermitted(EResourceClass.COMMAND, "get"))
+    {
+      mDesc = "User " + ue.toString() + " is not permitted to issue GET requests";
+      mLogger.warn(mDesc);
     }
     else
     {
@@ -66,6 +76,11 @@ public class MessageGetProcessor extends AProcessor
       {
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("MessageGetProcessor::process() - " + mDesc);
+      }
+      else if (!ue.isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.READ_ACCESS))
+      {
+        mDesc = "User " + ue.toString() + " is not permitted to issue read from queue " + mQueue;
+        mLogger.warn(mDesc);
       }
       else
       {

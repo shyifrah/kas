@@ -135,14 +135,14 @@ public class MqContextConnection extends MqConnection
    * 
    * @return {@code true} if the server accepted the request, {@code false} otherwise
    */
-  public boolean shutdown()
+  public boolean termServer()
   {
-    mLogger.debug("MqContextConnection::shutdown() - IN");
+    mLogger.debug("MqContextConnection::termServer() - IN");
     
-    IMqMessage request = MqRequestFactory.createShutdownRequest(mUser);
+    IMqMessage request = MqRequestFactory.createTermServerRequest(mUser);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::shutdown() - OUT");
+    mLogger.debug("MqContextConnection::termServer() - OUT");
     return success;
   }
   

@@ -2,6 +2,7 @@ package com.kas.sec.access;
 
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
@@ -30,6 +31,11 @@ public class AccessEntry extends AKasObject
   private String mResourceRegEx;
   
   /**
+   * The {@link Pattern} object compiled from the regular expression
+   */
+  private Pattern mCompiledPattern = null;
+  
+  /**
    * The list of entity IDs that are permitted to the resource(s) designated by the regular expression
    */
   private Map<Integer, AccessLevel> mPermittedEntities;
@@ -53,6 +59,18 @@ public class AccessEntry extends AKasObject
   public String getResourceRegEx()
   {
     return mResourceRegEx;
+  }
+  
+  /**
+   * Test if a specific resource is protected by this {@link AccessEntry} 
+   * 
+   * @return {@code true} if the resource name matches the regular expression, {@code false} otherwise
+   */
+  public boolean isResourceMatch(String resource)
+  {
+    if (mCompiledPattern == null)
+      mCompiledPattern = Pattern.compile(mResourceRegEx);
+    return mCompiledPattern.matcher(resource).matches();
   }
   
   /**

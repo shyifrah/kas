@@ -13,7 +13,6 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqRequestFactory;
-import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
@@ -43,12 +42,12 @@ public class QueryServerProcessor extends AProcessor
    * Construct a {@link QueryServerProcessor}
    * 
    * @param request The request message
-   * @param controller The session controller
+   * @param handler The session handler
    * @param repository The server's repository
    */
-  QueryServerProcessor(IMqMessage request, IController controller, IRepository repository)
+  QueryServerProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    super(request, controller, repository);
+    super(request, handler, repository);
   }
   
   /**
@@ -70,7 +69,7 @@ public class QueryServerProcessor extends AProcessor
     }
     else
     {
-      int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQrysQueryType, EQueryType.cUnknown.ordinal());
+      int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQueryType, EQueryType.cUnknown.ordinal());
       mQueryType = EQueryType.fromInt(temp);
       mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString());
       
@@ -81,27 +80,21 @@ public class QueryServerProcessor extends AProcessor
         case cQueryConfigAll:
           body = MainConfiguration.getInstance().toPrintableString();
           break;
-          
         case cQueryConfigLogging:
           body = LogSystem.getInstance().getConfig().toPrintableString();
           break;
-          
         case cQueryConfigMq:
           body = mConfig.toPrintableString();
           break;
-          
         case cQueryConfigSerializer:
           body = Deserializer.getInstance().getConfig().toPrintableString();
           break;
-          
         case cQuerySession:
           body = querySession();
           break;
-          
         case cQueryConnection:
           body = queryConnection();
           break;
-          
         case cQueryQueue:
           props = queryQueue();
           if (!mQueryOutProps)
@@ -112,7 +105,6 @@ public class QueryServerProcessor extends AProcessor
             body = sb.toString();
           }
           break;
-          
         case cUnknown:
         default:
           mCode = EMqCode.cError;
@@ -147,7 +139,7 @@ public class QueryServerProcessor extends AProcessor
       if (!manager.isActive())
       {
         IMqMessage sysStateRequest = MqRequestFactory.createSystemStateMessage(mQueryOriginQmgr, true);
-        IProcessor processor = new SysStateProcessor(sysStateRequest, mController, mRepository);
+        IProcessor processor = new SysStateProcessor(sysStateRequest, mHandler, mRepository);
         processor.process();
       }
     }
@@ -163,7 +155,7 @@ public class QueryServerProcessor extends AProcessor
    */
   private String querySession()
   {
-    String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysSessionId, null);
+    String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQuerySessId, null);
     if (sessid != null) mQuerySessionId = UniqueId.fromString(sessid);
     
     StringBuilder sb = new StringBuilder();
@@ -197,7 +189,7 @@ public class QueryServerProcessor extends AProcessor
    */
   private String queryConnection()
   {
-    String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyQrysConnId, null);
+    String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryConnId, null);
     if (connid != null) mQueryConnectionId = UniqueId.fromString(connid);
     
     StringBuilder sb = new StringBuilder();
@@ -231,11 +223,11 @@ public class QueryServerProcessor extends AProcessor
    */
   private Properties queryQueue()
   {
-    mQueryOriginQmgr = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQmgrName, null);
-    mQueryQueuePrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqPrefix, false);
-    mQueryAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqAllData, false);
-    mQueryOutProps = mRequest.getBoolProperty(IMqConstants.cKasPropertyQryqOutOnlyProps, false);
-    mQueryQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQryqQueueName, "");
+    mQueryOriginQmgr = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQmgrName, null);
+    mQueryQueuePrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
+    mQueryAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryAllData, false);
+    mQueryOutProps = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryOutOnlyProps, false);
+    mQueryQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQueueName, "");
     if (mQueryQueue == null) mQueryQueue = "";
     
     Properties props = mRepository.queryQueues(mQueryQueue, mQueryQueuePrefix, mQueryAllData);

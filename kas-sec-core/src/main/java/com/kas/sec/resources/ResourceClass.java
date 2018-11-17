@@ -108,7 +108,11 @@ public class ResourceClass extends AKasObject
   }
   
   /**
-   * Get the access level in which {@code user} can access the {@code resName}
+   * Get the access level in which {@code user} can access the {@code resName}.<br>
+   * <br>
+   * First, obtain all ACEs that potentially protect the specified resource.
+   * Secondly, for each ACE, we check if it grants some sort of access to the resource,
+   * if it does, the search is stopped.
    * 
    * @param resName The name of the resource
    * @param user The {@link UserEntity}

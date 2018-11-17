@@ -62,10 +62,15 @@ public class KasApplLauncher
   static private Map<String, String> getAndProcessStartupArguments(String [] args)
   {
     Map<String, String> pArgumentsMap = new HashMap<String, String>();
-    if ((args != null) && (args.length > 0))
+    if ((args == null) || (args.length == 0))
+    {
+      sLogger.info("No arguments passed to KAS launcher, continue...");
+    }
+    else
     {
       for (String arg : args)
       {
+        sLogger.info("Processing argument: [" + arg + "]");
         String [] keyValue = arg.split("=");
         if (keyValue.length > 2)
         {
