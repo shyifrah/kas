@@ -1,5 +1,6 @@
 package com.kas.appl;
 
+import java.util.HashMap;
 import java.util.Map;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ConsoleLogger;
@@ -17,6 +18,44 @@ import com.kas.logging.LoggerFactory;
 public abstract class AKasAppl extends AKasObject implements IKasAppl
 {
   static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasAppl.class.getName());
+  
+  /**
+   * Check validity of startup arguments and return a map of arguments of keys and values
+   * 
+   * @param args An array of arguments passed to {@link #main(String[] main} function
+   * @return a map of arguments
+   */
+  static protected Map<String, String> getAndProcessStartupArguments(String [] args)
+  {
+    Map<String, String> pArgumentsMap = new HashMap<String, String>();
+    if ((args == null) || (args.length == 0))
+    {
+      sStartupLogger.info("No arguments passed to KAS launcher, continue...");
+    }
+    else
+    {
+      for (String arg : args)
+      {
+        sStartupLogger.info("Processing argument: [" + arg + "]");
+        String [] keyValue = arg.split("=");
+        if (keyValue.length > 2)
+        {
+          sStartupLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
+        }
+        else if (keyValue.length <= 1)
+        {
+          sStartupLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
+        }
+        else
+        {
+          String key = keyValue[0];
+          String value = keyValue[1];
+          pArgumentsMap.put(key, value);
+        }
+      }
+    }
+    return pArgumentsMap;
+  }
   
   /**
    * Logger
@@ -90,6 +129,51 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   }
   
   /**
+   * Running the application. 
+   */
+  public abstract void appExec();
+  
+  /**
+   * Finalizing {@link #run() main function} execution.
+   *  
+   * @return {@code true} if shutdown hook was successfully de-registered, {@code false} otherwise.
+   * The meaning of the shutdown hook removal is that the main thread should execute the {@link #term()}
+   * function, or leave it for the shutdown hook.
+   */
+  protected boolean end()
+  {
+    mLogger.debug("AKasAppl::end() - IN");
+    
+    mLogger.info("Try de-registering the shutdown hook...");
+    boolean okay = false;
+    try
+    {
+      okay = Runtime.getRuntime().removeShutdownHook(mShutdownHook);
+      mLogger.debug("AKasAppl::run() - Shutdown hook was successfully de-registered");
+    }
+    catch (IllegalStateException e)
+    {
+      mLogger.debug("AKasAppl::run() - Shutdown hook could not be de-registered. It is probably because JVM is alreadu shutting down");
+    }
+    
+    mLogger.debug("AKasAppl::end() - OUT, Returns=" + okay);
+    return okay;
+  }
+  
+  /**
+   * Running the application.
+   * 
+   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
+   * 
+   * @see IKasAppl#run()
+   */
+  public boolean run()
+  {
+    appExec();
+    return end();
+  }
+  
+  /**
    * Terminating the application.<br>
    * <br>
    * Most application doesn't require real termination, so we provide default initialization.
@@ -126,51 +210,11 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   }
   
   /**
-   * Running the application.
-   * 
-   * @return {@code true} if main thread should execute the termination, {@code false} otherwise
-   * 
-   * @see IKasAppl#run()
-   */
-  public boolean run()
-  {
-    appExec();
-    return end();
-  }
-  
-  /**
    * Refreshing the configuration
    * 
    * @see IBaseListener#refresh()
    */
   public void refresh()
   {
-  }
-  
-  /**
-   * Finalizing {@link #run() main function} execution.
-   *  
-   * @return {@code true} if shutdown hook was successfully de-registered, {@code false} otherwise.
-   * The meaning of the shutdown hook removal is that the main thread should execute the {@link #term()}
-   * function, or leave it for the shutdown hook.
-   */
-  protected boolean end()
-  {
-    mLogger.debug("AKasAppl::end() - IN");
-    
-    mLogger.info("Try de-registering the shutdown hook...");
-    boolean okay = false;
-    try
-    {
-      okay = Runtime.getRuntime().removeShutdownHook(mShutdownHook);
-      mLogger.debug("AKasAppl::run() - Shutdown hook was successfully de-registered");
-    }
-    catch (IllegalStateException e)
-    {
-      mLogger.debug("AKasAppl::run() - Shutdown hook could not be de-registered. It is probably because JVM is alreadu shutting down");
-    }
-    
-    mLogger.debug("AKasAppl::end() - OUT, Returns=" + okay);
-    return okay;
   }
 }

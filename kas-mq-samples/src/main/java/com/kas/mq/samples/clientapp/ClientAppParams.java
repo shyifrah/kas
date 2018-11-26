@@ -16,7 +16,7 @@ public class ClientAppParams extends ParamsContainer
   
   ClientAppParams(Map<String,String> map)
   {
-    super(map, "client.app.");
+    super(map, ClientApp.cClientAppArgPrefix);
     mUserName  = getStrArg("username", null);                            // username to identify to KAS/MQ
     mPassword  = getStrArg("password", null);                            // password for username
     mHost      = getStrArg("host", "localhost");                         // KAS/MQ server host name / ip address 

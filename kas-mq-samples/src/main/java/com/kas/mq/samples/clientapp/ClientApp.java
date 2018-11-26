@@ -27,6 +27,27 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
 public class ClientApp extends AKasAppl 
 {
   static final String cAppName = "ClientApp sample";
+  static final String cClientAppArgPrefix = "client.app.";
+  
+  static public void main(String [] args)
+  {
+    Map<String, String> map = getAndProcessStartupArguments(args);
+    map.put(cClientAppArgPrefix + "message.type", "0");
+    map.put(cClientAppArgPrefix + "put.queuename", "client.app.queue");
+    map.put(cClientAppArgPrefix + "get.queuename", "client.app.queue");
+    //map.put(cClientAppArgPrefix + "total.messages", "10000");
+    //map.put(cClientAppArgPrefix + "total.producers", "1");
+    //map.put(cClientAppArgPrefix + "total.consumers", "1");
+    map.put(cClientAppArgPrefix + "username", "root");
+    map.put(cClientAppArgPrefix + "password", "root");
+    //map.put(cClientAppArgPrefix + "host", "localhost");
+    //map.put(cClientAppArgPrefix + "port", "14560");
+    ClientApp app = new ClientApp(map);
+    
+    boolean init = app.init();
+    if (init) app.run();
+    app.term();
+  }
   
   private Thread [] mProducers;
   private Thread [] mConsumers;
