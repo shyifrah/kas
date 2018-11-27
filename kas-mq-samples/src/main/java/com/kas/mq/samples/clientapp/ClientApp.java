@@ -4,6 +4,8 @@ import java.util.Map;
 import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.utils.FileUtils;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.samples.Utils;
 import com.kas.mq.samples.mdbsim.MdbSimulator;
@@ -26,22 +28,24 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  */
 public class ClientApp extends AKasAppl 
 {
-  static final String cAppName = "ClientApp sample";
-  static final String cClientAppArgPrefix = "client.app.";
+  static final String cKasHome      = "./build/install/kas-mq-samples";
+  static final String cAppName      = "ClientAppSample";
+  static final String cConfigPrefix = "client.app.";
   
   static public void main(String [] args)
   {
+    if (!FileUtils.isDirAndExist(cKasHome))
+    {
+      sStartupLogger.error("kas.home directory [" + cKasHome + "] does not exist");
+      return;
+    }
+        
     Map<String, String> map = getAndProcessStartupArguments(args);
-    map.put(cClientAppArgPrefix + "message.type", "0");
-    map.put(cClientAppArgPrefix + "put.queuename", "client.app.queue");
-    map.put(cClientAppArgPrefix + "get.queuename", "client.app.queue");
-    //map.put(cClientAppArgPrefix + "total.messages", "10000");
-    //map.put(cClientAppArgPrefix + "total.producers", "1");
-    //map.put(cClientAppArgPrefix + "total.consumers", "1");
-    map.put(cClientAppArgPrefix + "username", "root");
-    map.put(cClientAppArgPrefix + "password", "root");
-    //map.put(cClientAppArgPrefix + "host", "localhost");
-    //map.put(cClientAppArgPrefix + "port", "14560");
+    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    map.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
+    map.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
+    map.put(cConfigPrefix + "username", "root");
+    map.put(cConfigPrefix + "password", "root");
     ClientApp app = new ClientApp(map);
     
     boolean init = app.init();
@@ -49,6 +53,9 @@ public class ClientApp extends AKasAppl
     app.term();
   }
   
+  /**
+   * ClientApp data members
+   */
   private Thread [] mProducers;
   private Thread [] mConsumers;
   
@@ -118,13 +125,22 @@ public class ClientApp extends AKasAppl
       //===========================================================================================
       // defining queues which are used by producers and consumers
       //===========================================================================================
+      System.out.println("Creating resources..." + (mParams.mCreateResources ? "" : " skipped"));
       if (mParams.mCreateResources)
       {
-        Utils.createQueue(client, mParams.mProdQueueName, mParams.mTotalMessages);
-        if (!mParams.mProdQueueName.equals(mParams.mConsQueueName))
+        System.out.println("Creating queue: " + mParams.mProdQueueName);
+        try
+        {
+          Utils.createQueue(client, mParams.mProdQueueName, mParams.mTotalMessages);
+        }
+        catch (KasException e) {}
+        
+        System.out.println("Creating queue: " + mParams.mConsQueueName);
+        try
         {
           Utils.createQueue(client, mParams.mConsQueueName, mParams.mTotalMessages);
         }
+        catch (KasException e) {}
       }
       
       //===========================================================================================

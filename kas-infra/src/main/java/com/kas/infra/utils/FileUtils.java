@@ -72,7 +72,20 @@ public class FileUtils
     return result;
   }
   
-
+  /**
+   * Test if a path is a directory and exists.<br>
+   * 
+   * @param path The path to test
+   * @return {@code true} if and only if {@code path} designates an existing directory
+   */
+  static public boolean isDirAndExist(String path)
+  {
+    File dir = new File(path);
+    if ((dir.isDirectory()) && (dir.exists()))
+      return true;
+    return false;
+  }
+  
   /**
    * Verify a file exists.<br>
    * <br>

@@ -7,6 +7,7 @@ import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -58,6 +59,17 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   }
   
   /**
+   * Set KAS' home directory to {@code kasHome}
+   * 
+   * @param kasHome The home directory
+   */
+  static protected void setHomeDirectory(String kasHome)
+  {
+    sStartupLogger.info("Setting product home directory to: [" + kasHome + "]");
+    RunTimeUtils.setProperty(RunTimeUtils.cProductHomeDirProperty, kasHome, true);
+  }
+  
+  /**
    * Logger
    */
   protected ILogger mLogger = null;
@@ -65,7 +77,7 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   /**
    * Shutdown hook
    */
-  protected KasApplShutdownHook mShutdownHook = null;
+  protected ApplShutdownHook mShutdownHook = null;
   
   /**
    * The product version
@@ -102,9 +114,17 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   {
     sStartupLogger.info("KAS base application startup in progress...");
     
+    String kasHome = mStartupArgs.get(RunTimeUtils.cProductHomeDirProperty);
+    if (kasHome == null)
+    {
+      sStartupLogger.info("KAS home directory not specified, cannot continue...");
+      return false;
+    }
+    setHomeDirectory(kasHome);
+    
     mVersion = new ProductVersion(this.getClass());
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mShutdownHook = new KasApplShutdownHook(this);
+    mShutdownHook = new ApplShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     sStartupLogger.info("Logging services are now active, switching to log file");
     

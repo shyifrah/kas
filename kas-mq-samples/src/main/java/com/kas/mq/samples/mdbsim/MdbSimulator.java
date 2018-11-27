@@ -5,6 +5,8 @@ import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.utils.FileUtils;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
@@ -29,10 +31,35 @@ import com.kas.mq.samples.Utils;
  */
 public class MdbSimulator extends AKasAppl
 {
-  static final String cAppName = "MDB sample";
+  static final String cKasHome      = "./build/install/kas-mq-samples";
+  static final String cAppName      = "MdbSimSample";
+  static final String cConfigPrefix = "mdb.sim.";
+  
   static final long cConsumerPollingInterval = 1000L;
   static final long cConsumerGetTimeout      = 60000L;
   
+  static public void main(String [] args)
+  {
+    if (!FileUtils.isDirAndExist(cKasHome))
+    {
+      sStartupLogger.error("kas.home directory [" + cKasHome + "] does not exist");
+      return;
+    }
+        
+    Map<String, String> map = getAndProcessStartupArguments(args);
+    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    map.put(cConfigPrefix + "username", "root");
+    map.put(cConfigPrefix + "password", "root");
+    MdbSimulator app = new MdbSimulator(map);
+    
+    boolean init = app.init();
+    if (init) app.run();
+    app.term();
+  }
+  
+  /**
+   * MDB simulator data members
+   */
   private MdbSimulatorParams mParams;
   
   /**
@@ -102,12 +129,18 @@ public class MdbSimulator extends AKasAppl
       if (mParams.mCreateResources)
       {
         System.out.println("Creating queue: " + mParams.mRequestsQueue);
-        Utils.createQueue(client, mParams.mRequestsQueue, 10000);
-        if (!mParams.mRequestsQueue.equals(mParams.mRepliesQueue))
+        try
         {
-          System.out.println("Creating queue: " + mParams.mRepliesQueue);
-          Utils.createQueue(client, mParams.mRepliesQueue , 10000);
+          Utils.createQueue(client, mParams.mRequestsQueue, 10000);
         }
+        catch (KasException e) {}
+        
+        System.out.println("Creating queue: " + mParams.mRepliesQueue);
+        try
+        {
+          Utils.createQueue(client, mParams.mRepliesQueue, 10000);
+        }
+        catch (KasException e) {}
       }
       
       //===========================================================================================

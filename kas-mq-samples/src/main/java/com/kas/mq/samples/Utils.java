@@ -30,8 +30,6 @@ public class Utils
     client.deleteQueue(queue, true);
   }
   
-
-  
   /**
    * Report execution time
    * 
