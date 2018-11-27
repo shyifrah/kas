@@ -170,11 +170,11 @@ public class MqConnection extends AKasObject implements IMqConnection
     else
     {
       IMqMessage request = MqRequestFactory.createLoginRequest(user, pwd, mClientName);
-      mLogger.debug("MqConnection::login() - sending login request: " + request.toPrintableString(0));
+      mLogger.debug("MqConnection::login() - sending login request: " + StringUtils.asPrintableString(request));
       try
       {
         IMqMessage reply = (IMqMessage)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqConnection::login() - received response: " + reply.toPrintableString(0));
+        mLogger.debug("MqConnection::login() - received response: " + StringUtils.asPrintableString(reply));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
           String sid = reply.getStringProperty(IMqConstants.cKasPropertyLoginSession, UniqueId.cNullUniqueIdAsString);
