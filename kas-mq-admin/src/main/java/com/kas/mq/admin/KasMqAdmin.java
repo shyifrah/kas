@@ -7,6 +7,8 @@ import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.FileUtils;
+import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.admin.cmds.CliCommandFactory;
 import com.kas.mq.admin.cmds.ICliCommand;
@@ -19,7 +21,27 @@ import com.kas.mq.impl.MqContext;
  */
 public class KasMqAdmin extends AKasAppl 
 {
-  static final String cAppName = "KAS/MQ admin CLI";
+  static final String cKasHome = "./build/install/kas-mq-admin";
+  static final String cAppName = "KAS/MQ Admin Console";
+  
+  static public void main(String [] args)
+  {
+    if (!FileUtils.isDirAndExist(cKasHome))
+    {
+      sStartupLogger.error("kas.home directory [" + cKasHome + "] does not exist");
+      return;
+    }
+        
+    Map<String, String> map = getAndProcessStartupArguments(args);
+    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    KasMqAdmin app = new KasMqAdmin(map);
+    
+    boolean init = app.init();
+    if (init) app.run();
+    app.term();
+  }
+  
+  
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
   
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
