@@ -20,12 +20,12 @@ import com.kas.infra.utils.RunTimeUtils;
  * 
  * @author Pippo
  */
-public class KasApplLauncher
+public class KasAppLauncher
 {
   static private final String cKasHomeSystemProperty = RunTimeUtils.cProductHomeDirProperty;
   static private final String cAppClassSystemProperty = "kas.class";
   
-  static private IBaseLogger sLogger = new ConsoleLogger(KasApplLauncher.class.getName());
+  static private IBaseLogger sLogger = new ConsoleLogger(KasAppLauncher.class.getName());
   
   /**
    * Main function
@@ -144,20 +144,20 @@ public class KasApplLauncher
    */
   static private void launchApplication(String className, Map<String, String> args)
   {
-    AKasAppl app = null;
+    AKasApp app = null;
     boolean init = false;
     try
     {
       Class<?> cls = Class.forName(className);
       Constructor<?> ctor = cls.getConstructor(Map.class);
       Object instance = ctor.newInstance(args);
-      if (!(instance instanceof AKasAppl))
+      if (!(instance instanceof AKasApp))
       {
-        sLogger.error("KAS application not an instance of basic application class: " + AKasAppl.class.getName());
+        sLogger.error("KAS application not an instance of basic application class: " + AKasApp.class.getName());
       }
       else
       {
-        app = (AKasAppl)instance;
+        app = (AKasApp)instance;
         init = app.init();
         if (!init)
         {

@@ -3,10 +3,10 @@ package com.kas.mq.admin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import com.kas.appl.AKasAppl;
+import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
-import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.admin.cmds.CliCommandFactory;
@@ -14,11 +14,11 @@ import com.kas.mq.admin.cmds.ICliCommand;
 import com.kas.mq.impl.MqContext;
 
 /**
- * MQ administration CLI.
+ * KAS/MQ admin console
  * 
  * @author Pippo
  */
-public class KasMqAdmin extends AKasAppl 
+public class KasMqAdmin extends AKasApp 
 {
   static final String cKasHome = "./build/install/kas-mq-admin";
   static final String cAppName = "KAS/MQ Admin Console";
@@ -27,24 +27,16 @@ public class KasMqAdmin extends AKasAppl
   
   static public void main(String [] args)
   {
-    Map<String, String> argsMap = getAndProcessStartupArguments(args);
-    Map<String, String> map = new HashMap<String, String>();
-    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
-    map.putAll(argsMap);
+    Map<String, String> defaults = new HashMap<String, String>();
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
     
-    String kasHome = map.get(RunTimeUtils.cProductHomeDirProperty);
-    if (!FileUtils.isDirAndExist(kasHome))
-    {
-      sStartupLogger.error("kas.home directory [" + kasHome + "] does not exist");
-      return;
-    }
+    AppLauncher launcher = new AppLauncher(args, defaults);
+    Map<String, String> settings = launcher.getSettings();
     
-    KasMqAdmin app = new KasMqAdmin(map);
-    
-    boolean init = app.init();
-    if (init) app.run();
-    app.term();
+    KasMqAdmin app = new KasMqAdmin(settings);
+    launcher.launch(app);
   }
+  
   
   /**
    * A {@link MqContext} which will act as the client
@@ -58,7 +50,6 @@ public class KasMqAdmin extends AKasAppl
    */
   public KasMqAdmin(Map<String, String> args)
   {
-    super(args);
   }
   
   /**

@@ -7,7 +7,6 @@ import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.logging.IBaseLogger;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -16,9 +15,9 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public abstract class AKasAppl extends AKasObject implements IKasAppl
+public abstract class AKasApp extends AKasObject implements IKasApp
 {
-  static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasAppl.class.getName());
+  static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasApp.class.getName());
   
   /**
    * Check validity of startup arguments and return a map of arguments of keys and values
@@ -59,17 +58,6 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   }
   
   /**
-   * Set KAS' home directory to {@code kasHome}
-   * 
-   * @param kasHome The home directory
-   */
-  static protected void setHomeDirectory(String kasHome)
-  {
-    sStartupLogger.info("Setting product home directory to: [" + kasHome + "]");
-    RunTimeUtils.setProperty(RunTimeUtils.cProductHomeDirProperty, kasHome, true);
-  }
-  
-  /**
    * Logger
    */
   protected ILogger mLogger = null;
@@ -77,7 +65,7 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   /**
    * Shutdown hook
    */
-  protected ApplShutdownHook mShutdownHook = null;
+  protected AppShutdownHook mShutdownHook = null;
   
   /**
    * The product version
@@ -85,18 +73,10 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   protected ProductVersion mVersion = null;
   
   /**
-   * Startup arguments
+   * Construct the {@link AKasApp application}
    */
-  protected Map<String, String> mStartupArgs = null;
-  
-  /**
-   * Construct the {@link AKasAppl application} passing it the startup arguments
-   * 
-   * @param args The startup arguments
-   */
-  protected AKasAppl(Map<String, String> args)
+  protected AKasApp()
   {
-    mStartupArgs = args;
   }
   
   /**
@@ -114,17 +94,9 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
   {
     sStartupLogger.info("KAS base application startup in progress...");
     
-    String kasHome = mStartupArgs.get(RunTimeUtils.cProductHomeDirProperty);
-    if (kasHome == null)
-    {
-      sStartupLogger.info("KAS home directory not specified, cannot continue...");
-      return false;
-    }
-    setHomeDirectory(kasHome);
-    
     mVersion = new ProductVersion(this.getClass());
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mShutdownHook = new ApplShutdownHook(this);
+    mShutdownHook = new AppShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     sStartupLogger.info("Logging services are now active, switching to log file");
     
@@ -185,7 +157,7 @@ public abstract class AKasAppl extends AKasObject implements IKasAppl
    * 
    * @return {@code true} if main thread should execute the termination, {@code false} otherwise
    * 
-   * @see IKasAppl#run()
+   * @see IKasApp#run()
    */
   public boolean run()
   {

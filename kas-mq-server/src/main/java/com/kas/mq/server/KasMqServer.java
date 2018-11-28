@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import com.kas.appl.AKasAppl;
+import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.db.DbConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
@@ -23,9 +25,22 @@ import com.kas.mq.server.internal.ServerNotifier;
  * 
  * @author Pippo
  */
-public class KasMqServer extends AKasAppl implements IMqServer
+public class KasMqServer extends AKasApp implements IMqServer
 {
-  static final String cAppName = "KAS/MQ server";
+  static private final String cKasHome = "./build/install/kas-mq-server";
+  static private final String cAppName = "KAS/MQ server";
+  
+  static public void main(String [] args)
+  {
+    Map<String, String> defaults = new HashMap<String, String>();
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    
+    AppLauncher launcher = new AppLauncher(args, defaults);
+    Map<String, String> settings = launcher.getSettings();
+    
+    KasMqServer app = new KasMqServer(settings);
+    launcher.launch(app);
+  }
   
   /**
    * Server socket
@@ -75,11 +90,10 @@ public class KasMqServer extends AKasAppl implements IMqServer
   /**
    * Construct the {@link KasMqServer} passing it the startup arguments
    * 
-   * @param args The startup arguments
+   * @param settings The startup arguments
    */
-  public KasMqServer(Map<String, String> args)
+  protected KasMqServer(Map<String, String> settings)
   {
-    super(args);
   }
   
   /**

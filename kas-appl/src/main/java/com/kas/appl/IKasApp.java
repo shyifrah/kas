@@ -11,7 +11,7 @@ import com.kas.infra.config.IBaseListener;
  * 
  * @author Pippo
  */
-public interface IKasAppl extends IInitializable, IBaseListener
+public interface IKasApp extends IInitializable, IBaseListener
 {
   /**
    * Get the application name

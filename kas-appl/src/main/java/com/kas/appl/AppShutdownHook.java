@@ -5,7 +5,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
 /**
- * The {@link ApplShutdownHook} is a thread that kicks in the minute a shutdown signal is sent to the application.<br>
+ * The {@link AppShutdownHook} is a thread that kicks in the minute a shutdown signal is sent to the application.<br>
  * 
  * This is actually a shutdown hook that is registered via a call to {@link Runtime#addShutdownHook(Thread)}.
  * 
@@ -13,7 +13,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @see java.lang.Runtime#addShutdownHook(Thread)
  */
-public class ApplShutdownHook extends AKasThread
+public class AppShutdownHook extends AKasThread
 {
   /**
    * Logger
@@ -23,7 +23,7 @@ public class ApplShutdownHook extends AKasThread
   /**
    * The KAS application that should be stopped
    */
-  private AKasAppl mApplication;
+  private AKasApp mApplication;
   
   /**
    * Indicator if the hook is running
@@ -31,13 +31,13 @@ public class ApplShutdownHook extends AKasThread
   private boolean mIsRunning = false;
   
   /**
-   * Construct {@link ApplShutdownHook}
+   * Construct {@link AppShutdownHook}
    * 
    * @param appl The KAS application
    */
-  public ApplShutdownHook(AKasAppl appl)
+  public AppShutdownHook(AKasApp appl)
   {
-    super(ApplShutdownHook.class.getSimpleName());
+    super(AppShutdownHook.class.getSimpleName());
     mLogger = LoggerFactory.getLogger(this.getClass());
     mApplication = appl;
   }
@@ -45,7 +45,7 @@ public class ApplShutdownHook extends AKasThread
   /**
    * Running the shutdown hook.<br>
    * <br>
-   * The procedure is actually quite simple - invoking the application's {@link AKasAppl#term()} method.
+   * The procedure is actually quite simple - invoking the application's {@link AKasApp#term()} method.
    * 
    * @see com.kas.infra.base.IInitializable#term()
    */

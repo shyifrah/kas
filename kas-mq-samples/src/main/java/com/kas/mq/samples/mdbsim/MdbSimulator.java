@@ -2,11 +2,11 @@ package com.kas.mq.samples.mdbsim;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.kas.appl.AKasAppl;
+import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
-import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.MqContext;
@@ -30,7 +30,7 @@ import com.kas.mq.samples.Utils;
  * 
  * @author Pippo
  */
-public class MdbSimulator extends AKasAppl
+public class MdbSimulator extends AKasApp
 {
   static final String cKasHome      = "./build/install/kas-mq-samples";
   static final String cAppName      = "MdbSimSample";
@@ -38,28 +38,19 @@ public class MdbSimulator extends AKasAppl
   
   static final long cConsumerPollingInterval = 1000L;
   static final long cConsumerGetTimeout      = 60000L;
-  
+
   static public void main(String [] args)
   {
-    Map<String, String> argsMap = getAndProcessStartupArguments(args);
-    Map<String, String> map = new HashMap<String, String>();
-    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
-    map.put(cConfigPrefix + "username", "root");
-    map.put(cConfigPrefix + "password", "root");
-    map.putAll(argsMap);
+    Map<String, String> defaults = new HashMap<String, String>();
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    defaults.put(cConfigPrefix + "username", "root");
+    defaults.put(cConfigPrefix + "password", "root");
     
-    String kasHome = map.get(RunTimeUtils.cProductHomeDirProperty);
-    if (!FileUtils.isDirAndExist(kasHome))
-    {
-      sStartupLogger.error("kas.home directory [" + kasHome + "] does not exist");
-      return;
-    }
+    AppLauncher launcher = new AppLauncher(args, defaults);
+    Map<String, String> settings = launcher.getSettings();
     
-    MdbSimulator app = new MdbSimulator(map);
-    
-    boolean init = app.init();
-    if (init) app.run();
-    app.term();
+    MdbSimulator app = new MdbSimulator(settings);
+    launcher.launch(app);
   }
   
   /**
@@ -74,7 +65,6 @@ public class MdbSimulator extends AKasAppl
    */
   public MdbSimulator(Map<String, String> args)
   {
-    super(args);
     mParams = new MdbSimulatorParams(args);
   }
 

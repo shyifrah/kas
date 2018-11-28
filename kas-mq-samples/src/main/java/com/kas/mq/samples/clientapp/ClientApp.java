@@ -2,10 +2,10 @@ package com.kas.mq.samples.clientapp;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.kas.appl.AKasAppl;
+import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
-import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.samples.Utils;
@@ -27,7 +27,7 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  * 
  * @author Pippo
  */
-public class ClientApp extends AKasAppl 
+public class ClientApp extends AKasApp 
 {
   static final String cKasHome      = "./build/install/kas-mq-samples";
   static final String cAppName      = "ClientAppSample";
@@ -35,27 +35,18 @@ public class ClientApp extends AKasAppl
   
   static public void main(String [] args)
   {
-    Map<String, String> argsMap = getAndProcessStartupArguments(args);
-    Map<String, String> map = new HashMap<String, String>();
-    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
-    map.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
-    map.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
-    map.put(cConfigPrefix + "username", "root");
-    map.put(cConfigPrefix + "password", "root");
-    map.putAll(argsMap);
+    Map<String, String> defaults = new HashMap<String, String>();
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    defaults.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
+    defaults.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
+    defaults.put(cConfigPrefix + "username", "root");
+    defaults.put(cConfigPrefix + "password", "root");
     
-    String kasHome = map.get(RunTimeUtils.cProductHomeDirProperty);
-    if (!FileUtils.isDirAndExist(kasHome))
-    {
-      sStartupLogger.error("kas.home directory [" + kasHome + "] does not exist");
-      return;
-    }
+    AppLauncher launcher = new AppLauncher(args, defaults);
+    Map<String, String> settings = launcher.getSettings();
     
-    ClientApp app = new ClientApp(map);
-    
-    boolean init = app.init();
-    if (init) app.run();
-    app.term();
+    ClientApp app = new ClientApp(settings);
+    launcher.launch(app);
   }
   
   /**
@@ -73,7 +64,6 @@ public class ClientApp extends AKasAppl
    */
   public ClientApp(Map<String, String> args)
   {
-    super(args);
     mParams = new ClientAppParams(args);
   }
   
@@ -234,6 +224,6 @@ public class ClientApp extends AKasAppl
     System.out.println("Ended at..................: " + tsEnd.toString());
     
     String runTime = Utils.reportTime(tsStart, tsEnd);
-    System.out.println("Total run time.....: " + runTime);
+    System.out.println("Run time...........: " + runTime);
   }
 }

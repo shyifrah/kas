@@ -1,7 +1,9 @@
 package com.kas.mq.server;
 
+import java.util.HashMap;
 import java.util.Map;
-import com.kas.appl.AKasAppl;
+import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.KasException;
 import com.kas.infra.logging.IBaseLogger;
@@ -16,14 +18,28 @@ import com.kas.mq.internal.MqRequestFactory;
  * 
  * @author Pippo
  */
-public class KasMqStopper extends AKasAppl 
+public class KasMqStopper extends AKasApp 
 {
-  static final String cAppName = "KAS/MQ server-stopper";
-  
-  static private final String cKasUserSystemProperty = "kas.user";
-  static private final String cKasPassSystemProperty = "kas.pass";
+  static private final String cKasHome = "./build/install/kas-mq-server";
+  static private final String cAppName = "KAS/MQ server-stopper";
+  static private final String cKasUser = "kas.user";
+  static private final String cKasPass = "kas.pass";
   
   static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqStopper.class.getName());
+  
+  static public void main(String [] args)
+  {
+    Map<String, String> defaults = new HashMap<String, String>();
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    defaults.put(cKasUser, "root");
+    defaults.put(cKasPass, "root");
+    
+    AppLauncher launcher = new AppLauncher(args, defaults);
+    Map<String, String> settings = launcher.getSettings();
+    
+    KasMqStopper app = new KasMqStopper(settings);
+    launcher.launch(app);
+  }
   
   /**
    * KAS/MQ server's configuration
@@ -31,13 +47,20 @@ public class KasMqStopper extends AKasAppl
   private MqConfiguration mConfig = null;
   
   /**
+   * Credentials for the stopper
+   */
+  private String mUserName;
+  private String mPassword;
+  
+  /**
    * Construct the {@link KasMqStopper} passing it the startup arguments
    * 
-   * @param args The startup arguments
+   * @param settings The startup arguments
    */
-  public KasMqStopper(Map<String, String> args)
+  protected KasMqStopper(Map<String, String> settings)
   {
-    super(args);
+    mUserName = settings.get(cKasUser);
+    mPassword = settings.get(cKasPass);
   }
   
   /**
@@ -87,8 +110,6 @@ public class KasMqStopper extends AKasAppl
   {
     MqContext context = new MqContext(cAppName);
     int port = mConfig.getPort();
-    String user = mStartupArgs.get(cKasUserSystemProperty);
-    String pass = mStartupArgs.get(cKasPassSystemProperty);
     String deadq = mConfig.getDeadQueueName();
     
     boolean shouldContinue = true;
@@ -99,7 +120,7 @@ public class KasMqStopper extends AKasAppl
       try
       {
         sStartupLogger.info("Connecting to KAS/MQ server on localhost...");
-        context.connect("localhost", port, user, pass);
+        context.connect("localhost", port, mUserName, mPassword);
         connected = true;
         RunTimeUtils.sleepForMilliSeconds(500);
       }
@@ -111,7 +132,7 @@ public class KasMqStopper extends AKasAppl
     
     if (shouldContinue)
     {
-      IMqMessage request = MqRequestFactory.createTermServerRequest(user);
+      IMqMessage request = MqRequestFactory.createTermServerRequest(mUserName);
       try
       {
         sStartupLogger.info("Putting shutdown request...");
