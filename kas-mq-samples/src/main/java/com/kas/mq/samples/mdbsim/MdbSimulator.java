@@ -1,5 +1,6 @@
 package com.kas.mq.samples.mdbsim;
 
+import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
@@ -40,16 +41,20 @@ public class MdbSimulator extends AKasAppl
   
   static public void main(String [] args)
   {
-    if (!FileUtils.isDirAndExist(cKasHome))
-    {
-      sStartupLogger.error("kas.home directory [" + cKasHome + "] does not exist");
-      return;
-    }
-        
-    Map<String, String> map = getAndProcessStartupArguments(args);
+    Map<String, String> argsMap = getAndProcessStartupArguments(args);
+    Map<String, String> map = new HashMap<String, String>();
     map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
     map.put(cConfigPrefix + "username", "root");
     map.put(cConfigPrefix + "password", "root");
+    map.putAll(argsMap);
+    
+    String kasHome = map.get(RunTimeUtils.cProductHomeDirProperty);
+    if (!FileUtils.isDirAndExist(kasHome))
+    {
+      sStartupLogger.error("kas.home directory [" + kasHome + "] does not exist");
+      return;
+    }
+    
     MdbSimulator app = new MdbSimulator(map);
     
     boolean init = app.init();

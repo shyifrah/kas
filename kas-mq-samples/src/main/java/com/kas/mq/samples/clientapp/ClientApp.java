@@ -1,5 +1,6 @@
 package com.kas.mq.samples.clientapp;
 
+import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasAppl;
 import com.kas.infra.base.KasException;
@@ -34,18 +35,22 @@ public class ClientApp extends AKasAppl
   
   static public void main(String [] args)
   {
-    if (!FileUtils.isDirAndExist(cKasHome))
-    {
-      sStartupLogger.error("kas.home directory [" + cKasHome + "] does not exist");
-      return;
-    }
-        
-    Map<String, String> map = getAndProcessStartupArguments(args);
+    Map<String, String> argsMap = getAndProcessStartupArguments(args);
+    Map<String, String> map = new HashMap<String, String>();
     map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
     map.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
     map.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
     map.put(cConfigPrefix + "username", "root");
     map.put(cConfigPrefix + "password", "root");
+    map.putAll(argsMap);
+    
+    String kasHome = map.get(RunTimeUtils.cProductHomeDirProperty);
+    if (!FileUtils.isDirAndExist(kasHome))
+    {
+      sStartupLogger.error("kas.home directory [" + kasHome + "] does not exist");
+      return;
+    }
+    
     ClientApp app = new ClientApp(map);
     
     boolean init = app.init();

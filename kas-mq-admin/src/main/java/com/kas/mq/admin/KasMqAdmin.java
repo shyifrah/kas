@@ -1,10 +1,9 @@
 package com.kas.mq.admin;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import com.kas.appl.AKasAppl;
-import com.kas.infra.base.ConsoleLogger;
-import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.FileUtils;
@@ -23,28 +22,29 @@ public class KasMqAdmin extends AKasAppl
 {
   static final String cKasHome = "./build/install/kas-mq-admin";
   static final String cAppName = "KAS/MQ Admin Console";
+  static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
+  
   
   static public void main(String [] args)
   {
-    if (!FileUtils.isDirAndExist(cKasHome))
+    Map<String, String> argsMap = getAndProcessStartupArguments(args);
+    Map<String, String> map = new HashMap<String, String>();
+    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    map.putAll(argsMap);
+    
+    String kasHome = map.get(RunTimeUtils.cProductHomeDirProperty);
+    if (!FileUtils.isDirAndExist(kasHome))
     {
-      sStartupLogger.error("kas.home directory [" + cKasHome + "] does not exist");
+      sStartupLogger.error("kas.home directory [" + kasHome + "] does not exist");
       return;
     }
-        
-    Map<String, String> map = getAndProcessStartupArguments(args);
-    map.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    
     KasMqAdmin app = new KasMqAdmin(map);
     
     boolean init = app.init();
     if (init) app.run();
     app.term();
   }
-  
-  
-  static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
-  
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqAdmin.class.getName());
   
   /**
    * A {@link MqContext} which will act as the client
