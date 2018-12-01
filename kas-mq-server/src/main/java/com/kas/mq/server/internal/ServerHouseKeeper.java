@@ -10,8 +10,11 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.ServerRepository;
 
 /**
- * The {@link ServerHouseKeeper}, which is a {@link Runnable} object that will be scheduled for execution
- * at a fixed rate to perform some housekeeping tasks.
+ * The {@link ServerHouseKeeper} is a {@link Runnable} object that will be
+ * scheduled for execution at a fixed rate to perform some housekeeping tasks.<br>
+ * <br>
+ * Housekeeping tasks include:<br>
+ * 1. Expiring old messages
  * 
  * @author Pippo
  */

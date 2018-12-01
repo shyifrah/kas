@@ -63,7 +63,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   private ServerHouseKeeper mHousekeeper = null;
   
   /**
-   * {@ServerNotifier}
+   * {@link ServerNotifier}
    */
   private ServerNotifier mNotifier = null;
   

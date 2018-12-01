@@ -11,6 +11,12 @@ import com.kas.mq.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.repo.MqRemoteManager;
 
+/**
+ * The {@link ServerNotifier} responsible for broadcasting messages
+ * to remote KAS/MQ servers regarding the local KAS/MQ server state.
+ * 
+ * @author Pippo
+ */
 public class ServerNotifier extends AKasObject
 {
   /**
