@@ -3,6 +3,15 @@
 @echo off
 
 title KAS/MQ Server start
+set "PASSED_ARGS=%*"
 
-set "BATCH_DIR=%~dp0"
-call %BATCH_DIR%/launcher.bat kas.class=com.kas.mq.server.KasMqServer
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Setup
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+set "SCRIPT_DIR=%~dp0"
+call %SCRIPT_DIR%/launcher.bat
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Run command
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.mq.server.KasMqServer %PASSED_ARGS%
