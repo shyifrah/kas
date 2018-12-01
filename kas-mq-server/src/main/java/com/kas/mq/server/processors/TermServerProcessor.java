@@ -5,6 +5,8 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for terminating the KAS/MQ server
@@ -41,13 +43,17 @@ public class TermServerProcessor extends AProcessor
     }
     else
     {
-      String user = mRequest.getStringProperty(IMqConstants.cKasPropertyTermUserName, IMqConstants.cSystemUserName);
-      mDesc = "Cannot shutdown KAS/MQ server with non-admin user";
-      if ("admin".equalsIgnoreCase(user))
+      UserEntity ue = mHandler.getActiveUser();
+      if (ue.isAccessPermitted(EResourceClass.COMMAND, "TERM_SERVER"))
       {
         mCode = EMqCode.cOkay;
         mDesc = "Shutdown request was successfully posted";
         mLogger.debug("TermServerProcessor::process() - " + mDesc);
+      }
+      else
+      {
+        mDesc = "User " + ue.toString() + " is not permitted to terminate KAS/MQ server";
+        mLogger.warn(mDesc);
       }
     }
     
