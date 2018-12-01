@@ -2,8 +2,6 @@
 @setlocal enabledelayedexpansion
 @echo off
 
-title MDB-Simulator
-
 :: the program creates messages by producer threads and
 :: simultaneously consumes them by the consumer threads
 ::
@@ -19,8 +17,19 @@ title MDB-Simulator
 :: if an argument is specified more than once, its last occurrence takes place.
 :: this means that any value passed to this batch script override the value specified below
 
-set "BATCH_DIR=%~dp0"
-call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.mdbsim.MdbSimulator ^
+title MDB-Simulator
+set "PASSED_ARGS=%*"
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Setup
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+set "SCRIPT_DIR=%~dp0"
+call %SCRIPT_DIR%/launcher.bat
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Run command
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.mq.samples.mdbsim.MdbSimulator ^ 
   mdb.sim.create.res=true ^
   mdb.sim.req.queuename=mdb.req.queue ^
   mdb.sim.rep.queuename=mdb.rep.queue ^
@@ -28,4 +37,4 @@ call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.mdbsim.Mdb
   mdb.sim.password=admin ^
   mdb.sim.host=localhost ^
   mdb.sim.port=14560 ^
-  %*
+  %PASSED_ARGS%

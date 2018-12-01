@@ -2,8 +2,6 @@
 @setlocal enabledelayedexpansion
 @echo off
 
-title Client-App
-
 :: the program creates messages by producer threads and
 :: simultaneously consumes them by the consumer threads
 ::
@@ -23,8 +21,19 @@ title Client-App
 :: if an argument is specified more than once, its last occurrence takes place.
 :: this means that any value passed to this batch script override the value specified below
 
-set "BATCH_DIR=%~dp0"
-call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.clientapp.ClientApp ^
+title Client-App
+set "PASSED_ARGS=%*"
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Setup
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+set "SCRIPT_DIR=%~dp0"
+call %SCRIPT_DIR%/launcher.bat
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Run command
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.mq.samples.clientapp.ClientApp ^ 
   client.app.message.type=0 ^
   client.app.put.queuename=mdb.req.queue ^
   client.app.get.queuename=mdb.rep.queue ^
@@ -35,4 +44,4 @@ call %BATCH_DIR%/launcher.bat kas.home=. kas.class=com.kas.mq.samples.clientapp.
   client.app.password=admin ^
   client.app.host=localhost ^
   client.app.port=14560 ^
-  %*
+  %PASSED_ARGS%
