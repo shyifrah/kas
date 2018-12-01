@@ -24,7 +24,6 @@ public class KasMqAdmin extends AKasApp
   static final String cAppName = "KAS/MQ Admin Console";
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
   
-  
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
@@ -36,7 +35,6 @@ public class KasMqAdmin extends AKasApp
     KasMqAdmin app = new KasMqAdmin(settings);
     launcher.launch(app);
   }
-  
   
   /**
    * A {@link MqContext} which will act as the client
