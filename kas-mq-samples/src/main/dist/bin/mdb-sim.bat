@@ -2,8 +2,8 @@
 @setlocal enabledelayedexpansion
 @echo off
 
-:: the program creates messages by producer threads and
-:: simultaneously consumes them by the consumer threads
+:: the program creates reads messages from request queue
+:: and reply to the reply queue
 ::
 :: available arguments to the application:
 ::
