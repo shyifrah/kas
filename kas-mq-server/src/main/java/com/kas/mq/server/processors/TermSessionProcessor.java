@@ -6,6 +6,8 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for terminating an active session
@@ -52,16 +54,24 @@ public class TermSessionProcessor extends AProcessor
       if (sessid != null) mSessionId = UniqueId.fromString(sessid);
       mLogger.debug("TermSessionProcessor::process() - SessionId=" + mSessionId);
       
+      UserEntity ue = mHandler.getActiveUser();
+      
       SessionHandler handler = mController.getHandler(mSessionId);
       if (handler == null)
       {
         mDesc = "Session with ID " + mSessionId + " does not exist";
       }
-      else
+      else if (ue.isAccessPermitted(EResourceClass.COMMAND, "TERM_SESSION"))
       {
         handler.end();
-        mDesc = "Session with ID " + mSessionId + " was successfully terminated";
         mCode = EMqCode.cOkay;
+        mDesc = "Session with ID " + mSessionId + " was successfully terminated";
+        mLogger.debug("TermSessionProcessor::process() - " + mDesc);
+      }
+      else
+      {
+        mDesc = "User " + ue.toString() + " is not permitted to terminate sessions";
+        mLogger.warn(mDesc);
       }
     }
     

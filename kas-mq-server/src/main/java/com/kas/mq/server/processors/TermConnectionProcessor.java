@@ -8,6 +8,8 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for terminating an active connection
@@ -53,6 +55,8 @@ public class TermConnectionProcessor extends AProcessor
       String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyTermConnId, null);
       if (connid != null) mConnectionId = UniqueId.fromString(connid);
       mLogger.debug("TermConnectionProcessor::process() - ConnectionId=" + mConnectionId);
+      
+      UserEntity ue = mHandler.getActiveUser();
     
       MqServerConnectionPool pool = MqServerConnectionPool.getInstance();
       MqServerConnection conn = pool.getConnection(mConnectionId);
@@ -60,11 +64,17 @@ public class TermConnectionProcessor extends AProcessor
       {
         mDesc = "Connection with ID " + mConnectionId + " does not exist";
       }
-      else
+      else if (ue.isAccessPermitted(EResourceClass.COMMAND, "TERM_CONNECTION"))
       {
         pool.release(conn);
-        mDesc = "Connection with ID " + mConnectionId + " was successfully terminated";
         mCode = EMqCode.cOkay;
+        mDesc = "Connection with ID " + mConnectionId + " was successfully terminated";
+        mLogger.debug("TermConnectionProcessor::process() - " + mDesc);
+      }
+      else
+      {
+        mDesc = "User " + ue.toString() + " is not permitted to terminate connections";
+        mLogger.warn(mDesc);
       }
     }
     

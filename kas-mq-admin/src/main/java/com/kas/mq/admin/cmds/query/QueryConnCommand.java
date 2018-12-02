@@ -5,7 +5,7 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
 import com.kas.mq.internal.IMqConstants;
 
@@ -54,7 +54,7 @@ public class QueryConnCommand extends ACliCommand
     opt = opt.toUpperCase();
     
     Properties qprops = new Properties();
-    EQueryType qType = EQueryType.cQueryConnection;
+    EQueryType qType = EQueryType.QUERY_CONNECTION;
     
     if (!opt.equals("ALL"))
     {

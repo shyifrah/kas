@@ -4,7 +4,7 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
 
 /**
@@ -53,17 +53,17 @@ public class QueryConfCommand extends ACliCommand
     opt = opt.toUpperCase();
     
     Properties qprops = new Properties();
-    EQueryType qType = EQueryType.cUnknown;
+    EQueryType qType = EQueryType.UNKNOWN;
     if (opt.equals("ALL"))
-      qType = EQueryType.cQueryConfigAll;
+      qType = EQueryType.QUERY_CONFIG_ALL;
     else if (opt.equals("LOGGING"))
-      qType = EQueryType.cQueryConfigLogging;
+      qType = EQueryType.QUERY_CONFIG_LOGGING;
     else if (opt.equals("MQ"))
-      qType = EQueryType.cQueryConfigMq;
+      qType = EQueryType.QUERY_CONFIG_MQ;
     else if (opt.equals("SERIALIZER"))
-      qType = EQueryType.cQueryConfigSerializer;
+      qType = EQueryType.QUERY_CONFIG_SERIALIZER;
     
-    if (qType == EQueryType.cUnknown)
+    if (qType == EQueryType.UNKNOWN)
     {
       writeln("Invalid query type \"" + opt + "\"");
       writeln(" ");

@@ -1,6 +1,5 @@
 package com.kas.mq.server.processors;
 
-import com.kas.mq.impl.IMqGlobals.EQueryType;
 import java.util.Collection;
 import java.util.Map;
 import com.kas.comm.serializer.Deserializer;
@@ -8,6 +7,7 @@ import com.kas.config.MainConfiguration;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.impl.LogSystem;
+import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -17,6 +17,8 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for querying server's information
@@ -69,47 +71,56 @@ public class QueryServerProcessor extends AProcessor
     }
     else
     {
-      int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQueryType, EQueryType.cUnknown.ordinal());
+      int temp = mRequest.getIntProperty(IMqConstants.cKasPropertyQueryType, EQueryType.UNKNOWN.ordinal());
       mQueryType = EQueryType.fromInt(temp);
       mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString());
       
-      mCode = EMqCode.cOkay;
-      mDesc = "";
-      switch (mQueryType)
+      UserEntity ue = mHandler.getActiveUser();
+      if (ue.isAccessPermitted(EResourceClass.COMMAND, mQueryType.name()))
       {
-        case cQueryConfigAll:
-          body = MainConfiguration.getInstance().toPrintableString();
-          break;
-        case cQueryConfigLogging:
-          body = LogSystem.getInstance().getConfig().toPrintableString();
-          break;
-        case cQueryConfigMq:
-          body = mConfig.toPrintableString();
-          break;
-        case cQueryConfigSerializer:
-          body = Deserializer.getInstance().getConfig().toPrintableString();
-          break;
-        case cQuerySession:
-          body = querySession();
-          break;
-        case cQueryConnection:
-          body = queryConnection();
-          break;
-        case cQueryQueue:
-          props = queryQueue();
-          if (!mQueryOutProps)
-          {
-            StringBuilder sb = new StringBuilder();
-            for (Map.Entry<Object, Object> entry : props.entrySet())
-              sb.append(entry.getValue().toString()).append('\n');
-            body = sb.toString();
-          }
-          break;
-        case cUnknown:
-        default:
-          mCode = EMqCode.cError;
-          mDesc = "Invalid query server information type: " + temp;
-          break;
+        mDesc = "User " + ue.toString() + " is not permitted to query the server";
+        mLogger.warn(mDesc);
+      }
+      else
+      {
+        mCode = EMqCode.cOkay;
+        mDesc = "";
+        switch (mQueryType)
+        {
+          case QUERY_CONFIG_ALL:
+            body = MainConfiguration.getInstance().toPrintableString();
+            break;
+          case QUERY_CONFIG_LOGGING:
+            body = LogSystem.getInstance().getConfig().toPrintableString();
+            break;
+          case QUERY_CONFIG_MQ:
+            body = mConfig.toPrintableString();
+            break;
+          case QUERY_CONFIG_SERIALIZER:
+            body = Deserializer.getInstance().getConfig().toPrintableString();
+            break;
+          case QUERY_SESSION:
+            body = querySession();
+            break;
+          case QUERY_CONNECTION:
+            body = queryConnection();
+            break;
+          case QUERY_QUEUE:
+            props = queryQueue();
+            if (!mQueryOutProps)
+            {
+              StringBuilder sb = new StringBuilder();
+              for (Map.Entry<Object, Object> entry : props.entrySet())
+                sb.append(entry.getValue().toString()).append('\n');
+              body = sb.toString();
+            }
+            break;
+          case UNKNOWN:
+          default:
+            mCode = EMqCode.cError;
+            mDesc = "Invalid query server information type: " + temp;
+            break;
+        }
       }
     }
     
@@ -132,7 +143,7 @@ public class QueryServerProcessor extends AProcessor
   {
     mLogger.debug("QueryServerProcessor::postprocess() - IN");
     
-    if ((mQueryType == EQueryType.cQueryQueue) && (mQueryOriginQmgr != null))
+    if ((mQueryType == EQueryType.QUERY_QUEUE) && (mQueryOriginQmgr != null))
     {
       mLogger.debug("QueryServerProcessor::process() - Origin is not null, checking if should also handle a sys-state change");
       MqManager manager = mRepository.getRemoteManager(mQueryOriginQmgr);

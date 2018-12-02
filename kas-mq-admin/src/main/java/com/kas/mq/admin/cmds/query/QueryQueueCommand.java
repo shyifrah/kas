@@ -5,7 +5,7 @@ import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
 import com.kas.mq.internal.IMqConstants;
 
@@ -89,7 +89,7 @@ public class QueryQueueCommand extends ACliCommand
       return false;
     }
     
-    MqStringMessage result = mClient.queryServer(EQueryType.cQueryQueue, qprops);
+    MqStringMessage result = mClient.queryServer(EQueryType.QUERY_QUEUE, qprops);
     if (result != null)
       writeln(result.getBody());
     writeln(mClient.getResponse());

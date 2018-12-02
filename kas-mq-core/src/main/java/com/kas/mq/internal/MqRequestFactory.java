@@ -4,7 +4,7 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.IMqGlobals.EQueryType;
+import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
 
