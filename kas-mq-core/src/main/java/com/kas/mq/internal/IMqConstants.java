@@ -41,7 +41,7 @@ public interface IMqConstants
    * This user does not actually exist
    */
   static public final String cSystemUserName = "SYSTEM";
-  static public final String cSystemPassWord = "K4S/MQ";
+  static public final String cSystemPassWord = "SYSTEM";
   
   /**
    * Property names

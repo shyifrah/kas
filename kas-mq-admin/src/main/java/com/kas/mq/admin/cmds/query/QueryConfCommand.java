@@ -60,6 +60,8 @@ public class QueryConfCommand extends ACliCommand
       qType = EQueryType.QUERY_CONFIG_LOGGING;
     else if (opt.equals("MQ"))
       qType = EQueryType.QUERY_CONFIG_MQ;
+    else if (opt.equals("DB"))
+      qType = EQueryType.QUERY_CONFIG_DB;
     else if (opt.equals("SERIALIZER"))
       qType = EQueryType.QUERY_CONFIG_SERIALIZER;
     

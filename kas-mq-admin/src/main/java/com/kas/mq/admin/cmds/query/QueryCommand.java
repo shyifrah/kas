@@ -75,6 +75,8 @@ public class QueryCommand extends ACliCommand
     writeln("                                                             |                  |");
     writeln("                                                             +--- MQ -----------+");
     writeln("                                                             |                  |");
+    writeln("                                                             +--- DB -----------+");
+    writeln("                                                             |                  |");
     writeln("                                                             +--- LOGGING ------+");
     writeln("                                                             |                  |");
     writeln("                                                             +--- SERIALIZER ---+");

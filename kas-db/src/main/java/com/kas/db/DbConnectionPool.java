@@ -81,6 +81,16 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   private Map<UniqueId, DbConnection> mConnMap;
   
   /**
+   * Get the DB configuration
+   * 
+   * @return the DB configuration
+   */
+  public DbConfiguration getConfig()
+  {
+    return mConfig;
+  }
+  
+  /**
    * Construct the DB pool
    * 
    * @param config The configuration object

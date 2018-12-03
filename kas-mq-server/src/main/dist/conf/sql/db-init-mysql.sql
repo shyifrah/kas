@@ -39,8 +39,11 @@ INSERT INTO kas_mq_users (user_name, user_description, user_password)
   VALUES('oper', 'system operator', 'oper');
   
 INSERT INTO kas_mq_users (user_name, user_description, user_password)
-  VALUES('guest', 'guest user', 'guest');
+  VALUES('system', 'system user', 'system');
 
+INSERT INTO kas_mq_users (user_name, user_description, user_password)
+  VALUES('guest', 'guest user', 'guest');
+  
 --
 -- groups
 --
@@ -53,6 +56,9 @@ CREATE TABLE kas_mq_groups (
 INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('admins', 'administrators');
   
+INSERT INTO kas_mq_groups (group_name, group_description)
+  VALUES('kas', 'kas system');
+
 INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('mods', 'moderators');
 
@@ -91,6 +97,19 @@ INSERT INTO kas_mq_users_to_groups
     SELECT group_id
     FROM kas_mq_groups 
     WHERE group_name = 'mods'
+  ) groups;
+
+INSERT INTO kas_mq_users_to_groups
+  SELECT user_id, group_id FROM 
+  (
+    SELECT user_id
+    FROM kas_mq_users
+    WHERE user_name = 'system'
+  ) users,
+  (
+    SELECT group_id
+    FROM kas_mq_groups 
+    WHERE group_name = 'kas'
   ) groups;
 
 --

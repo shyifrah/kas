@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Map;
 import com.kas.comm.serializer.Deserializer;
 import com.kas.config.MainConfiguration;
+import com.kas.db.DbConfiguration;
+import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.logging.impl.LogSystem;
@@ -95,6 +97,9 @@ public class QueryServerProcessor extends AProcessor
             break;
           case QUERY_CONFIG_MQ:
             body = mConfig.toPrintableString();
+            break;
+          case QUERY_CONFIG_DB:
+            body = DbConnectionPool.getInstance().getConfig().toPrintableString();
             break;
           case QUERY_CONFIG_SERIALIZER:
             body = Deserializer.getInstance().getConfig().toPrintableString();

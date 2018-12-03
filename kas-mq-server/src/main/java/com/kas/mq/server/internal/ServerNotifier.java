@@ -61,7 +61,14 @@ public class ServerNotifier extends AKasObject
     Properties props = mRepository.queryLocalQueues("", true, false);
     message.setSubset(props);
     
-    notify(message, true);
+    try
+    {
+      notify(message, true);
+    }
+    catch (Throwable e)
+    {
+      mLogger.warn("Failed to notify remote KAS/MQ servers on server activation");
+    }
     
     mLogger.debug("ServerNotifier::notifyServerActivated() - OUT");
   }
@@ -79,7 +86,14 @@ public class ServerNotifier extends AKasObject
     String qmgr = mRepository.getLocalManager().getName();
     IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, false);
     
-    notify(message, false);
+    try
+    {
+      notify(message, false);
+    }
+    catch (Throwable e)
+    {
+      mLogger.warn("Failed to notify remote KAS/MQ servers on server deactivation");
+    }
     
     mLogger.debug("ServerNotifier::notifyServerDeactivated() - OUT");
   }
@@ -111,7 +125,8 @@ public class ServerNotifier extends AKasObject
       conn.connect(host, port);
       if (conn.isConnected())
       {
-        conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+        boolean logged = conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+        if (!logged) throw new IllegalStateException("Failed to login to remote KAS/MQ server at " + host + ':' + port);
         
         IMqMessage reply = conn.notifySysState(message);
         
