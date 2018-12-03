@@ -68,7 +68,7 @@ public class MqServerConnectionPool extends AKasObject implements IMqConnectionP
   {
     mLogger.debug("MqServerConnectionPool::allocate() - IN");
     
-    String clientApp = String.format("ServerConn%05d", mSequence.getAndIncrement());
+    String clientApp = String.format("KAS/MQ Server Conn %05d", mSequence.getAndIncrement());
     MqServerConnection conn = new MqServerConnection(clientApp);
     UniqueId uid = conn.getConnectionId();
     mConnections.put(uid, conn);

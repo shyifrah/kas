@@ -57,7 +57,7 @@ INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('admins', 'administrators');
   
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('kas', 'kas system');
+  VALUES('kas', 'kas internal system');
 
 INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('mods', 'moderators');
@@ -115,6 +115,7 @@ INSERT INTO kas_mq_users_to_groups
 --
 -- command permissions:
 --   administrators and moderators can issue all commands
+--   kas internal users can issue only TERM_SERVER
 --
 CREATE TABLE kas_mq_command_permissions (
   pattern      VARCHAR(100) NOT NULL,
@@ -127,17 +128,17 @@ CREATE TABLE kas_mq_command_permissions (
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'admins';
-
+  WHERE group_name IN ('admins', 'mods');
+  
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
-  SELECT '.*', group_id, 1
+  SELECT 'TERM_SERVER', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'mods';
+  WHERE group_name = 'kas';
 
 --
 -- application permissions:
 --   administrators can login from all applications
---   moderators can login from all KAS applications
+--   moderators and kas internal users can login from all KAS applications
 --
 CREATE TABLE kas_mq_application_permissions (
   pattern      VARCHAR(100) NOT NULL,
@@ -155,7 +156,7 @@ INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT 'KAS.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'mods';
+  WHERE group_name IN ('mods', 'kas');
 
 --
 -- queue permissions:

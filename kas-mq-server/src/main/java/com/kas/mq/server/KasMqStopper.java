@@ -5,13 +5,11 @@ import java.util.Map;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
 import com.kas.infra.base.ConsoleLogger;
-import com.kas.infra.base.KasException;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.messages.IMqMessage;
-import com.kas.mq.internal.MqRequestFactory;
+import com.kas.mq.server.internal.MqServerConnection;
+import com.kas.mq.server.internal.MqServerConnectionPool;
 
 /**
  * MQ server stopper.<br>
@@ -31,8 +29,8 @@ public class KasMqStopper extends AKasApp
   {
     Map<String, String> defaults = new HashMap<String, String>();
     defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
-    defaults.put(cKasUser, "root");
-    defaults.put(cKasPass, "root");
+    defaults.put(cKasUser, "system");
+    defaults.put(cKasPass, "system");
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
@@ -108,56 +106,61 @@ public class KasMqStopper extends AKasApp
    */
   public void appExec()
   {
-    MqContext context = new MqContext(cAppName);
-    int port = mConfig.getPort();
-    String deadq = mConfig.getDeadQueueName();
+    MqServerConnectionPool connPool = MqServerConnectionPool.getInstance();
+    MqServerConnection conn = connPool.allocate();
     
     boolean shouldContinue = true;
-    boolean connected = false;
+    try
+    {
+      conn.connect("localhost", mConfig.getPort());
+    }
+    catch (Throwable e)
+    {
+      sStartupLogger.error("Exception caught: ", e);
+      shouldContinue = false;
+    }
+    
+    if (shouldContinue)
+    {
+      try
+      {
+        boolean authed = conn.login(mUserName, mPassword);
+        if (!authed)
+        {
+          sStartupLogger.error(conn.getResponse());
+          shouldContinue = false;
+        }
+      }
+      catch (Throwable e)
+      {
+        sStartupLogger.error("Exception caught: ", e);
+        shouldContinue = false;
+      }
+    }
     
     if (shouldContinue)
     {
       try
       {
-        sStartupLogger.info("Connecting to KAS/MQ server on localhost...");
-        context.connect("localhost", port, mUserName, mPassword);
-        connected = true;
-        RunTimeUtils.sleepForMilliSeconds(500);
+        boolean termed = conn.termServer();
+        if (!termed)
+        {
+          sStartupLogger.error(conn.getResponse());
+          shouldContinue = false;
+        }
+        else
+        {
+          sStartupLogger.info(conn.getResponse());
+        }
       }
-      catch (KasException e)
+      catch (Throwable e)
       {
+        sStartupLogger.error("Exception caught: ", e);
         shouldContinue = false;
       }
     }
     
-    if (shouldContinue)
-    {
-      IMqMessage request = MqRequestFactory.createTermServerRequest(mUserName);
-      try
-      {
-        sStartupLogger.info("Putting shutdown request...");
-        context.put(deadq, request);
-        RunTimeUtils.sleepForMilliSeconds(500);
-      }
-      catch (Exception e)
-      {
-        shouldContinue = false;
-      }
-    }
-    
-    if (shouldContinue || connected)
-    {
-      try
-      {
-        sStartupLogger.info("Disconnecting from KAS/MQ server...");
-        context.disconnect();
-        RunTimeUtils.sleepForMilliSeconds(500);
-      }
-      catch (KasException e)
-      {
-        shouldContinue = false;
-      }
-    }
+    connPool.release(conn);
   }
   
   /**
