@@ -27,7 +27,7 @@ import com.kas.mq.server.internal.ServerNotifier;
  */
 public class KasMqServer extends AKasApp implements IMqServer
 {
-  static private final String cKasHome = "./build/install/kas-mq-server";
+  static private final String cKasHome = "./kas-mq-server/build/install/kas-mq-server";
   static private final String cAppName = "KAS/MQ server";
   
   static public void main(String [] args)
@@ -139,7 +139,7 @@ public class KasMqServer extends AKasApp implements IMqServer
     }
     
     DbUtils.initSchema();
-    
+
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
     mController = new SessionController(this);
@@ -250,7 +250,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public void appExec()
   {
     int errors = 0;
-    sStartupLogger.info("KAS/MQ server " + mConfig.getManagerName() + " ready for some action...");
+    sStartupLogger.info("KAS/MQ server " + mConfig.getManagerName() + " available on port " +  mConfig.getPort ());
     while (!isStopping())
     {
       if (!mConfig.isEnabled())
