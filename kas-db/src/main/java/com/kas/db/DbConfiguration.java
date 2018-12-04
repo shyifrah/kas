@@ -26,8 +26,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   static public final String  cDefaultHostName       = "localhost";
   static public final int     cDefaultPort           = 3306;
   static public final String  cDefaultSchemaName     = "kas";
-  static public final String  cDefaultUserName       = null;
-  static public final String  cDefaultPassword       = null;
+  static public final String  cDefaultUserName       = "kas";
+  static public final String  cDefaultPassword       = "kas";
   static public final int     cDefaultMaxConnections = 20;
   
   /**
@@ -208,6 +208,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
       .append(pad).append("  Host=").append(mHostName).append("\n")
       .append(pad).append("  Port=").append(mPort).append("\n")
       .append(pad).append("  Schema=").append(mSchemaName).append("\n")
+      .append(pad).append("  cDefaultUserName=").append(cDefaultUserName).append("\n")
+      .append(pad).append("  cDefaultPassword=").append(cDefaultPassword).append("\n")
       .append(pad).append("  MaxConnections=").append(mMaxConnections).append("\n")
       .append(pad).append(")");
     return sb.toString();
