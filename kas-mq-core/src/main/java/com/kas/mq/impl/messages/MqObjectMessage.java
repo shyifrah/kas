@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 import com.kas.comm.serializer.Serializer;
 import com.kas.infra.utils.StringUtils;
@@ -20,11 +19,6 @@ import com.kas.mq.internal.ABaseBytesMessage;
  */
 public final class MqObjectMessage extends ABaseBytesMessage
 {
-  static
-  {
-    Deserializer.getInstance().register(MqObjectMessage.class, EClassId.cClassMqObjectMessage);
-  }
-  
   /**
    * A cached message body
    */

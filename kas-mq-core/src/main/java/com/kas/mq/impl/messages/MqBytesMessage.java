@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ABaseBytesMessage;
@@ -18,11 +17,6 @@ import com.kas.mq.internal.ABaseBytesMessage;
  */
 public final class MqBytesMessage extends ABaseBytesMessage
 {
-  static
-  {
-    Deserializer.getInstance().register(MqBytesMessage.class, EClassId.cClassMqBytesMessage);
-  }
-  
   /**
    * Construct a default bytes message object
    */

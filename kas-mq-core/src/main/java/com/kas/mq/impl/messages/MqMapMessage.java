@@ -6,7 +6,6 @@ import java.io.ObjectOutputStream;
 import java.util.Enumeration;
 import java.util.Map;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
@@ -21,11 +20,6 @@ import com.kas.mq.internal.ABaseMessage;
  */
 public final class MqMapMessage extends ABaseMessage
 {
-  static
-  {
-    Deserializer.getInstance().register(MqMapMessage.class, EClassId.cClassMqMapMessage);
-  }
-  
   /**
    * The message body
    */

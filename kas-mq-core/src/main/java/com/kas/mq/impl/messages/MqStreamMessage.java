@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
-import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
@@ -21,11 +20,6 @@ import com.kas.mq.internal.ABaseBytesMessage;
  */
 public final class MqStreamMessage extends ABaseBytesMessage
 {
-  static
-  {
-    Deserializer.getInstance().register(MqStreamMessage.class, EClassId.cClassMqStreamMessage);
-  }
-  
   private transient ByteArrayInputStream  mBais = null;
   private transient ObjectInputStream     mOis  = null;
   private transient ByteArrayOutputStream mBaos = null;
