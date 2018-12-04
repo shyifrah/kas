@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
+import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ABaseMessage;
@@ -17,6 +18,11 @@ import com.kas.mq.internal.ABaseMessage;
  */
 public final class MqStringMessage extends ABaseMessage
 {
+  static
+  {
+    Deserializer.getInstance().register(MqStringMessage.class, EClassId.cClassMqStringMessage);
+  }
+  
   /**
    * The message body
    */

@@ -3,8 +3,8 @@ package com.kas.comm.serializer;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import com.kas.comm.IPacket;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
 import com.kas.logging.ILogger;
@@ -15,7 +15,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class Deserializer extends AKasObject implements IInitializable
+public class Deserializer extends AKasObject
 {
   /**
    * Singleton instance
@@ -38,14 +38,9 @@ public class Deserializer extends AKasObject implements IInitializable
   private ILogger mLogger;
   
   /**
-   * Serialization configuration
+   * Map of IDs and classes
    */
-  private SerializerConfiguration mConfig;
-  
-  /**
-   * Serialization configuration
-   */
-  private boolean mIsInitialized;
+  private ClassIdMap mClassesMap;
   
   /**
    * Construct the {@link Deserializer}
@@ -53,52 +48,7 @@ public class Deserializer extends AKasObject implements IInitializable
   private Deserializer()
   {
     mLogger = LoggerFactory.getLogger(this.getClass());
-    mConfig = new SerializerConfiguration();
-    mIsInitialized = false;
-  }
-  
-  /**
-   * Initializing the {@link Deserializer}
-   * 
-   * @return {@code true} always
-   * 
-   * @see com.kas.infra.base.IInitializable#init()
-   */
-  public boolean init()
-  {
-    if (!mIsInitialized)
-    {
-      mConfig.init();
-      mIsInitialized = true;
-    }
-    return true;
-  }
-  
-  /**
-   * Terminating the {@link Deserializer}
-   * 
-   * @return {@code true} always
-   * 
-   * @see com.kas.infra.base.IInitializable#term()
-   */
-  public boolean term()
-  {
-    if (mIsInitialized)
-    {
-      mConfig.term();
-      mIsInitialized = false;
-    }
-    return true;
-  }
-  
-  /**
-   * Get the {@link Deserializer} configuration object
-   * 
-   * @return {@link SerializerConfiguration}
-   */
-  public SerializerConfiguration getConfig()
-  {
-    return mConfig;
+    mClassesMap = new ClassIdMap();
   }
   
   /**
@@ -110,40 +60,66 @@ public class Deserializer extends AKasObject implements IInitializable
    * 
    * @throws KasException if some sort of reflection error occurred
    */
-  public IObject deserializeObjectWithId(int id, ObjectInputStream istream) throws KasException
+  private IObject deserializeObjectWithId(EClassId id, ObjectInputStream istream) throws KasException
   {
-    mLogger.diag("Deserializer::deserialize() - IN");
+    mLogger.diag("Deserializer::deserialize() - IN, ID=" + id);
     
-    String className = mConfig.getClassName(id);
-    mLogger.diag("Deserializer::deserialize() - Deserializing object with class ID=" + id + ", ClassName=[" + className + "]");
+    Object object = null;
     
-    Object object;
-    Class<?> cls;
-    try
+    Class<? extends IPacket> cls = mClassesMap.get(id);
+    if (cls == null)
     {
-      cls = Class.forName(className);
-      Constructor<?> ctor = cls.getConstructor(ObjectInputStream.class);
-      object = ctor.newInstance(istream);
+      mLogger.diag("Deserializer::deserialize() - Unknown class ID=" + id);
     }
-    catch (ClassNotFoundException e)
+    else
     {
-      throw new KasException("Failed to find class " + className, e);
-    }
-    catch (NoSuchMethodException | SecurityException e)
-    {
-      throw new KasException("Failed to find or access constructor " + className + "(ObjectInputStream)", e);
-    }
-    catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
-    {
-      throw new KasException("Failed to instantiate " + className, e);
-    }
-    catch (Throwable e)
-    {
-      throw new KasException("Exception caught during deserialization of class with ID: (" + id + ")", e);
+      String className = cls.getName();
+      mLogger.diag("Deserializer::deserialize() - Deserializing object with class ID=" + id + ", ClassName=[" + className + "]");
+      
+      try
+      {
+        Constructor<?> ctor = cls.getConstructor(ObjectInputStream.class);
+        object = ctor.newInstance(istream);
+      }
+      catch (NoSuchMethodException | SecurityException e)
+      {
+        throw new KasException("Failed to find or access constructor " + className + "(ObjectInputStream)", e);
+      }
+      catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+      {
+        throw new KasException("Failed to instantiate " + className, e);
+      }
+      catch (Throwable e)
+      {
+        throw new KasException("Exception caught during deserialization of class with ID: (" + id + ")", e);
+      }
     }
     
     mLogger.diag("Deserializer::deserialize() - OUT");
     return (IObject)object;
+  }
+  
+  /**
+   * Register an {@link IPacket} class with associated ID
+   * 
+   * @param newClass The class
+   * @param newId The associated ID
+   * @return The old class that was associated with the specified ID
+   */
+  public void register(Class<? extends IPacket> newClass, EClassId newId)
+  {
+    mLogger.debug("Deserializer::register() - IN, ID=" + newId + ", Class=[" + newClass.getName() + "]");
+    
+    if (!IPacket.class.isAssignableFrom(newClass))
+    {
+      mLogger.warn("Class [" + newClass.getName() + "] is not valid for registration with Serializing mechanism as it is not a valid IPacket");
+    }
+    else
+    {
+      mClassesMap.put(newId, newClass);
+    }
+    
+    mLogger.debug("Deserializer::register() - OUT");
   }
   
   /**
@@ -156,9 +132,12 @@ public class Deserializer extends AKasObject implements IInitializable
   static public IObject deserialize(int id, ObjectInputStream istream) throws KasException
   {
     Deserializer deserializer = Deserializer.getInstance();
-    deserializer.init();
     
-    return deserializer.deserializeObjectWithId(id, istream);
+    EClassId clsid = EClassId.fromInt(id);
+    if (clsid == EClassId.cUnknown)
+      return null;
+    
+    return deserializer.deserializeObjectWithId(clsid, istream);
   }
 
   /**
@@ -174,7 +153,7 @@ public class Deserializer extends AKasObject implements IInitializable
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Config=(").append(mConfig.toPrintableString()).append(")\n")
+      .append(pad).append("  ClassesMap=(").append(mClassesMap.toPrintableString(level+2)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }

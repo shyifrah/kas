@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.PacketHeader;
+import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 import com.kas.mq.internal.ABaseMessage;
 
@@ -16,6 +17,11 @@ import com.kas.mq.internal.ABaseMessage;
  */
 public final class MqMessage extends ABaseMessage implements IPacket
 {
+  static
+  {
+    Deserializer.getInstance().register(MqMessage.class, EClassId.cClassMqMessage);
+  }
+  
   /**
    * Construct a default message
    */
