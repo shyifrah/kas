@@ -78,8 +78,6 @@ public class QueryCommand extends ACliCommand
     writeln("                                                             +--- DB -----------+");
     writeln("                                                             |                  |");
     writeln("                                                             +--- LOGGING ------+");
-    writeln("                                                             |                  |");
-    writeln("                                                             +--- SERIALIZER ---+");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");

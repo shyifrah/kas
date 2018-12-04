@@ -15,7 +15,6 @@ public enum EQueryType
   QUERY_CONFIG_LOGGING,
   QUERY_CONFIG_MQ,
   QUERY_CONFIG_DB,
-  QUERY_CONFIG_SERIALIZER,
   
   /**
    * Query session
