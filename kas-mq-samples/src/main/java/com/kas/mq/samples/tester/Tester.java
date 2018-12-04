@@ -73,6 +73,7 @@ public class Tester
       for (int i = 0; i < 100; ++i)
       {
         IMqMessage message = MqMessageFactory.createStringMessage("Message number: " + i);
+        System.out.println(String.format("%02d >> ID=[%s]", i, message.getMessageId().toString()));
         client.put(name, message);
       }
       System.out.println("============================================================");
@@ -89,7 +90,7 @@ public class Tester
       int i = 0;
       while (message != null)
       {
-        System.out.println(String.format("%02d >> ID=[%s]", i, message.getMessageId().toString()));
+        System.out.println(String.format("%02d << ID=[%s]", i, message.getMessageId().toString()));
         ++i;
         message = client.get(name, 10000L, 500L);
       }
@@ -106,7 +107,7 @@ public class Tester
       success = client.deleteQueue(name, true);
       if (success)
       {
-        System.out.println("defined!");
+        System.out.println("deleted!");
       }
       else
       {
