@@ -124,6 +124,8 @@ public class KasMqServer extends AKasApp implements IMqServer
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
+    sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType () + " DB " + mDbConfig.getHost () + ":" + mDbConfig.getPort ());
+    sStartupLogger.info("DB additional information: Schema=" + mDbConfig.getSchemaName () + ",Credentials=" + mDbConfig.getUserName () + "/" + mDbConfig.getPassword ());
     mDbConfig.init();
     
     mConfig = new MqConfiguration();
