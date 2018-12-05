@@ -2,9 +2,21 @@ package com.kas.mq.impl.messages;
 
 import java.io.Serializable;
 import java.util.Map;
+import com.kas.comm.serializer.Deserializer;
+import com.kas.comm.serializer.EClassId;
 
 public class MqMessageFactory
 {
+  static
+  {
+    Deserializer.getInstance().register(MqMessage.class, EClassId.cClassMqMessage);
+    Deserializer.getInstance().register(MqMapMessage.class, EClassId.cClassMqMapMessage);
+    Deserializer.getInstance().register(MqObjectMessage.class, EClassId.cClassMqObjectMessage);
+    Deserializer.getInstance().register(MqStreamMessage.class, EClassId.cClassMqStreamMessage);
+    Deserializer.getInstance().register(MqStringMessage.class, EClassId.cClassMqStringMessage);
+    Deserializer.getInstance().register(MqBytesMessage.class, EClassId.cClassMqBytesMessage);
+  }
+  
   /**
    * Create a no-body message
    * 

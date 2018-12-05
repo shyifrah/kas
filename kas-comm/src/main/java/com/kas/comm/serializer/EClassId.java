@@ -12,6 +12,7 @@ public enum EClassId implements IObject
   /**
    * place holders
    */
+  cUnknown,
   cPlaceHolder00,
   cPlaceHolder01,
   cPlaceHolder02,
@@ -21,7 +22,6 @@ public enum EClassId implements IObject
   cPlaceHolder06,
   cPlaceHolder07,
   cPlaceHolder08,
-  cPlaceHolder09,
   
   /**
    * KAS/MQ message types
@@ -44,7 +44,13 @@ public enum EClassId implements IObject
    */
   static public EClassId fromInt(int id)
   {
-    return cValues[id];
+    EClassId classId = cUnknown;
+    try
+    {
+      classId = cValues[id];
+    }
+    catch (Throwable e) {}
+    return classId;
   }
   
   /**
