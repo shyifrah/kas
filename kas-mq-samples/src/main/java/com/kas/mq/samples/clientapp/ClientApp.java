@@ -46,6 +46,7 @@ public class ClientApp extends AKasApp
     Map<String, String> settings = launcher.getSettings();
     
     ClientApp app = new ClientApp(settings);
+    System.out.println("ClientApp parameters=" + app.mParams.toPrintableString());
     launcher.launch(app);
   }
   
@@ -111,7 +112,7 @@ public class ClientApp extends AKasApp
     TimeStamp tsStart = TimeStamp.now();
     MqContext client = new MqContext(cAppName);
     
-    mParams.print();
+    //mParams.print();   
     
     try
     {
