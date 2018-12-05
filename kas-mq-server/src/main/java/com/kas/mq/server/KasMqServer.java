@@ -27,13 +27,13 @@ import com.kas.mq.server.internal.ServerNotifier;
  */
 public class KasMqServer extends AKasApp implements IMqServer
 {
-  static private final String cKasHome = "./kas-mq-server/build/install/kas-mq-server";
+  static private final String cKasHome = "/build/install/kas-mq-server";
   static private final String cAppName = "KAS/MQ server";
   
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
@@ -124,7 +124,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
-    sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType () + " DB " + mDbConfig.getHost () + ":" + mDbConfig.getPort ());
+    sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType () + " DB on " + mDbConfig.getHost () + ":" + mDbConfig.getPort ());
     sStartupLogger.info("DB additional information: Schema=" + mDbConfig.getSchemaName () + ",Credentials=" + mDbConfig.getUserName () + "/" + mDbConfig.getPassword ());
     mDbConfig.init();
     
@@ -139,14 +139,14 @@ public class KasMqServer extends AKasApp implements IMqServer
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
     }
-    
+
     DbUtils.initSchema();
 
     mRepository = new ServerRepository(mConfig);
     mHousekeeper = new ServerHouseKeeper(mRepository);
     mController = new SessionController(this);
     mNotifier = new ServerNotifier(mRepository);
-    
+
     try
     {
       mListenSocket = new ServerSocket(mConfig.getPort());
@@ -166,9 +166,8 @@ public class KasMqServer extends AKasApp implements IMqServer
       return false;
     }
     
-    startHouseKeeper();
-    
-    mNotifier.notifyServerActivated();
+    startHouseKeeper();  
+    mNotifier.notifyServerActivated();    
     return true;
   }
   

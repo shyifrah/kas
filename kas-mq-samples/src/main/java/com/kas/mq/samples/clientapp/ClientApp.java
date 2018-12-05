@@ -29,14 +29,14 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  */
 public class ClientApp extends AKasApp 
 {
-  static final String cKasHome      = "./build/install/kas-mq-samples";
+  static final String cKasHome      = "/build/install/kas-mq-samples";
   static final String cAppName      = "ClientAppSample";
   static final String cConfigPrefix = "client.app.";
   
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
     defaults.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
     defaults.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
     defaults.put(cConfigPrefix + "username", "root");
