@@ -20,14 +20,14 @@ import com.kas.mq.impl.MqContext;
  */
 public class KasMqAdmin extends AKasApp 
 {
-  static final String cKasHome = "./build/install/kas-mq-admin";
+  static final String cKasHome = "/build/install/kas-mq-admin";
   static final String cAppName = "KAS/MQ Admin Console";
   static final String cAdminPrompt = ConsoleUtils.RED + "KAS/MQ Admin> " + ConsoleUtils.RESET;
   
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
