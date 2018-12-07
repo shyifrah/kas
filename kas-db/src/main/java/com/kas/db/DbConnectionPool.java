@@ -25,6 +25,8 @@ import com.kas.logging.LoggerFactory;
  */
 public class DbConnectionPool extends AKasObject implements IPool<DbConnection> 
 {
+  static private final int cDbConnectionTimeOutSeconds = 5;
+  
   /**
    * The pool that will actually be used
    */
@@ -39,9 +41,8 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   static public boolean init(DbConfiguration config)
   {
     sInstance = new DbConnectionPool(config);
-    return sInstance.checkDbStatus();    
+    return sInstance.isConnectivityAvailable();
   }
-  
  
   /**
    * Get the pool
@@ -105,9 +106,6 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     
     mConfig = config;
     
-    String dbType = mConfig.getDbType().toLowerCase();
-    String schema = mConfig.getSchemaName().toLowerCase();
-    
     mConnUrl = DbUtils.createConnUrl(
       mConfig.getDbType().toLowerCase(), 
       mConfig.getHost().toLowerCase(), 
@@ -115,11 +113,6 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
       mConfig.getSchemaName().toLowerCase(), 
       mConfig.getUserName().toLowerCase(), 
       mConfig.getPassword());
-        
-        new StringBuilder()
-      .append("jdbc:").append(dbType).append("://")
-      .append(mConfig.getHost()).append(':').append(mConfig.getPort()).append('/')
-      .append(schema).toString();
     
     mConnMap = new ConcurrentHashMap<UniqueId, DbConnection>();
   }
@@ -178,6 +171,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   public String getDbVersion() 
   {
 	  mLogger.debug("DbConnectionPool::getDbVersion() - IN");
+	  
 	  DbConnection dbConn = allocate();
 	  Connection conn = dbConn.getConn();
 	  String version=null;
@@ -193,7 +187,8 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     	 mLogger.error("DbConnectionPool::getDbVersion() - unable to get DB version. error=" + ex.getMessage());;
 	  }
 	  release(dbConn);
-	  mLogger.debug("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB");	    	    
+	  mLogger.debug("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB");
+	  
 	  mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + version);
 	  return version;	  
   }
@@ -203,25 +198,30 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    * 
    * @return {@code true} if connectivity works fine, {@code false} otherwise
    */
-  public boolean checkDbStatus()
+  private boolean isConnectivityAvailable()
   {
-    mLogger.debug("DbConnectionPool::checkDbStatus() - IN");
+    mLogger.debug("DbConnectionPool::isConnectivityAvailable() - IN");
     
-    boolean rc = false;    
+    boolean available = false;
+    
     DbConnection dbConn = allocate();
     Connection conn = dbConn.getConn();
-    try {
-		if ( conn.isValid(5) ) {
-		    mLogger.info("DbConnectionPool::checkDbStatus() - Connection pool successfully connected to DB");
-			rc=true;
-		}
-	} catch (SQLException e) {	
-		mLogger.error("DBConnectionPool::checkDbStatus() - Unable to validate DB connction. error=" + e.getMessage());
-		e.printStackTrace();
-	}
-	return rc;
+    try
+    {
+      if (conn.isValid(cDbConnectionTimeOutSeconds))
+      {
+        mLogger.info("Connection pool successfully connected to DB");
+        available = true;
+      }
+    }
+    catch (SQLException e)
+    {	
+      mLogger.error("Unable to validate DB connction. Exception caught: ", e);
+    }
+    
+    mLogger.debug("DbConnectionPool::isConnectivityAvailable() - OUT, Return=" + available);
+    return available;
   }
-   
   
   /**
    * Closing all connections and clearing the map 

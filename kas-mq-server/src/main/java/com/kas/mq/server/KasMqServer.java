@@ -197,20 +197,23 @@ public class KasMqServer extends AKasApp implements IMqServer
     {
       mLogger.warn("An error occurred while shutting the server's repository");
     }
+    
     try
     {
-      if (mListenSocket != null) {
-    	  mListenSocket.close();
-      }      
+      if (mListenSocket != null)
+        mListenSocket.close();
     }
     catch (IOException e)
     {
       mLogger.warn("An error occurred while trying to close server socket", e);
     }	  
 
-    try {
+    try
+    {
     	DbConnectionPool.getInstance().shutdown();
-    }catch (RuntimeException e) {
+    }
+    catch (RuntimeException e)
+    {
     	mLogger.error("An error occured while trying to close DBConnectionPool");
     }
     
