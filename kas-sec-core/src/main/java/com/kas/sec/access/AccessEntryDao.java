@@ -46,7 +46,7 @@ public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
    */
   AccessEntryDao(String resTypeName)
   {
-    mTableName = "kas_mq_" + resTypeName + "_permissions";
+    mTableName = "kas_mq_" + resTypeName.toLowerCase() + "_permissions";
   }
   
   /**
