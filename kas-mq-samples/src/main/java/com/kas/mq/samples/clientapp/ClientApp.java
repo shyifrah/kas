@@ -39,8 +39,8 @@ public class ClientApp extends AKasApp
     defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
     defaults.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
     defaults.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
-    defaults.put(cConfigPrefix + "username", "root");
-    defaults.put(cConfigPrefix + "password", "root");
+    defaults.put(cConfigPrefix + "username", "admin");
+    defaults.put(cConfigPrefix + "password", "admin");
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
