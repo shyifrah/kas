@@ -152,15 +152,15 @@ public class KasMqServer extends AKasApp implements IMqServer
     }
     catch (IOException e)
     {
-      mLogger.error("An error occurred while trying to bind server socket with port: " + mConfig.getPort());
-      mLogger.fatal("Exception caught: ", e);
+    	sStartupLogger.error("An error occurred while trying to bind server socket with port: " + mConfig.getPort());
+    	sStartupLogger.error("Exception caught: " +  e.getMessage());
       return false;
     }
     
     init = mRepository.init();
     if (!init)
     {
-      mLogger.fatal("Server repository failed initialization");
+    	mLogger.fatal("Server repository failed initialization");
       return false;
     }
     
@@ -187,27 +187,32 @@ public class KasMqServer extends AKasApp implements IMqServer
    * @return {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public synchronized boolean appTerm()
-  {
-    mNotifier.notifyServerDeactivated();
-    
+  {	  
+    mNotifier.notifyServerDeactivated();	
+
     stopHouseKeeper();
-    
+	
     boolean term = mRepository.term();
     if (!term)
     {
       mLogger.warn("An error occurred while shutting the server's repository");
     }
-    
     try
     {
-      mListenSocket.close();
+      if (mListenSocket != null) {
+    	  mListenSocket.close();
+      }      
     }
     catch (IOException e)
     {
       mLogger.warn("An error occurred while trying to close server socket", e);
+    }	  
+
+    try {
+    	DbConnectionPool.getInstance().shutdown();
+    }catch (RuntimeException e) {
+    	mLogger.error("An error occured while trying to close DBConnectionPool");
     }
-    
-    DbConnectionPool.getInstance().shutdown();
     
     mConfig.term();
     return true;
