@@ -125,7 +125,6 @@ public class KasMqServer extends AKasApp implements IMqServer
   {
     mDbConfig = new DbConfiguration();
     sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType () + " DB on " + mDbConfig.getHost () + ":" + mDbConfig.getPort ());
-    sStartupLogger.info("DB additional information: Schema=" + mDbConfig.getSchemaName () + ",Credentials=" + mDbConfig.getUserName () + "/" + mDbConfig.getPassword ());
     mDbConfig.init();
     
     mConfig = new MqConfiguration();
@@ -139,7 +138,7 @@ public class KasMqServer extends AKasApp implements IMqServer
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
     }
-
+    sStartupLogger.info("DB additional information: DBVersion=" + DbConnectionPool.getInstance().getDbVersion() + ", Schema=" + mDbConfig.getSchemaName () + " ,User=" + mDbConfig.getUserName ());
     DbUtils.initSchema();
 
     mRepository = new ServerRepository(mConfig);

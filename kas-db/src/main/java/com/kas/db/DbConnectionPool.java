@@ -39,9 +39,10 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   static public boolean init(DbConfiguration config)
   {
     sInstance = new DbConnectionPool(config);
-    return sInstance.getDbVersion();
+    return sInstance.checkDbStatus();    
   }
   
+ 
   /**
    * Get the pool
    * 
@@ -168,39 +169,59 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     
     mLogger.debug("DbConnectionPool::release() - OUT");
   }
+   
+  /**
+   * Get DB version
+   * 
+   * @return {@code version} if connectivity works fine
+   */
+  public String getDbVersion() 
+  {
+	  mLogger.debug("DbConnectionPool::getDbVersion() - IN");
+	  DbConnection dbConn = allocate();
+	  Connection conn = dbConn.getConn();
+	  String version=null;
+	  try
+		{
+		  PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER;");
+		  ResultSet rs = st.executeQuery();
+		  if (rs.next())
+		    version = rs.getString("VER");
+		}
+	  catch (SQLException ex)
+	  {
+    	 mLogger.error("DbConnectionPool::getDbVersion() - unable to get DB version. error=" + ex.getMessage());;
+	  }
+	  release(dbConn);
+	  mLogger.debug("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB");	    	    
+	  mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + version);
+	  return version;	  
+  }
   
   /**
-   * Check DB connectivity and get its version
+   * Check DB connectivity
    * 
    * @return {@code true} if connectivity works fine, {@code false} otherwise
    */
-  public boolean getDbVersion()
+  public boolean checkDbStatus()
   {
-    mLogger.debug("DbConnectionPool::getDbVersion() - IN");
+    mLogger.debug("DbConnectionPool::checkDbStatus() - IN");
     
-    boolean success = true;
-    
-    String version = null;
+    boolean rc = false;    
     DbConnection dbConn = allocate();
     Connection conn = dbConn.getConn();
-    try
-    {
-      PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER;");
-      ResultSet rs = st.executeQuery();
-      if (rs.next())
-        version = rs.getString("VER");
-    }
-    catch (SQLException ex)
-    {
-      success = false;
-    }
-    release(dbConn);
-    mLogger.info("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB and got its version: " + version);
-    
-    
-    mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + success);
-    return success;
+    try {
+		if ( conn.isValid(5) ) {
+		    mLogger.info("DbConnectionPool::checkDbStatus() - Connection pool successfully connected to DB");
+			rc=true;
+		}
+	} catch (SQLException e) {	
+		mLogger.error("DBConnectionPool::checkDbStatus() - Unable to validate DB connction. error=" + e.getMessage());
+		e.printStackTrace();
+	}
+	return rc;
   }
+   
   
   /**
    * Closing all connections and clearing the map 
