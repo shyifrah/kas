@@ -34,7 +34,6 @@ Each project relies on the output of other projects. Dependecies is shown below.
 | kas-mq-samples | Sample KAS/MQ Applications |
 | kas-mq-admin   | KAS/MQ Admin Console |
 | kas-sec-core   | Security |
-| kas-data       | Not a project, more like a repository |
 
 ## Project dependencies
 Each level in the following tree represents a dependency on the previous level<br>
