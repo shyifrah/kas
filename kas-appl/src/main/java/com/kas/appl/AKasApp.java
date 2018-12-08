@@ -189,7 +189,7 @@ public abstract class AKasApp extends AKasObject implements IKasApp
   public boolean term()
   {
     sStartupLogger.info("KAS base application termination in progress...");
-    
+    Runtime.getRuntime().removeShutdownHook(mShutdownHook);
     boolean term = appTerm();
     if (!term)
     {
