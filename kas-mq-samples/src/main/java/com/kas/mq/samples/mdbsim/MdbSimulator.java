@@ -42,7 +42,8 @@ public class MdbSimulator extends AKasApp
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, cKasHome);
+    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
     defaults.put(cConfigPrefix + "username", "root");
     defaults.put(cConfigPrefix + "password", "root");
     

@@ -36,7 +36,8 @@ public class ClientApp extends AKasApp
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
     defaults.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
     defaults.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
     defaults.put(cConfigPrefix + "username", "root");
