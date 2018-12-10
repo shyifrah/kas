@@ -72,20 +72,22 @@ public interface IMqConstants
   
   static public final String cKasPropertySyssQmgrName      = cKasPropertyPrefix + "sysstate.qmgr";
   static public final String cKasPropertySyssActive        = cKasPropertyPrefix + "sysstate.active";
-  static public final String cKasPropertySyssSessionPrefix = cKasPropertyPrefix + "sysstate.sessid";
+  static public final String cKasPropertySyssQueueList     = cKasPropertyPrefix + "sysstate.qlist";
   
   static public final String cKasPropertyRepoQmgrName  = cKasPropertyPrefix + "repo.qmgr";
   static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";
   static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
   
   static public final String cKasPropertyQueryType         = cKasPropertyPrefix + "qry.type";
+  
   static public final String cKasPropertyQuerySessId       = cKasPropertyPrefix + "qry.sessid";
+  
   static public final String cKasPropertyQueryConnId       = cKasPropertyPrefix + "qry.connid";
-  static public final String cKasPropertyQueryQmgrName     = cKasPropertyPrefix + "qry.qmgr";
+  
   static public final String cKasPropertyQueryQueueName    = cKasPropertyPrefix + "qry.queue";
   static public final String cKasPropertyQueryPrefix       = cKasPropertyPrefix + "qry.prefix";
   static public final String cKasPropertyQueryAllData      = cKasPropertyPrefix + "qry.alldata";
-  static public final String cKasPropertyQueryOutOnlyProps = cKasPropertyPrefix + "qry.output.only.props";
+  static public final String cKasPropertyQueryFormatOutput = cKasPropertyPrefix + "qry.format";
   static public final String cKasPropertyQueryResultPrefix = cKasPropertyPrefix + "qry.result";
   
   static public final String cKasPropertyTermConnId   = cKasPropertyPrefix + "term.connid";
