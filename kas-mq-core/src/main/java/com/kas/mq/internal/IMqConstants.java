@@ -40,8 +40,8 @@ public interface IMqConstants
    * System user name<br>
    * This user does not actually exist
    */
-  static public final String cSystemUserName = "SYSTEM";
-  static public final String cSystemPassWord = "SYSTEM";
+  static public final String cSystemUserName = "system";
+  static public final String cSystemPassWord = "system";
   
   /**
    * Property names
