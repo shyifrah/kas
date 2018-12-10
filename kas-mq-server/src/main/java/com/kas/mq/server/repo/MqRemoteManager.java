@@ -1,9 +1,8 @@
 package com.kas.mq.server.repo;
 
-import java.util.Map;
 import com.kas.infra.base.Properties;
+import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqQueue;
 import com.kas.mq.internal.MqRemoteQueue;
@@ -34,57 +33,24 @@ public class MqRemoteManager extends MqManager
    * 
    * @param props The {@link Properties} object that contains the queues definitions
    */
-  public void setQueues(Properties props)
+  public void setQueues(StringList qlist)
   {
-    mLogger.debug("MqRemoteManager::setQueues() - IN");
+    mLogger.debug("MqRemoteManager::setQueues() - IN, QList=" + qlist.toString());
     
-    for (Map.Entry<Object, Object> entry : props.entrySet())
+    if (qlist != null)
     {
-      String key = (String)entry.getKey();
-      String qname = key.substring(IMqConstants.cKasPropertyQueryResultPrefix.length()+1);
-      if (qname.length() > 0)
+      for (String qname : qlist)
       {
-        MqRemoteQueue queue = new MqRemoteQueue(this, qname, MqServerConnectionPool.getInstance());
-        mLogger.debug("MqRemoteManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
-        mQueues.put(qname, queue);
+        if ((qname != null) && (qname.length() > 0))
+        {
+          MqRemoteQueue queue = new MqRemoteQueue(this, qname, MqServerConnectionPool.getInstance());
+          mLogger.debug("MqRemoteManager::setQueues() - Adding to remote queues list queue: " + queue.toString());
+          mQueues.put(qname, queue);
+        }
       }
     }
     
     mLogger.debug("MqRemoteManager::setQueues() - OUT");
-  }
-  
-  /**
-   * Query queues
-   * 
-   * @param name The queue name/prefix.
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
-   * @return A properties object that holds the queried data
-   */
-  Properties queryQueue(String name, boolean prefix, boolean all)
-  {
-    mLogger.debug("MqRemoteManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
-    
-    Properties props = new Properties();
-    for (MqQueue queue : mQueues.values())
-    {
-      MqRemoteQueue mqrq = (MqRemoteQueue)queue;
-      boolean include = false;
-      if (prefix)
-        include = mqrq.getName().startsWith(name);
-      else
-        include = mqrq.getName().equals(name);
-      
-      mLogger.debug("MqRemoteManager::queryQueue() - Checking if current queue [" + mqrq.getName() + "] matches query: " + include);
-      if (include)
-      {
-        String key = IMqConstants.cKasPropertyQueryResultPrefix + "." + mqrq.getName();
-        props.setStringProperty(key, mqrq.queryResponse(all));
-      }
-    }
-    
-    mLogger.debug("MqRemoteManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
-    return props;
   }
   
   /**
