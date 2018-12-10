@@ -53,7 +53,7 @@ public enum EQueryType
   public String toString()
   {
     StringBuilder sb = new StringBuilder()
-      .append(name().substring(1))
+      .append(name())
       .append(" (")
       .append(ordinal())
       .append(')');
