@@ -12,6 +12,31 @@ import com.kas.infra.utils.StringUtils;
 public class StringList extends ArrayList<String> implements IObject
 {
   private static final long serialVersionUID = 1L;
+  
+  /**
+   * Create a StringList object from a comma-separated list which is enclosed with brackets
+   *  
+   * @param string The comma-separated list
+   * @return The StringList object
+   */
+  static public StringList fromString(String string)
+  {
+    if (!string.startsWith("["))
+      return null;
+    if (!string.endsWith("]"))
+      return null;
+    
+    String [] array = string.substring(1, string.length()-1).split(" ,");
+    if (array.length == 0)
+      return null;
+    StringList result = new StringList();
+    for (String str : array)
+    {
+      if (str.length() > 0)
+        result.add(str);
+    }
+    return result;
+  }
 
   /**
    * Returns the {@link StringList} simple class name enclosed with chevrons.
