@@ -1,11 +1,11 @@
 package com.kas.mq.server.processors;
 
 import java.util.Collection;
-import java.util.Map;
 import com.kas.config.MainConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.typedef.StringList;
 import com.kas.logging.impl.LogSystem;
 import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
@@ -38,7 +38,7 @@ public class QueryServerProcessor extends AProcessor
   private String     mQueryQueue;        // For Q QUEUE
   private boolean    mQueryQueuePrefix;  // For Q QUEUE
   private boolean    mQueryAllData;      // For Q QUEUE
-  private boolean    mQueryOutProps;     // For Q QUEUE
+  private boolean    mQueryFormat;       // For Q QUEUE
   
   /**
    * Construct a {@link QueryServerProcessor}
@@ -76,7 +76,7 @@ public class QueryServerProcessor extends AProcessor
       mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString());
       
       UserEntity ue = mHandler.getActiveUser();
-      if (ue.isAccessPermitted(EResourceClass.COMMAND, mQueryType.name()))
+      if (!ue.isAccessPermitted(EResourceClass.COMMAND, mQueryType.name()))
       {
         mDesc = "User " + ue.toString() + " is not permitted to query the server";
         mLogger.warn(mDesc);
@@ -106,14 +106,7 @@ public class QueryServerProcessor extends AProcessor
             body = queryConnection();
             break;
           case QUERY_QUEUE:
-            props = queryQueue();
-            if (!mQueryOutProps)
-            {
-              StringBuilder sb = new StringBuilder();
-              for (Map.Entry<Object, Object> entry : props.entrySet())
-                sb.append(entry.getValue().toString()).append('\n');
-              body = sb.toString();
-            }
+            body = queryQueue();
             break;
           case UNKNOWN:
           default:
@@ -232,22 +225,36 @@ public class QueryServerProcessor extends AProcessor
    * 
    * @return the output of the "q queue" command
    */
-  private Properties queryQueue()
+  private String queryQueue()
   {
-    mQueryOriginQmgr = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQmgrName, null);
     mQueryQueuePrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
     mQueryAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryAllData, false);
-    mQueryOutProps = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryOutOnlyProps, false);
+    mQueryFormat = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryFormatOutput, true);
     mQueryQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQueueName, "");
     if (mQueryQueue == null) mQueryQueue = "";
     
-    Properties props = mRepository.queryQueues(mQueryQueue, mQueryQueuePrefix, mQueryAllData);
-    int total = props.size();
+    StringList qlist = mRepository.queryQueues(mQueryQueue, mQueryQueuePrefix, mQueryAllData);
+    int total = qlist.size();
     
     mDesc = String.format("%s queues matched filtering criteria", (total == 0 ? "No" : total));
-    mValue = props.size();
+    mValue = total;
     mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
     
-    return props;
+    String body;
+    if (mQueryFormat)
+    {
+      StringBuilder sb = new StringBuilder();
+      for (String str : qlist)
+        sb.append(str).append('\n');
+      
+      sb.append(" \n");
+      body = sb.toString();
+    }
+    else
+    {
+      body = qlist.toString();
+    }
+    
+    return body;
   }
 }
