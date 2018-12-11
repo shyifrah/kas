@@ -189,12 +189,16 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    */
   protected boolean isAccessPermitted(UserEntity user, EResourceClass resClass, String resName, AccessLevel level)
   {
+    mLogger.diag("AProcessor::isAccessPermitted() - IN, User=" + user.toString() + ", ResClass=" + resClass.toString() + ", ResName=" + resName + ", Level=" + level.toPrintableString());
+    
     boolean result = user.isAccessPermitted(resClass, resName, level);
     if (!result)
     {
       mLogger.error("User " + user.toString() + " is not permitted to access resource");
       mLogger.trace("Additional information: Class=" + resClass.toString() + "; Resource=" + resName + "; Level=" + level.toPrintableString());
     }
+    
+    mLogger.diag("AProcessor::isAccessPermitted() - OUT, Result=" + result);
     return result;
   }
   
