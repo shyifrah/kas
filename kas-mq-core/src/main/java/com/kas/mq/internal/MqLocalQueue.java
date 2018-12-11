@@ -452,7 +452,7 @@ public class MqLocalQueue extends MqQueue
   public String queryResponse(boolean all)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("Queue.............: ").append(mName);
+    sb.append(mName);
     if (all)
     {
       sb.append('\n');
