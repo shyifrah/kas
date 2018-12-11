@@ -56,24 +56,24 @@ public class QueryConfCommand extends ACliCommand
     
     Properties qprops = new Properties();
     EQueryType qType = EQueryType.QUERY_CONFIG;
-    EQueryConfigType confType = EQueryConfigType.UNKNOWN;
+    int confType = -1;
     if (opt.equals("ALL"))
-      confType = EQueryConfigType.ALL;
+      confType = EQueryConfigType.ALL.ordinal();
     else if (opt.equals("LOGGING"))
-      confType = EQueryConfigType.LOGGING;
+      confType = EQueryConfigType.LOGGING.ordinal();
     else if (opt.equals("MQ"))
-      confType = EQueryConfigType.MQ;
+      confType = EQueryConfigType.MQ.ordinal();
     else if (opt.equals("DB"))
-      confType = EQueryConfigType.DB;
+      confType = EQueryConfigType.DB.ordinal();
     
-    if (confType == EQueryConfigType.UNKNOWN)
+    if (confType == -1)
     {
       writeln("Invalid query type \"" + opt + "\"");
       writeln(" ");
       return false;
     }
     
-    qprops.setIntProperty(IMqConstants.cKasPropertyQueryConfigType, confType.ordinal());
+    qprops.setIntProperty(IMqConstants.cKasPropertyQueryConfigType, confType);
     
     if (mCommandArgs.size() > 0)
     {
