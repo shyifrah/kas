@@ -1,7 +1,6 @@
 package com.kas.mq.impl;
 
-
-public enum EQueryType
+public enum EQueryConfigType
 {
   /**
    * Unknown value
@@ -9,27 +8,27 @@ public enum EQueryType
   UNKNOWN,
   
   /**
-   * Query configuration
+   * All configuration data
    */
-  QUERY_CONFIG,
+  ALL,
   
   /**
-   * Query session
+   * Logging configuration data
    */
-  QUERY_SESSION,
+  LOGGING,
   
   /**
-   * Query connection
+   * MQ configuration data
    */
-  QUERY_CONNECTION,
+  MQ,
   
   /**
-   * Query queues
+   * DB configuration data
    */
-  QUERY_QUEUE,
+  DB,
   ;
   
-  static final private EQueryType [] cValues = EQueryType.values();
+  static final private EQueryConfigType [] cValues = EQueryConfigType.values();
   
   /**
    * Get the enum value by its ordinal.
@@ -37,7 +36,7 @@ public enum EQueryType
    * @param id The ordinal of the enum
    * @return the enum value
    */
-  static public EQueryType fromInt(int id)
+  static public EQueryConfigType fromInt(int id)
   {
     return cValues[id];
   }

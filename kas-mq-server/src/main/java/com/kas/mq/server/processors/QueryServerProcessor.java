@@ -7,6 +7,7 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.StringList;
 import com.kas.logging.impl.LogSystem;
+import com.kas.mq.impl.EQueryConfigType;
 import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
@@ -17,8 +18,6 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.sec.entities.UserEntity;
-import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for querying server's information
@@ -31,14 +30,15 @@ public class QueryServerProcessor extends AProcessor
    * Extracted input from the request: 
    * the type of information
    */
-  private EQueryType mQueryType;         // For all Q command variations
-  private UniqueId   mQuerySessionId;    // For Q SESS
-  private UniqueId   mQueryConnectionId; // For Q CONN
-  private String     mQueryOriginQmgr;   // For Q QUEUE
-  private String     mQueryQueue;        // For Q QUEUE
-  private boolean    mQueryQueuePrefix;  // For Q QUEUE
-  private boolean    mQueryAllData;      // For Q QUEUE
-  private boolean    mQueryFormat;       // For Q QUEUE
+  private EQueryType       mQueryType;         // For all Q command variations
+  private UniqueId         mQuerySessionId;    // For Q SESS
+  private UniqueId         mQueryConnectionId; // For Q CONN
+  private EQueryConfigType mQueryConfigType;   // For Q CONFIG
+  private String           mQueryOriginQmgr;   // For Q QUEUE
+  private String           mQueryQueue;        // For Q QUEUE
+  private boolean          mQueryQueuePrefix;  // For Q QUEUE
+  private boolean          mQueryAllData;      // For Q QUEUE
+  private boolean          mQueryFormat;       // For Q QUEUE
   
   /**
    * Construct a {@link QueryServerProcessor}
@@ -75,45 +75,27 @@ public class QueryServerProcessor extends AProcessor
       mQueryType = EQueryType.fromInt(temp);
       mLogger.debug("QueryServerProcessor::process() - QueryType=" + mQueryType.toString());
       
-      UserEntity ue = mHandler.getActiveUser();
-      if (!ue.isAccessPermitted(EResourceClass.COMMAND, mQueryType.name()))
+      mCode = EMqCode.cOkay;
+      mDesc = "";
+      switch (mQueryType)
       {
-        mDesc = "User " + ue.toString() + " is not permitted to query the server";
-        mLogger.warn(mDesc);
-      }
-      else
-      {
-        mCode = EMqCode.cOkay;
-        mDesc = "";
-        switch (mQueryType)
-        {
-          case QUERY_CONFIG_ALL:
-            body = MainConfiguration.getInstance().toPrintableString();
-            break;
-          case QUERY_CONFIG_LOGGING:
-            body = LogSystem.getInstance().getConfig().toPrintableString();
-            break;
-          case QUERY_CONFIG_MQ:
-            body = mConfig.toPrintableString();
-            break;
-          case QUERY_CONFIG_DB:
-            body = DbConnectionPool.getInstance().getConfig().toPrintableString();
-            break;
-          case QUERY_SESSION:
-            body = querySession();
-            break;
-          case QUERY_CONNECTION:
-            body = queryConnection();
-            break;
-          case QUERY_QUEUE:
-            body = queryQueue();
-            break;
-          case UNKNOWN:
-          default:
-            mCode = EMqCode.cError;
-            mDesc = "Invalid query server information type: " + temp;
-            break;
-        }
+        case QUERY_CONFIG:
+          body = queryConfig();
+          break;
+        case QUERY_SESSION:
+          body = querySession();
+          break;
+        case QUERY_CONNECTION:
+          body = queryConnection();
+          break;
+        case QUERY_QUEUE:
+          body = queryQueue();
+          break;
+        case UNKNOWN:
+        default:
+          mCode = EMqCode.cError;
+          mDesc = "Invalid query server information type: " + temp;
+          break;
       }
     }
     
@@ -150,6 +132,39 @@ public class QueryServerProcessor extends AProcessor
     
     mLogger.debug("QueryServerProcessor::postprocess() - OUT");
     return true;
+  }
+  
+  /**
+   * Return the output of the "q config" command
+   * 
+   * @return the output of the "q config" command
+   */
+  private String queryConfig()
+  {
+    int qConfigType = mRequest.getIntProperty(IMqConstants.cKasPropertyQueryConfigType, -1);
+    if (qConfigType != -1) mQueryConfigType = EQueryConfigType.fromInt(qConfigType);
+    
+    String body = null;
+    switch (mQueryConfigType)
+    {
+      case ALL:
+        body = MainConfiguration.getInstance().toPrintableString();
+        break;
+      case LOGGING:
+        body = LogSystem.getInstance().getConfig().toPrintableString();
+        break;
+      case MQ:
+        body = mConfig.toPrintableString();
+        break;
+      case DB:
+        body = DbConnectionPool.getInstance().getConfig().toPrintableString();
+        break;
+      default:
+        mDesc = String.format("Invalid configuration type encountered: %d", qConfigType);
+        mCode = EMqCode.cError;
+    }
+    
+    return body;
   }
   
   /**

@@ -4,8 +4,10 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
+import com.kas.mq.impl.EQueryConfigType;
 import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.IMqConstants;
 
 /**
  * A QUERY CONFIGURATION command
@@ -53,22 +55,25 @@ public class QueryConfCommand extends ACliCommand
     opt = opt.toUpperCase();
     
     Properties qprops = new Properties();
-    EQueryType qType = EQueryType.UNKNOWN;
+    EQueryType qType = EQueryType.QUERY_CONFIG;
+    EQueryConfigType confType = EQueryConfigType.UNKNOWN;
     if (opt.equals("ALL"))
-      qType = EQueryType.QUERY_CONFIG_ALL;
+      confType = EQueryConfigType.ALL;
     else if (opt.equals("LOGGING"))
-      qType = EQueryType.QUERY_CONFIG_LOGGING;
+      confType = EQueryConfigType.LOGGING;
     else if (opt.equals("MQ"))
-      qType = EQueryType.QUERY_CONFIG_MQ;
+      confType = EQueryConfigType.MQ;
     else if (opt.equals("DB"))
-      qType = EQueryType.QUERY_CONFIG_DB;
+      confType = EQueryConfigType.DB;
     
-    if (qType == EQueryType.UNKNOWN)
+    if (confType == EQueryConfigType.UNKNOWN)
     {
       writeln("Invalid query type \"" + opt + "\"");
       writeln(" ");
       return false;
     }
+    
+    qprops.setIntProperty(IMqConstants.cKasPropertyQueryConfigType, confType.ordinal());
     
     if (mCommandArgs.size() > 0)
     {
