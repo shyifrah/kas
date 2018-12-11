@@ -44,8 +44,8 @@ public class MdbSimulator extends AKasApp
     Map<String, String> defaults = new HashMap<String, String>();
     String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
     defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    defaults.put(cConfigPrefix + "username", "root");
-    defaults.put(cConfigPrefix + "password", "root");
+    defaults.put(cConfigPrefix + "username", "guest");
+    defaults.put(cConfigPrefix + "password", "guest");
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
@@ -117,6 +117,7 @@ public class MdbSimulator extends AKasApp
     try
     {
       client.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);
+      System.out.println("Response: " + client.getResponse());
       
       //===========================================================================================
       // defining queues which will be used by mdb
