@@ -10,6 +10,8 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for deleting queues
@@ -63,6 +65,16 @@ public class DeleteQueueProcessor extends AProcessor
       {
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("DeleteQueueProcessor::process() - " + mDesc);
+      }
+      else if (!isAccessPermitted(EResourceClass.COMMAND, "DELETE_QUEUE", AccessLevel.READ_ACCESS))
+      {
+        mDesc = "User is not permitted to issue DELETE_QUEUE command";
+        mLogger.warn(mDesc);
+      }
+      else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.ALTER_ACCESS))
+      {
+        mDesc = "User is not permitted to alter queues";
+        mLogger.warn(mDesc);
       }
       else if (mqlq.size() == 0)
       {

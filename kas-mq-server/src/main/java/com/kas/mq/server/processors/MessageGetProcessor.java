@@ -77,9 +77,9 @@ public class MessageGetProcessor extends AProcessor
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("MessageGetProcessor::process() - " + mDesc);
       }
-      else if (!ue.isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.READ_ACCESS))
+      else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.READ_ACCESS))
       {
-        mDesc = "User " + ue.toString() + " is not permitted to issue read from queue " + mQueue;
+        mDesc = "User is not permitted to read from queues";
         mLogger.warn(mDesc);
       }
       else
