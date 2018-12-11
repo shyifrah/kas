@@ -26,7 +26,7 @@ public class StringList extends ArrayList<String> implements IObject
     if (!string.endsWith("]"))
       return null;
     
-    String [] array = string.substring(1, string.length()-1).split(" ,");
+    String [] array = string.substring(1, string.length()-1).split(", ");
     if (array.length == 0)
       return null;
     StringList result = new StringList();
