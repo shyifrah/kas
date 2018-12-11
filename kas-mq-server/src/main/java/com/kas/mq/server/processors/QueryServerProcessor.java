@@ -245,7 +245,7 @@ public class QueryServerProcessor extends AProcessor
     {
       StringBuilder sb = new StringBuilder();
       for (String str : qlist)
-        sb.append(str).append('\n');
+        sb.append("Queue.............: ").append(str).append('\n');
       
       sb.append(" \n");
       body = sb.toString();
