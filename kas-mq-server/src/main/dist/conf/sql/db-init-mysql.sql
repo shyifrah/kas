@@ -57,10 +57,10 @@ INSERT INTO kas_mq_groups (group_name, group_description)
   VALUES('admins', 'administrators');
   
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('kas', 'kas internal system');
+  VALUES('mods', 'moderators');
 
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('mods', 'moderators');
+  VALUES('samples', 'sample applications');
 
 --
 -- group assignment
@@ -109,7 +109,20 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'kas'
+    WHERE group_name = 'admins'
+  ) groups;
+
+INSERT INTO kas_mq_users_to_groups
+  SELECT user_id, group_id FROM 
+  (
+    SELECT user_id
+    FROM kas_mq_users
+    WHERE user_name = 'guest'
+  ) users,
+  (
+    SELECT group_id
+    FROM kas_mq_groups 
+    WHERE group_name = 'samples'
   ) groups;
 
 --
@@ -131,9 +144,14 @@ INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   WHERE group_name IN ('admins', 'mods');
   
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
-  SELECT 'TERM_SERVER', group_id, 1
+  SELECT 'DEFINE_QUEUE_MDB.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'kas';
+  WHERE group_name = 'samples';
+
+INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
+  SELECT 'DEFINE_QUEUE_CLIENT.APP.*', group_id, 7
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
 
 --
 -- application permissions:
@@ -156,7 +174,17 @@ INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT 'KAS.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name IN ('mods', 'kas');
+  WHERE group_name = 'mods';
+
+INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
+  SELECT 'MdbSimSample', group_id, 1
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
+
+INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
+  SELECT 'ClientAppSample', group_id, 1
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
 
 --
 -- queue permissions:
@@ -180,5 +208,15 @@ INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 4
   FROM   kas_mq_groups
   WHERE group_name = 'mods';
+
+INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
+  SELECT 'mdb.*', group_id, 7
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
+
+INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
+  SELECT 'client.app.*', group_id, 7
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
 
 COMMIT;
