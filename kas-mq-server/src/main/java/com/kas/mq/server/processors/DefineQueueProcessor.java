@@ -69,7 +69,7 @@ public class DefineQueueProcessor extends AProcessor
         mDesc = "Queue with name \"" + mQueue + "\" already exists";
         mLogger.debug("DefineQueueProcessor::process() - " + mDesc);
       }
-      else if (!isAccessPermitted(EResourceClass.COMMAND, "DEFINE_QUEUE", AccessLevel.READ_ACCESS))
+      else if (!isAccessPermitted(EResourceClass.COMMAND, String.format("DEFINE_QUEUE_%s", mQueue)))
       {
         mDesc = "User is not permitted to issue DEFINE_QUEUE command";
         mLogger.warn(mDesc);

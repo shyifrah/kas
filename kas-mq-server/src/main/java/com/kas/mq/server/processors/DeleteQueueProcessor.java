@@ -66,7 +66,7 @@ public class DeleteQueueProcessor extends AProcessor
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("DeleteQueueProcessor::process() - " + mDesc);
       }
-      else if (!isAccessPermitted(EResourceClass.COMMAND, "DELETE_QUEUE", AccessLevel.READ_ACCESS))
+      else if (!isAccessPermitted(EResourceClass.COMMAND, String.format("DELETE_QUEUE_%s", mQueue)))
       {
         mDesc = "User is not permitted to issue DELETE_QUEUE command";
         mLogger.warn(mDesc);
