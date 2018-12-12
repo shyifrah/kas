@@ -30,7 +30,7 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
 public class ClientApp extends AKasApp 
 {
   static final String cKasHome      = "/build/install/kas-mq-samples";
-  static final String cAppName      = "ClientAppSample";
+  static final String cAppName      = "SampleClientApp";
   static final String cConfigPrefix = "client.app.";
   
   static public void main(String [] args)

@@ -23,15 +23,25 @@ public abstract class GenThread extends Thread
   {
     mLogger.debug("GenThread::run() - IN");
     
+    boolean success = false;
+    
     try
     {
       mLogger.debug("ConsumerThread::run() - Connecting to " + mParams.mHost + ':' + mParams.mPort);
       mContext.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);
+      success = true;
     }
     catch (KasException e) {}
     
-    mLogger.debug("GenThread::run() - Starting actual work...");
-    work();
+    if (!success)
+    {
+      mLogger.debug("GenThread::run() - Failed to connect to remote server. Response: " + mContext.getResponse());
+    }
+    else
+    {
+      mLogger.debug("GenThread::run() - Starting actual work...");
+      work();
+    }
     
     try
     {

@@ -33,7 +33,7 @@ import com.kas.mq.samples.Utils;
 public class MdbSimulator extends AKasApp
 {
   static final String cKasHome      = "./build/install/kas-mq-samples";
-  static final String cAppName      = "MdbSimSample";
+  static final String cAppName      = "SampleMdbSim";
   static final String cConfigPrefix = "mdb.sim.";
   
   static final long cConsumerPollingInterval = 1000L;
@@ -145,6 +145,8 @@ public class MdbSimulator extends AKasApp
       //===========================================================================================
       System.out.println("Start reading messages and replying to messages...");
       IMqMessage message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
+      System.out.println("Response: " + client.getResponse());
+      
       while (message != null)
       {
         ++total;

@@ -152,6 +152,16 @@ INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT 'DEFINE_QUEUE_CLIENT.APP.*', group_id, 7
   FROM   kas_mq_groups
   WHERE group_name = 'samples';
+  
+INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
+  SELECT 'DELETE_QUEUE_MDB.*', group_id, 7
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
+
+INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
+  SELECT 'DELETE_QUEUE_CLIENT.APP.*', group_id, 7
+  FROM   kas_mq_groups
+  WHERE group_name = 'samples';
 
 --
 -- application permissions:
@@ -177,12 +187,7 @@ INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   WHERE group_name = 'mods';
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
-  SELECT 'MdbSimSample', group_id, 1
-  FROM   kas_mq_groups
-  WHERE group_name = 'samples';
-
-INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
-  SELECT 'ClientAppSample', group_id, 1
+  SELECT 'SAMPLE.*', group_id, 1
   FROM   kas_mq_groups
   WHERE group_name = 'samples';
 
@@ -210,12 +215,12 @@ INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   WHERE group_name = 'mods';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
-  SELECT 'mdb.*', group_id, 7
+  SELECT 'MDB.*', group_id, 7
   FROM   kas_mq_groups
   WHERE group_name = 'samples';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
-  SELECT 'client.app.*', group_id, 7
+  SELECT 'CLIENT.APP.*', group_id, 7
   FROM   kas_mq_groups
   WHERE group_name = 'samples';
 
