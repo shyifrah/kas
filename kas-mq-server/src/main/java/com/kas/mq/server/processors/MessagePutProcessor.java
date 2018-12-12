@@ -7,6 +7,8 @@ import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqQueue;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for putting a message into a queue
@@ -64,6 +66,11 @@ public class MessagePutProcessor extends AProcessor
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist, message is sent to dead queue";
         mLogger.debug("MessagePutProcessor::process() - " + mDesc);
         dead.put(mRequest);
+      }
+      else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.WRITE_ACCESS))
+      {
+        mDesc = "User is not permitted to write to queues";
+        mLogger.warn(mDesc);
       }
       else
       {

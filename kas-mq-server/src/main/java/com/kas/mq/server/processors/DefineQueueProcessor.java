@@ -11,6 +11,8 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for defining queues
@@ -66,6 +68,16 @@ public class DefineQueueProcessor extends AProcessor
       {
         mDesc = "Queue with name \"" + mQueue + "\" already exists";
         mLogger.debug("DefineQueueProcessor::process() - " + mDesc);
+      }
+      else if (!isAccessPermitted(EResourceClass.COMMAND, String.format("DEFINE_QUEUE_%s", mQueue)))
+      {
+        mDesc = "User is not permitted to issue DEFINE_QUEUE command";
+        mLogger.warn(mDesc);
+      }
+      else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.ALTER_ACCESS))
+      {
+        mDesc = "User is not permitted to alter queues";
+        mLogger.warn(mDesc);
       }
       else
       {

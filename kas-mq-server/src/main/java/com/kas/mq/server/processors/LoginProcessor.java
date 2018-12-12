@@ -7,6 +7,7 @@ import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.sec.ProtectionManager;
+import com.kas.sec.access.AccessLevel;
 import com.kas.sec.entities.UserEntity;
 import com.kas.sec.resources.EResourceClass;
 
@@ -74,7 +75,7 @@ public class LoginProcessor extends AProcessor
       {
         mDesc = "Incorrect password for " + mUser;
       }
-      else if (!ue.isAccessPermitted(EResourceClass.APPLICATION, mClientApp))
+      else if (!isAccessPermitted(ue, EResourceClass.APPLICATION, mClientApp, AccessLevel.READ_ACCESS))
       {
         mDesc = "User " + ue.toString() + " is not permitted to access application " + mClientApp;
         mLogger.warn(mDesc);

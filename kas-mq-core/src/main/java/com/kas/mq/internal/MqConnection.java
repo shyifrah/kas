@@ -269,8 +269,8 @@ public class MqConnection extends AKasObject implements IMqConnection
     {
       try
       {
-        message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue);
-        message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser);
+        message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue.toUpperCase());
+        message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser.toUpperCase());
         message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
         
         mLogger.debug("MqConnection::put() - sending message: " + StringUtils.asPrintableString(message));

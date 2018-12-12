@@ -3,11 +3,6 @@ package com.kas.mq.impl;
 public enum EQueryConfigType
 {
   /**
-   * Unknown value
-   */
-  UNKNOWN,
-  
-  /**
    * All configuration data
    */
   ALL,

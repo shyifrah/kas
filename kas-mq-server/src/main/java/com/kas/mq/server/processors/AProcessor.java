@@ -13,6 +13,9 @@ import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.MqConfiguration;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Abstract processor.<br>
@@ -54,8 +57,8 @@ public abstract class AProcessor extends AKasObject implements IProcessor
   
   /**
    * The processor response values.<br>
-   * These values are used to generate the response if either 
-   * {@link #respond()} or {@link #respond(String, Properties)} are called
+   * These values are used to generate the {@link MqResponse} object whenever 
+   * one of the respond() methods are called
    */
   protected EMqCode mCode = EMqCode.cFail;
   protected int mValue = -1;
@@ -148,6 +151,55 @@ public abstract class AProcessor extends AKasObject implements IProcessor
     
     response.setResponse(new MqResponse(mCode, mValue, mDesc));
     return response;
+  }
+  
+  /**
+   * Check if active user has READ access to the specified resource
+   * 
+   * @param resClass Resource Class
+   * @param resName Resource name
+   * @return {@code true} if user is permitted, {@code false} otherwise
+   */
+  protected boolean isAccessPermitted(EResourceClass resClass, String resName)
+  {
+    return isAccessPermitted(resClass, resName, AccessLevel.READ_ACCESS);
+  }
+  
+  /**
+   * Check if active user has specified access to the specified resource
+   * 
+   * @param resClass Resource Class
+   * @param resName Resource name
+   * @param level Access level
+   * @return {@code true} if user is permitted, {@code false} otherwise
+   */
+  protected boolean isAccessPermitted(EResourceClass resClass, String resName, AccessLevel level)
+  {
+    return isAccessPermitted(mHandler.getActiveUser(), resClass, resName, level);
+  }
+  
+  /**
+   * Check if specified user has specified access to the specified resource
+   * 
+   * @param user User entity
+   * @param resClass Resource Class
+   * @param resName Resource name
+   * @param level Access level
+   * @return {@code true} if user is permitted, {@code false} otherwise
+   */
+  protected boolean isAccessPermitted(UserEntity user, EResourceClass resClass, String resName, AccessLevel level)
+  {
+    mLogger.diag("AProcessor::isAccessPermitted() - IN, User=" + user.toString() + ", ResClass=" + resClass.toString() + ", ResName=" + resName + ", Level=" + level.toPrintableString());
+    
+    boolean result = user.isAccessPermitted(resClass, resName, level);
+    if (!result)
+    {
+      mLogger.error("User " + user.toString() + " is not permitted to access resource");
+      mLogger.trace("Additional information: Class=" + resClass.toString() + "; Resource=" + resName + "; Level=" + level.toPrintableString());
+    }
+    
+    mLogger.diag("AProcessor::isAccessPermitted() - OUT, Result=" + result);
+    return result;
   }
   
   /**

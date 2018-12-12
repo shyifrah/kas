@@ -6,7 +6,6 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.sec.entities.UserEntity;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -48,30 +47,28 @@ public class TermSessionProcessor extends AProcessor
       mDesc = "KAS/MQ server is disabled";
       mLogger.debug("TermSessionProcessor::process() - " + mDesc);
     }
+    else if (!isAccessPermitted(EResourceClass.COMMAND, "TERM_SESSION"))
+    {
+      mDesc = "User is not permitted to terminate sessions";
+      mLogger.warn(mDesc);
+    }
     else
     {
       String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyTermSessId, null);
       if (sessid != null) mSessionId = UniqueId.fromString(sessid);
       mLogger.debug("TermSessionProcessor::process() - SessionId=" + mSessionId);
       
-      UserEntity ue = mHandler.getActiveUser();
-      
       SessionHandler handler = mController.getHandler(mSessionId);
       if (handler == null)
       {
         mDesc = "Session with ID " + mSessionId + " does not exist";
       }
-      else if (ue.isAccessPermitted(EResourceClass.COMMAND, "TERM_SESSION"))
+      else
       {
         handler.end();
         mCode = EMqCode.cOkay;
         mDesc = "Session with ID " + mSessionId + " was successfully terminated";
         mLogger.debug("TermSessionProcessor::process() - " + mDesc);
-      }
-      else
-      {
-        mDesc = "User " + ue.toString() + " is not permitted to terminate sessions";
-        mLogger.warn(mDesc);
       }
     }
     
