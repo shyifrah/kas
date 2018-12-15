@@ -41,6 +41,15 @@ public class MqRequestFactory
     return message;
   }
   
+  static public MqMessage createAlterQueueRequest(String queue, Properties qProps)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cAlterQueue);
+    message.setStringProperty(IMqConstants.cKasPropertyAltQueueName, queue);
+    message.setSubset(qProps);
+    return message;
+  }
+  
   static public MqMessage createDeleteQueueRequest(String queue, boolean force)
   {
     MqMessage message = MqMessageFactory.createMessage();

@@ -82,6 +82,33 @@ public class MqLocalQueue extends MqQueue
   }
   
   /**
+   * Get the {@link MqLocalQueue} permanent value
+   * 
+   * @return the {@link MqLocalQueue}  permanent value
+   */
+  public boolean getPermanentValue() {
+	  return mBackup;
+  }
+ 
+  /**
+   * Set the {@link MqLocalQueue} Threshold
+   *  	
+   * @param threshold The threshold value to be set
+   */  
+  public void setThreshold(int threshold) {
+	  this.mThreshold=threshold;
+  }
+  
+  /**
+   * Set the {@link MqLocalQueue} Permanent value
+   *  	
+   * @param backup The permanent value to be set
+   */  
+  public void setPermanentValue(boolean backup) {
+	  this.mBackup = backup;
+  }
+  
+  /**
    * Get queue size
    * 
    * @return the number of messages in all priority queues

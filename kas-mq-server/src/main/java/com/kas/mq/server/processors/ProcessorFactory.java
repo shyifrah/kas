@@ -35,6 +35,9 @@ public class ProcessorFactory
       case cDefineQueue:
         processor = new DefineQueueProcessor(request, handler, repository);
         break;
+      case cAlterQueue:
+          processor = new AlterQueueProcessor(request, handler, repository);
+          break;
       case cDeleteQueue:
         processor = new DeleteQueueProcessor(request, handler, repository);
         break;

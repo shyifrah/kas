@@ -131,6 +131,24 @@ public final class MqContext extends AKasObject
   }
   
   /**
+   * Alter a queue.
+   * 
+   * @param queue The queue name to alter
+   * @param qProps The properties to alter for this queue 
+   * @return the {@code true} if queue was altered, {@code false} otherwise
+   */
+  public boolean alterQueue(String queue, Properties qProps)
+  {
+    mLogger.debug("MqContext::alterQueue() - IN, Queue=" + queue);
+    
+    boolean success = false;  
+    success = mConnection.alterQueue(queue, qProps);
+      
+    mLogger.debug("MqContext::alterQueue() - OUT, Returns=" + success);
+    return success;
+  }
+  
+  /**
    * Delete an existing queue.
    * 
    * @param queue The queue name to delete.
