@@ -57,6 +57,10 @@ public interface IMqConstants
   static public final String cKasPropertyDefThreshold = cKasPropertyPrefix + "def.q.threshold";
   static public final String cKasPropertyDefPermanent = cKasPropertyPrefix + "def.q.permanent";
   
+  static public final String cKasPropertyAltQueueName = cKasPropertyPrefix + "alt.q.queue";
+  static public final String cKasPropertyAltPermanent = cKasPropertyPrefix + "alt.q.permanent";
+  static public final String cKasPropertyAltThreshold = cKasPropertyPrefix + "atl.q.threshold";
+  
   static public final String cKasPropertyDelQueueName = cKasPropertyPrefix + "del.q.queue";
   static public final String cKasPropertyDelForce     = cKasPropertyPrefix + "del.q.force";
   

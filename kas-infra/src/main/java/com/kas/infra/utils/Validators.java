@@ -1,5 +1,6 @@
 package com.kas.infra.utils;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Validators
@@ -18,6 +19,21 @@ public class Validators
   
   static private final int cMinimumPortNumber = 1;
   static private final int cMaximumPortNumber = (Short.MAX_VALUE + 1) * 2 - 1;
+  
+  static private final String cTrhesholdPattern = "\\d+";
+  static private Pattern cThresholdCompiledPattern = Pattern.compile(cTrhesholdPattern);
+
+  /**
+   * Validate Threshold with regular expression
+   * 
+   * @param threshold The Threshold for validation
+   * @return {@code true} if {@code threshold} is a valid Threshold, {@code false} otherwise
+   */
+  static public boolean isThreshold(String threshold)
+  {
+    if ((threshold == null) || (threshold.trim().length() == 0)) return false;  
+    return cThresholdCompiledPattern.matcher(threshold).matches();
+  }
   
   /**
    * Validate IP address with regular expression

@@ -2,6 +2,8 @@ package com.kas.mq.server.repo;
 
 import java.io.File;
 import java.util.Collection;
+
+import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -143,6 +145,47 @@ public class MqLocalManager extends MqManager
     }
     
     mLogger.debug("MqLocalManager::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));
+    return queue;
+  }
+  
+  /**
+   * Alter a local queue object
+   * 
+   * @param name The name of the queue to define
+   * @param qprops The properties to be altered
+   * @return the altered {@link MqLocalQueue}
+   */
+  MqLocalQueue alterQueue(String name, Properties qprops)
+  {
+    mLogger.debug("MqLocalManager::alterQueue() - IN, Name=" + name);
+    MqLocalQueue queue = null;
+    
+    if (name != null)
+    {
+      name = name.toUpperCase();
+      queue = (MqLocalQueue) mQueues.get(name);      
+        
+      try {
+    	  if ( qprops.containsKey(IMqConstants.cKasPropertyAltThreshold) )
+    	  {
+    		  queue.setThreshold(qprops.getIntProperty(IMqConstants.cKasPropertyAltThreshold));
+    	  }
+      } catch (KasException e) {			
+    	  mLogger.error("Unable to set Threshold for current queue" + e.getMessage());		
+      }
+      
+      try {
+    	  if ( qprops.containsKey(IMqConstants.cKasPropertyAltPermanent) )
+    	  {
+    		  queue.setPermanentValue(qprops.getBoolProperty(IMqConstants.cKasPropertyAltPermanent));
+    	  }
+      } catch (KasException e) {			
+    	  mLogger.error("Unable to set Permanent value for current queue" + e.getMessage());		
+      }    
+      mQueues.remove(name);
+      mQueues.put(name, queue);      
+    }    
+    mLogger.debug("MqLocalManager::alterQueue() - OUT, Returns=" + StringUtils.asString(queue));
     return queue;
   }
   

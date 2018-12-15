@@ -47,6 +47,24 @@ public class MqContextConnection extends MqConnection
   }
   
   /**
+   * Alter a new queue.
+   * 
+   * @param queue The queue name to be altered.
+   * @param qProps The queue properties to be altered
+   * @return the {@code true} if queue was altered, {@code false} otherwise
+   */
+  public boolean alterQueue(String queue, Properties qProps)
+  {
+    mLogger.debug("MqContextConnection::alterQueue() - IN");
+    
+    IMqMessage request = MqRequestFactory.createAlterQueueRequest(queue, qProps);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::alterQueue() - OUT");
+    return success;
+  }
+  
+  /**
    * Define a new queue.
    * 
    * @param queue The queue name to delete.
