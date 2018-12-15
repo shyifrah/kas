@@ -33,7 +33,8 @@ public class KasMqServer extends AKasApp implements IMqServer
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
@@ -124,7 +125,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
-    sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType () + " DB on " + mDbConfig.getHost () + ":" + mDbConfig.getPort ());
+    sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType() + " DB on " + mDbConfig.getHost() + ":" + mDbConfig.getPort());
     mDbConfig.init();
     
     mConfig = new MqConfiguration();
@@ -138,7 +139,7 @@ public class KasMqServer extends AKasApp implements IMqServer
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
     }
-    sStartupLogger.info("DB additional information: DBVersion=" + DbConnectionPool.getInstance().getDbVersion() + ", Schema=" + mDbConfig.getSchemaName () + " ,User=" + mDbConfig.getUserName ());
+    sStartupLogger.info("DB additional information: Version=" + DbConnectionPool.getInstance().getDbVersion() + ", Schema=" + mDbConfig.getSchemaName() + ", User=" + mDbConfig.getUserName());
     DbUtils.initSchema();
 
     mRepository = new ServerRepository(mConfig);

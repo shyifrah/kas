@@ -1,6 +1,7 @@
 package com.kas.mq.internal;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.typedef.StringList;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.typedef.QueueMap;
@@ -112,6 +113,38 @@ public class MqManager extends AKasObject
   public boolean isActive()
   {
     return mActive;
+  }
+  
+  /**
+   * Query queues
+   * 
+   * @param name The queue name/prefix.
+   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return A properties object that holds the queried data
+   */
+  public StringList queryQueue(String name, boolean prefix, boolean all)
+  {
+    mLogger.debug("MqManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    
+    StringList qlist = new StringList();
+    for (MqQueue queue : mQueues.values())
+    {
+      boolean include = false;
+      if (prefix)
+        include = queue.getName().startsWith(name);
+      else
+        include = queue.getName().equals(name);
+      
+      mLogger.debug("MqManager::queryQueue() - Checking if current queue [" + queue.getName() + "] matches query: " + include);
+      if (include)
+      {
+        qlist.add(queue.queryResponse(all));
+      }
+    }
+    
+    mLogger.debug("MqManager::queryQueue() - OUT, Returns=" + qlist.size() + " queues");
+    return qlist;
   }
   
   /**

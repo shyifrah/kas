@@ -2,7 +2,7 @@ package com.kas.mq.server.internal;
 
 import java.util.Collection;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.Properties;
+import com.kas.infra.typedef.StringList;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
@@ -58,8 +58,8 @@ public class ServerNotifier extends AKasObject
     String qmgr = mRepository.getLocalManager().getName();
     IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, true);
     
-    Properties props = mRepository.queryLocalQueues("", true, false);
-    message.setSubset(props);
+    StringList qlist = mRepository.queryLocalQueues("", true, false);
+    message.setStringProperty(IMqConstants.cKasPropertySyssQueueList, qlist.toString());
     
     try
     {
@@ -130,11 +130,11 @@ public class ServerNotifier extends AKasObject
         
         IMqMessage reply = conn.notifySysState(message);
         
-        Properties remoteQueues = reply.getSubset(IMqConstants.cKasPropertyQueryResultPrefix);
-        if (!remoteManager.isActive())
+        String remoteQueues = reply.getStringProperty(IMqConstants.cKasPropertySyssQueueList, null);
+        if (remoteQueues != null)
         {
-          remoteManager.activate();
-          remoteManager.setQueues(remoteQueues);
+          StringList remoteQueueList = StringList.fromString(remoteQueues);
+          remoteManager.setQueues(remoteQueueList);
         }
         
         conn.disconnect();

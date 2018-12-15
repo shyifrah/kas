@@ -58,12 +58,13 @@ public class QueryQueueCommand extends ACliCommand
     }
     
     Properties qprops = new Properties();
+    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryFormatOutput, true); // format output to message body
     
     String name = mCommandArgs.poll().toUpperCase();
     if (name.endsWith("*"))
     {
       name = name.substring(0, name.length()-1);
-      qprops.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, true);
+      qprops.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, true); // queue name is prefix of queues
     }
     
     if ((name.length() > 0) && (!Validators.isQueueName(name)))
@@ -73,14 +74,14 @@ public class QueryQueueCommand extends ACliCommand
       return false;
     }
     
-    qprops.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, name);
+    qprops.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, name); // queue name
     
     boolean all = false;
     String opt = mCommandArgs.poll();
     if ((opt != null) && (opt.equalsIgnoreCase("ALL")))
       all = true;
     
-    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryAllData, all);
+    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryAllData, all); // get all data on queue
     
     if (mCommandArgs.size() > 0)
     {

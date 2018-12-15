@@ -16,7 +16,7 @@ class ConsumerThread extends GenThread
   
   ConsumerThread(int tix, ClientAppParams params)
   {
-    super(ConsumerThread.class.getSimpleName() + tix, params);
+    super("SAMPLE-" + ConsumerThread.class.getSimpleName() + tix, params);
     mLogger = LoggerFactory.getLogger(this.getClass());
     mThreadIndex = tix;
     mParams = params;

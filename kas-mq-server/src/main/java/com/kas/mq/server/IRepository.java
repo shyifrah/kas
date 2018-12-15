@@ -3,8 +3,8 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
-import com.kas.infra.base.Properties;
 import com.kas.infra.config.IBaseListener;
+import com.kas.infra.typedef.StringList;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqQueue;
@@ -62,8 +62,6 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue
    * @return the {@link MqRemoteQueue} object deleted
-   * 
-   * @see com.kas.mq.server.IRepository#deleteRemoteQueue(String, String)
    */
   public abstract MqRemoteQueue deleteRemoteQueue(String qmgr, String queue);
   
@@ -100,10 +98,8 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public abstract Properties queryLocalQueues(String name, boolean prefix, boolean all);
+  public abstract StringList queryLocalQueues(String name, boolean prefix, boolean all);
   
   /**
    * Get information regarding remote queues whose name begins with the specified prefix.
@@ -112,10 +108,8 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public abstract Properties queryRemoteQueues(String name, boolean prefix, boolean all);
+  public abstract StringList queryRemoteQueues(String name, boolean prefix, boolean all);
   
   /**
    * Get information regarding all queues whose name begins with the specified prefix.<br>
@@ -127,7 +121,7 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
    */
-  public abstract Properties queryQueues(String name, boolean prefix, boolean all);
+  public abstract StringList queryQueues(String name, boolean prefix, boolean all);
   
   /**
    * Get {@link MqManager} by its name 

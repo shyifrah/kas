@@ -97,6 +97,18 @@ public class AccessEntry extends AKasObject
   }
   
   /**
+   * Get the object's string representation
+   * 
+   * @return the string representation with the specified level of padding
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append(name()).append("RegEx=").append(mResourceRegEx);
+    return sb.toString();
+  }
+  
+  /**
    * Get the object's detailed string representation
    * 
    * @param level The string padding level

@@ -8,7 +8,6 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.sec.entities.UserEntity;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -50,31 +49,29 @@ public class TermConnectionProcessor extends AProcessor
       mDesc = "KAS/MQ server is disabled";
       mLogger.debug("TermConnectionProcessor::process() - " + mDesc);
     }
+    else if (!isAccessPermitted(EResourceClass.COMMAND, "TERM_CONNECTION"))
+    {
+      mDesc = "User is not permitted to terminate connections";
+      mLogger.warn(mDesc);
+    }
     else
     {
       String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyTermConnId, null);
       if (connid != null) mConnectionId = UniqueId.fromString(connid);
       mLogger.debug("TermConnectionProcessor::process() - ConnectionId=" + mConnectionId);
       
-      UserEntity ue = mHandler.getActiveUser();
-    
       MqServerConnectionPool pool = MqServerConnectionPool.getInstance();
       MqServerConnection conn = pool.getConnection(mConnectionId);
       if (conn == null)
       {
         mDesc = "Connection with ID " + mConnectionId + " does not exist";
       }
-      else if (ue.isAccessPermitted(EResourceClass.COMMAND, "TERM_CONNECTION"))
+      else
       {
         pool.release(conn);
         mCode = EMqCode.cOkay;
         mDesc = "Connection with ID " + mConnectionId + " was successfully terminated";
         mLogger.debug("TermConnectionProcessor::process() - " + mDesc);
-      }
-      else
-      {
-        mDesc = "User " + ue.toString() + " is not permitted to terminate connections";
-        mLogger.warn(mDesc);
       }
     }
     

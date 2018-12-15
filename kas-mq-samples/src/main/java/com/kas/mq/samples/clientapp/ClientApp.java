@@ -30,17 +30,18 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
 public class ClientApp extends AKasApp 
 {
   static final String cKasHome      = "/build/install/kas-mq-samples";
-  static final String cAppName      = "ClientAppSample";
+  static final String cAppName      = "SampleClientApp";
   static final String cConfigPrefix = "client.app.";
   
   static public void main(String [] args)
   {
     Map<String, String> defaults = new HashMap<String, String>();
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
+    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
     defaults.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
     defaults.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
-    defaults.put(cConfigPrefix + "username", "root");
-    defaults.put(cConfigPrefix + "password", "root");
+    defaults.put(cConfigPrefix + "username", "guest");
+    defaults.put(cConfigPrefix + "password", "guest");
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
@@ -112,11 +113,12 @@ public class ClientApp extends AKasApp
     TimeStamp tsStart = TimeStamp.now();
     MqContext client = new MqContext(cAppName);
     
-    //mParams.print();   
+    mParams.print();   
     
     try
     {
       client.connect(mParams.mHost, mParams.mPort, mParams.mUserName, mParams.mPassword);
+      System.out.println("Response: " + client.getResponse());
       
       //===========================================================================================
       // defining queues which are used by producers and consumers

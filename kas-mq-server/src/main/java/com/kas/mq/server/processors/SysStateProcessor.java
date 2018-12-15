@@ -1,6 +1,7 @@
 package com.kas.mq.server.processors;
 
 import com.kas.infra.base.Properties;
+import com.kas.infra.typedef.StringList;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -44,7 +45,8 @@ public class SysStateProcessor extends AProcessor
   {
     mLogger.debug("SysStateProcessor::process() - IN");
     
-    Properties props = null;
+    Properties props = new Properties();
+    StringList localQueueList = null;
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
@@ -67,10 +69,15 @@ public class SysStateProcessor extends AProcessor
       else if (mActivated && !manager.isActive())
       {
         manager.activate();
-        Properties remoteQueues = mRequest.getSubset(IMqConstants.cKasPropertyQueryResultPrefix);
-        ((MqRemoteManager)manager).setQueues(remoteQueues);
+        String remoteQueues = mRequest.getStringProperty(IMqConstants.cKasPropertySyssQueueList, null);
+        if (remoteQueues != null)
+        {
+          StringList remoteQueueList = StringList.fromString(remoteQueues);
+          ((MqRemoteManager)manager).setQueues(remoteQueueList);
+        }
         
-        props = mRepository.queryLocalQueues("", true, false);
+        localQueueList = mRepository.queryLocalQueues("", true, false);
+        props.setStringProperty(IMqConstants.cKasPropertySyssQueueList, localQueueList.toString());
       }
     }
     

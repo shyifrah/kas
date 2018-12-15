@@ -2,7 +2,6 @@ package com.kas.mq.server.repo;
 
 import java.io.File;
 import java.util.Collection;
-
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
@@ -208,39 +207,6 @@ public class MqLocalManager extends MqManager
     
     mLogger.debug("MqLocalManager::deleteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
-  }
-  
-  /**
-   * Query local queues
-   * 
-   * @param name The queue name. If it ends with {@code asterisk}, then the name is a prefix
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
-   * @return A properties object that holds the queried data
-   */
-  Properties queryQueue(String name, boolean prefix, boolean all)
-  {
-    mLogger.debug("MqLocalManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
-    
-    Properties props = new Properties();
-    for (MqQueue queue : mQueues.values())
-    {
-      MqLocalQueue mqlq = (MqLocalQueue)queue;
-      boolean include = false;
-      if (prefix)
-        include = mqlq.getName().startsWith(name);
-      else
-        include = mqlq.getName().equals(name);
-      
-      mLogger.debug("MqLocalManager::queryQueue() - Checking if current queue [" + mqlq.getName() + "] matches query: " + include);
-      if (include)
-      {
-        String key = IMqConstants.cKasPropertyQueryResultPrefix + "." + mqlq.getName();
-        props.setStringProperty(key, mqlq.queryResponse(all));
-      }
-    }
-    mLogger.debug("MqLocalManager::queryQueue() - OUT, Returns=" + props.size() + " queues");
-    return props;
   }
   
   /**

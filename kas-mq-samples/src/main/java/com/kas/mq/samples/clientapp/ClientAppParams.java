@@ -45,7 +45,6 @@ public class ClientAppParams extends ParamsContainer
       .append("  mTotalConsumers=").append(mTotalConsumers).append("\n")
       .append("  mTotalMessages=").append(mTotalMessages).append("\n")
       .append("  mMessageType=").append(mMessageType).append("\n")
-
       .append(")");
     return sb.toString();  
   }

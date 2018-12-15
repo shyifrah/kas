@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.Properties;
+import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
@@ -287,15 +287,13 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public Properties queryLocalQueues(String name, boolean prefix, boolean all)
+  public StringList queryLocalQueues(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryLocalQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     mLogger.debug("ServerRepository::queryLocalQueues() - Checking if LocalQueuesManager " + mLocalManager.getName() + " has results for this query...");
-    Properties result = mLocalManager.queryQueue(name, prefix, all);
+    StringList result = mLocalManager.queryQueue(name, prefix, all);
     
     mLogger.debug("ServerRepository::queryLocalQueues() - OUT, Returns=" + result.size() + " records");
     return result;
@@ -308,20 +306,18 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public Properties queryRemoteQueues(String name, boolean prefix, boolean all)
+  public StringList queryRemoteQueues(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryRemoteQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
-    Properties result = new Properties();
+    StringList result = new StringList();
     for (Map.Entry<String, MqRemoteManager> entry : mRemoteManagersMap.entrySet())
     {
       MqRemoteManager mgr = entry.getValue();
       mLogger.debug("ServerRepository::queryRemoteQueues() - Checking if RemoteQueuesManager " + mgr.getName() + " has results for this query...");
-      Properties props = mgr.queryQueue(name, prefix, all);
-      result.putAll(props);
+      StringList list = mgr.queryQueue(name, prefix, all);
+      result.addAll(list);
     }
     
     mLogger.debug("ServerRepository::queryRemoteQueues() - OUT, Returns=" + result.size() + " records");
@@ -339,16 +335,14 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
    * @param all If {@code true}, display all information on all queues, otherwise, display only names 
    * @return A properties object that holds the queried data
-   * 
-   * @see com.kas.mq.impl.internal.IClient#queryQueue(String, boolean, boolean)
    */
-  public Properties queryQueues(String name, boolean prefix, boolean all)
+  public StringList queryQueues(String name, boolean prefix, boolean all)
   {
     mLogger.debug("ServerRepository::queryQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
-    Properties result = queryRemoteQueues(name, prefix, all);
-    Properties locals = queryLocalQueues(name, prefix, all);
-    result.putAll(locals);
+    StringList result = queryRemoteQueues(name, prefix, all);
+    StringList locals = queryLocalQueues(name, prefix, all);
+    result.addAll(locals);
     
     mLogger.debug("ServerRepository::queryQueues() - OUT, Returns=" + result.size() + " records");
     return result;

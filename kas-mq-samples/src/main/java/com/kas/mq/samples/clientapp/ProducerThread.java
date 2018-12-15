@@ -18,7 +18,7 @@ class ProducerThread extends GenThread
   
   ProducerThread(int tix, ClientAppParams params)
   {
-    super(ProducerThread.class.getSimpleName() + tix, params);
+    super("SAMPLE-" + ProducerThread.class.getSimpleName() + tix, params);
     mLogger = LoggerFactory.getLogger(this.getClass());
     mThreadIndex = tix;
     mParams = params;

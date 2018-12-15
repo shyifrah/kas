@@ -14,10 +14,10 @@ public class MqRequestFactory
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cLogin);
-    message.setStringProperty(IMqConstants.cKasPropertyLoginUserName, user);
+    message.setStringProperty(IMqConstants.cKasPropertyLoginUserName, user.toUpperCase());
     byte [] b64pass = Base64Utils.encode(pass.getBytes());
     message.setStringProperty(IMqConstants.cKasPropertyLoginPassword, StringUtils.asHexString(b64pass));
-    message.setStringProperty(IMqConstants.cKasPropertyLoginAppName, appName);
+    message.setStringProperty(IMqConstants.cKasPropertyLoginAppName, appName.toUpperCase());
     return message;
   }
   
@@ -25,7 +25,7 @@ public class MqRequestFactory
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cGet);
-    message.setStringProperty(IMqConstants.cKasPropertyGetQueueName, queue);
+    message.setStringProperty(IMqConstants.cKasPropertyGetQueueName, queue.toUpperCase());
     message.setLongProperty(IMqConstants.cKasPropertyGetTimeout, timeout);
     message.setLongProperty(IMqConstants.cKasPropertyGetInterval, interval);
     return message;
@@ -35,7 +35,7 @@ public class MqRequestFactory
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cDefineQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyDefQueueName, queue);
+    message.setStringProperty(IMqConstants.cKasPropertyDefQueueName, queue.toUpperCase());
     message.setIntProperty(IMqConstants.cKasPropertyDefThreshold, threshold);
     message.setBoolProperty(IMqConstants.cKasPropertyDefPermanent, perm);
     return message;
@@ -54,7 +54,7 @@ public class MqRequestFactory
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cDeleteQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyDelQueueName, queue);
+    message.setStringProperty(IMqConstants.cKasPropertyDelQueueName, queue.toUpperCase());
     message.setBoolProperty(IMqConstants.cKasPropertyDelForce, force);
     return message;
   }
@@ -88,7 +88,7 @@ public class MqRequestFactory
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cTermServer);
-    message.setStringProperty(IMqConstants.cKasPropertyTermUserName, user);
+    message.setStringProperty(IMqConstants.cKasPropertyTermUserName, user.toUpperCase());
     return message;
   }
   

@@ -7,7 +7,6 @@ import com.kas.mq.internal.MqQueue;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.sec.access.AccessLevel;
-import com.kas.sec.entities.UserEntity;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -46,18 +45,11 @@ public class MessageGetProcessor extends AProcessor
   {
     mLogger.debug("MessageGetProcessor::process() - IN");
     
-    UserEntity ue = mHandler.getActiveUser();
-    
     IMqMessage result = null;
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
       mLogger.debug("MessageGetProcessor::process() - " + mDesc);
-    }
-    else if (!ue.isAccessPermitted(EResourceClass.COMMAND, "get"))
-    {
-      mDesc = "User " + ue.toString() + " is not permitted to issue GET requests";
-      mLogger.warn(mDesc);
     }
     else
     {
@@ -77,9 +69,9 @@ public class MessageGetProcessor extends AProcessor
         mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
         mLogger.debug("MessageGetProcessor::process() - " + mDesc);
       }
-      else if (!ue.isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.READ_ACCESS))
+      else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.READ_ACCESS))
       {
-        mDesc = "User " + ue.toString() + " is not permitted to issue read from queue " + mQueue;
+        mDesc = "User is not permitted to read from queues";
         mLogger.warn(mDesc);
       }
       else
