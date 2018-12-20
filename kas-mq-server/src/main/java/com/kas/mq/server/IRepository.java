@@ -30,6 +30,14 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
   public abstract MqLocalQueue defineLocalQueue(String name, int threshold, boolean perm);
   
   /**
+   * Alter a {@link MqLocalQueue} object with the specified {@code name}
+   * 
+   * @param name The name of the queue
+   * @param qProps The queue properties to be altered
+   * @return the {@link MqLocalQueue} object defined
+   */  
+  public abstract MqLocalQueue alterLocalQueue(String name, Properties qProps);
+  /**
    * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}
    * 
    * @param qmgr The name of the KAS/MQ server

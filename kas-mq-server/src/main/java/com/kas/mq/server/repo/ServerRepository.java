@@ -140,7 +140,7 @@ public class ServerRepository extends AKasObject implements IRepository
     MqLocalQueue queue = mLocalManager.defineQueue(name, threshold, perm);
     mLogger.debug("ServerRepository::defineLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return queue;
-  }
+  }    
   
   /**
    * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}
@@ -162,6 +162,23 @@ public class ServerRepository extends AKasObject implements IRepository
       
     mLogger.debug("ServerRepository::defineRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
     return mqrq;
+  }    
+  
+  /**
+   * alter a {@link MqLocalQueue} object with the specified {@code name} and {@code properties}.
+   * 
+   * @param name The name of the queue
+   * @param qprops The queue properties we want to alter 
+   * @return the {@link MqLocalQueue} object created
+   * 
+   * @see com.kas.mq.server.IRepository#defineLocalQueue(String, int)
+   */
+  public MqLocalQueue alterLocalQueue(String name, Properties qprops)
+  {
+    mLogger.debug("ServerRepository::alterLocalQueue() - IN, Name=" + name);
+    MqLocalQueue queue = mLocalManager.alterQueue(name, qprops);
+    mLogger.debug("ServerRepository::alterLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    return queue;
   }
   
   /**

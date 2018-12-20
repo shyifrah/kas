@@ -205,21 +205,26 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     boolean available = false;
     
     DbConnection dbConn = allocate();
-    Connection conn = dbConn.getConn();
-    try
-    {
-      if (conn.isValid(cDbConnectionTimeOutSeconds))
-      {
-        mLogger.info("Connection pool successfully connected to DB");
-        available = true;
-      }
-    }
-    catch (SQLException e)
-    {	
-      mLogger.error("Unable to validate DB connction. Exception caught: ", e);
-    }
+    if ( dbConn == null ) {
+    	mLogger.error("Unable to allocate DB Connection");
+    	available=false;
+    }else {    	
+    	Connection conn = dbConn.getConn();    
+	    try
+	    {	    	
+	      if (conn.isValid(cDbConnectionTimeOutSeconds))
+	      {
+	        mLogger.info("Connection pool successfully connected to DB");
+	        available = true;
+	      }
+	    }    
+	    catch (SQLException e)
+	    {	
+	      mLogger.error("Unable to validate DB connction. Exception caught: ", e);
+	    }
     
-    mLogger.debug("DbConnectionPool::isConnectivityAvailable() - OUT, Return=" + available);
+	    mLogger.debug("DbConnectionPool::isConnectivityAvailable() - OUT, Return=" + available);
+    }
     return available;
   }
   
