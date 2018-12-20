@@ -389,7 +389,6 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
       .append(pad).append("  PredefinedQueues=(\n")
       .append(StringUtils.asPrintableString(mPredefQueuesMap, level+2)).append("\n")
       .append(pad).append("  )\n")
-//      .append(pad).append("  DbConfig=(").append(mDbConfig.toPrintableString(level+1)).append(")\n")
       .append(pad).append(")");
     return sb.toString();
   }
