@@ -21,10 +21,25 @@ public class StringList extends ArrayList<String> implements IObject
    */
   static public StringList fromString(String string)
   {
-    if (!string.startsWith("["))
-      return null;
-    if (!string.endsWith("]"))
-      return null;
+    return fromString(string, true);
+  }
+
+  /**
+   * Create a StringList object from a comma-separated list which is enclosed with brackets
+   *  
+   * @param string The comma-separated list
+   * @param enclosed Whether {@code string} is enclosed with brackets
+   * @return The StringList object
+   */
+  static public StringList fromString(String string, boolean enclosed)
+  {
+    if (enclosed)
+    {
+      if (!string.startsWith("["))
+        return null;
+      if (!string.endsWith("]"))
+        return null;
+    }
     
     String [] array = string.substring(1, string.length()-1).split(", ");
     if (array.length == 0)

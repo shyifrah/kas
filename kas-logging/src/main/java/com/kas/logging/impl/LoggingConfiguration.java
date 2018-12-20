@@ -93,7 +93,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
           config = new StderrAppenderConfiguration(name, this);
           break;
         case "noop":
-          config = new StderrAppenderConfiguration(name, this);
+          config = new NoOpAppenderConfiguration(name, this);
           break;
         default:
           break;
