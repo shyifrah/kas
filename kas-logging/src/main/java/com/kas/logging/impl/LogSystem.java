@@ -2,7 +2,6 @@ package com.kas.logging.impl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.appender.IAppenderConfiguration;
@@ -14,12 +13,8 @@ import com.kas.logging.appender.IAppenderConfiguration;
  */
 public class LogSystem extends AKasObject
 {
-  static public final String cFileAppenderName   = "file";
-  static public final String cStdoutAppenderName = "stdout";
-  static public final String cStderrAppenderName = "stderr";
-  
   /**
-   * The {@link MainConfiguration} singleton instance
+   * Singleton instance
    */
   static private LogSystem sInstance = new LogSystem();
   
