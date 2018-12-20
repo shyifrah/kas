@@ -1,7 +1,6 @@
 package com.kas.logging.appender;
 
 import com.kas.infra.base.IObject;
-import com.kas.infra.config.IBaseListener;
 import com.kas.logging.impl.IAppender;
 
 /**
@@ -9,7 +8,7 @@ import com.kas.logging.impl.IAppender;
  * 
  * @author Pippo
  */
-public interface IAppenderConfiguration extends IObject, IBaseListener
+public interface IAppenderConfiguration extends IObject
 {
   /**
    * Get the appender's name

@@ -28,8 +28,8 @@ public class Utils
   static public void deleteQueue(MqContext client, String queue)
   {
     System.out.println("Deleting forcefully queue with name " + queue);
-    System.out.println("Response: " + client.getResponse());
     client.deleteQueue(queue, true);
+    System.out.println("Response: " + client.getResponse());
   }
   
   /**

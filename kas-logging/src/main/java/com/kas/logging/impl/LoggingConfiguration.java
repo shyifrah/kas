@@ -1,12 +1,10 @@
 package com.kas.logging.impl;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.config.impl.AConfiguration;
 import com.kas.infra.base.Properties;
-import com.kas.infra.config.IBaseListener;
-import com.kas.infra.config.IBaseRegistrar;
+import com.kas.infra.utils.StringUtils;
 import com.kas.logging.appender.AAppenderConfiguration;
 import com.kas.logging.appender.IAppenderConfiguration;
 /**
@@ -14,7 +12,7 @@ import com.kas.logging.appender.IAppenderConfiguration;
  * 
  * @author Pippo
  */
-public class LoggingConfiguration extends AConfiguration implements IBaseRegistrar
+public class LoggingConfiguration extends AConfiguration
 {
   static public final String  cLogConfigPrefix         = "kas.logging.";
   static public final String  cLogAppenderConfigPrefix = cLogConfigPrefix + "appender.";
@@ -33,17 +31,10 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   private Map<String, IAppenderConfiguration> mAppenderConfigs = new ConcurrentHashMap<String, IAppenderConfiguration>();
   
   /**
-   * A set of configuration listener objects.<br>
-   * When configuration changes, all listeners are notified
-   */
-  private HashSet<IBaseListener> mListeners;
-  
-  /**
    * Construct the configuration
    */
   LoggingConfiguration()
   {
-    mListeners = new HashSet<IBaseListener>();
   }
   
   /**
@@ -56,9 +47,6 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
     mEnabled = mMainConfig.getBoolProperty ( cLogConfigPrefix + "enabled" , mEnabled );
     
     refreshAppenderConfigs();
-    
-    for (IBaseListener listener : mListeners)
-      listener.refresh();
   }
   
   /**
@@ -93,7 +81,7 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
           config = new StderrAppenderConfiguration(name, this);
           break;
         case "noop":
-          config = new StderrAppenderConfiguration(name, this);
+          config = new NoOpAppenderConfiguration(name, this);
           break;
         default:
           break;
@@ -167,30 +155,6 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
   }
   
   /**
-   * Register an object as a listener to to configuration changes
-   * 
-   * @param listener The listener
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
-   */
-  public synchronized void register(IBaseListener listener)
-  {
-    mListeners.add(listener);
-  }
-  
-  /**
-   * Register an object as a listener to to configuration changes
-   * 
-   * @param listener The listener
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
-   */
-  public synchronized void unregister(IBaseListener listener)
-  {
-    mListeners.remove(listener);
-  }
-  
-  /**
    * Returns the {@link LoggingConfiguration} string representation.
    * 
    * @param level the required level padding
@@ -205,12 +169,9 @@ public class LoggingConfiguration extends AConfiguration implements IBaseRegistr
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
       .append(pad).append("  Enabled=").append(mEnabled).append("\n")
-      .append(pad).append("  AppendersConfigurations=(\n");
-
-    for (IBaseListener listener : mListeners)
-      sb.append(pad).append("    ").append(listener.toPrintableString(level+2)).append("\n");
-    
-    sb.append(pad).append("  )\n")
+      .append(pad).append("  AppendersConfigurations=(\n")
+      .append(StringUtils.asPrintableString(mAppenderConfigs, level+2, true)).append("\n")
+      .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
   }

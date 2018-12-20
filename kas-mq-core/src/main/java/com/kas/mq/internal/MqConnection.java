@@ -229,7 +229,7 @@ public class MqConnection extends AKasObject implements IMqConnection
           reply.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
           reply.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
           result = reply;
-          setResponse("Successfully got a message from queue " + queue + ", Message: " + StringUtils.asPrintableString(reply));
+          setResponse("Successfully got a message from queue " + queue + ", MessageID: " + reply.getMessageId());
         }
         else
         {

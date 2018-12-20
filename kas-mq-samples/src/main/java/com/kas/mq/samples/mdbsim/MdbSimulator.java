@@ -179,6 +179,7 @@ public class MdbSimulator extends AKasApp
         if (total % 100 == 0) System.out.println(String.format("Number of messages processed by MDB: %d", total));
         
         message = client.get(mParams.mRequestsQueue, cConsumerGetTimeout, cConsumerPollingInterval);
+        System.out.println("Response: " + client.getResponse());
       }
       
       //===========================================================================================
