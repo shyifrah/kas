@@ -74,6 +74,20 @@ public class StringUtils
    */
   static public String asPrintableString(Map<?, ?> map, int level)
   {
+    return asPrintableString(map, level, false);
+  }
+  
+  /**
+   * Return the printable String value for a Map object, just as if it had the 
+   * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
+   * 
+   * @param map The {@link Map}
+   * @param level Padding level
+   * @param iobj When {@code true}, {@code map} values hold objects that implement {@link IObject}
+   * @return the object's printable string representation 
+   */
+  static public String asPrintableString(Map<?, ?> map, int level, boolean iobj)
+  {
     String pad = getPadding(level);
     StringBuilder sb = new StringBuilder();
     
@@ -82,9 +96,16 @@ public class StringUtils
     
     for (Map.Entry<?, ?> entry : map.entrySet())
     {
+      String key = asString(entry.getKey());
+      String val;
+      if (iobj)
+        val = ((IObject)entry.getValue()).toPrintableString(level);
+      else
+        val = asString(entry.getValue());
+      
       ++i;
       sb.append(pad)
-        .append(asString(entry.getKey(), entry.getValue()));
+        .append(key).append('=').append(val);
       
       if (i + 1 <= size)
         sb.append("\n");
