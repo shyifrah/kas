@@ -170,7 +170,7 @@ public class LoggingConfiguration extends AConfiguration
     sb.append(name()).append("(\n")
       .append(pad).append("  Enabled=").append(mEnabled).append("\n")
       .append(pad).append("  AppendersConfigurations=(\n")
-      .append(pad).append(StringUtils.asPrintableString(this, level+2)).append("\n")
+      .append(StringUtils.asPrintableString(mAppenderConfigs, level+2, true)).append("\n")
       .append(pad).append("  )\n")
       .append(pad).append(")");
     return sb.toString();
