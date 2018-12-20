@@ -76,7 +76,8 @@ public class AlterQueueCommand extends ACliCommand
 	    	writeln(" ");
 	    	return false;
 	    }
-	    firstOpt = false;            	      
+	    firstOpt = false;   
+	    
 	    if (opt.equals("PERMANENT")) 
 	    {	    	
 	    	qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, true);
