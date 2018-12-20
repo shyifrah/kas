@@ -3,6 +3,7 @@ package com.kas.mq.server;
 import java.util.Collection;
 import com.kas.infra.base.IInitializable;
 import com.kas.infra.base.IObject;
+import com.kas.infra.base.Properties;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.typedef.StringList;
 import com.kas.mq.internal.MqLocalQueue;

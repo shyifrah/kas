@@ -57,62 +57,52 @@ public class AlterQueueCommand extends ACliCommand
       return false;
     }
     
-    Properties qprops = new Properties();
+    Properties qprops = new Properties();    
+    boolean firstOpt = true;
     
-    String queue = mCommandArgs.poll().toUpperCase();
-
+    String queue = mCommandArgs.poll().toUpperCase();   
     if ((queue.length() > 0) && (!Validators.isQueueName(queue)))
     {
       writeln("Invalid queue name \"" + queue + "\"");
       writeln(" ");
       return false;
     }
-    qprops.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, queue);
-    
-    String opt = mCommandArgs.poll().toUpperCase();
-    if (opt == null) 
-    {
-    	writeln("missing property to alter");
-    	writeln(" ");
-    	return false;
-    }    
-    
-    String val=null;    
-    if (opt.equals("PERMANENT")) 
-    {
-    	qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, true);
-    }
-	else if (opt.equals("TEMPORARY")) 
-	{
-		qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, false);
-	}
-	else if (opt.equals("THRESHOLD")) 
-	{
-			String threshold = mCommandArgs.poll();
-			writeln(threshold);
-		    if ((threshold.length() > 0) && (!Validators.isThreshold(threshold))) 
-		    {		    	
-		    	writeln("invalid threshold value");
-		    	writeln(" ");
-		    	return false;
-		    }else
-		    {
-		    	qprops.setStringProperty(IMqConstants.cKasPropertyAltThreshold, threshold);
-		    }
-    }else {    	   
-    	writeln("Not supported option");
-    	writeln(" ");    
-    	return false;
-    }
-    
-    if (mCommandArgs.size() > 0)
-    {
-      writeln("Excessive token \"" + mCommandArgs.poll() + "\"");
-      writeln(" ");
-      return false;
-    }
-      
-    mClient.alterQueue(queue, qprops);
+  
+    while (mCommandArgs.size() > 0) {
+    	String opt = mCommandArgs.poll().toUpperCase();    	 
+	    if (firstOpt && (opt == null)) 
+	    {
+	    	writeln("missing property to alter");
+	    	writeln(" ");
+	    	return false;
+	    }
+	    firstOpt = false;   
+	    
+	    if (opt.equals("PERMANENT")) 
+	    {	    	
+	    	qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, true);
+	    }
+	    else if (opt.equals("TEMPORARY")) 
+		{
+			qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, false);
+		}
+	    else if (opt.equals("THRESHOLD")) 
+		{
+				String threshold = mCommandArgs.poll();				
+			    if ((threshold.length() > 0) && (!Validators.isThreshold(threshold))) 
+			    {		    	
+			    	writeln("invalid threshold value");
+			    	writeln(" ");
+			    	return false;
+			    }else
+			    	qprops.setStringProperty(IMqConstants.cKasPropertyAltThreshold, threshold);			    
+	    }else {    	   
+	    	writeln("Not supported option");
+	    	writeln(" ");    
+	    	return false;
+	    }	   
+    }	     
+    mClient.alterQueue(queue,qprops);
     writeln(mClient.getResponse());
     writeln(" ");     
     return false;

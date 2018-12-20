@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
