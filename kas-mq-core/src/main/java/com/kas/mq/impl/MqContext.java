@@ -3,7 +3,6 @@ package com.kas.mq.impl;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
-import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
 import com.kas.logging.ILogger;
@@ -175,38 +174,6 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Terminate connection
-   * 
-   * @param id The connection's {@link UniqueId} to terminate
-   * @return {@code true} if connection was terminated, {@code false} otherwise
-   */
-  public boolean termConn(UniqueId id)
-  {
-    mLogger.debug("MqContext::termConn() - IN, ConnId=" + id);
-    
-    boolean success = mConnection.termConn(id);
-    
-    mLogger.debug("MqContext::termConn() - OUT, Returns=" + success);
-    return success;
-  }
-  
-  /**
-   * Terminate session
-   * 
-   * @param id The session's {@link UniqueId} to terminate
-   * @return {@code true} if session was terminated, {@code false} otherwise
-   */
-  public boolean termSess(UniqueId id)
-  {
-    mLogger.debug("MqContext::termSess() - IN, SessId=" + id);
-    
-    boolean success = mConnection.termSess(id);
-    
-    mLogger.debug("MqContext::termSess() - OUT, Returns=" + success);
-    return success;
-  }
-  
-  /**
    * Query KAS/MQ server for information
    * 
    * @param qType a {@link EQueryType} value that describes the type of query
@@ -269,21 +236,6 @@ public final class MqContext extends AKasObject
     }
     
     mLogger.debug("MqContext::put() - OUT");
-  }
-  
-  /**
-   * Mark the KAS/MQ server it should shutdown
-   * 
-   * @return {@code true} if the server accepted the request, {@code false} otherwise
-   */
-  public boolean shutdown()
-  {
-    mLogger.debug("MqContext::put() - IN");
-    
-    boolean success = mConnection.termServer();
-    
-    mLogger.debug("MqContext::put() - OUT, Returns=" + success);
-    return success;
   }
   
   /**
