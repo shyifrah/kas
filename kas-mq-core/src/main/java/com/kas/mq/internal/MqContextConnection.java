@@ -1,14 +1,11 @@
-package com.kas.mq.impl;
+package com.kas.mq.internal;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.EQueryType;
+import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
-import com.kas.mq.internal.EMqCode;
-import com.kas.mq.internal.IMqConstants;
-import com.kas.mq.internal.MqConnection;
-import com.kas.mq.internal.MqRequestFactory;
 
 /**
  * A {@link MqContextConnection} is an extended {@link MqConnection} used by {@link MqContext}
@@ -22,7 +19,7 @@ public class MqContextConnection extends MqConnection
    * 
    * @param clientName A name used by the client application
    */
-  protected MqContextConnection(String clientName)
+  public MqContextConnection(String clientName)
   {
     super(clientName);
   }

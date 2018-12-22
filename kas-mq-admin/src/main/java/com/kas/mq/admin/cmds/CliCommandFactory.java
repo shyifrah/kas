@@ -12,7 +12,7 @@ import com.kas.mq.admin.cmds.other.ExitCommand;
 import com.kas.mq.admin.cmds.other.HelpCommand;
 import com.kas.mq.admin.cmds.query.QueryCommand;
 import com.kas.mq.admin.cmds.term.TermCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A Factory for creating {@link ICliCommand} objects based on the command verb (the first argument)
@@ -26,9 +26,10 @@ public class CliCommandFactory
    * Factory method
    * 
    * @param cmdWords The command arguments
+   * @param client The {@link MqContextConnection} object to be used
    * @return A {@link ICliCommand} object or {@code null} if the command verb is unknown
    */
-  static public ICliCommand newCommand(TokenDeque cmdWords, MqContext client)
+  static public ICliCommand newCommand(TokenDeque cmdWords, MqContextConnection client)
   {
     String verb = cmdWords.poll().toUpperCase();
     
@@ -64,7 +65,7 @@ public class CliCommandFactory
     
     if (AltCommand.sCommandVerbs.contains(verb))
         return new AltCommand(cmdWords, client);
-    // Unknown command
+    
     return null;
   }
 }

@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A DEFINE command
@@ -27,7 +27,7 @@ public class DefCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  public DefCommand(TokenDeque args, MqContext client)
+  public DefCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

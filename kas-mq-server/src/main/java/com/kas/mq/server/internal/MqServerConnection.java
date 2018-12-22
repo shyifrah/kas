@@ -1,7 +1,7 @@
 package com.kas.mq.server.internal;
 
-import com.kas.mq.impl.MqContextConnection;
 import com.kas.mq.impl.messages.IMqMessage;
+import com.kas.mq.internal.MqContextConnection;
 import com.kas.mq.internal.MqRequestFactory;
 
 /**

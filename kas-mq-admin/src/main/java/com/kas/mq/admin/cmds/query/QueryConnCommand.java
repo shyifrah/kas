@@ -4,10 +4,10 @@ import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
 import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A QUERY CONNECTION command
@@ -23,7 +23,7 @@ public class QueryConnCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected QueryConnCommand(TokenDeque args, MqContext client)
+  protected QueryConnCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

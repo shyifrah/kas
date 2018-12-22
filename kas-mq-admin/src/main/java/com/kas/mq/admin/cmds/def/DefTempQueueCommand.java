@@ -3,8 +3,8 @@ package com.kas.mq.admin.cmds.def;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
 import com.kas.mq.internal.IMqConstants;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A DEFINE TEMPQUEUE command
@@ -20,7 +20,7 @@ public class DefTempQueueCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DefTempQueueCommand(TokenDeque args, MqContext client)
+  protected DefTempQueueCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }
