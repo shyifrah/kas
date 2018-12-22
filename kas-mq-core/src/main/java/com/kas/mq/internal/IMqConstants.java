@@ -58,8 +58,8 @@ public interface IMqConstants
   static public final String cKasPropertyDefPermanent = cKasPropertyPrefix + "def.q.permanent";
   
   static public final String cKasPropertyAltQueueName = cKasPropertyPrefix + "alt.q.queue";
-  static public final String cKasPropertyAltPermanent = cKasPropertyPrefix + "alt.q.permanent";
-  static public final String cKasPropertyAltThreshold = cKasPropertyPrefix + "atl.q.threshold";
+  static public final String cKasPropertyAltDisp      = cKasPropertyPrefix + "alt.q.opt.disposition";
+  static public final String cKasPropertyAltThreshold = cKasPropertyPrefix + "atl.q.opt.threshold";
   
   static public final String cKasPropertyDelQueueName = cKasPropertyPrefix + "del.q.queue";
   static public final String cKasPropertyDelForce     = cKasPropertyPrefix + "del.q.force";
@@ -74,16 +74,16 @@ public interface IMqConstants
   static public final String cKasPropertyPutQueueName = cKasPropertyPrefix + "put.queue";
   static public final String cKasPropertyPutTimeStamp = cKasPropertyPrefix + "put.timestamp";
   
-  static public final String cKasPropertySyssQmgrName      = cKasPropertyPrefix + "sysstate.qmgr";
-  static public final String cKasPropertySyssActive        = cKasPropertyPrefix + "sysstate.active";
-  static public final String cKasPropertySyssQueueList     = cKasPropertyPrefix + "sysstate.qlist";
+  static public final String cKasPropertySyssQmgrName  = cKasPropertyPrefix + "sysstate.qmgr";
+  static public final String cKasPropertySyssActive    = cKasPropertyPrefix + "sysstate.active";
+  static public final String cKasPropertySyssQueueList = cKasPropertyPrefix + "sysstate.qlist";
   
   static public final String cKasPropertyRepoQmgrName  = cKasPropertyPrefix + "repo.qmgr";
   static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";
   static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
   
-  static public final String cKasPropertyQueryType         = cKasPropertyPrefix + "qry.type";
-  static public final String cKasPropertyQueryConfigType   = cKasPropertyPrefix + "qry.conf.type";
+  static public final String cKasPropertyQueryType       = cKasPropertyPrefix + "qry.type";
+  static public final String cKasPropertyQueryConfigType = cKasPropertyPrefix + "qry.conf.type";
   
   static public final String cKasPropertyQuerySessId       = cKasPropertyPrefix + "qry.sessid";
   

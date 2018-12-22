@@ -50,9 +50,9 @@ public class DelCommand extends ACliCommand
     writeln(" ");
     writelnGreen("Format: ");
     writeln(" ");
-    writeln("     >>--- DELETE ---+--- queue ---+---+-------------+---><");
-    writeln("                                       |             |");
-    writeln("                                       +--- FORCE ---+");
+    writeln("     >>--- DELETE ---+--- QUEUE|Q ---+--- queue ---+---+-------------+---><");
+    writeln("                                                       |             |");
+    writeln("                                                       +--- FORCE ---+");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");

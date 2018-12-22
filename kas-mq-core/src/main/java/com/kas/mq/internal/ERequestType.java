@@ -30,14 +30,14 @@ public enum ERequestType implements IObject
   cDefineQueue,
   
   /**
-   * Alter a queue
-   */
-  cAlterQueue,
-  
-  /**
    * Delete a queue
    */
   cDeleteQueue,
+  
+  /**
+   * Alter a queue
+   */
+  cAlterQueue,
   
   /**
    * Query server info
