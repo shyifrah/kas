@@ -5,25 +5,27 @@ import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.impl.MqContext;
-import com.kas.mq.impl.EQueryType;
-import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.IMqConstants;
 
 /**
- * AN ALTER QUEUE command
+ * An ALTER QUEUE command
  * 
- * @author chen
+ * @author Chen
  */
-public class AlterQueueCommand extends ACliCommand
+public class AltQueueCommand extends ACliCommand
 {
+  private boolean mWasDispositionSpecified = false;
+  private boolean mWasThresholdSpecified = false;
+  
   /**
-   * Construct a {@linkAlterQueueCommand} passing the command arguments and the client object
+   * Construct a {@link AltQueueCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected AlterQueueCommand(TokenDeque args, MqContext client)
+  protected AltQueueCommand(TokenDeque args, MqContext client)
   {
     super(args, client);
   }
@@ -37,15 +39,15 @@ public class AlterQueueCommand extends ACliCommand
   }
   
   /**
-   * An alter queue command.<br>
+   * An Alter queue command.<br>
    * <br>
-   * The command expects the "ALTER QUEUE" followed by two arguments. The first argument
+   * The command expects the "ALTER QUEUE" followed by at least two arguments. The first argument
    * is the queue name. This argument is mandatory.<br>
-   * The second argument is the settings that needs to be changed for that queue.
-   * Current support settings are: PERMANENT, TEMPORARY or THRESHOLD=<threshold_value>
+   * The second argument (and so forth), is one of the following settings:
+   * PERMANENT, TEMPORARY or THRESHOLD <threshold_value>. Note that PERMANENT and TEMPORARY are
+   * Mutually exclusive.<br>
    * If more arguments are specified, the command will fail with an "excessive arguments" message 
    * 
-   * a q q1 permanent threshold(1)
    * @return {@code false} always because there is no way that this command will terminate the command processor.
    */
   public boolean run()
@@ -58,53 +60,107 @@ public class AlterQueueCommand extends ACliCommand
     }
     
     Properties qprops = new Properties();    
-    boolean firstOpt = true;
     
-    String queue = mCommandArgs.poll().toUpperCase();   
+    String queue = mCommandArgs.poll().toUpperCase();
     if ((queue.length() > 0) && (!Validators.isQueueName(queue)))
     {
       writeln("Invalid queue name \"" + queue + "\"");
       writeln(" ");
       return false;
     }
-  
-    while (mCommandArgs.size() > 0) {
-    	String opt = mCommandArgs.poll().toUpperCase();    	 
-	    if (firstOpt && (opt == null)) 
-	    {
-	    	writeln("missing property to alter");
-	    	writeln(" ");
-	    	return false;
-	    }
-	    firstOpt = false;   
+    
+    boolean exitCommand    = false;
+    
+    while (mCommandArgs.size() > 0)
+    {
+      String opt = mCommandArgs.poll().toUpperCase();
 	    
-	    if (opt.equals("PERMANENT")) 
-	    {	    	
-	    	qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, true);
-	    }
-	    else if (opt.equals("TEMPORARY")) 
-		{
-			qprops.setBoolProperty(IMqConstants.cKasPropertyAltPermanent, false);
-		}
-	    else if (opt.equals("THRESHOLD")) 
-		{
-				String threshold = mCommandArgs.poll();				
-			    if ((threshold.length() > 0) && (!Validators.isThreshold(threshold))) 
-			    {		    	
-			    	writeln("invalid threshold value");
-			    	writeln(" ");
-			    	return false;
-			    }else
-			    	qprops.setStringProperty(IMqConstants.cKasPropertyAltThreshold, threshold);			    
-	    }else {    	   
-	    	writeln("Not supported option");
-	    	writeln(" ");    
-	    	return false;
-	    }	   
-    }	     
-    mClient.alterQueue(queue,qprops);
+      switch (opt)
+      {
+        case "PERMANENT":
+        case "PERM":
+          exitCommand = handleDispositionOption(EQueueDisp.PERMANENT, qprops);
+          if (exitCommand)
+            return false;
+          break;
+        case "TEMPORARY":
+        case "TEMP":
+          exitCommand = handleDispositionOption(EQueueDisp.TEMPORARY, qprops);
+          if (exitCommand)
+            return false;
+          break;
+        case "THRESHOLD":
+          exitCommand = handleThresholdOption(qprops);
+          if (exitCommand)
+            return false;
+          break;
+        default:
+          writeln("Invalid argument: \"" + opt + "\"");
+          writeln(" ");
+          return false;
+      }
+    }
+    
+    mClient.alterQueue(queue, qprops);
     writeln(mClient.getResponse());
     writeln(" ");     
+    return false;
+  }
+  
+  /**
+   * Handle the TEMPORARY and PERMANENT options
+   * 
+   * @param newDisp One of the {@link EQueueDisp} values
+   * @param qprops The alter command properties
+   * @return {@code true} if the command should end, {@code false} otherwise
+   */
+  private boolean handleDispositionOption(EQueueDisp newDisp, Properties qprops)
+  {
+    if (mWasDispositionSpecified)
+    {
+      writeln("Cannot specify two persistency options on the same ALTER command");
+      writeln(" ");
+      return true;
+    }
+    
+    mWasDispositionSpecified = true;
+    qprops.setStringProperty(IMqConstants.cKasPropertyAltDisp, newDisp.name());
+    return false;
+  }
+    
+  /**
+   * Handle the THRESHOLD option
+   * 
+   * @param qprops The alter command properties
+   * @return {@code true} if the command should end, {@code false} otherwise
+   */
+  private boolean handleThresholdOption(Properties qprops)
+  {
+    if (mWasThresholdSpecified)
+    {
+      writeln("Cannot specify two threshold value options on the same ALTER command");
+      writeln(" ");
+      return true;
+    }
+    
+    String threshold = mCommandArgs.poll();
+    if (threshold == null)
+    {
+      writeln("Missing threshold value");
+      writeln(" ");
+      return true;
+    }
+    
+    if (!Validators.isThreshold(threshold)) 
+    {         
+      writeln("Invalid threshold value: \"" + threshold + "\"");
+      writeln(" ");
+      return true;
+    }
+    
+    mWasThresholdSpecified = true;
+    int th = Integer.parseInt(threshold);
+    qprops.setIntProperty(IMqConstants.cKasPropertyAltThreshold, th);
     return false;
   }
 }

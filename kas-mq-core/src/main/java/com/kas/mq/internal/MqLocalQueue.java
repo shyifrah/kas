@@ -29,9 +29,9 @@ public class MqLocalQueue extends MqQueue
   private int mThreshold;
   
   /**
-   * Should this queue be saved to file-system
+   * Queue disposition
    */
-  private boolean mBackup;
+  private EQueueDisp mDisposition;
   
   /**
    * Last access
@@ -59,13 +59,13 @@ public class MqLocalQueue extends MqQueue
    * @param mgr The name of the manager that owns this {@link MqLocalQueue}
    * @param name The name of this {@link MqLocalQueue} object.
    * @param threshold The maximum message capacity this {@link MqLocalQueue} can hold
-   * @param backup Should this queue be saved to file-system
+   * @param disp Queue disposition
    */
-  public MqLocalQueue(MqManager mgr, String name, int threshold, boolean backup)
+  public MqLocalQueue(MqManager mgr, String name, int threshold, EQueueDisp disp)
   {
     super(mgr, name);
     mThreshold = threshold;
-    mBackup = backup;
+    mDisposition = disp;
     mQueueArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
       mQueueArray[i] = new MessageQueue();
@@ -82,30 +82,33 @@ public class MqLocalQueue extends MqQueue
   }
   
   /**
-   * Get the {@link MqLocalQueue} permanent value
-   * 
-   * @return the {@link MqLocalQueue}  permanent value
-   */
-  public boolean getPermanentValue() {
-	  return mBackup;
-  }
- 
-  /**
    * Set the {@link MqLocalQueue} Threshold
-   *  	
+   *    
    * @param threshold The threshold value to be set
    */  
-  public void setThreshold(int threshold) {
-	  this.mThreshold=threshold;
+  public void setThreshold(int threshold)
+  {
+    mThreshold = threshold;
   }
   
   /**
-   * Set the {@link MqLocalQueue} Permanent value
+   * Get the {@link MqLocalQueue} disposition
+   * 
+   * @return the {@link MqLocalQueue} disposition
+   */
+  public EQueueDisp getDisposition()
+  {
+	  return mDisposition;
+  }
+ 
+  /**
+   * Set the {@link MqLocalQueue} disposition
    *  	
-   * @param backup The permanent value to be set
+   * @param disp The new queue disposition
    */  
-  public void setPermanentValue(boolean backup) {
-	  this.mBackup = backup;
+  public void setDisposition(EQueueDisp disp)
+  {
+    mDisposition = disp;
   }
   
   /**
@@ -235,7 +238,7 @@ public class MqLocalQueue extends MqQueue
     mLogger.debug("MqLocalQueue::backup() - IN, name=[" + mName + "]");
     boolean success = true;
     
-    if (mBackup)
+    if (mDisposition == EQueueDisp.PERMANENT)
     {
       String fullFileName = RunTimeUtils.getProductHomeDir() + File.separator + "repo" + File.separator + mName + ".qbk";
       mBackupFile = new File(fullFileName);
@@ -486,7 +489,7 @@ public class MqLocalQueue extends MqQueue
       sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
       sb.append("  Accessed...: ").append(getLastAccess()).append('\n');
       sb.append("  Threshold..: ").append(mThreshold).append('\n');
-      sb.append("  Backup.....: ").append(mBackup).append('\n');
+      sb.append("  Disposition: ").append(mDisposition).append('\n');
       sb.append("  Messages...: ").append(size()).append('\n');
     }
     return sb.toString();
@@ -521,7 +524,7 @@ public class MqLocalQueue extends MqQueue
     sb.append(name()).append("(\n")
       .append(pad).append("  Manager=").append(mManager).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append("  Backup=").append(mBackup).append("\n")
+      .append(pad).append("  Disposition=").append(mDisposition).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
       .append(pad).append("  LastAccess=(\n")
       .append(pad).append("    By=").append(mLastAccessUser).append("\n")

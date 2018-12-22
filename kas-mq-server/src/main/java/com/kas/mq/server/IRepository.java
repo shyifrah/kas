@@ -38,6 +38,7 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * @return the {@link MqLocalQueue} object defined
    */  
   public abstract MqLocalQueue alterLocalQueue(String name, Properties qProps);
+  
   /**
    * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}
    * 

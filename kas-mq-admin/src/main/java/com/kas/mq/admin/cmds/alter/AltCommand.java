@@ -12,24 +12,25 @@ import com.kas.mq.impl.MqContext;
  * 
  * @author Chen
  */
-public class AlterCommand extends ACliCommand {
-
+public class AltCommand extends ACliCommand
+{
   static public final Set<String> sCommandVerbs = new TreeSet<String>();
   static
   {
     sCommandVerbs.add("ALTER");
-    sCommandVerbs.add("A");
+    sCommandVerbs.add("ALT");
   }	  
 
   /**
-   * Construct an {@link AlterCommand} passing the command arguments and the client object
+   * Construct an {@link AltCommand} passing the command arguments and the client object
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */ 
-  public AlterCommand(TokenDeque args, MqContext client) {
-	super(args, client);
+  public AltCommand(TokenDeque args, MqContext client)
+  {
+    super(args, client);
   }
 
   /**
@@ -50,17 +51,15 @@ public class AlterCommand extends ACliCommand {
     writeln(" ");
     writelnGreen("Format: ");
     writeln(" ");
-    writeln("     >>--- ALTER|A ---+--- QUEUE|Q ---+--- queue-name ---+-----------------+-----------------+----+---><");
-    writeln("                                                         |                 |                 |    |");    
-    writeln("                                                         +--- THRESHOLD ---+--- threshold ---|    |");
-    writeln("                                                         |                 |                 |    |");
-    writeln("                                                         +--- PERMANENT ---+-----------------+----+");
-    writeln("                                                         |                 |                 |    |");
-    writeln("                                                         +--- TEMPORARY ---+-----------------+----+");
+    writeln("     >>--- ALTER|ALT ---+--- QUEUE|Q ---+--- queue ---+-----------------------------------+---+----------------------+---><");
+    writeln("                                                      |                                   |   |                      |");    
+    writeln("                                                      +--- THRESHOLD ---+--- threshold ---+   +--- PERMANENT|PERM ---+");
+    writeln("                                                                                              |                      |");    
+    writeln("                                                                                              +--- TEMPORARY|TEMP ---+");
     writeln(" ");
     writelnGreen("Description: ");
     writeln(" ");
-    writeln("     alter server's entity.");
+    writeln("     Alter server's entity.");
     writeln("     Entity types are listed below.");
     writeln(" ");
     writeln("     -- For QUEUE --");
@@ -76,12 +75,12 @@ public class AlterCommand extends ACliCommand {
     writeln("          KAS/MQ Admin> ALTER QUEUE queue1 TEMPORARY");
     writeln(" ");
     writeln("     Alter queue threshold to the given value");
-    writeln("          KAS/MQ Admin> ALTER QUEUE queue1 THRESHOLD=30");
+    writeln("          KAS/MQ Admin> ALTER QUEUE queue1 THRESHOLD 30");
     writeln(" ");
   }
 
   /**
-   * AN Alter command.<br>
+   * An Alter command.<br>
    * <br>
    * For only the "ALTER" verb, the command will fail with a missing entity type message.
    * The rest of the arguments are passed to the sub-commands.
@@ -100,10 +99,11 @@ public class AlterCommand extends ACliCommand {
     String type = mCommandArgs.poll().toUpperCase();
     
     if (type.equals("QUEUE"))
-      return new AlterQueueCommand(mCommandArgs, mClient).run();
+      return new AltQueueCommand(mCommandArgs, mClient).run();
     if (type.equals("Q"))
-      return new AlterQueueCommand(mCommandArgs, mClient).run();   
-        
+      return new AltQueueCommand(mCommandArgs, mClient).run();   
+    
+    writeln("Invalid entity type \"" + type + "\"");
     writeln(" ");
     return false;
   }
