@@ -105,19 +105,13 @@ public class ConnectCommand extends ACliCommand
     if (sport == null)
       sport = "14560";
     
-    int port = -1;
-    try
-    {
-      port = Integer.valueOf(sport.toUpperCase());
-    }
-    catch (NumberFormatException e) {}
-    
-    if (!Validators.isPort(port))
+    if (!Validators.isPort(sport))
     {
       writeln("Invalid port number \"" + sport + "\"");
       writeln(" ");
       return false;
     }
+    int port = Integer.valueOf(sport.toUpperCase());
     
     if (mCommandArgs.size() > 0)
     {

@@ -65,19 +65,14 @@ public class DefQueueCommand extends ACliCommand
     if (sthreshold == null)
       sthreshold = "" + IMqConstants.cDefaultQueueThreshold;
     
-    int threshold = -1;
-    try
-    {
-      threshold = Integer.valueOf(sthreshold.toUpperCase());
-    }
-    catch (NumberFormatException e) {}
-    
-    if (threshold <= 0)
+    if (!Validators.isThreshold(sthreshold))
     {
       writeln("Invalid threshold number \"" + sthreshold + "\"");
       writeln(" ");
       return false;
     }
+    
+    int threshold = Integer.valueOf(sthreshold.toUpperCase());
     
     if (mCommandArgs.size() > 0)
     {
