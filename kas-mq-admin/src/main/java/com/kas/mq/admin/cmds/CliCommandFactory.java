@@ -1,7 +1,7 @@
 package com.kas.mq.admin.cmds;
 
 import com.kas.infra.typedef.TokenDeque;
-import com.kas.mq.admin.cmds.alter.AlterCommand;
+import com.kas.mq.admin.cmds.alter.AltCommand;
 import com.kas.mq.admin.cmds.def.DefCommand;
 import com.kas.mq.admin.cmds.del.DelCommand;
 import com.kas.mq.admin.cmds.msgs.GetCommand;
@@ -62,8 +62,8 @@ public class CliCommandFactory
     if (TermCommand.sCommandVerbs.contains(verb))
       return new TermCommand(cmdWords, client);
     
-    if (AlterCommand.sCommandVerbs.contains(verb))
-        return new AlterCommand(cmdWords, client);
+    if (AltCommand.sCommandVerbs.contains(verb))
+        return new AltCommand(cmdWords, client);
     // Unknown command
     return null;
   }
