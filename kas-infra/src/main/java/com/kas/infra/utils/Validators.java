@@ -1,6 +1,5 @@
 package com.kas.infra.utils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Validators
@@ -20,19 +19,41 @@ public class Validators
   static private final int cMinimumPortNumber = 1;
   static private final int cMaximumPortNumber = (Short.MAX_VALUE + 1) * 2 - 1;
   
-  static private final String cTrhesholdPattern = "\\d+";
-  static private Pattern cThresholdCompiledPattern = Pattern.compile(cTrhesholdPattern);
-
+  static private final int cMinimumThreshold = 1;
+  static private final int cMaximumThreshold = 100000;
+  
+  static private final String cNumericPattern = "[+-]?\\d+";
+  static private Pattern cNumericCompiledPattern = Pattern.compile(cNumericPattern);
+  
   /**
-   * Validate Threshold with regular expression
+   * Validate {@code string} can be converted into a numeric value
    * 
-   * @param threshold The Threshold for validation
-   * @return {@code true} if {@code threshold} is a valid Threshold, {@code false} otherwise
+   * @param string The string to validate
+   * @return {@code true} if {@link Integer#valueOf(String)} can be called for {@code string}
+   * without throwing an exception, {@code false} otherwise
+   */
+  static public boolean isNumeric(String string)
+  {
+    if ((string == null) || (string.trim().length() == 0)) return false;
+    String numstr = string.trim();
+    return cNumericCompiledPattern.matcher(numstr).matches();
+  }
+  
+  /**
+   * Validate {@code threshold} can be set for queue 
+   * 
+   * @param threshold The Threshold to validate
+   * @return {@code true} if {@code threshold} is valid, {@code false} otherwise
    */
   static public boolean isThreshold(String threshold)
   {
-    if ((threshold == null) || (threshold.trim().length() == 0)) return false;  
-    return cThresholdCompiledPattern.matcher(threshold).matches();
+    if (isNumeric(threshold))
+    {
+      int th = Integer.parseInt(threshold);
+      if ((th >= cMinimumThreshold) && (th <= cMaximumThreshold))
+        return true;
+    }
+    return false;
   }
   
   /**
@@ -57,6 +78,22 @@ public class Validators
   {
     if ((host == null) || (host.trim().length() == 0)) return false;
     return cHostNameCompiledPattern.matcher(host).matches();
+  }
+  
+  /**
+   * Validate port number
+   * 
+   * @param port The port number for validation
+   * @return {@code true} if {@code port} is a valid port number, {@code false} otherwise
+   */
+  static public boolean isPort(String port)
+  {
+    if (isNumeric(port))
+    {
+      int p = Integer.parseInt(port);
+      return (p >= cMinimumPortNumber) && (p <= cMaximumPortNumber);
+    }
+    return false;
   }
   
   /**
