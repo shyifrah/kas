@@ -114,7 +114,6 @@ public class DefCommand extends ACliCommand
     if (type.equals("TQ"))
       return new DefTempQueueCommand(mCommandArgs, mClient).run();
     
-    
     writeln("Invalid entity type \"" + type + "\"");
     writeln(" ");
     return false;
