@@ -63,8 +63,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * Initialize the server repository
    * 
    * @return {@code true} if initialization completed successfully, {@code false} otherwise
-   * 
-   * @see com.kas.infra.base.IInitializable#init()
    */
   public boolean init()
   {
@@ -96,8 +94,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * Terminate the server repository
    * 
    * @return {@code true} if termination completed successfully, {@code false} otherwise
-   * 
-   * @see com.kas.infra.base.IInitializable#term()
    */
   public boolean term()
   {
@@ -132,8 +128,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param thoreshold The queue threshold
    * @param perm Is the queue should be defined as permanent
    * @return the {@link MqLocalQueue} object created
-   * 
-   * @see com.kas.mq.server.IRepository#defineLocalQueue(String, int)
    */
   public MqLocalQueue defineLocalQueue(String name, int threshold, boolean perm)
   {
@@ -149,8 +143,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue
    * @return the {@link MqRemoteQueue} object created
-   * 
-   * @see com.kas.mq.server.IRepository#defineRemoteQueue(String, String)
    */
   public MqRemoteQueue defineRemoteQueue(String qmgr, String queue)
   {
@@ -171,8 +163,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param name The name of the queue
    * @param qprops The queue properties we want to alter 
    * @return the {@link MqLocalQueue} object created
-   * 
-   * @see com.kas.mq.server.IRepository#defineLocalQueue(String, int)
    */
   public MqLocalQueue alterLocalQueue(String name, Properties qprops)
   {
@@ -187,8 +177,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @param name The name of the queue to be removed
    * @return the {@link MqLocalQueue} object removed
-   * 
-   * @see com.kas.mq.server.IRepository#deleteLocalQueue(String)
    */
   public MqLocalQueue deleteLocalQueue(String name)
   {
@@ -204,8 +192,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * @param qmgr The name of the KAS/MQ server
    * @param queue The name of queue
    * @return the {@link MqRemoteQueue} object deleted
-   * 
-   * @see com.kas.mq.server.IRepository#deleteRemoteQueue(String, String)
    */
   public MqRemoteQueue deleteRemoteQueue(String qmgr, String queue)
   {
@@ -224,8 +210,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @param name The name of the destination to be retrieved
    * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
-   * 
-   * @see IRepository#getLocalQueue(String)
    */
   public MqLocalQueue getLocalQueue(String name)
   {
@@ -240,8 +224,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @param name The name of the remote queue to be retrieved
    * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
-   * 
-   * @see IRepository#getRemoteQueue(String)
    */
   public MqRemoteQueue getRemoteQueue(String name)
   {
@@ -354,8 +336,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @param name The name of the {@link MqManager}
    * @return the {@link MqManager}
-   * 
-   * @see com.kas.mq.server.IRepository#getRemoteManager(String)
    */
   public MqRemoteManager getRemoteManager(String name)
   {
@@ -366,8 +346,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * Get all remote {@link MqRemoteManager managers} 
    * 
    * @return the {@link MqManager}
-   * 
-   * @see com.kas.mq.server.IRepository#getRemoteManagers()
    */
   public Collection<MqRemoteManager> getRemoteManagers()
   {
@@ -378,8 +356,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * Get the local {@link MqLocalManager} 
    * 
    * @return the local {@link MqLocalManager}
-   * 
-   * @see com.kas.mq.server.IRepository#getLocalManager()
    */
   public MqLocalManager getLocalManager()
   {
@@ -390,8 +366,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * Get the {@link MqLocalQueue} object representing the dead queue
    * 
    * @return the {@link MqLocalQueue} object of the dead queue
-   * 
-   * @see com.kas.mq.server.IRepository#getDeadQueue()
    */
   public MqLocalQueue getDeadQueue()
   {
@@ -402,8 +376,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * Get a collection of all local queues
    * 
    * @return a collection of all local queues
-   * 
-   * @see com.kas.mq.server.IRepository#getLocalQueues()
    */
   public Collection<MqQueue> getLocalQueues()
   {
@@ -441,8 +413,6 @@ public class ServerRepository extends AKasObject implements IRepository
    * 
    * @param level The string padding level
    * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
    */
   public String toPrintableString(int level)
   {

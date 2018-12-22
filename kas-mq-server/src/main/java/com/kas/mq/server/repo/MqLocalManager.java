@@ -6,6 +6,7 @@ import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
@@ -139,7 +140,7 @@ public class MqLocalManager extends MqManager
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = new MqLocalQueue(this, name, threshold, backup);
+      queue = new MqLocalQueue(this, name, threshold, backup ? EQueueDisp.PERMANENT : EQueueDisp.TEMPORARY);
       mQueues.put(name, queue);
     }
     
@@ -162,28 +163,35 @@ public class MqLocalManager extends MqManager
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = (MqLocalQueue) mQueues.get(name);      
+      queue = (MqLocalQueue)mQueues.get(name);      
         
-      try {
-    	  if ( qprops.containsKey(IMqConstants.cKasPropertyAltThreshold) )
-    	  {
-    		  queue.setThreshold(qprops.getIntProperty(IMqConstants.cKasPropertyAltThreshold));
-    	  }
-      } catch (KasException e) {			
-    	  mLogger.error("Unable to set Threshold for current queue" + e.getMessage());		
+      try
+      {
+        if (qprops.containsKey(IMqConstants.cKasPropertyAltThreshold))
+        {
+          int newThreshold = qprops.getIntProperty(IMqConstants.cKasPropertyAltThreshold);
+          queue.setThreshold(newThreshold);
+        }
+      }
+      catch (KasException e)
+      {
+        mLogger.error("Unable to set Threshold for queue " + name + ". Exception: ", e);		
       }
       
-      try {
-    	  if ( qprops.containsKey(IMqConstants.cKasPropertyAltPermanent) )
-    	  {
-    		  queue.setPermanentValue(qprops.getBoolProperty(IMqConstants.cKasPropertyAltPermanent));
-    	  }
-      } catch (KasException e) {			
-    	  mLogger.error("Unable to set Permanent value for current queue" + e.getMessage());		
-      }    
-      mQueues.remove(name);
-      mQueues.put(name, queue);      
-    }    
+      try
+      {
+        if (qprops.containsKey(IMqConstants.cKasPropertyAltDisp))
+        {
+          EQueueDisp newDisp = EQueueDisp.fromString(qprops.getStringProperty(IMqConstants.cKasPropertyAltDisp));
+          queue.setDisposition(newDisp);
+        }
+      }
+      catch (KasException e)
+      {
+        mLogger.error("Unable to set disposition for queue " + name + ". Exception: ", e);
+      }      
+    }
+    
     mLogger.debug("MqLocalManager::alterQueue() - OUT, Returns=" + StringUtils.asString(queue));
     return queue;
   }
