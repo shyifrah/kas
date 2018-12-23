@@ -4,7 +4,7 @@ import com.kas.infra.base.AKasObject;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A basic command
@@ -21,7 +21,7 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
   /**
    * The client program that will actually execute the commands
    */
-  protected MqContext mClient;
+  protected MqContextConnection mClient;
   
   /**
    * Construct a {@link ACliCommand} specifying the command arguments and the client
@@ -29,7 +29,7 @@ public abstract class ACliCommand extends AKasObject implements ICliCommand
    * @param cmdWords The command arguments
    * @param client The client
    */
-  protected ACliCommand(TokenDeque args, MqContext client)
+  protected ACliCommand(TokenDeque args, MqContextConnection client)
   {
     mCommandArgs = args;
     mClient = client;

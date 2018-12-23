@@ -3,7 +3,7 @@ package com.kas.mq.admin.cmds.term;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A TERMINATE SESSION command
@@ -19,7 +19,7 @@ public class TermSessCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected TermSessCommand(TokenDeque args, MqContext client)
+  protected TermSessCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

@@ -6,7 +6,7 @@ import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
 import com.kas.mq.admin.cmds.CliCommandFactory;
 import com.kas.mq.admin.cmds.ICliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A HELP command
@@ -26,9 +26,9 @@ public class HelpCommand extends ACliCommand
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
-   * @param client The client that will perform the actual disconnection
+   * @param client The client that will perform the actual work
    */
-  public HelpCommand(TokenDeque args, MqContext client)
+  public HelpCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

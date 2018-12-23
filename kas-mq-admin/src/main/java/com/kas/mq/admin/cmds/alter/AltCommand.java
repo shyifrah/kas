@@ -2,10 +2,9 @@ package com.kas.mq.admin.cmds.alter;
 
 import java.util.Set;
 import java.util.TreeSet;
-
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * AN ALTER command
@@ -28,7 +27,7 @@ public class AltCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */ 
-  public AltCommand(TokenDeque args, MqContext client)
+  public AltCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

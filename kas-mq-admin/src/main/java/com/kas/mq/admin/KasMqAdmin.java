@@ -12,6 +12,7 @@ import com.kas.infra.utils.StringUtils;
 import com.kas.mq.admin.cmds.CliCommandFactory;
 import com.kas.mq.admin.cmds.ICliCommand;
 import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * KAS/MQ admin console
@@ -40,7 +41,7 @@ public class KasMqAdmin extends AKasApp
   /**
    * A {@link MqContext} which will act as the client
    */
-  private MqContext mClient = new MqContext(cAppName);
+  private MqContextConnection mClient = new MqContextConnection(cAppName);
   
   /**
    * Construct the {@link KasMqAdmin} passing it the startup arguments

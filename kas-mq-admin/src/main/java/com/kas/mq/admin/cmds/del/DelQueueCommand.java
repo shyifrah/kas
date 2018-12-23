@@ -3,7 +3,7 @@ package com.kas.mq.admin.cmds.del;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A DELETE command
@@ -19,7 +19,7 @@ public class DelQueueCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  protected DelQueueCommand(TokenDeque args, MqContext client)
+  protected DelQueueCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

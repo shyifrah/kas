@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * An EXIT command
@@ -25,9 +25,9 @@ public class ExitCommand extends ACliCommand
    * that will perform actions on behalf of this command.
    * 
    * @param args The command arguments specified when command was entered
-   * @param client The client that will perform the actual disconnection
+   * @param client The client that will perform the actual work
    */
-  public ExitCommand(TokenDeque args, MqContext client)
+  public ExitCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }

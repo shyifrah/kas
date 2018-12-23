@@ -3,6 +3,7 @@ package com.kas.mq.internal;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
@@ -91,8 +92,9 @@ public class MqConnection extends AKasObject implements IMqConnection
     try
     {
       mMessenger = MessengerFactory.create(host, port);
+      setResponse("Successfully connected to " + addr);
     }
-    catch (ConnectException e)
+    catch (ConnectException | UnknownHostException e)
     {
       logErrorAndSetResponse("Connection to [" + addr + "] refused");
     }
@@ -102,7 +104,9 @@ public class MqConnection extends AKasObject implements IMqConnection
       sb.append("Exception occurred while trying to connect to [")
         .append(addr).append("]. Exception: ").append(StringUtils.format(e));
       logErrorAndSetResponse(sb.toString());
-      mMessenger.cleanup();
+      
+      if (mMessenger != null)
+        mMessenger.cleanup();
     }
     
     mLogger.debug("MqConnection::connect() - OUT");

@@ -2,11 +2,10 @@ package com.kas.mq.admin.cmds.other;
 
 import java.util.Set;
 import java.util.TreeSet;
-import com.kas.infra.base.KasException;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.cmds.ACliCommand;
-import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.MqContextConnection;
 
 /**
  * A CONNECT command
@@ -29,7 +28,7 @@ public class ConnectCommand extends ACliCommand
    * @param args The command arguments specified when command was entered
    * @param client The client that will perform the actual connection
    */
-  public ConnectCommand(TokenDeque args, MqContext client)
+  public ConnectCommand(TokenDeque args, MqContextConnection client)
   {
     super(args, client);
   }
@@ -148,20 +147,18 @@ public class ConnectCommand extends ACliCommand
     String password = input.getOriginalString();
     
     String resp = null;
-    try
+    mClient.connect(host, port);
+    resp = mClient.getResponse();
+    
+    if (mClient.isConnected())
     {
-      mClient.connect(host, port, username, password);
+      boolean logged = mClient.login(username, password);
       resp = mClient.getResponse();
-    }
-    catch (KasException e)
-    {
-      resp = mClient.getResponse();
-      try
+      if (!logged)
       {
         mClient.disconnect();
       }
-      catch (KasException e2) {}
-    } 
+    }
     
     writeln(resp);
     writeln(" ");
