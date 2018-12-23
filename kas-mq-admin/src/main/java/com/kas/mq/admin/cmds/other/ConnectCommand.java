@@ -153,9 +153,9 @@ public class ConnectCommand extends ACliCommand
     if (mClient.isConnected())
     {
       boolean logged = mClient.login(username, password);
+      resp = mClient.getResponse();
       if (!logged)
       {
-        resp = mClient.getResponse();
         mClient.disconnect();
       }
     }
