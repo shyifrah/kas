@@ -116,6 +116,26 @@ public class ConsoleUtils
   static private PrintStream sStdout  = System.out;
   
   /**
+   * Formatting and writing a message to STDOUT.
+   * 
+   * @param message The message to print
+   */
+  static public void write(String message, Object ... args)
+  {
+    System.out.print(String.format(message, args));
+  }
+  
+  /**
+   * Formatting and writing a message to STDOUT. The message will be followed by a Newline character.
+   * 
+   * @param message The message to print
+   */
+  static public void writeln(String message, Object ... args)
+  {
+    System.out.println(String.format(message, args));
+  }
+  
+  /**
    * Print the prompt message and read a string from STDIN
    *  
    * @param prompt The message to print before reading the string
