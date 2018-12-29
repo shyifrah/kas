@@ -61,7 +61,7 @@ public class DefineQueueCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
-    conn.defineQueue(mName, mThreshold, mDisposition == EQueueDisp.PERMANENT);
+    conn.defineQueue(mName, mDescription, mThreshold, mDisposition == EQueueDisp.PERMANENT);
     ConsoleUtils.writeln("%s", conn.getResponse());
   }
   

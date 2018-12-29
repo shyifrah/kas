@@ -81,7 +81,7 @@ public class DefQueueCommand extends ACliCommand
       return false;
     }
     
-    mClient.defineQueue(queue, threshold, true);
+    mClient.defineQueue(queue, "", threshold, true);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;

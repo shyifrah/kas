@@ -14,7 +14,7 @@ public class Utils
   static public void createQueue(MqContext client, String queue, int threshold) throws KasException
   {
     System.out.println("Defining queue with name " + queue + " and a threshold of " + (threshold) + " messages");
-    boolean defined = client.defineQueue(queue, threshold, true);
+    boolean defined = client.defineQueue(queue, "", threshold, true);
     System.out.println("Response: " + client.getResponse());
     if (!defined)
       throw new KasException("failed to define queue with name " + queue);

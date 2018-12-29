@@ -50,7 +50,7 @@ public class Tester
     {
       System.out.println("============================================================");
       System.out.print("Define queue \"" + name + "\": ");
-      success = client.defineQueue(name, 1000, true);
+      success = client.defineQueue(name, "", 1000, true);
       if (success)
       {
         System.out.println("defined!");
