@@ -54,6 +54,7 @@ public interface IMqConstants
   static public final String cKasPropertyLoginSession  = cKasPropertyPrefix + "login.sessionid";
   
   static public final String cKasPropertyDefQueueName = cKasPropertyPrefix + "def.q.queue";
+  static public final String cKasPropertyDefQueueDesc = cKasPropertyPrefix + "def.q.desc";
   static public final String cKasPropertyDefThreshold = cKasPropertyPrefix + "def.q.threshold";
   static public final String cKasPropertyDefPermanent = cKasPropertyPrefix + "def.q.permanent";
   

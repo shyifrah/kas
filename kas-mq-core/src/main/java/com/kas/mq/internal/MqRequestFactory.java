@@ -31,11 +31,12 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqMessage createDefineQueueRequest(String queue, int threshold, boolean perm)
+  static public MqMessage createDefineQueueRequest(String queue, String desc, int threshold, boolean perm)
   {
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cDefineQueue);
     message.setStringProperty(IMqConstants.cKasPropertyDefQueueName, queue.toUpperCase());
+    message.setStringProperty(IMqConstants.cKasPropertyDefQueueDesc, desc.toUpperCase());
     message.setIntProperty(IMqConstants.cKasPropertyDefThreshold, threshold);
     message.setBoolProperty(IMqConstants.cKasPropertyDefPermanent, perm);
     return message;
