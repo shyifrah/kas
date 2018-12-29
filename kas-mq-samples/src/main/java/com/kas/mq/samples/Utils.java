@@ -3,6 +3,7 @@ package com.kas.mq.samples;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.mq.impl.MqContext;
+import com.kas.mq.internal.EQueueDisp;
 
 public class Utils
 {
@@ -14,7 +15,7 @@ public class Utils
   static public void createQueue(MqContext client, String queue, int threshold) throws KasException
   {
     System.out.println("Defining queue with name " + queue + " and a threshold of " + (threshold) + " messages");
-    boolean defined = client.defineQueue(queue, "", threshold, true);
+    boolean defined = client.defineQueue(queue, "", threshold, EQueueDisp.TEMPORARY);
     System.out.println("Response: " + client.getResponse());
     if (!defined)
       throw new KasException("failed to define queue with name " + queue);

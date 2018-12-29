@@ -6,7 +6,6 @@ public interface IMqConstants
    * Queue definition defaults
    */
   static public final int cDefaultQueueThreshold = 1000;
-  static public final boolean cDefaultQueuePermanent = true;
   
   /**
    * Message priorities
@@ -53,10 +52,10 @@ public interface IMqConstants
   static public final String cKasPropertyLoginAppName  = cKasPropertyPrefix + "login.appname";
   static public final String cKasPropertyLoginSession  = cKasPropertyPrefix + "login.sessionid";
   
-  static public final String cKasPropertyDefQueueName = cKasPropertyPrefix + "def.q.queue";
-  static public final String cKasPropertyDefQueueDesc = cKasPropertyPrefix + "def.q.desc";
-  static public final String cKasPropertyDefThreshold = cKasPropertyPrefix + "def.q.threshold";
-  static public final String cKasPropertyDefPermanent = cKasPropertyPrefix + "def.q.permanent";
+  static public final String cKasPropertyDefQueueName   = cKasPropertyPrefix + "def.q.queue";
+  static public final String cKasPropertyDefQueueDesc   = cKasPropertyPrefix + "def.q.desc";
+  static public final String cKasPropertyDefThreshold   = cKasPropertyPrefix + "def.q.threshold";
+  static public final String cKasPropertyDefDisposition = cKasPropertyPrefix + "def.q.disposition";
   
   static public final String cKasPropertyAltQueueName = cKasPropertyPrefix + "alt.q.queue";
   static public final String cKasPropertyAltDisp      = cKasPropertyPrefix + "alt.q.opt.disposition";

@@ -9,6 +9,7 @@ import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -106,10 +107,10 @@ public final class MqContext extends AKasObject
    * @param queue The name of the queue to define.
    * @param desc The queue description
    * @param threshold The queue threshold
-   * @param perm Is this a permanent queue
+   * @param disp The queue disposition
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public boolean defineQueue(String queue, String desc, int threshold, boolean perm)
+  public boolean defineQueue(String queue, String desc, int threshold, EQueueDisp disp)
   {
     mLogger.debug("MqContext::defineQueue() - IN, Queue=" + queue);
     
@@ -124,7 +125,7 @@ public final class MqContext extends AKasObject
     }
     else
     {
-      success = mConnection.defineQueue(queue, desc, threshold, perm);
+      success = mConnection.defineQueue(queue, desc, threshold, disp);
     }
     
     mLogger.debug("MqContext::defineQueue() - OUT, Returns=" + success);

@@ -3,6 +3,7 @@ package com.kas.mq.admin.cmds.def;
 import com.kas.infra.typedef.TokenDeque;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.cmds.ACliCommand;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -86,7 +87,7 @@ public class DefTempQueueCommand extends ACliCommand
       return false;
     }
     
-    mClient.defineQueue(queue, "", threshold, false);
+    mClient.defineQueue(queue, "", threshold, EQueueDisp.TEMPORARY);
     writeln(mClient.getResponse());
     writeln(" ");
     return false;
