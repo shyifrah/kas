@@ -50,9 +50,21 @@ public class Validators
     if (isNumeric(threshold))
     {
       int th = Integer.parseInt(threshold);
-      if ((th >= cMinimumThreshold) && (th <= cMaximumThreshold))
-        return true;
+      return isThreshold(th);
     }
+    return false;
+  }
+  
+  /**
+   * Validate {@code threshold} can be set for queue 
+   * 
+   * @param threshold The Threshold to validate
+   * @return {@code true} if {@code threshold} is valid, {@code false} otherwise
+   */
+  static public boolean isThreshold(int threshold)
+  {
+    if ((threshold >= cMinimumThreshold) && (threshold <= cMaximumThreshold))
+      return true;
     return false;
   }
   
