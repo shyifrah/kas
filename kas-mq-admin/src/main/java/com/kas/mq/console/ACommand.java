@@ -68,7 +68,7 @@ public abstract class ACommand implements ICommand
     String reminder = mArgs;
     while (reminder.length() > 0)
     {
-      param = reminder.split(" ")[0];
+      param = reminder.split(" ")[0].toUpperCase();
       if (param.length() == 0)
         throw new IllegalArgumentException("Missing or invalid argument at [" + reminder + "]");
       
@@ -124,7 +124,7 @@ public abstract class ACommand implements ICommand
    * 
    * @param key The name of the argument
    * @param defval Default value to assign, in case no matching entry is found
-   * @return The value to assign to the argument
+   * @return The value from the map, or {@code defval} if {@code key} was not found
    */
   protected String getString(String key, String defval)
   {
@@ -139,7 +139,7 @@ public abstract class ACommand implements ICommand
    * 
    * @param key The name of the argument
    * @param defval Default value to assign, in case no matching entry is found
-   * @return The value to assign to the argument
+   * @return The value from the map, or {@code defval} if {@code key} was not found
    */
   protected Integer getInteger(String key, Integer defval)
   {
@@ -161,7 +161,7 @@ public abstract class ACommand implements ICommand
    * 
    * @param key The name of the argument
    * @param defval Default value to assign, in case no matching entry is found
-   * @return The value to assign to the argument
+   * @return The value from the map, or {@code defval} if {@code key} was not found
    */
   protected Boolean getBoolean(String key, Boolean defval)
   {
@@ -173,6 +173,29 @@ public abstract class ACommand implements ICommand
         result = Boolean.TRUE;
       else if (sval.equalsIgnoreCase("false"))
         result = Boolean.FALSE;
+    }
+    return result;
+  }
+  
+  /**
+   * Read an Enum value from the arguments map
+   * 
+   * @param key The name of the argument
+   * @param type The class of the enum
+   * @param defval Default value to assign, in case no matching entry is found
+   * @return The value from the map, or {@code defval} if {@code key} was not found
+   */
+  protected <T extends Enum<T>> T getEnum(String key, Class<T> type, T defval)
+  {
+    T result = defval;
+    String sval = getString(key, null);
+    if (sval != null)
+    {
+      try
+      {
+        result = Enum.valueOf(type, sval);
+      }
+      catch (IllegalArgumentException e) {}
     }
     return result;
   }
