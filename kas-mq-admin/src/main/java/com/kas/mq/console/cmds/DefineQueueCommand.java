@@ -1,6 +1,9 @@
 package com.kas.mq.console.cmds;
 
+import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -16,7 +19,7 @@ public class DefineQueueCommand extends ACommand
   private String mName;
   private String mDescription;
   private Integer mThreshold;
-  private Boolean mPersistent;
+  private EQueueDisp mDisposition;
   
   /**
    * Construct the command
@@ -37,7 +40,7 @@ public class DefineQueueCommand extends ACommand
     mName = getString("QUEUE", null);
     mDescription = getString("DESCRIPTION", "");
     mThreshold = getInteger("THRESHOLD", 1000);
-    mPersistent = getBoolean("PERSISTENT", false);
+    mDisposition = getEnum("DISPOSITION", EQueueDisp.class, EQueueDisp.TEMPORARY);
   }
   
   /**
@@ -45,8 +48,10 @@ public class DefineQueueCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("QUEUE name was not specified");
+    if (!Validators.isQueueName(mName))
+      throw new IllegalArgumentException("NAME was not specified or invalid queue name: [" + mName + "]");
+    if (!Validators.isThreshold(mThreshold))
+      throw new IllegalArgumentException("THRESHOLD is invalid: [" + mThreshold + "]");
   }
   
   /**
@@ -56,6 +61,8 @@ public class DefineQueueCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+    conn.defineQueue(mName, mThreshold, mDisposition == EQueueDisp.PERMANENT);
+    ConsoleUtils.writeln("%s", conn.getResponse());
   }
   
   /**
@@ -70,7 +77,7 @@ public class DefineQueueCommand extends ACommand
       .append(" QUEUE(").append(mName).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n")
       .append(" THRESHOLD(").append(mThreshold).append(")\n")
-      .append(" PERSISTENT(").append(mPersistent).append(")\n");
+      .append(" DISPOSITION(").append(mDisposition).append(")\n");
     return sb.toString();
   }
 }
