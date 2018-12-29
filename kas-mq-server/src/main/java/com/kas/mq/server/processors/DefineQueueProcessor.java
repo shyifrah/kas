@@ -85,7 +85,7 @@ public class DefineQueueProcessor extends AProcessor
       }
       else
       {
-        mqlq = mRepository.defineLocalQueue(mQueue, mThreshold, mDisposition == EQueueDisp.PERMANENT);
+        mqlq = mRepository.defineLocalQueue(mQueue, mDescription, mThreshold, mDisposition);
         mLogger.debug("DefineQueueProcessor::process() - Created queue " + StringUtils.asPrintableString(mqlq));
         mDesc = "Queue with name " + mQueue + " and threshold of " + mThreshold + " was successfully defined";
         mCode = EMqCode.cOkay;

@@ -6,6 +6,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.typedef.StringList;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqQueue;
@@ -21,16 +22,6 @@ import com.kas.mq.server.repo.MqRemoteManager;
 public interface IRepository extends IBaseListener, IInitializable, IObject
 {
   /**
-   * Define a {@link MqLocalQueue} object with the specified {@code name}
-   * 
-   * @param name The name of the queue
-   * @param threshold The queue threshold
-   * @param perm Is the queue should be defined as permanent
-   * @return the {@link MqLocalQueue} object defined
-   */
-  public abstract MqLocalQueue defineLocalQueue(String name, int threshold, boolean perm);
-  
-  /**
    * Alter a {@link MqLocalQueue} object with the specified {@code name}
    * 
    * @param name The name of the queue
@@ -38,6 +29,17 @@ public interface IRepository extends IBaseListener, IInitializable, IObject
    * @return the {@link MqLocalQueue} object defined
    */  
   public abstract MqLocalQueue alterLocalQueue(String name, Properties qProps);
+  
+  /**
+   * Create a {@link MqLocalQueue} object with the specified {@code name} and {@code threshold}.
+   * 
+   * @param name The name of the queue
+   * @param desc The queue description
+   * @param thoreshold The queue threshold
+   * @param disp The queue disposition
+   * @return the {@link MqLocalQueue} object created
+   */
+  public abstract MqLocalQueue defineLocalQueue(String name, String desc, int threshold, EQueueDisp disp);
   
   /**
    * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}

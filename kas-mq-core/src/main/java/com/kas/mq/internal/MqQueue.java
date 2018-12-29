@@ -35,9 +35,9 @@ public abstract class MqQueue extends AKasObject
    */
   protected MqQueue(MqManager mgr, String name)
   {
-    mLogger  = LoggerFactory.getLogger(this.getClass());
+    mLogger = LoggerFactory.getLogger(this.getClass());
     mManager = mgr;
-    mName    = name;
+    mName = name;
   }
   
   /**

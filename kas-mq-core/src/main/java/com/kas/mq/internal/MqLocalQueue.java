@@ -23,6 +23,11 @@ import com.kas.mq.typedef.MessageQueue;
 public class MqLocalQueue extends MqQueue
 {
   /**
+   * Queue description
+   */
+  private String mDescription;
+  
+  /**
    * Maximum number of messages this queue can hold before put operations
    * will start to fail.
    */
@@ -58,17 +63,29 @@ public class MqLocalQueue extends MqQueue
    * 
    * @param mgr The name of the manager that owns this {@link MqLocalQueue}
    * @param name The name of this {@link MqLocalQueue} object.
+   * @param desc The description of this {@link MqLocalQueue} object.
    * @param threshold The maximum message capacity this {@link MqLocalQueue} can hold
    * @param disp Queue disposition
    */
-  public MqLocalQueue(MqManager mgr, String name, int threshold, EQueueDisp disp)
+  public MqLocalQueue(MqManager mgr, String name, String desc, int threshold, EQueueDisp disp)
   {
     super(mgr, name);
+    mDescription = desc;
     mThreshold = threshold;
     mDisposition = disp;
     mQueueArray = new MessageQueue[ IMqConstants.cMaximumPriority + 1 ];
     for (int i = 0; i <= IMqConstants.cMaximumPriority; ++i)
       mQueueArray[i] = new MessageQueue();
+  }
+  
+  /**
+   * Get the {@link MqLocalQueue} description
+   * 
+   * @return the {@link MqLocalQueue} description
+   */
+  public String getDescription()
+  {
+    return mDescription;
   }
   
   /**
@@ -120,14 +137,15 @@ public class MqLocalQueue extends MqQueue
   {
     int sum = 0;
     for (int i = 0; i < mQueueArray.length; ++i)
-    {
       sum += mQueueArray[i].size();
-    }
     return sum;
   }
   
   /**
-   * Restore the {@link MqLocalQueue} contents from the file system
+   * Restore the {@link MqLocalQueue} contents and definition from the file system.<br>
+   * Regardless of how the object was created, its definitions are restored from the file system.
+   * That means, that even if the queue was created with a threshold of 5 messages, this definition
+   * will be changed to the threshold that was specified during initial definition.
    * 
    * @return {@code true} if queue contents restored successfully, {@code false} otherwise
    */
@@ -170,6 +188,7 @@ public class MqLocalQueue extends MqQueue
         // read queue details
         try
         {
+          mDescription = (String)istream.readObject();
           mThreshold = istream.readInt();
           mLastAccessUser = (String)istream.readObject();
           mLastAccessTimeStamp = new TimeStamp(istream.readLong());
@@ -284,6 +303,7 @@ public class MqLocalQueue extends MqQueue
           {
             // write queue details
             mLogger.debug("MqLocalQueue::backup() - Threshold=" + mThreshold + "; LastAccess=(" + getLastAccess() + ")");
+            ostream.writeObject(mDescription);
             ostream.writeInt(mThreshold);
             ostream.writeObject(mLastAccessUser);
             ostream.writeLong(mLastAccessTimeStamp.getAsLong());
@@ -352,9 +372,7 @@ public class MqLocalQueue extends MqQueue
       for (IMqMessage msg : mdq)
       {
         if (msg.isExpired())
-        {
           mdq.remove(msg);
-        }
       }
     }
     
@@ -487,6 +505,7 @@ public class MqLocalQueue extends MqQueue
     {
       sb.append('\n');
       sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
+      sb.append("  Description: ").append(mDescription).append('\n');
       sb.append("  Accessed...: ").append(getLastAccess()).append('\n');
       sb.append("  Threshold..: ").append(mThreshold).append('\n');
       sb.append("  Disposition: ").append(mDisposition).append('\n');
@@ -524,6 +543,7 @@ public class MqLocalQueue extends MqQueue
     sb.append(name()).append("(\n")
       .append(pad).append("  Manager=").append(mManager).append("\n")
       .append(pad).append("  Name=").append(mName).append("\n")
+      .append(pad).append("  Description=").append(mDescription).append("\n")
       .append(pad).append("  Disposition=").append(mDisposition).append("\n")
       .append(pad).append("  Threshold=").append(mThreshold).append("\n")
       .append(pad).append("  LastAccess=(\n")
