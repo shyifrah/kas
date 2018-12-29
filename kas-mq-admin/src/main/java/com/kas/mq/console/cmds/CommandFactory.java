@@ -33,20 +33,24 @@ public class CommandFactory
   static public ICommand create(String text)
   {
     ICommand cmd = null;
-    
-    if (text == null)
+    String cmdText = text;
+    if (cmdText == null)
       return null;
-    if (text.length() == 0)
+    if (cmdText.length() == 0)
       return null;
     
-    text = text.replaceAll("\\(", " (").replaceAll("\\)", ") ");
+    cmdText = cmdText.replaceAll("\\(", " (").replaceAll("\\)", ") ");
     
-    String [] tokens = text.split(" ");
-    if (tokens.length >= 2)
+    String [] tokens = cmdText.split(" ");
+    if (tokens.length < 2)
+    {
+      ConsoleUtils.writeln("Unknown command: [%s]", cmdText);
+    }
+    else
     {
       String cmdVerb = tokens[0].toUpperCase();
       String subVerb = tokens[1].toUpperCase();
-      String cmdArgs = text.substring(cmdVerb.length()).trim();
+      String cmdArgs = cmdText.substring(cmdVerb.length()).trim();
       
       StringBuffer clsNameBuffer = new StringBuffer()
         .append(cPackageName)
@@ -55,7 +59,7 @@ public class CommandFactory
         .append(cmdVerb.substring(1).toLowerCase())
         .append(subVerb.substring(0, 1))
         .append(subVerb.substring(1).toLowerCase())
-        .append("CommandParser");
+        .append("Command");
       
       cmd = newInstance(clsNameBuffer.toString(), cmdVerb, cmdArgs);
     }
@@ -64,7 +68,7 @@ public class CommandFactory
   }
   
   /**
-   * Create a new instance of the desired command
+   * Create a new instance of the desired command object
    * 
    * @param name The class name of the command
    * @param verb The command verb
@@ -85,7 +89,7 @@ public class CommandFactory
     }
     catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | ClassCastException e)
     {
-      ConsoleUtils.writeln("Failde to instantiate command object. Error message: [%s]", e.getMessage());
+      ConsoleUtils.writeln("Unknown command: [%s %s]", verb, args);
     }
     
     return cmd;
