@@ -118,6 +118,8 @@ public class DefineQueueProcessor extends AProcessor
       Map<String, NetworkAddress> map = mConfig.getRemoteManagers();
       String localQmgr = mConfig.getManagerName();
       
+      MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
+      
       for (Map.Entry<String, NetworkAddress> entry : map.entrySet())
       {
         String remoteQmgrName  = entry.getKey();
@@ -125,17 +127,24 @@ public class DefineQueueProcessor extends AProcessor
         
         mLogger.debug("DefineQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
         conn.connect(address.getHost(), address.getPort());
         if (conn.isConnected())
         {
+          boolean logged = conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+          if (!logged)
+          {
+            mLogger.debug("DefineQueueProcessor::postprocess() - Failed to login to remote KAS/MQ server at " + address.toString());
+            continue;
+          }
+          
           boolean success = conn.notifyRepoUpdate(localQmgr, mQueue, true);
           mLogger.debug("DefineQueueProcessor::postprocess() - Notification returned: " + success);
           
           conn.disconnect();
         }
-        MqServerConnectionPool.getInstance().release(conn);
       }
+      
+      MqServerConnectionPool.getInstance().release(conn);
     }
     
     mLogger.debug("DefineQueueProcessor::postprocess() - OUT");
