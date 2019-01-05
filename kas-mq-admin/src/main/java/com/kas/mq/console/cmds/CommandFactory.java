@@ -15,6 +15,21 @@ public class CommandFactory
   static private final String cPackageName = new CommandFactory().getClass().getPackage().getName();
   
   /**
+   * Singleton instance
+   */
+  static private CommandFactory sInstance = new CommandFactory();
+  
+  /**
+   * Get the singleton
+   * 
+   * @return the singleton instance
+   */
+  static public CommandFactory getInstance()
+  {
+    return sInstance;
+  }
+  
+  /**
    * Private Constructor
    */
   private CommandFactory()

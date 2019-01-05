@@ -1,5 +1,7 @@
 package com.kas.mq.console.cmds;
 
+import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -41,8 +43,8 @@ public class DeleteQueueCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("QUEUE name was not specified");
+    if (!Validators.isQueueName(mName))
+      throw new IllegalArgumentException("QUEUE was not specified or invalid queue name: [" + mName + "]");
   }
   
   /**
@@ -52,6 +54,8 @@ public class DeleteQueueCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+    conn.deleteQueue(mName, mForce);
+    ConsoleUtils.writeln("%s", conn.getResponse());
   }
   
   /**

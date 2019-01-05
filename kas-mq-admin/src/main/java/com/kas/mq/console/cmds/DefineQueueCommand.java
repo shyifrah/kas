@@ -49,7 +49,7 @@ public class DefineQueueCommand extends ACommand
   protected void verify()
   {
     if (!Validators.isQueueName(mName))
-      throw new IllegalArgumentException("NAME was not specified or invalid queue name: [" + mName + "]");
+      throw new IllegalArgumentException("QUEUE was not specified or invalid queue name: [" + mName + "]");
     if (!Validators.isThreshold(mThreshold))
       throw new IllegalArgumentException("THRESHOLD is invalid: [" + mThreshold + "]");
   }
