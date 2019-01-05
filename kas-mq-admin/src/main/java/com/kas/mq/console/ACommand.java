@@ -1,5 +1,7 @@
 package com.kas.mq.console;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -21,14 +23,14 @@ public abstract class ACommand implements ICommand
   static private final Pattern cPattern_ParamValue = Pattern.compile(cRegExpr_ParamValue);
   
   /**
-   * The command verb
+   * A list of acceptable command verbs
    */
-  protected String mVerb;
+  protected List<String> mCommandVerbs = new ArrayList<String>();
   
   /**
-   * The string of arguments as entered upon construction
+   * The string of arguments
    */
-  protected String mArgs;
+  protected String mArgumentText;
   
   /**
    * After parsing the arguments string (via a call to {@link #parse()},
@@ -36,18 +38,6 @@ public abstract class ACommand implements ICommand
    * Note that the map uses case-insensitive keys. DO NOT CHANGE THAT!
    */
   private Map<String, String> mArgMap = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);;
-  
-  /**
-   * Construct the command parser
-   * 
-   * @param verb The command verb
-   * @param args The argument string
-   */
-  protected ACommand(String verb, String args)
-  {
-    mVerb = verb;
-    mArgs = args;
-  }
   
   /**
    * Parse the command arguments and populate the arguments map.<br>
@@ -65,7 +55,7 @@ public abstract class ACommand implements ICommand
   {
     String param = null;
     String value = null;
-    String reminder = mArgs;
+    String reminder = mArgumentText;
     while (reminder.length() > 0)
     {
       param = reminder.split(" ")[0].toUpperCase();
@@ -108,7 +98,7 @@ public abstract class ACommand implements ICommand
   protected abstract void setup();
   
   /**
-   * Verify data members values. 
+   * An abstract method for verifying the validity of data members values. 
    */
   protected abstract void verify();
   
@@ -118,6 +108,26 @@ public abstract class ACommand implements ICommand
    * @param conn The {@link MqContextConnection} that will be used to execute the command
    */
   public abstract void exec(MqContextConnection conn);
+  
+  /**
+   * Set the command's argument text to the specified argument
+   * 
+   * @param text The command text beginning with the first argument or sub-verb
+   */
+  public void reset(String text)
+  {
+    mArgumentText = text;
+  }
+  
+  /**
+   * Get the list of command verbs acceptable by this command
+   * 
+   * @return the list of command verbs acceptable by this command
+   */
+  public List<String> getCommandVerbs()
+  {
+    return mCommandVerbs;
+  }
   
   /**
    * Read a string value from the arguments map
