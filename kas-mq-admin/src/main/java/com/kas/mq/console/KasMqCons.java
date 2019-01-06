@@ -125,16 +125,16 @@ public class KasMqCons extends AKasApp
     text = text.substring(0, text.length()-1);
     text = text.trim();
     
-    ICommand parser = CommandFactory.create(text);
-    if (parser == null)
+    ICommand cmd = CommandFactory.getInstance().newCommand(text);
+    if (cmd == null)
     {
       return false;
     }
     
     try
     {
-      parser.parse();
-      ConsoleUtils.writeln("Parsed command: " + parser.toString());
+      cmd.parse();
+      ConsoleUtils.writeln("Parsed command: " + cmd.toString());
     }
     catch (IllegalArgumentException e)
     {
@@ -144,7 +144,7 @@ public class KasMqCons extends AKasApp
     
     try
     {
-      parser.exec(mConnection);
+      cmd.exec(mConnection);
     }
     catch (Throwable e)
     {
