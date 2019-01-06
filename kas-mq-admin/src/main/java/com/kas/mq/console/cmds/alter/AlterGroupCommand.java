@@ -1,5 +1,6 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.alter;
 
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -17,14 +18,13 @@ public class AlterGroupCommand extends ACommand
   private String mDescription;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public AlterGroupCommand(String verb, String args)
+  AlterGroupCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("GROUP");
+    mCommandVerbs.add("GRP");
+    mCommandVerbs.add("G");
   }
   
   /**
@@ -32,7 +32,7 @@ public class AlterGroupCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("GROUP", null);
+    mName = getString("NAME", null);
     mDescription = getString("DESCRIPTION", "");
   }
   
@@ -41,8 +41,8 @@ public class AlterGroupCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("GROUP name was not specified");
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
@@ -62,8 +62,8 @@ public class AlterGroupCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("ALTER").append('\n')
-      .append(" GROUP(").append(mName).append(")\n")
+    sb.append("ALTER GROUP").append('\n')
+      .append(" NAME(").append(mName).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n");
     return sb.toString();
   }

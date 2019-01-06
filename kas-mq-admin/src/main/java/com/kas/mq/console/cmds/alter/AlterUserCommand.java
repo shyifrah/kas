@@ -1,6 +1,7 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.alter;
 
 import com.kas.infra.typedef.StringList;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -20,14 +21,13 @@ public class AlterUserCommand extends ACommand
   private StringList mGroups;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public AlterUserCommand(String verb, String args)
+  AlterUserCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("USER");
+    mCommandVerbs.add("USR");
+    mCommandVerbs.add("U");
   }
   
   /**
@@ -35,7 +35,7 @@ public class AlterUserCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("USER", null);
+    mName = getString("NAME", null);
     mPassword = getString("PASSWORD", null);
     mDescription = getString("DESCRIPTION", "");
     String grps = getString("GROUPS", null);
@@ -47,12 +47,8 @@ public class AlterUserCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("USER name was not specified");
-    if (mPassword == null)
-      throw new IllegalArgumentException("USER password was not specified");
-    if (mGroups.isEmpty())
-      throw new IllegalArgumentException("USER must be a member of at least one group");
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
@@ -72,8 +68,8 @@ public class AlterUserCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("ALTER").append('\n')
-      .append(" USER(").append(mName).append(")\n")
+    sb.append("ALTER USER").append('\n')
+      .append(" NAME(").append(mName).append(")\n")
       .append(" PASSWORD(").append(mPassword).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n")
       .append(" GROUPS(").append(mGroups).append(")\n");

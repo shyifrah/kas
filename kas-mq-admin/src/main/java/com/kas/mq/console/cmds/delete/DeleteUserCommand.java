@@ -1,5 +1,6 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.delete;
 
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -16,14 +17,13 @@ public class DeleteUserCommand extends ACommand
   private String mName;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public DeleteUserCommand(String verb, String args)
+  DeleteUserCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("USER");
+    mCommandVerbs.add("USR");
+    mCommandVerbs.add("U");
   }
   
   /**
@@ -31,7 +31,7 @@ public class DeleteUserCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("USER", null);
+    mName = getString("NAME", null);
   }
   
   /**
@@ -39,8 +39,8 @@ public class DeleteUserCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("USER name was not specified");
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
@@ -60,8 +60,8 @@ public class DeleteUserCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DELETE").append('\n')
-      .append(" USER(").append(mName).append(")\n");
+    sb.append("DELETE USER").append('\n')
+      .append(" NAME(").append(mName).append(")\n");
     return sb.toString();
   }
 }

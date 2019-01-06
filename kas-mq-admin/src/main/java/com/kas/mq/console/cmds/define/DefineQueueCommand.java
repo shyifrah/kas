@@ -1,4 +1,4 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.define;
 
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.Validators;
@@ -22,14 +22,12 @@ public class DefineQueueCommand extends ACommand
   private EQueueDisp mDisposition;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public DefineQueueCommand(String verb, String args)
+  DefineQueueCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("QUEUE");
+    mCommandVerbs.add("Q");
   }
   
   /**
@@ -37,7 +35,7 @@ public class DefineQueueCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("QUEUE", null);
+    mName = getString("NAME", null);
     mDescription = getString("DESCRIPTION", "");
     mThreshold = getInteger("THRESHOLD", 1000);
     mDisposition = getEnum("DISPOSITION", EQueueDisp.class, EQueueDisp.TEMPORARY);
@@ -49,9 +47,9 @@ public class DefineQueueCommand extends ACommand
   protected void verify()
   {
     if (!Validators.isQueueName(mName))
-      throw new IllegalArgumentException("QUEUE was not specified or invalid queue name: [" + mName + "]");
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
     if (!Validators.isThreshold(mThreshold))
-      throw new IllegalArgumentException("THRESHOLD is invalid: [" + mThreshold + "]");
+      throw new IllegalArgumentException("Threshold was not specified or invalid: [" + mThreshold + "]");
   }
   
   /**
@@ -73,8 +71,8 @@ public class DefineQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DEFINE").append('\n')
-      .append(" QUEUE(").append(mName).append(")\n")
+    sb.append("DEFINE QUEUE").append('\n')
+      .append(" NAME(").append(mName).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n")
       .append(" THRESHOLD(").append(mThreshold).append(")\n")
       .append(" DISPOSITION(").append(mDisposition).append(")\n");

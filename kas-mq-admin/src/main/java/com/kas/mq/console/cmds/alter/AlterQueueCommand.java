@@ -1,6 +1,8 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.alter;
 
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -16,17 +18,15 @@ public class AlterQueueCommand extends ACommand
   private String mName;
   private String mDescription;
   private Integer mThreshold;
-  private Boolean mPersistent;
+  private EQueueDisp mDisposition;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public AlterQueueCommand(String verb, String args)
+  AlterQueueCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("QUEUE");
+    mCommandVerbs.add("Q");
   }
   
   /**
@@ -34,10 +34,10 @@ public class AlterQueueCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("QUEUE", null);
+    mName = getString("NAME", null);
     mDescription = getString("DESCRIPTION", "");
     mThreshold = getInteger("THRESHOLD", 1000);
-    mPersistent = getBoolean("PERSISTENT", false);
+    mDisposition = getEnum("DISPOSITION", EQueueDisp.class, EQueueDisp.TEMPORARY);
   }
   
   /**
@@ -45,8 +45,10 @@ public class AlterQueueCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("QUEUE name was not specified");
+    if (!Validators.isQueueName(mName))
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
+    if (!Validators.isThreshold(mThreshold))
+      throw new IllegalArgumentException("Threshold was not specified or invalid: [" + mThreshold + "]");
   }
   
   /**
@@ -66,11 +68,11 @@ public class AlterQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("ALTER").append('\n')
-      .append(" QUEUE(").append(mName).append(")\n")
+    sb.append("ALTER QUEUE").append('\n')
+      .append(" NAME(").append(mName).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n")
       .append(" THRESHOLD(").append(mThreshold).append(")\n")
-      .append(" PERSISTENT(").append(mPersistent).append(")\n");
+      .append(" DISPOSITION(").append(mDisposition).append(")\n");
     return sb.toString();
   }
 }

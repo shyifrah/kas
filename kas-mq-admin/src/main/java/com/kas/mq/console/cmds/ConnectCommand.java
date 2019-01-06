@@ -10,7 +10,7 @@ import com.kas.mq.internal.MqContextConnection;
  * 
  * @author Pippo
  */
-public class ConnectHostCommand extends ACommand
+public class ConnectCommand extends ACommand
 {
   /**
    * Connect attributes
@@ -21,14 +21,12 @@ public class ConnectHostCommand extends ACommand
   private String mPassword;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public ConnectHostCommand(String verb, String args)
+  ConnectCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("CONNECT");
+    mCommandVerbs.add("CONN");
   }
   
   /**

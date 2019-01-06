@@ -1,38 +1,16 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.define;
 
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.AFactory;
 import com.kas.mq.console.ICommand;
 
 /**
- * A factory that generate commands based on their text
+ * Define command factory
  * 
  * @author Pippo
  */
-public class CommandFactory extends AFactory
+public class DefineCommandFactory extends AFactory
 {
-  /**
-   * Singleton instance
-   */
-  static private CommandFactory sInstance = new CommandFactory();
-  
-  /**
-   * Get the singleton
-   * 
-   * @return the singleton instance
-   */
-  static public CommandFactory getInstance()
-  {
-    return sInstance;
-  }
-  
-  /**
-   * Private Constructor
-   */
-  private CommandFactory()
-  {
-  }
-  
   /**
    * Get a {@link ICommand} object to handle the new command text.<br>
    * Note that the only the verb upper-cased to locate the specific class,
@@ -46,27 +24,20 @@ public class CommandFactory extends AFactory
   {
     ICommand cmd = null;
     String text = cmdText.trim();
-    if (text == null)
-      return null;
     if (text.length() == 0)
       return null;
-    
-    text = cmdText.replaceAll("\\(", " (").replaceAll("\\)", ") ");
     
     String [] tokens = text.split(" ");
     if (tokens.length < 2)
     {
-      ConsoleUtils.writeln("Unknown command: [%s]", text);
+      ConsoleUtils.writeln("Unknown command: [DEFINE %s]", text);
     }
     else
     {
       String verb = tokens[0].toUpperCase();
       cmd = mCommandVerbs.get(verb);
-      if (cmd != null)
-      {
-        String reminder = text.substring(verb.length()).trim();
-        cmd.reset(reminder);
-      }
+      String reminder = text.substring(verb.length()).trim();
+      cmd.reset(reminder);
     }
     
     return cmd;

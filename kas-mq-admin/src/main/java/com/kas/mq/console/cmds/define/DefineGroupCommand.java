@@ -1,5 +1,6 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.define;
 
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -17,14 +18,13 @@ public class DefineGroupCommand extends ACommand
   private String mDescription;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public DefineGroupCommand(String verb, String args)
+  DefineGroupCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("GROUP");
+    mCommandVerbs.add("GRP");
+    mCommandVerbs.add("G");
   }
   
   /**
@@ -32,7 +32,7 @@ public class DefineGroupCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("GROUP", null);
+    mName = getString("NAME", null);
     mDescription = getString("DESCRIPTION", "");
   }
   
@@ -41,8 +41,8 @@ public class DefineGroupCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("GROUP name was not specified");
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
@@ -62,8 +62,8 @@ public class DefineGroupCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DEFINE").append('\n')
-      .append(" GROUP(").append(mName).append(")\n")
+    sb.append("DEFINE GROUP").append('\n')
+      .append(" NAME(").append(mName).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n");
     return sb.toString();
   }

@@ -1,4 +1,4 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.delete;
 
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.Validators;
@@ -19,14 +19,12 @@ public class DeleteQueueCommand extends ACommand
   private Boolean mForce;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public DeleteQueueCommand(String verb, String args)
+  DeleteQueueCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("QUEUE");
+    mCommandVerbs.add("Q");
   }
   
   /**
@@ -34,7 +32,7 @@ public class DeleteQueueCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("QUEUE", null);
+    mName = getString("NAME", null);
     mForce = getBoolean("FORCE", false);
   }
   
@@ -44,7 +42,7 @@ public class DeleteQueueCommand extends ACommand
   protected void verify()
   {
     if (!Validators.isQueueName(mName))
-      throw new IllegalArgumentException("QUEUE was not specified or invalid queue name: [" + mName + "]");
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
@@ -66,8 +64,8 @@ public class DeleteQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DELETE").append('\n')
-      .append(" QUEUE(").append(mName).append(")\n")
+    sb.append("DELETE QUEUE").append('\n')
+      .append(" NAME(").append(mName).append(")\n")
       .append(" FORCE(").append(mForce).append(")\n");
     return sb.toString();
   }

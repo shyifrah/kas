@@ -1,5 +1,6 @@
-package com.kas.mq.console.cmds;
+package com.kas.mq.console.cmds.delete;
 
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -16,14 +17,13 @@ public class DeleteGroupCommand extends ACommand
   private String mName;
   
   /**
-   * Construct the command
-   * 
-   * @param verb The command verb
-   * @param args The argument string
+   * Construct the command and setting its verbs
    */
-  public DeleteGroupCommand(String verb, String args)
+  DeleteGroupCommand()
   {
-    super(verb, args);
+    mCommandVerbs.add("GROUP");
+    mCommandVerbs.add("GRP");
+    mCommandVerbs.add("G");
   }
   
   /**
@@ -31,7 +31,7 @@ public class DeleteGroupCommand extends ACommand
    */
   protected void setup()
   {
-    mName = getString("GROUP", null);
+    mName = getString("NAME", null);
   }
   
   /**
@@ -39,8 +39,8 @@ public class DeleteGroupCommand extends ACommand
    */
   protected void verify()
   {
-    if (mName == null)
-      throw new IllegalArgumentException("USER name was not specified");
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
@@ -60,8 +60,8 @@ public class DeleteGroupCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DELETE").append('\n')
-      .append(" GROUP(").append(mName).append(")\n");
+    sb.append("DELETE GROUP").append('\n')
+      .append(" NAME(").append(mName).append(")\n");
     return sb.toString();
   }
 }
