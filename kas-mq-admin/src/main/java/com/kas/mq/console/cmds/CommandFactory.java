@@ -1,6 +1,5 @@
 package com.kas.mq.console.cmds;
 
-import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.AFactory;
 import com.kas.mq.console.ICommand;
 
@@ -54,18 +53,14 @@ public class CommandFactory extends AFactory
     text = cmdText.replaceAll("\\(", " (").replaceAll("\\)", ") ");
     
     String [] tokens = text.split(" ");
-    if (tokens.length < 2)
-    {
-      ConsoleUtils.writeln("Unknown command: [%s]", text);
-    }
-    else
+    if (tokens.length > 0)
     {
       String verb = tokens[0].toUpperCase();
       cmd = mCommandVerbs.get(verb);
       if (cmd != null)
       {
         String reminder = text.substring(verb.length()).trim();
-        cmd.reset(reminder);
+        cmd.setText(reminder);
       }
     }
     
