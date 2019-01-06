@@ -43,6 +43,11 @@ public class KasMqCons extends AKasApp
   private MqContextConnection mConnection = new MqContextConnection(cAppName);
   
   /**
+   * The main command factory
+   */
+  private CommandFactory mCommandFactory = CommandFactory.getInstance();
+  
+  /**
    * Construct the {@link KasMqCons} passing it the startup arguments
    * 
    * @param args The startup arguments
@@ -73,6 +78,8 @@ public class KasMqCons extends AKasApp
   {
     ConsoleUtils.writeln(cAppName + " started");
     ConsoleUtils.writeln(" ");
+    
+    mCommandFactory.init();
     
     boolean isExitCommand  = false;
     boolean isNewCommand   = true;
@@ -125,9 +132,10 @@ public class KasMqCons extends AKasApp
     text = text.substring(0, text.length()-1);
     text = text.trim();
     
-    ICommand cmd = CommandFactory.getInstance().newCommand(text);
+    ICommand cmd = mCommandFactory.newCommand(text);
     if (cmd == null)
     {
+      ConsoleUtils.writeln("Unknown command: [%s]", text);
       return false;
     }
     
@@ -138,7 +146,12 @@ public class KasMqCons extends AKasApp
     }
     catch (IllegalArgumentException e)
     {
-      ConsoleUtils.writeln("Error: " + e.getMessage());
+      ConsoleUtils.writeln("Error: %s", e.getMessage());
+      return false;
+    }
+    catch (Throwable e)
+    {
+      ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
       return false;
     }
     
@@ -148,7 +161,7 @@ public class KasMqCons extends AKasApp
     }
     catch (Throwable e)
     {
-      ConsoleUtils.writeln("Error: " + e.getMessage());
+      ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
       return false;
     }
     
