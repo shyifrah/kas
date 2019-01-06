@@ -1,6 +1,5 @@
 package com.kas.mq.console.cmds.delete;
 
-import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -32,15 +31,6 @@ public class DeleteUserCommand extends ACommand
   protected void setup()
   {
     mName = getString("NAME", null);
-  }
-  
-  /**
-   * Verify mandatory arguments
-   */
-  protected void verify()
-  {
-    if (!Validators.isUserName(mName))
-      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**

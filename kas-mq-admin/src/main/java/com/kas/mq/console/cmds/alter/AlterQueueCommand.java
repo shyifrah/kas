@@ -1,6 +1,5 @@
 package com.kas.mq.console.cmds.alter;
 
-import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqContextConnection;
@@ -39,18 +38,7 @@ public class AlterQueueCommand extends ACommand
     mThreshold = getInteger("THRESHOLD", 1000);
     mDisposition = getEnum("DISPOSITION", EQueueDisp.class, EQueueDisp.TEMPORARY);
   }
-  
-  /**
-   * Verify mandatory arguments
-   */
-  protected void verify()
-  {
-    if (!Validators.isQueueName(mName))
-      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
-    if (!Validators.isThreshold(mThreshold))
-      throw new IllegalArgumentException("Threshold was not specified or invalid: [" + mThreshold + "]");
-  }
-  
+
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 

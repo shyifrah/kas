@@ -38,13 +38,6 @@ public class DefineCommand extends ACommand
   }
   
   /**
-   * Verify mandatory arguments
-   */
-  protected void verify()
-  {
-  }
-  
-  /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
    * @param conn The {@link MqContextConnection} that will be used to execute the command

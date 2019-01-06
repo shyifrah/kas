@@ -83,8 +83,6 @@ public abstract class ACommand implements ICommand
         throw new IllegalArgumentException("Unknown argument [" + key + "]");
       }
     }
-    
-    verify();
   }
   
   /**
@@ -96,11 +94,6 @@ public abstract class ACommand implements ICommand
    * Calling to these methods will remove the corresponding values from the arguments map.<br>
    */
   protected abstract void setup();
-  
-  /**
-   * An abstract method for verifying the validity of data members values. 
-   */
-  protected abstract void verify();
   
   /**
    * Execute the command using the specified {@link MqContextConnection}

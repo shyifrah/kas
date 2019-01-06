@@ -1,7 +1,6 @@
 package com.kas.mq.console.cmds.define;
 
 import com.kas.infra.typedef.StringList;
-import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -40,15 +39,6 @@ public class DefineUserCommand extends ACommand
     mDescription = getString("DESCRIPTION", "");
     String grps = getString("GROUPS", null);
     mGroups = StringList.fromString(grps, false);
-  }
-  
-  /**
-   * Verify mandatory arguments
-   */
-  protected void verify()
-  {
-    if (!Validators.isUserName(mName))
-      throw new IllegalArgumentException("Name was not specified or invalid: [" + mName + "]");
   }
   
   /**
