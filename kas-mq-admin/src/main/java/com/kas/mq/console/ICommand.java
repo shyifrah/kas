@@ -27,7 +27,7 @@ public interface ICommand
    * 
    * @param text The command text
    */
-  public abstract void reset(String text);
+  public abstract void setText(String text);
   
   /**
    * Get the list of command verbs acceptable by this command

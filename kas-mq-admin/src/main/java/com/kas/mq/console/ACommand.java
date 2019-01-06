@@ -114,7 +114,7 @@ public abstract class ACommand implements ICommand
    * 
    * @param text The command text beginning with the first argument or sub-verb
    */
-  public void reset(String text)
+  public void setText(String text)
   {
     mArgumentText = text;
   }

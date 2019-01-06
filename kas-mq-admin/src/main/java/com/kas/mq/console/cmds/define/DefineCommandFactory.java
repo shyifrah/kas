@@ -37,7 +37,7 @@ public class DefineCommandFactory extends AFactory
       String verb = tokens[0].toUpperCase();
       cmd = mCommandVerbs.get(verb);
       String reminder = text.substring(verb.length()).trim();
-      cmd.reset(reminder);
+      cmd.setText(reminder);
     }
     
     return cmd;
