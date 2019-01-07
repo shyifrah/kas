@@ -6,7 +6,7 @@ import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
- * CONNECT HOST command
+ * CONNECT command
  * 
  * @author Pippo
  */
@@ -35,7 +35,7 @@ public class ConnectCommand extends ACommand
   protected void setup()
   {
     mHost = getString("HOST", null);
-    mPort = getInteger("PORT", 0);
+    mPort = getInteger("PORT", 14560);
     mUser = getString("USER", null);
     mPassword = getString("PASSWORD", null);
   }
@@ -49,22 +49,10 @@ public class ConnectCommand extends ACommand
   {
     try
     {
-      if (mHost == null)
-        mHost = ConsoleUtils.readClearText("Enter host name or IP address: ");
-      
       if (!Validators.isHostName(mHost))
         throw new IllegalArgumentException("HOST was not specified or invalid host name: [" + mHost + ']');
-      
-      String sport = null;
-      if (mPort == 0)
-        sport = ConsoleUtils.readClearText("Enter port number (14560): ");
-      if (sport.trim().length() == 0)
-        sport = "14560";
-      
-      if (!Validators.isPort(sport))
-        throw new IllegalArgumentException("PORT was not specified or invalid port: [" + sport + ']');
-      
-      mPort = Integer.parseInt(sport);
+      if (!Validators.isPort(mPort))
+        throw new IllegalArgumentException("PORT was not specified or invalid port: [" + mPort + ']');
       
       conn.connect(mHost, mPort);
       if (!conn.isConnected())
@@ -106,7 +94,7 @@ public class ConnectCommand extends ACommand
       .append(" PORT(").append(mPort).append(")\n");
     
     if (mUser != null)
-      sb.append(" USER(").append(mHost).append(")\n");
+      sb.append(" USER(").append(mUser).append(")\n");
     if (mPassword != null)
       sb.append(" PASSWORD(").append(mPassword).append(")\n");
     

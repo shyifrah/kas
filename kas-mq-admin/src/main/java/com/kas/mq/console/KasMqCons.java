@@ -159,6 +159,11 @@ public class KasMqCons extends AKasApp
     {
       cmd.exec(mConnection);
     }
+    catch (IllegalArgumentException e)
+    {
+      ConsoleUtils.writeln("Error: %s", e.getMessage());
+      return false;
+    }
     catch (Throwable e)
     {
       ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
