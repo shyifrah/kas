@@ -22,6 +22,8 @@ public class Validators
   static private final int cMinimumThreshold = 1;
   static private final int cMaximumThreshold = 100000;
   
+  static private final int cMaximumQueueDescriptionLength = 256;
+  
   static private final String cNumericPattern = "[+-]?\\d+";
   static private Pattern cNumericCompiledPattern = Pattern.compile(cNumericPattern);
   
@@ -129,6 +131,19 @@ public class Validators
   {
     if ((queue == null) || (queue.trim().length() == 0)) return false;
     return cQueueNameCompiledPattern.matcher(queue).matches(); 
+  }
+  
+  /**
+   * Validate queue description
+   * 
+   * @param desc The queue description for validation
+   * @return {@code true} if {@code desc} is a valid queue description, {@code false} otherwise
+   */
+  static public boolean isQueueDesc(String desc)
+  {
+    if (desc == null) return false;
+    if (desc.trim().length() > cMaximumQueueDescriptionLength) return false;
+    return true;
   }
   
   /**

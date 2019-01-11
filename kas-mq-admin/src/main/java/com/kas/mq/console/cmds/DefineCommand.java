@@ -1,6 +1,5 @@
 package com.kas.mq.console.cmds;
 
-import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.console.ICommand;
 import com.kas.mq.console.cmds.define.DefineCommandFactory;
@@ -31,10 +30,13 @@ public class DefineCommand extends ACommand
   }
   
   /**
-   * Setting data members
+   * Overriding the default {@link ACommand#parse(String)}
+   * 
+   * @param text The text passed to this command
    */
-  protected void setup()
+  public void parse(String text)
   {
+    mCommandText = text;
   }
   
   /**
@@ -44,15 +46,20 @@ public class DefineCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
-    ICommand cmd = mFactory.newCommand(mArgumentText);
-    if (cmd == null)
-    {
-      ConsoleUtils.writeln("Unknown command: [DEFINE %s]", mArgumentText);
-    }
-    else
-    {
+    ICommand cmd = mFactory.newCommand(mCommandText);
+    if (cmd != null)
       cmd.exec(conn);
-      ConsoleUtils.writeln(conn.getResponse());
-    }
+  }
+  
+  /**
+   * Get the command text
+   * 
+   * @return the command text
+   */
+  public String toString()
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("DEFINE...");
+    return sb.toString();
   }
 }

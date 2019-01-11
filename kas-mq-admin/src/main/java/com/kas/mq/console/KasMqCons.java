@@ -7,7 +7,7 @@ import com.kas.appl.AppLauncher;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.console.cmds.CommandFactory;
+import com.kas.mq.console.cmds.MainCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -45,7 +45,7 @@ public class KasMqCons extends AKasApp
   /**
    * The main command factory
    */
-  private CommandFactory mCommandFactory = CommandFactory.getInstance();
+  private MainCommandFactory mCommandFactory = MainCommandFactory.getInstance();
   
   /**
    * Construct the {@link KasMqCons} passing it the startup arguments
@@ -131,43 +131,30 @@ public class KasMqCons extends AKasApp
   {
     text = text.substring(0, text.length()-1);
     text = text.trim();
+    if (text == null)
+      return false;
+    if (text.length() == 0)
+      return false;
+    
+    text = text.replaceAll("\\(", " (").replaceAll("\\)", ") ");
     
     ICommand cmd = mCommandFactory.newCommand(text);
-    if (cmd == null)
+    if (cmd != null)
     {
-      ConsoleUtils.writeln("Unknown command: [%s]", text);
-      return false;
-    }
-    
-    try
-    {
-      cmd.parse();
-      ConsoleUtils.writeln("Parsed command: " + cmd.toString());
-    }
-    catch (IllegalArgumentException e)
-    {
-      ConsoleUtils.writeln("Error: %s", e.getMessage());
-      return false;
-    }
-    catch (Throwable e)
-    {
-      ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
-      return false;
-    }
-    
-    try
-    {
-      cmd.exec(mConnection);
-    }
-    catch (IllegalArgumentException e)
-    {
-      ConsoleUtils.writeln("Error: %s", e.getMessage());
-      return false;
-    }
-    catch (Throwable e)
-    {
-      ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
-      return false;
+      try
+      {
+        cmd.exec(mConnection);
+      }
+      catch (IllegalArgumentException e)
+      {
+        ConsoleUtils.writeln("Error: %s", e.getMessage());
+        return false;
+      }
+      catch (Throwable e)
+      {
+        ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
+        return false;
+      }
     }
     
     return false;

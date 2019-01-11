@@ -50,9 +50,9 @@ public class ConnectCommand extends ACommand
     try
     {
       if (!Validators.isHostName(mHost))
-        throw new IllegalArgumentException("HOST was not specified or invalid host name: [" + mHost + ']');
+        throw new IllegalArgumentException("HOST was not specified or invalid: [" + mHost + ']');
       if (!Validators.isPort(mPort))
-        throw new IllegalArgumentException("PORT was not specified or invalid port: [" + mPort + ']');
+        throw new IllegalArgumentException("Invalid PORT: [" + mPort + ']');
       
       conn.connect(mHost, mPort);
       if (!conn.isConnected())
@@ -65,7 +65,7 @@ public class ConnectCommand extends ACommand
         mUser = ConsoleUtils.readClearText("Enter user name: ");
       
       if (!Validators.isUserName(mUser))
-        throw new IllegalArgumentException("USER was not specified or invalid user name: [" + mUser + ']');
+        throw new IllegalArgumentException("USER was not specified or invalid: [" + mUser + ']');
       
       if (mPassword == null)
         mPassword = ConsoleUtils.readMaskedText("Enter password: ");

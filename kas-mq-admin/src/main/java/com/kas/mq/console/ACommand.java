@@ -28,9 +28,9 @@ public abstract class ACommand implements ICommand
   protected List<String> mCommandVerbs = new ArrayList<String>();
   
   /**
-   * The string of arguments
+   * The command text passed to the specific command
    */
-  protected String mArgumentText;
+  protected String mCommandText;
   
   /**
    * After parsing the arguments string (via a call to {@link #parse()},
@@ -51,11 +51,11 @@ public abstract class ACommand implements ICommand
    * Finally, the {@link #verify()} method is called to allow the driven command parser
    * to add extra verifications, for example, verify mandatory values were specified. 
    */
-  public void parse()
+  public void parse(String text)
   {
     String param = null;
     String value = null;
-    String reminder = mArgumentText;
+    String reminder = text;
     while (reminder.length() > 0)
     {
       param = reminder.split(" ")[0].toUpperCase();
@@ -86,14 +86,16 @@ public abstract class ACommand implements ICommand
   }
   
   /**
-   * An abstract method for setting the arguments of the driven command parser.<br>
+   * An empty method for setting the arguments of the driven command parser.<br>
    * <br>
    * Setting the data members is done by calling the {@link #getBoolean(String, Boolean)}, 
    * {@link #getInteger(String, Integer)} and {@link #getString(String, String)} methods
    * and assign the returned value.<br>
    * Calling to these methods will remove the corresponding values from the arguments map.<br>
    */
-  protected abstract void setup();
+  protected void setup()
+  {
+  }
   
   /**
    * Execute the command using the specified {@link MqContextConnection}
@@ -101,16 +103,6 @@ public abstract class ACommand implements ICommand
    * @param conn The {@link MqContextConnection} that will be used to execute the command
    */
   public abstract void exec(MqContextConnection conn);
-  
-  /**
-   * Set the command's argument text to the specified argument
-   * 
-   * @param text The command text beginning with the first argument or sub-verb
-   */
-  public void setText(String text)
-  {
-    mArgumentText = text;
-  }
   
   /**
    * Get the list of command verbs acceptable by this command
@@ -154,7 +146,10 @@ public abstract class ACommand implements ICommand
       {
         result = Integer.valueOf(sval);
       }
-      catch (NumberFormatException e) {}
+      catch (NumberFormatException e)
+      {
+        throw new IllegalArgumentException("Illegal value for argument \"" + key + "\". Expected: integer");
+      }
     }
     return result;
   }
@@ -176,6 +171,8 @@ public abstract class ACommand implements ICommand
         result = Boolean.TRUE;
       else if (sval.equalsIgnoreCase("false"))
         result = Boolean.FALSE;
+      else
+        throw new IllegalArgumentException("Illegal value for argument \"" + key + "\". Expected: boolean");
     }
     return result;
   }
@@ -198,7 +195,10 @@ public abstract class ACommand implements ICommand
       {
         result = Enum.valueOf(type, sval);
       }
-      catch (IllegalArgumentException e) {}
+      catch (IllegalArgumentException e)
+      {
+        throw new IllegalArgumentException("Illegal value for argument \"" + key + "\". Expected: Enum value");
+      }
     }
     return result;
   }

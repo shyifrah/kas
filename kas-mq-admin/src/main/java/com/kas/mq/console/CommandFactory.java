@@ -8,13 +8,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import com.kas.infra.utils.ConsoleUtils;
 
 /**
  * A base factory for commands
  * 
  * @author Pippo
  */
-public class AFactory implements IFactory
+public class CommandFactory implements ICommandFactory
 {
   /**
    * A {@link TreeMap} to map command verbs with {@link ICommand} that handles it
@@ -25,7 +26,7 @@ public class AFactory implements IFactory
    * Initialize the command factory.<br>
    * We scan the contents of the directory represented by this package.
    * If a class file is found that designates a {@link ICommand}, we instantiate it
-   * and then call this class' {@link ICommand#init(IFactory)} method.
+   * and then call this class' {@link ICommand#init(ICommandFactory)} method.
    */
   public void init()
   {
@@ -98,5 +99,56 @@ public class AFactory implements IFactory
     {
       mCommandVerbs.put(verb, cmd);
     }
+  }
+  
+  /**
+   * Get a {@link ICommand} object to handle the new command text.<br>
+   * Note that the only the verb upper-cased to locate the specific class,
+   * but the arguments should remain untouched. This is because some arguments
+   * are case sensitive (e.g. PASSWORD).
+   * 
+   * @param cmdText The command text
+   * @return the {@link ICommand} that will handle the command text
+   */
+  public ICommand newCommand(String cmdText)
+  {
+    ICommand cmd = null;
+    
+    String [] tokens = cmdText.split(" ");
+    if (tokens.length == 0)
+    {
+      ConsoleUtils.writeln("Missing command verb");
+    }
+    else
+    {
+      String verb = tokens[0].toUpperCase();
+      cmd = mCommandVerbs.get(verb);
+      if (cmd == null)
+      {
+        ConsoleUtils.writeln("Invalid command verb [%s]", verb);
+      }
+      else
+      {
+        String reminder = cmdText.substring(verb.length()).trim();
+        
+        try
+        {
+          cmd.parse(reminder);
+          ConsoleUtils.writeln("Parsed command: " + cmd.toString());
+        }
+        catch (IllegalArgumentException e)
+        {
+          ConsoleUtils.writeln("Error: %s", e.getMessage());
+          cmd = null;
+        }
+        catch (Throwable e)
+        {
+          ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
+          cmd = null;
+        }
+      }
+    }
+    
+    return cmd;
   }
 }

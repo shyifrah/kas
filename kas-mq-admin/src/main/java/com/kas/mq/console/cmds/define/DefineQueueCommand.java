@@ -1,6 +1,7 @@
 package com.kas.mq.console.cmds.define;
 
 import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqContextConnection;
@@ -47,6 +48,13 @@ public class DefineQueueCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+    if (!Validators.isQueueName(mName))
+      throw new IllegalArgumentException("NAME was not specified or invalid: [" + mName + ']');
+    if (!Validators.isThreshold(mThreshold))
+      throw new IllegalArgumentException("Invalid THRESHOLD: [" + mThreshold + "]; Value must be in range 1-100,000");
+    if (!Validators.isQueueDesc(mDescription))
+      throw new IllegalArgumentException("Invalid DESCRIPTION: [" + mDescription + "]; Value cannot exceed 256 characters");
+    
     conn.defineQueue(mName, mDescription, mThreshold, mDisposition);
     ConsoleUtils.writeln("%s", conn.getResponse());
   }
