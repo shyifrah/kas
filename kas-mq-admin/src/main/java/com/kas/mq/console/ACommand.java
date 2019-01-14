@@ -155,6 +155,31 @@ public abstract class ACommand implements ICommand
   }
   
   /**
+   * Read a long value from the arguments map
+   * 
+   * @param key The name of the argument
+   * @param defval Default value to assign, in case no matching entry is found
+   * @return The value from the map, or {@code defval} if {@code key} was not found
+   */
+  protected Long getLong(String key, Long defval)
+  {
+    Long result = defval;
+    String sval = getString(key, null);
+    if (sval != null)
+    {
+      try
+      {
+        result = Long.valueOf(sval);
+      }
+      catch (NumberFormatException e)
+      {
+        throw new IllegalArgumentException("Illegal value for argument \"" + key + "\". Expected: long");
+      }
+    }
+    return result;
+  }
+  
+  /**
    * Read a boolean value from the arguments map
    * 
    * @param key The name of the argument
