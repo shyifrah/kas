@@ -37,7 +37,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::defineQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, desc, threshold, disp);
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDefineQueueRequest(qname, desc, threshold, disp);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::defineQueue() - OUT");
@@ -55,7 +56,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::alterQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createAlterQueueRequest(queue, qProps);
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createAlterQueueRequest(qname, qProps);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::alterQueue() - OUT");
@@ -73,7 +75,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::deleteQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createDeleteQueueRequest(queue, force);
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDeleteQueueRequest(qname, force);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::deleteQueue() - OUT");

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.helpers.ThrowableFormatter;
 
 /**
  * A base factory for commands
@@ -143,7 +144,7 @@ public class CommandFactory implements ICommandFactory
         }
         catch (Throwable e)
         {
-          ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
+          ConsoleUtils.writeln("Exception: %s", new ThrowableFormatter(e).toString());
           cmd = null;
         }
       }

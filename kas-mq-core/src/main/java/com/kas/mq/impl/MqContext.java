@@ -61,7 +61,6 @@ public final class MqContext extends AKasObject
     if (!Validators.isUserName(user))
       throw new KasException("Validation failed. \"" + user + "\" is not a valid user name");
     
-    
     mConnection.connect(host, port);
     if (!isConnected())
       throw new KasException("Error - connect() failed. Client response: " + mConnection.getResponse());
