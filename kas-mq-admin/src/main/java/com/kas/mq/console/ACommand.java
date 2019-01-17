@@ -218,7 +218,7 @@ public abstract class ACommand implements ICommand
     {
       try
       {
-        result = Enum.valueOf(type, sval);
+        result = Enum.valueOf(type, sval.toUpperCase());
       }
       catch (IllegalArgumentException e)
       {
