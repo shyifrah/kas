@@ -60,7 +60,7 @@ public class AlterCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("ALTER...");
+    sb.append("ALTER");
     return sb.toString();
   }
 }

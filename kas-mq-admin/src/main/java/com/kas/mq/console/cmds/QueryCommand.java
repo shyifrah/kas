@@ -61,7 +61,7 @@ public class QueryCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("QUERY...");
+    sb.append("QUERY");
     return sb.toString();
   }
 }

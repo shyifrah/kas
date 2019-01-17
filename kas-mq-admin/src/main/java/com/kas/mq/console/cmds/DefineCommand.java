@@ -59,7 +59,7 @@ public class DefineCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DEFINE...");
+    sb.append("DEFINE");
     return sb.toString();
   }
 }

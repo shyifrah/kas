@@ -59,7 +59,7 @@ public class DeleteCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DELETE...");
+    sb.append("DELETE");
     return sb.toString();
   }
 }

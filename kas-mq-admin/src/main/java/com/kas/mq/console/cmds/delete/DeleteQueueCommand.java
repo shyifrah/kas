@@ -58,7 +58,7 @@ public class DeleteQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DELETE QUEUE").append('\n')
+    sb.append("QUEUE").append('\n')
       .append(" NAME(").append(mName).append(")\n")
       .append(" FORCE(").append(mForce).append(")\n");
     return sb.toString();
