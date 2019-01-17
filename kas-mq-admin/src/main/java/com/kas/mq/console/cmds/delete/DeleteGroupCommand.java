@@ -50,7 +50,7 @@ public class DeleteGroupCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DELETE GROUP").append('\n')
+    sb.append("GROUP").append('\n')
       .append(" NAME(").append(mName).append(")\n");
     return sb.toString();
   }

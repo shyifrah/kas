@@ -58,7 +58,7 @@ public class DefineUserCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("DEFINE USER").append('\n')
+    sb.append("USER").append('\n')
       .append(" NAME(").append(mName).append(")\n")
       .append(" PASSWORD(").append(mPassword).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n")
