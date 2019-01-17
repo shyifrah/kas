@@ -56,7 +56,7 @@ public class AlterQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("ALTER QUEUE").append('\n')
+    sb.append("QUEUE").append('\n')
       .append(" NAME(").append(mName).append(")\n")
       .append(" DESCRIPTION(").append(mDescription).append(")\n")
       .append(" THRESHOLD(").append(mThreshold).append(")\n")
