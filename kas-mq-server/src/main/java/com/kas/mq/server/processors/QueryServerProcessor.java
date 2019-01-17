@@ -142,11 +142,11 @@ public class QueryServerProcessor extends AProcessor
    */
   private String queryConfig()
   {
-    int qConfigType = mRequest.getIntProperty(IMqConstants.cKasPropertyQueryConfigType, -1);
-    if (qConfigType != -1) mQueryConfigType = EQueryConfigType.fromInt(qConfigType);
+    String qConfigType = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryConfigType, "ALL");
+    mQueryConfigType = EQueryConfigType.valueOf(qConfigType);
     
     String body = "";
-    String resName = String.format("%s_%s", mQueryType.name(), mQueryConfigType.name());
+    String resName = String.format("%s_%s", mQueryType.name(), qConfigType);
     if (!isAccessPermitted(EResourceClass.COMMAND, resName))
     {
       mCode = EMqCode.cError;

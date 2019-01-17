@@ -76,7 +76,7 @@ public class QueryQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("QUERY QUEUE").append('\n')
+    sb.append("QUEUE").append('\n')
       .append(" NAME(").append(mName).append(")\n")
       .append(" ALLDATA(").append(mAllData).append(")\n");
     return sb.toString();
