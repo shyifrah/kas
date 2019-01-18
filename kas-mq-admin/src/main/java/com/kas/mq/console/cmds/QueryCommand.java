@@ -2,6 +2,7 @@ package com.kas.mq.console.cmds;
 
 import com.kas.mq.console.ACommand;
 import com.kas.mq.console.ICommand;
+import com.kas.mq.console.ICommandFactory;
 import com.kas.mq.console.cmds.query.QueryCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -15,7 +16,7 @@ public class QueryCommand extends ACommand
   /**
    * A factory responsible for creating {@link ICommand} according to sub-verb
    */
-  private QueryCommandFactory mFactory;
+  private ICommandFactory mFactory;
   
   /**
    * Construct the command and setting its verbs
