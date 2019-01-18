@@ -3,7 +3,7 @@ package com.kas.mq.console.cmds.alter;
 import com.kas.mq.console.CommandFactory;
 
 /**
- * Alter command factory
+ * ALTER command factory
  * 
  * @author Pippo
  */

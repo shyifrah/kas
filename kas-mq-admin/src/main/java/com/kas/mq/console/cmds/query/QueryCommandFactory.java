@@ -3,7 +3,7 @@ package com.kas.mq.console.cmds.query;
 import com.kas.mq.console.CommandFactory;
 
 /**
- * Query command factory
+ * QUERY command factory
  * 
  * @author Pippo
  */

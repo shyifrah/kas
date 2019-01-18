@@ -3,7 +3,7 @@ package com.kas.mq.console.cmds.define;
 import com.kas.mq.console.CommandFactory;
 
 /**
- * Define command factory
+ * DEFINE command factory
  * 
  * @author Pippo
  */

@@ -3,7 +3,7 @@ package com.kas.mq.console.cmds.delete;
 import com.kas.mq.console.CommandFactory;
 
 /**
- * Delete command factory
+ * DELETE command factory
  * 
  * @author Pippo
  */
