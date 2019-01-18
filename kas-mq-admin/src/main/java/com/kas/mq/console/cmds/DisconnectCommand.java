@@ -48,7 +48,6 @@ public class DisconnectCommand extends ACommand
   {
     StringBuilder sb = new StringBuilder();
     sb.append("DISCONNECT");
-    
     return sb.toString();
   }
 }

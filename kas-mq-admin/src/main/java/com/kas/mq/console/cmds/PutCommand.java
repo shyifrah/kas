@@ -70,10 +70,9 @@ public class PutCommand extends ACommand
   {
     StringBuilder sb = new StringBuilder();
     sb.append("PUT").append('\n')
-      .append(" QUEUE(").append(mQueue).append(")\n")
-      .append(" TEXT(").append(mText).append(")\n")
-      .append(" COUNT(").append(mCount).append(")\n");
-    
+      .append("  QUEUE(").append(mQueue).append(")\n")
+      .append("  TEXT(").append(mText).append(")\n")
+      .append("  COUNT(").append(mCount).append(")\n");
     return sb.toString();
   }
 }

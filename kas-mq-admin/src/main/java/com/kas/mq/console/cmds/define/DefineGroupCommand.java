@@ -52,9 +52,9 @@ public class DefineGroupCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("GROUP").append('\n')
-      .append(" NAME(").append(mName).append(")\n")
-      .append(" DESCRIPTION(").append(mDescription).append(")\n");
+    sb.append("  GROUP").append('\n')
+      .append("    NAME(").append(mName).append(")\n")
+      .append("    DESCRIPTION(").append(mDescription).append(")\n");
     return sb.toString();
   }
 }

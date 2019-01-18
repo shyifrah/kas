@@ -80,11 +80,10 @@ public class GetCommand extends ACommand
   {
     StringBuilder sb = new StringBuilder();
     sb.append("GET").append('\n')
-      .append(" QUEUE(").append(mQueue).append(")\n")
-      .append(" TIMEOUT(").append(mTimeout).append(")\n")
-      .append(" INTERVAL(").append(mInterval).append(")\n")
-      .append(" COUNT(").append(mCount).append(")\n");
-    
+      .append("  QUEUE(").append(mQueue).append(")\n")
+      .append("  TIMEOUT(").append(mTimeout).append(")\n")
+      .append("  INTERVAL(").append(mInterval).append(")\n")
+      .append("  COUNT(").append(mCount).append(")\n");
     return sb.toString();
   }
 }

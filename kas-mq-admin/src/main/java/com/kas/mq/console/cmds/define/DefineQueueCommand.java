@@ -67,11 +67,11 @@ public class DefineQueueCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("QUEUE").append('\n')
-      .append(" NAME(").append(mName).append(")\n")
-      .append(" DESCRIPTION(").append(mDescription).append(")\n")
-      .append(" THRESHOLD(").append(mThreshold).append(")\n")
-      .append(" DISPOSITION(").append(mDisposition).append(")\n");
+    sb.append("  QUEUE").append('\n')
+      .append("    NAME(").append(mName).append(")\n")
+      .append("    DESCRIPTION(").append(mDescription).append(")\n")
+      .append("    THRESHOLD(").append(mThreshold).append(")\n")
+      .append("    DISPOSITION(").append(mDisposition).append(")\n");
     return sb.toString();
   }
 }

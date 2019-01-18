@@ -64,8 +64,8 @@ public class QueryConfigCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("CONFIGURATION").append('\n')
-      .append(" TYPE(").append(mType.name()).append(")\n");
+    sb.append("  CONFIGURATION").append('\n')
+      .append("    TYPE(").append(mType.name()).append(")\n");
     return sb.toString();
   }
 }

@@ -58,11 +58,11 @@ public class DefineUserCommand extends ACommand
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("USER").append('\n')
-      .append(" NAME(").append(mName).append(")\n")
-      .append(" PASSWORD(").append(mPassword).append(")\n")
-      .append(" DESCRIPTION(").append(mDescription).append(")\n")
-      .append(" GROUPS(").append(mGroups).append(")\n");
+    sb.append("  USER").append('\n')
+      .append("    NAME(").append(mName).append(")\n")
+      .append("    PASSWORD(").append(mPassword).append(")\n")
+      .append("    DESCRIPTION(").append(mDescription).append(")\n")
+      .append("    GROUPS(").append(mGroups).append(")\n");
     return sb.toString();
   }
 }

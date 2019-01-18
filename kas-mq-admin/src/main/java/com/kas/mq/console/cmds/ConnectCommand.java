@@ -90,14 +90,12 @@ public class ConnectCommand extends ACommand
   {
     StringBuilder sb = new StringBuilder();
     sb.append("CONNECT").append('\n')
-      .append(" HOST(").append(mHost).append(")\n")
-      .append(" PORT(").append(mPort).append(")\n");
-    
+      .append("  HOST(").append(mHost).append(")\n")
+      .append("  PORT(").append(mPort).append(")\n");
     if (mUser != null)
-      sb.append(" USER(").append(mUser).append(")\n");
+      sb.append("  USER(").append(mUser).append(")\n");
     if (mPassword != null)
-      sb.append(" PASSWORD(").append(mPassword).append(")\n");
-    
+      sb.append("  PASSWORD(").append(mPassword).append(")\n");
     return sb.toString();
   }
 }
