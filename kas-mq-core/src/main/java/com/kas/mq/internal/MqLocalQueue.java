@@ -503,8 +503,7 @@ public class MqLocalQueue extends MqQueue
     sb.append(mName);
     if (all)
     {
-      sb.append('\n');
-      sb.append("  Owned by...: ").append(mManager.getName()).append('\n');
+      sb.append("\n  Owned by...: ").append(mManager.getName()).append('\n');
       sb.append("  Description: ").append(mDescription).append('\n');
       sb.append("  Accessed...: ").append(getLastAccess()).append('\n');
       sb.append("  Threshold..: ").append(mThreshold).append('\n');

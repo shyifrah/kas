@@ -211,7 +211,7 @@ public abstract class MqQueue extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(mName);
     if (all)
-      sb.append("\n  Owned by...: ").append(mManager.getName());
+      sb.append("\n  Owned by...: ").append(mManager.getName()).append('\n');
     return sb.toString();
   }
   
