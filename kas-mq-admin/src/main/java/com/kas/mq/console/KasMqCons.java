@@ -94,25 +94,21 @@ public class KasMqCons extends AKasApp
       line = line.trim();
       if (line.length() > 0)
       {
-        if ((isNewCommand) && (line.equalsIgnoreCase(cExitCommand)))
+        if (line.equalsIgnoreCase(cExitCommand))
+          line = line + ";";
+        
+        buffer.append(line);
+        if (line.endsWith(cCommandTerminator))
         {
-          isExitCommand = true;
+          isExitCommand = process(buffer.toString());
+          
+          isNewCommand = true;
+          buffer = new StringBuffer();
         }
         else
         {
-          buffer.append(line);
-          
-          if (line.endsWith(cCommandTerminator))
-          {
-            isNewCommand = true;
-            isExitCommand = process(buffer.toString());
-            buffer = new StringBuffer();
-          }
-          else
-          {
-            isNewCommand = false;
-            buffer.append(' ');
-          }
+          isNewCommand = false;
+          buffer.append(' ');
         }
       }
     }
@@ -139,22 +135,30 @@ public class KasMqCons extends AKasApp
     text = text.replaceAll("\\(", " (").replaceAll("\\)", ") ");
     
     ICommand cmd = mCommandFactory.newCommand(text);
-    if (cmd != null)
+    if (cmd == null)
     {
-      try
-      {
-        cmd.exec(mConnection);
-      }
-      catch (IllegalArgumentException e)
-      {
-        ConsoleUtils.writeln("Error: %s", e.getMessage());
-        return false;
-      }
-      catch (Throwable e)
-      {
-        ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
-        return false;
-      }
+      ConsoleUtils.writeln("Unknown command: [%s]", text);
+      return false;
+    }
+
+    try
+    {
+      cmd.exec(mConnection);
+    }
+    catch (IllegalArgumentException e)
+    {
+      ConsoleUtils.writeln("Error: %s", e.getMessage());
+      return false;
+    }
+    catch (RuntimeException e)
+    {
+      ConsoleUtils.writeln("Bye-bye...");
+      return true;
+    }
+    catch (Throwable e)
+    {
+      ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
+      return false;
     }
     
     return false;

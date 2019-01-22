@@ -113,42 +113,34 @@ public class CommandFactory implements ICommandFactory
    */
   public ICommand newCommand(String cmdText)
   {
-    ICommand cmd = null;
-    
     String [] tokens = cmdText.split(" ");
     if (tokens.length == 0)
     {
       ConsoleUtils.writeln("Missing command verb");
+      return null;
     }
-    else
+    
+    String verb = tokens[0].toUpperCase();
+    ICommand cmd = mCommandVerbs.get(verb);
+    if (cmd != null)
     {
-      String verb = tokens[0].toUpperCase();
-      cmd = mCommandVerbs.get(verb);
-      if (cmd == null)
+      String reminder = cmdText.substring(verb.length()).trim();
+      try
       {
-        ConsoleUtils.writeln("Invalid command verb [%s]", verb);
+        cmd.parse(reminder);
+        ConsoleUtils.writeln(cmd.toString());
       }
-      else
+      catch (IllegalArgumentException e)
       {
-        String reminder = cmdText.substring(verb.length()).trim();
-        
-        try
-        {
-          cmd.parse(reminder);
-          ConsoleUtils.writeln("Parsed command: " + cmd.toString());
-        }
-        catch (IllegalArgumentException e)
-        {
-          ConsoleUtils.writeln("Error: %s", e.getMessage());
-          cmd = null;
-        }
-        catch (Throwable e)
-        {
-          ConsoleUtils.writeln("Exception: %s", new ThrowableFormatter(e).toString());
-          cmd = null;
-        }
+        ConsoleUtils.writeln("Error: %s", e.getMessage());
+        cmd = null;
       }
-    }
+      catch (Throwable e)
+      {
+        ConsoleUtils.writeln("Exception: %s", new ThrowableFormatter(e).toString());
+        cmd = null;
+      }
+    }    
     
     return cmd;
   }
