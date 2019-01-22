@@ -103,6 +103,13 @@ public abstract class ACommand implements ICommand
    * @param conn The {@link MqContextConnection} that will be used to execute the command
    */
   public abstract void exec(MqContextConnection conn);
+
+  /**
+   * Print HELP screen for the specified command.
+   */
+  public void help()
+  {
+  }
   
   /**
    * Get the list of command verbs acceptable by this command

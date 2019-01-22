@@ -1,5 +1,6 @@
 package com.kas.mq.console.cmds;
 
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.console.ICommand;
 import com.kas.mq.console.ICommandFactory;
@@ -48,8 +49,13 @@ public class DefineCommand extends ACommand
   public void exec(MqContextConnection conn)
   {
     ICommand cmd = mFactory.newCommand(mCommandText);
-    if (cmd != null)
-      cmd.exec(conn);
+    if (cmd == null)
+    {
+      ConsoleUtils.writeln("Unknown sub-verb: [%s]", mCommandText);
+      return;
+    }
+    
+    cmd.exec(conn);
   }
   
   /**
