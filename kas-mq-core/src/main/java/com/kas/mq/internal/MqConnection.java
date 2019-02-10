@@ -70,7 +70,7 @@ public class MqConnection extends AKasObject implements IMqConnection
     mLogger = LoggerFactory.getLogger(this.getClass());
     mConnectionId = UniqueId.generate();
     mMessenger = null;
-    mClientName = clientName;
+    mClientName = clientName.toUpperCase();
   }
   
   /**
@@ -173,7 +173,8 @@ public class MqConnection extends AKasObject implements IMqConnection
     }
     else
     {
-      IMqMessage request = MqRequestFactory.createLoginRequest(user, pwd, mClientName);
+      String username = user.toUpperCase();
+      IMqMessage request = MqRequestFactory.createLoginRequest(username, pwd, mClientName);
       mLogger.debug("MqConnection::login() - sending login request: " + StringUtils.asPrintableString(request));
       try
       {
@@ -184,7 +185,7 @@ public class MqConnection extends AKasObject implements IMqConnection
           String sid = reply.getStringProperty(IMqConstants.cKasPropertyLoginSession, UniqueId.cNullUniqueIdAsString);
           UniqueId uid = UniqueId.fromString(sid);
           success = true;
-          mUser = user;
+          mUser = username;
           mSessionId = uid;
         }
         logInfoAndSetResponse(reply.getResponse().getDesc());
@@ -224,7 +225,8 @@ public class MqConnection extends AKasObject implements IMqConnection
     {
       try
       {
-        IMqMessage request = MqRequestFactory.createGetRequest(queue, timeout, interval);
+        String qname = queue.toUpperCase();
+        IMqMessage request = MqRequestFactory.createGetRequest(qname, timeout, interval);
         mLogger.debug("MqConnection::get() - sending get request: " + StringUtils.asPrintableString(request));
         IMqMessage reply = (IMqMessage)mMessenger.sendAndReceive(request);
         mLogger.debug("MqConnection::get() - received response: " + StringUtils.asPrintableString(reply));
@@ -273,7 +275,8 @@ public class MqConnection extends AKasObject implements IMqConnection
     {
       try
       {
-        message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, queue.toUpperCase());
+        String qname = queue.toUpperCase();
+        message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, qname);
         message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser.toUpperCase());
         message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
         

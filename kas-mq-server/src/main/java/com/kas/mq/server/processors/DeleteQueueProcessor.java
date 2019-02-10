@@ -125,6 +125,8 @@ public class DeleteQueueProcessor extends AProcessor
       Map<String, NetworkAddress> map = mConfig.getRemoteManagers();
       String localQmgr = mConfig.getManagerName();
       
+      MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
+      
       for (Map.Entry<String, NetworkAddress> entry : map.entrySet())
       {
         String remoteQmgrName  = entry.getKey();
@@ -132,17 +134,24 @@ public class DeleteQueueProcessor extends AProcessor
         
         mLogger.debug("DeleteQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
         conn.connect(address.getHost(), address.getPort());
         if (conn.isConnected())
         {
+          boolean logged = conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+          if (!logged)
+          {
+            mLogger.debug("DeleteQueueProcessor::postprocess() - Failed to login to remote KAS/MQ server at " + address.toString());
+            continue;
+          }
+          
           boolean success = conn.notifyRepoUpdate(localQmgr, mQueue, false);
           mLogger.debug("DeleteQueueProcessor::postprocess() - Notification returned: " + success);
           
           conn.disconnect();
         }
-        MqServerConnectionPool.getInstance().release(conn);
       }
+      
+      MqServerConnectionPool.getInstance().release(conn);
     }
     
     mLogger.debug("DeleteQueueProcessor::postprocess() - OUT");

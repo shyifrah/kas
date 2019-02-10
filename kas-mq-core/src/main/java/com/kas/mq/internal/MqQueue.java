@@ -35,9 +35,9 @@ public abstract class MqQueue extends AKasObject
    */
   protected MqQueue(MqManager mgr, String name)
   {
-    mLogger  = LoggerFactory.getLogger(this.getClass());
+    mLogger = LoggerFactory.getLogger(this.getClass());
     mManager = mgr;
-    mName    = name;
+    mName = name;
   }
   
   /**
@@ -211,7 +211,7 @@ public abstract class MqQueue extends AKasObject
     StringBuilder sb = new StringBuilder();
     sb.append(mName);
     if (all)
-      sb.append("\n  Owned by...: ").append(mManager.getName());
+      sb.append("\n  Owned by...: ").append(mManager.getName()).append('\n');
     return sb.toString();
   }
   

@@ -8,6 +8,7 @@ import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
+import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 
@@ -31,8 +32,8 @@ public class KasMqStopper extends AKasApp
     String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
     defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
     
-    defaults.put(cKasUser, "system");
-    defaults.put(cKasPass, "system");
+    defaults.put(cKasUser, IMqConstants.cSystemUserName);
+    defaults.put(cKasPass, IMqConstants.cSystemPassWord);
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();

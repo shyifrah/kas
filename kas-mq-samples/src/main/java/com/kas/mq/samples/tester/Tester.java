@@ -4,6 +4,7 @@ import com.kas.infra.base.KasException;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
+import com.kas.mq.internal.EQueueDisp;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class Tester
     {
       System.out.println("============================================================");
       System.out.print("Define queue \"" + name + "\": ");
-      success = client.defineQueue(name, 1000, true);
+      success = client.defineQueue(name, "", 1000, EQueueDisp.TEMPORARY);
       if (success)
       {
         System.out.println("defined!");

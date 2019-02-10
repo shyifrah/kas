@@ -27,16 +27,18 @@ public class MqContextConnection extends MqConnection
   /**
    * Define a new queue.
    * 
-   * @param queue The queue name to define.
+   * @param queue The name of the queue to define
+   * @param desc The queue description
    * @param threshold The queue threshold
-   * @param perm Is this a permanent queue
+   * @param disp The queue disposition
    * @return the {@code true} if queue was defined, {@code false} otherwise
    */
-  public boolean defineQueue(String queue, int threshold, boolean perm)
+  public boolean defineQueue(String queue, String desc, int threshold, EQueueDisp disp)
   {
     mLogger.debug("MqContextConnection::defineQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createDefineQueueRequest(queue, threshold, perm);
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDefineQueueRequest(qname, desc, threshold, disp);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::defineQueue() - OUT");
@@ -54,7 +56,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::alterQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createAlterQueueRequest(queue, qProps);
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createAlterQueueRequest(qname, qProps);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::alterQueue() - OUT");
@@ -72,7 +75,8 @@ public class MqContextConnection extends MqConnection
   {
     mLogger.debug("MqContextConnection::deleteQueue() - IN");
     
-    IMqMessage request = MqRequestFactory.createDeleteQueueRequest(queue, force);
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDeleteQueueRequest(qname, force);
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::deleteQueue() - OUT");

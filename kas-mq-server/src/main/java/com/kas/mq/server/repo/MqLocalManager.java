@@ -34,7 +34,7 @@ public class MqLocalManager extends MqManager
   MqLocalManager(String name, int port, String deadq)
   {
     super(name, "localhost", port);
-    mDeadQueue = defineQueue(deadq, IMqConstants.cDefaultQueueThreshold, false);
+    mDeadQueue = defineQueue(deadq, "Dead queue", IMqConstants.cDefaultQueueThreshold, EQueueDisp.TEMPORARY);
   }
   
   /**
@@ -74,7 +74,7 @@ public class MqLocalManager extends MqManager
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
           mLogger.trace("MqLocalManager::activate() - Restoring contents of queue [" + qName + ']');
-          MqLocalQueue q = defineQueue(qName, IMqConstants.cDefaultQueueThreshold);
+          MqLocalQueue q = defineQueue(qName, "", IMqConstants.cDefaultQueueThreshold, EQueueDisp.PERMANENT);
           boolean restored = q.restore();
           mLogger.trace("MqLocalManager::activate() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
           success = success && restored;
@@ -116,31 +116,20 @@ public class MqLocalManager extends MqManager
    * Define a local queue object
    * 
    * @param name The name of the queue to define
+   * @param desc The description of the queue
    * @param threshold The threshold of the queue
+   * @param disp Queue disposition
    * @return the created {@link MqLocalQueue}
    */
-  MqLocalQueue defineQueue(String name, int threshold)
+  MqLocalQueue defineQueue(String name, String desc, int threshold, EQueueDisp disp)
   {
-    return defineQueue(name, threshold, true);
-  }
-  
-  /**
-   * Define a local queue object
-   * 
-   * @param name The name of the queue to define
-   * @param threshold The threshold of the queue
-   * @param backup Should the queue be backed up to file-system
-   * @return the created {@link MqLocalQueue}
-   */
-  MqLocalQueue defineQueue(String name, int threshold, boolean backup)
-  {
-    mLogger.debug("MqLocalManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold + ", BackupToFilesys=" + backup);
+    mLogger.debug("MqLocalManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold + ", Disposition=" + disp);
     MqLocalQueue queue = null;
     
     if (name != null)
     {
       name = name.toUpperCase();
-      queue = new MqLocalQueue(this, name, threshold, backup ? EQueueDisp.PERMANENT : EQueueDisp.TEMPORARY);
+      queue = new MqLocalQueue(this, name, desc, threshold, disp);
       mQueues.put(name, queue);
     }
     

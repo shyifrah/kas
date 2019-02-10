@@ -82,7 +82,7 @@ public class GetCommand extends ACliCommand
       return false;
     }
     
-    String queue = mCommandArgs.poll().toUpperCase();
+    String queue = mCommandArgs.poll();
     if (!Validators.isQueueName(queue))
     {
       writeln("Invalid queue name \"" + queue + "\"");

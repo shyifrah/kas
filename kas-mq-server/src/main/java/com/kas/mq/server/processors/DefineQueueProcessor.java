@@ -5,6 +5,7 @@ import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
+import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.server.IRepository;
@@ -23,11 +24,12 @@ public class DefineQueueProcessor extends AProcessor
 {
   /**
    * Extracted input from the request:
-   * queue name, its threshold and is it a permanent queue
+   * queue name, description, threshold and the disposition
    */
   private String mQueue;
+  private String mDescription;
   private int mThreshold;
-  private boolean mPermanent;
+  private EQueueDisp mDisposition;
   
   /**
    * Construct a {@link DefineQueueProcessor}
@@ -58,9 +60,11 @@ public class DefineQueueProcessor extends AProcessor
     else
     {
       mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
+      mDescription = mRequest.getStringProperty(IMqConstants.cKasPropertyDefQueueDesc, "");
       mThreshold = mRequest.getIntProperty(IMqConstants.cKasPropertyDefThreshold, IMqConstants.cDefaultQueueThreshold);
-      mPermanent = mRequest.getBoolProperty(IMqConstants.cKasPropertyDefPermanent, IMqConstants.cDefaultQueuePermanent);
-      mLogger.debug("DefineQueueProcessor::process() - Queue=" + mQueue + "; Threshold=" + mThreshold + "; Permanent=" + mPermanent);
+      String disp = mRequest.getStringProperty(IMqConstants.cKasPropertyDefDisposition, EQueueDisp.TEMPORARY.name());
+      mDisposition = EQueueDisp.fromString(disp);
+      mLogger.debug("DefineQueueProcessor::process() - Queue=" + mQueue + "; Threshold=" + mThreshold + "; Disposition=" + disp);
       
       MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);
       
@@ -81,7 +85,7 @@ public class DefineQueueProcessor extends AProcessor
       }
       else
       {
-        mqlq = mRepository.defineLocalQueue(mQueue, mThreshold, mPermanent);
+        mqlq = mRepository.defineLocalQueue(mQueue, mDescription, mThreshold, mDisposition);
         mLogger.debug("DefineQueueProcessor::process() - Created queue " + StringUtils.asPrintableString(mqlq));
         mDesc = "Queue with name " + mQueue + " and threshold of " + mThreshold + " was successfully defined";
         mCode = EMqCode.cOkay;
@@ -114,6 +118,8 @@ public class DefineQueueProcessor extends AProcessor
       Map<String, NetworkAddress> map = mConfig.getRemoteManagers();
       String localQmgr = mConfig.getManagerName();
       
+      MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
+      
       for (Map.Entry<String, NetworkAddress> entry : map.entrySet())
       {
         String remoteQmgrName  = entry.getKey();
@@ -121,17 +127,24 @@ public class DefineQueueProcessor extends AProcessor
         
         mLogger.debug("DefineQueueProcessor::postprocess() - Notifying KAS/MQ server \"" + remoteQmgrName + "\" (" + address.toString() + ") on repository update");
         
-        MqServerConnection conn = MqServerConnectionPool.getInstance().allocate();
         conn.connect(address.getHost(), address.getPort());
         if (conn.isConnected())
         {
+          boolean logged = conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
+          if (!logged)
+          {
+            mLogger.debug("DefineQueueProcessor::postprocess() - Failed to login to remote KAS/MQ server at " + address.toString());
+            continue;
+          }
+          
           boolean success = conn.notifyRepoUpdate(localQmgr, mQueue, true);
           mLogger.debug("DefineQueueProcessor::postprocess() - Notification returned: " + success);
           
           conn.disconnect();
         }
-        MqServerConnectionPool.getInstance().release(conn);
       }
+      
+      MqServerConnectionPool.getInstance().release(conn);
     }
     
     mLogger.debug("DefineQueueProcessor::postprocess() - OUT");
