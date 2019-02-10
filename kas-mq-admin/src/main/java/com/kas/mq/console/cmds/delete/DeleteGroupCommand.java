@@ -1,5 +1,6 @@
 package com.kas.mq.console.cmds.delete;
 
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -40,6 +41,31 @@ public class DeleteGroupCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+  }
+  
+  /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Delete a group entity.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("       >>--DELETE|DEL--+--GROUP|GRP|G--+--NAME(name)--><");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    name:       ");
+    ConsoleUtils.writeln("Group name.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Delete STARKS group:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> DELETE GRP NAME(STARKS)");
+    ConsoleUtils.writeln(" ");
   }
   
   /**

@@ -49,6 +49,54 @@ public class HelpCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Display help screen regarding KAS/MQ Admin Console commands.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     >>--HELP--+--------------+--><");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--ALTER-------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--CONNECT-----+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--DEFINE------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--DELETE------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--DISCONNECT--+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--EXIT--------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--GET---------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--HELP--------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--PUT---------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--QUERY-------+");
+    ConsoleUtils.writeln("               |              |");
+    ConsoleUtils.writeln("               +--TERM--------+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Display general help screen:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> HELP");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Display help on the query command:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> HELP QUERY");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     This will display an error message, as KUKU is not a valid command verb:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> HELP KUKU");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

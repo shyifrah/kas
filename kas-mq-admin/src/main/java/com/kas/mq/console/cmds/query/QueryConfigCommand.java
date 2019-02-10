@@ -57,6 +57,39 @@ public class QueryConfigCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query the active configuration.");
+    ConsoleUtils.writeln("     This command will display the active configuration.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("                                                      +--TYPE(ALL)---+");
+    ConsoleUtils.writeln("                                                      |              |");
+    ConsoleUtils.writeln("       >>--QUERY|Q--+--CONFIGURATION|CONFIG|CONF|CFG--+--------------+--><");
+    ConsoleUtils.writeln("                                                      |              |");
+    ConsoleUtils.writeln("                                                      +--TYPE(type)--+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    type:         ");
+    ConsoleUtils.writeln("Configuration type or ALL. The valid types are LOGGING, MQ and DB.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query the entire configuration:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> QUERY CFG");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query all DB-related configuration:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> Q CONFIG TYPE(DB)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

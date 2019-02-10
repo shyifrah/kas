@@ -88,7 +88,8 @@ public class ConnectCommand extends ACommand
   {
     ConsoleUtils.writelnGreen("Purpose: ");
     ConsoleUtils.writeln(" ");
-    ConsoleUtils.writeln("     Connect to a host - IP address or host name - on a specific port.");
+    ConsoleUtils.writeln("     Connect to a HOST - IP address or host name - on a specified PORT, or 14560 if port number is not specified.");
+    ConsoleUtils.writeln("     If USER/PASSWORD are not specified, the user will be propmpted for its user name and password.");
     ConsoleUtils.writeln(" ");
     ConsoleUtils.writelnGreen("Format: ");
     ConsoleUtils.writeln(" ");
@@ -97,11 +98,6 @@ public class ConnectCommand extends ACommand
     ConsoleUtils.writeln("     >>--CONNECT|CONN--+--HOST(host)--+--+---------------+--+--------------+--+----------------------+--><");
     ConsoleUtils.writeln("                       |              |  |               |  |              |  |                      |");
     ConsoleUtils.writeln("                       +--HOST(ip)----+  +--PORT(port)---+  +--USER(user)--+  +--PASSWORD(password)--+");
-    ConsoleUtils.writeln(" ");
-    ConsoleUtils.writelnGreen("Description: ");
-    ConsoleUtils.writeln(" ");
-    ConsoleUtils.writeln("     Connect to the specified host or IP address on the specified port number, or 14560 if no port is specified.");
-    ConsoleUtils.writeln("     If user/password are not specified, the user will be propmpted for its user name and password.");
     ConsoleUtils.writeln(" ");
     ConsoleUtils.writelnGreen("Where: ");
     ConsoleUtils.writeln(" ");
@@ -122,7 +118,7 @@ public class ConnectCommand extends ACommand
     ConsoleUtils.writeln("     Connect with user ROOT to host with IP address of 101.23.2.2 on default port number:");
     ConsoleUtils.writeln("          KAS/MQ Admin> CONN HOST(101.23.2.2) USER(root)");
     ConsoleUtils.writeln(" ");
-    ConsoleUtils.writeln("     Connect to host name LONDON1 on port number 24560");
+    ConsoleUtils.writeln("     Connect to host name LONDON1 on port number 24560:");
     ConsoleUtils.writeln("          KAS/MQ Admin> CONNECT HOST(LONDON1) PORT(24560)");
     ConsoleUtils.writeln(" ");
   }

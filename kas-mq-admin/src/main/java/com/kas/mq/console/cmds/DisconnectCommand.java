@@ -40,6 +40,27 @@ public class DisconnectCommand extends ACommand
   }
   
   /**
+   * Print HELP screen for the specified command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Disconnect current active connection.");
+    ConsoleUtils.writeln("     If a connection is not active, the command is simply ignored.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     >>--DISCONNECT|DISCONN|DISC--><");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Disconnect current connection:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> DISCONNECT");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

@@ -59,6 +59,42 @@ public class DefineCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    if ((mCommandText != null) && (mCommandText.length() > 0))
+    {
+      ICommand cmd = mFactory.newCommand(mCommandText);
+      if (cmd != null)
+      {
+        cmd.help();
+      }
+      else
+      {
+        ConsoleUtils.writelnGreen("No help for command [DEFINE %s]: ", mCommandText);
+      }
+    }
+    else
+    {
+      ConsoleUtils.writelnGreen("Purpose: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     Define an entity. Type HELP DEFINE vvvvv for specifics.");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writelnGreen("Format: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     >>--DEFINE|DEF--+------------------------+--><");
+      ConsoleUtils.writeln("                     |                        |");
+      ConsoleUtils.writeln("                     +--QUEUE--queue_options--+");
+      ConsoleUtils.writeln("                     |                        |");
+      ConsoleUtils.writeln("                     +--GROUP--group_options--+");
+      ConsoleUtils.writeln("                     |                        |");
+      ConsoleUtils.writeln("                     +--USER---user_options---+");
+      ConsoleUtils.writeln(" ");
+    }
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

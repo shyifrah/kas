@@ -67,6 +67,39 @@ public class QuerySessCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query a session entity.");
+    ConsoleUtils.writeln("     This command will display information on a session identified by ID.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("                                     +--ID(ALL)--+");
+    ConsoleUtils.writeln("                                     |           |");
+    ConsoleUtils.writeln("       >>--QUERY|Q--+--SESSION|SESS--+-----------+--><");
+    ConsoleUtils.writeln("                                     |           |");
+    ConsoleUtils.writeln("                                     +--ID(id)---+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    id:         ");
+    ConsoleUtils.writeln("Session ID or ALL.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query all sessions:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> QUERY SESS");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query session with ID 01234567-0123-1234-2345-0123456789ab:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> Q SESSION ID(01234567-0123-1234-2345-0123456789ab)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

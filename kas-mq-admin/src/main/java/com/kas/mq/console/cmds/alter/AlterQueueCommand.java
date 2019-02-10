@@ -1,5 +1,6 @@
 package com.kas.mq.console.cmds.alter;
 
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqContextConnection;
@@ -46,6 +47,45 @@ public class AlterQueueCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+  }
+  
+  /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Alter a queue entity.");
+    ConsoleUtils.writeln("     You can alter a queue's name by using the NEWNAME attribute, the queue's DESCRIPTION, THRESHOLD or DISPOSITION.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("       >>--ALTER|ALT|AL--+--QUEUE|Q--+--NAME(name)--+--------------------+--+---------------------+--+------------------------+--+--------------------------+--><");
+    ConsoleUtils.writeln("                                                    |                    |  |                     |  |                        |  |                          |");
+    ConsoleUtils.writeln("                                                    +--NEWNAME(newname)--+  +--DESCRIPTION(desc)--+  +--THRESHOLD(threshold)--+  +--DISPOSITION(TEMPORARY)--+");
+    ConsoleUtils.writeln("                                                                                                                                 |                          |");
+    ConsoleUtils.writeln("                                                                                                                                 +--DISPOSITION(PERMANENT)--+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    name:       ");
+    ConsoleUtils.writeln("Queue name.");
+    ConsoleUtils.writeRed("    newname:    ");
+    ConsoleUtils.writeln("The new name to assign to this queue.");
+    ConsoleUtils.writeRed("    desc:       ");
+    ConsoleUtils.writeln("Queue description.");
+    ConsoleUtils.writeRed("    threshold:  ");
+    ConsoleUtils.writeln("Queue threshold.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Alter queue description:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> ALTER QUEUE NAME(APPQ) DESCRIPTION(Applicatino Queue)");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Alter queue threshold and description:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> ALTER QUEUE NAME(APPQ) DESCRIPTION(Applicatino Queue) THRESHOLD(1000)");
+    ConsoleUtils.writeln(" ");
   }
   
   /**

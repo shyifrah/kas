@@ -38,6 +38,27 @@ public class TermServerCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Terminate the server.");
+    ConsoleUtils.writeln("     This command will terminate the server to which the admin console is connected.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("       >>--TERMINATE|TERM|TRM--+--SERVER|SERV|SRVR|SRV--+--><");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Terminate the server:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> TERMINATE SERVER");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

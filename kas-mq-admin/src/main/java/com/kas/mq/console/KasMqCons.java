@@ -147,17 +147,16 @@ public class KasMqCons extends AKasApp
     }
     catch (IllegalArgumentException e)
     {
-      ConsoleUtils.writeln("Error: %s", e.getMessage());
+      ConsoleUtils.writelnRed("Error: %s", e.getMessage());
       return false;
     }
     catch (RuntimeException e)
     {
-      ConsoleUtils.writeln("Bye-bye...");
       return true;
     }
     catch (Throwable e)
     {
-      ConsoleUtils.writeln("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
+      ConsoleUtils.writelnRed("Exception: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
       return false;
     }
     

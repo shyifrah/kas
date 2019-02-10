@@ -67,6 +67,39 @@ public class QueryConnCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query a connection entity.");
+    ConsoleUtils.writeln("     This command will display information on a connection identified by ID.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("                                        +--ID(ALL)--+");
+    ConsoleUtils.writeln("                                        |           |");
+    ConsoleUtils.writeln("       >>--QUERY|Q--+--CONNECTION|CONN--+-----------+--><");
+    ConsoleUtils.writeln("                                        |           |");
+    ConsoleUtils.writeln("                                        +--ID(id)---+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    id:         ");
+    ConsoleUtils.writeln("Connection ID or ALL.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query all connections:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> QUERY CONN");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query connection with ID 01234567-0123-1234-2345-0123456789ab:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> Q CONNECTION ID(01234567-0123-1234-2345-0123456789ab)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

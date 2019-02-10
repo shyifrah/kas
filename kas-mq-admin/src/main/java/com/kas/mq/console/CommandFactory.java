@@ -132,12 +132,12 @@ public class CommandFactory implements ICommandFactory
       }
       catch (IllegalArgumentException e)
       {
-        ConsoleUtils.writeln("Error: %s", e.getMessage());
+        ConsoleUtils.writelnRed("Error: %s", e.getMessage());
         cmd = null;
       }
       catch (Throwable e)
       {
-        ConsoleUtils.writeln("Exception: %s", new ThrowableFormatter(e).toString());
+        ConsoleUtils.writelnRed("Exception: %s", new ThrowableFormatter(e).toString());
         cmd = null;
       }
     }    

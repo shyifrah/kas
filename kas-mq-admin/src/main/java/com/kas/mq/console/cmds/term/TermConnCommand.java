@@ -57,6 +57,32 @@ public class TermConnCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Terminate a connection.");
+    ConsoleUtils.writeln("     This command will terminate a connection identified with ID.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("       >>--TERMINATE|TERM|TRM--+--CONNECTION|CONN--+--ID(id)--+--><");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    id:         ");
+    ConsoleUtils.writeln("Connection ID.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Terminate connection with ID 01234567-0123-1234-2345-0123456789ab:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> TERMINATE CONNECTION ID(01234567-0123-1234-2345-0123456789ab)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

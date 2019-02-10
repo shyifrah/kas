@@ -25,8 +25,6 @@ public class QueryCommand extends ACommand
   QueryCommand()
   {
     mCommandVerbs.add("QUERY");
-    mCommandVerbs.add("QRY");
-    mCommandVerbs.add("QU");
     mCommandVerbs.add("Q");
     
     mFactory = new QueryCommandFactory();
@@ -58,6 +56,48 @@ public class QueryCommand extends ACommand
     }
     
     cmd.exec(conn);
+  }
+  
+  /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    if ((mCommandText != null) && (mCommandText.length() > 0))
+    {
+      ICommand cmd = mFactory.newCommand(mCommandText);
+      if (cmd != null)
+      {
+        cmd.help();
+      }
+      else
+      {
+        ConsoleUtils.writelnGreen("No help for command [QUERY %s]: ", mCommandText);
+      }
+    }
+    else
+    {
+      ConsoleUtils.writelnGreen("Purpose: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     Query entities. Type HELP QUERY vvvvv for specifics.");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writelnGreen("Format: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     >>--QUERY|Q--+------------------------------+--><");
+      ConsoleUtils.writeln("                  |                              |");
+      ConsoleUtils.writeln("                  +--CONFIG--config_options------+");
+      ConsoleUtils.writeln("                  |                              |");
+      ConsoleUtils.writeln("                  +--CONNECTION--conn_options----+");
+      ConsoleUtils.writeln("                  |                              |");
+      ConsoleUtils.writeln("                  +--SESSION--sess_options-------+");
+      ConsoleUtils.writeln("                  |                              |");
+      ConsoleUtils.writeln("                  +--QUEUE--queue_options--------+");
+      ConsoleUtils.writeln("                  |                              |");
+      ConsoleUtils.writeln("                  +--GROUP--group_options--------+");
+      ConsoleUtils.writeln("                  |                              |");
+      ConsoleUtils.writeln("                  +--USER---user_options---------+");
+      ConsoleUtils.writeln(" ");
+    }
   }
   
   /**

@@ -51,6 +51,40 @@ public class DeleteQueueCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Delete a queue entity.");
+    ConsoleUtils.writeln("     The NAME argument identifies the queue to be deleted. If FORCE(false) is specified or defaulted,");
+    ConsoleUtils.writeln("     the delete operation will fail in case the queue is not empty.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("                                                  +--FORCE(FALSE)--+");
+    ConsoleUtils.writeln("                                                  |                |");
+    ConsoleUtils.writeln("       >>--DELETE|DEL--+--QUEUE|Q--+--NAME(name)--+----------------+--><");
+    ConsoleUtils.writeln("                                                  |                |");
+    ConsoleUtils.writeln("                                                  +--FORCE(TRUE)---+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    name:       ");
+    ConsoleUtils.writeln("User name.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Delete queue named APPQ:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> DELETE Q NAME(APPQ)");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Forcely delete queue named TEMP1:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> DELETE Q NAME(APPQ) FORCE(true)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

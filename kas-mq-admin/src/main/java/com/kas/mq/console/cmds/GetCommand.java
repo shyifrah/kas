@@ -72,6 +72,51 @@ public class GetCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Get messages from queue.");
+    ConsoleUtils.writeln("     The QUEUE argument identifies the queue from which messages are read.");
+    ConsoleUtils.writeln("     If TIMEOUT is specified, the command will wait for this amount of milliseconds until the operation is aborted.");
+    ConsoleUtils.writeln("     The command works in a polling methodology. INTERVAL specifies the amount of time to wait between polling operations.");
+    ConsoleUtils.writeln("     COUNT is the number of messages to retrieve from the queue.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("                                  +--TIMEOUT(0)--------+  +--INTERVAL(1000)------+  +--COUNT(1)------+");
+    ConsoleUtils.writeln("                                  |                    |  |                      |  |                |");
+    ConsoleUtils.writeln("       >>--GET|G--+--QUEUE(name)--+--------------------+--+----------------------+--+----------------+--><");
+    ConsoleUtils.writeln("                                  |                    |  |                      |  |                |");
+    ConsoleUtils.writeln("                                  +--TIMEOUT(timeout)--+  +--INTERVAL(interval)--+  +--COUNT(count)--+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    name:       ");
+    ConsoleUtils.writeln("Queue name.");
+    ConsoleUtils.writeRed("    timeout:    ");
+    ConsoleUtils.writeln("The amount of time, in Milliseconds, to wait for a message to be available.");
+    ConsoleUtils.writeRed("    interval:   ");
+    ConsoleUtils.writeln("The amount of time, in Milliseconds, to wait between each poll operation.");
+    ConsoleUtils.writeRed("    count:      ");
+    ConsoleUtils.writeln("The number of messages to read from the queue.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Read a single message from queue APPQ:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> GET QUEUE(APPQ)");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Wait for 10 seconds for a message to be available in queue QUEUE1:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> GET QUEUE(QUEUE1) TIMEOUT(10000)");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Read 3 messages from queue TELAVIV:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> GET QUEUE(TELAVIV) COUNT(3)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

@@ -60,6 +60,42 @@ public class TermCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    if ((mCommandText != null) && (mCommandText.length() > 0))
+    {
+      ICommand cmd = mFactory.newCommand(mCommandText);
+      if (cmd != null)
+      {
+        cmd.help();
+      }
+      else
+      {
+        ConsoleUtils.writelnGreen("No help for command [TERMINATE %s]: ", mCommandText);
+      }
+    }
+    else
+    {
+      ConsoleUtils.writelnGreen("Purpose: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     Terminate active entities. Type HELP TERMINATE vvvvv for specifics.");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writelnGreen("Format: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     >>--TERMINATE|TERM|TRM--+------------------------------+--><");
+      ConsoleUtils.writeln("                             |                              |");
+      ConsoleUtils.writeln("                             +--SERVER--server_options------+");
+      ConsoleUtils.writeln("                             |                              |");
+      ConsoleUtils.writeln("                             +--CONNECTION--conn_options----+");
+      ConsoleUtils.writeln("                             |                              |");
+      ConsoleUtils.writeln("                             +--SESSION--sess_options-------+");
+      ConsoleUtils.writeln(" ");
+    }
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

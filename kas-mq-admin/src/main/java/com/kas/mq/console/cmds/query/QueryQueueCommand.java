@@ -69,6 +69,40 @@ public class QueryQueueCommand extends ACommand
   }
   
   /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query a queue entity.");
+    ConsoleUtils.writeln("     This command will display information on the queue identified by NAME.");
+    ConsoleUtils.writeln("     The level of details is controlled by the ALLDATA attribute.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("                                               +--ALLDATA(FALSE)--+");
+    ConsoleUtils.writeln("                                               |                  |");
+    ConsoleUtils.writeln("       >>--QUERY|Q--+--QUEUE|Q--+--NAME(name)--+------------------+--><");
+    ConsoleUtils.writeln("                                               |                  |");
+    ConsoleUtils.writeln("                                               +--ALLDATA(TRUE)---+");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    name:       ");
+    ConsoleUtils.writeln("Queue name.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query basic information on queue APPQ1:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> QUERY QUEUE NAME(APPQ1)");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Query extended information on queue APPQ2:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> Q Q NAME(APPQ2) ALLDATA(TRUE)");
+    ConsoleUtils.writeln(" ");
+  }
+  
+  /**
    * Get the command text
    * 
    * @return the command text

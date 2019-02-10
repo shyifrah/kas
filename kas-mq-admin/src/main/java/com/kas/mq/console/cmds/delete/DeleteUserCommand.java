@@ -1,5 +1,6 @@
 package com.kas.mq.console.cmds.delete;
 
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -40,6 +41,31 @@ public class DeleteUserCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+  }
+  
+  /**
+   * Display help screen for this command.
+   */
+  public void help()
+  {
+    ConsoleUtils.writelnGreen("Purpose: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Delete a user entity.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Format: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("       >>--DELETE|DEL--+--USER|USR|U--+--NAME(name)--><");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Where: ");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeRed("    name:       ");
+    ConsoleUtils.writeln("User name.");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writelnGreen("Examples:");
+    ConsoleUtils.writeln(" ");
+    ConsoleUtils.writeln("     Delete ARYA user:");
+    ConsoleUtils.writeln("          KAS/MQ Admin> DELETE USR NAME(ARYA)");
+    ConsoleUtils.writeln(" ");
   }
   
   /**

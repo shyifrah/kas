@@ -64,9 +64,35 @@ public class AlterCommand extends ACommand
    */
   public void help()
   {
-    ICommand cmd = mFactory.newCommand(mCommandText);
-    if (cmd != null)
-      cmd.help();
+    if ((mCommandText != null) && (mCommandText.length() > 0))
+    {
+      ICommand cmd = mFactory.newCommand(mCommandText);
+      if (cmd != null)
+      {
+        cmd.help();
+      }
+      else
+      {
+        ConsoleUtils.writelnGreen("No help for command [ALTER %s]: ", mCommandText);
+      }
+    }
+    else
+    {
+      ConsoleUtils.writelnGreen("Purpose: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     Alter an entity. Type HELP ALTER vvvvv for specifics.");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writelnGreen("Format: ");
+      ConsoleUtils.writeln(" ");
+      ConsoleUtils.writeln("     >>--ALTER|ALT|AL--+------------------------+--><");
+      ConsoleUtils.writeln("                       |                        |");
+      ConsoleUtils.writeln("                       +--QUEUE--queue_options--+");
+      ConsoleUtils.writeln("                       |                        |");
+      ConsoleUtils.writeln("                       +--GROUP--group_options--+");
+      ConsoleUtils.writeln("                       |                        |");
+      ConsoleUtils.writeln("                       +--USER---user_options---+");
+      ConsoleUtils.writeln(" ");
+    }
   }
   
   /**
