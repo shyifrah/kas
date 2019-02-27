@@ -4,6 +4,7 @@
 
 title KAS/MQ Admin console
 set "PASSED_ARGS=%*"
+set "CLASS_NAME=com.kas.mq.console.KasMqCons"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Setup
@@ -14,4 +15,4 @@ call %SCRIPT_DIR%/setup.bat
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Run command
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.mq.admin.KasMqAdmin %PASSED_ARGS%
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" %CLASS_NAME% %PASSED_ARGS%
