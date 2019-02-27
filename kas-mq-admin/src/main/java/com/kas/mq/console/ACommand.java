@@ -55,6 +55,7 @@ public abstract class ACommand implements ICommand
   {
     String param = null;
     String value = null;
+    mArgMap.clear();
     String reminder = text;
     while (reminder.length() > 0)
     {
