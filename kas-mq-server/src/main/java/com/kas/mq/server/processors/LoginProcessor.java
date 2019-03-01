@@ -6,9 +6,9 @@ import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
-import com.kas.sec.ProtectionManager;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.entities.UserEntity;
+import com.kas.sec.entities.UserEntityDao;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -60,8 +60,7 @@ public class LoginProcessor extends AProcessor
       mClientApp = mRequest.getStringProperty(IMqConstants.cKasPropertyLoginAppName, null);
       mLogger.debug("LoginProcessor::process() - ClientApp=" + mClientApp + "; User=" + mUser + "; Pass=" + mPass);
       
-      ProtectionManager pmgr = ProtectionManager.getInstance();
-      UserEntity ue = pmgr.getUserByName(mUser);
+      UserEntity ue = UserEntityDao.getByName(mUser);
       
       if ((mUser == null) || (mUser.length() == 0))
       {
