@@ -1,6 +1,8 @@
 package com.kas.mq.server.processors;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import com.kas.config.MainConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.Properties;
@@ -18,6 +20,11 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.entities.GroupEntity;
+import com.kas.sec.entities.GroupEntityDao;
+import com.kas.sec.entities.UserEntity;
+import com.kas.sec.entities.UserEntityDao;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -32,14 +39,16 @@ public class QueryServerProcessor extends AProcessor
    * the type of information
    */
   private EQueryType       mQueryType;         // For all Q command variations
-  private UniqueId         mQuerySessionId;    // For Q SESS
-  private UniqueId         mQueryConnectionId; // For Q CONN
-  private EQueryConfigType mQueryConfigType;   // For Q CONFIG
-  private String           mQueryOriginQmgr;   // For Q QUEUE
-  private String           mQueryQueue;        // For Q QUEUE
-  private boolean          mQueryQueuePrefix;  // For Q QUEUE
-  private boolean          mQueryAllData;      // For Q QUEUE
-  private boolean          mQueryFormat;       // For Q QUEUE
+  private UniqueId         mSessionId;         // For Q SESS
+  private UniqueId         mConnectionId;      // For Q CONN
+  private EQueryConfigType mConfigType;        // For Q CONFIG
+  private String           mUserName;          // For Q USER
+  private String           mGroupName;         // For Q GROUP
+  private String           mOriginQmgr;        // For Q QUEUE
+  private String           mQueueName;         // For Q QUEUE
+  private boolean          mIsPrefix;          // For Q QUEUE
+  private boolean          mIsAllData;         // For Q QUEUE
+  private boolean          mIsFormatted;       // For Q QUEUE
   
   /**
    * Construct a {@link QueryServerProcessor}
@@ -92,6 +101,12 @@ public class QueryServerProcessor extends AProcessor
         case QUERY_QUEUE:
           body = queryQueue();
           break;
+        case QUERY_USER:
+          body = queryUser();
+          break;
+        case QUERY_GROUP:
+          body = queryGroup();
+          break;
         case UNKNOWN:
         default:
           mCode = EMqCode.cError;
@@ -119,13 +134,13 @@ public class QueryServerProcessor extends AProcessor
   {
     mLogger.debug("QueryServerProcessor::postprocess() - IN");
     
-    if ((mQueryType == EQueryType.QUERY_QUEUE) && (mQueryOriginQmgr != null))
+    if ((mQueryType == EQueryType.QUERY_QUEUE) && (mOriginQmgr != null))
     {
       mLogger.debug("QueryServerProcessor::process() - Origin is not null, checking if should also handle a sys-state change");
-      MqManager manager = mRepository.getRemoteManager(mQueryOriginQmgr);
+      MqManager manager = mRepository.getRemoteManager(mOriginQmgr);
       if (!manager.isActive())
       {
-        IMqMessage sysStateRequest = MqRequestFactory.createSystemStateMessage(mQueryOriginQmgr, true);
+        IMqMessage sysStateRequest = MqRequestFactory.createSystemStateMessage(mOriginQmgr, true);
         IProcessor processor = new SysStateProcessor(sysStateRequest, mHandler, mRepository);
         processor.process();
       }
@@ -143,7 +158,7 @@ public class QueryServerProcessor extends AProcessor
   private String queryConfig()
   {
     String qConfigType = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryConfigType, "ALL");
-    mQueryConfigType = EQueryConfigType.valueOf(qConfigType);
+    mConfigType = EQueryConfigType.valueOf(qConfigType);
     
     String body = "";
     String resName = String.format("%s_%s", mQueryType.name(), qConfigType);
@@ -154,7 +169,7 @@ public class QueryServerProcessor extends AProcessor
     }
     else
     {
-      switch (mQueryConfigType)
+      switch (mConfigType)
       {
         case ALL:
           body = MainConfiguration.getInstance().toPrintableString();
@@ -182,7 +197,7 @@ public class QueryServerProcessor extends AProcessor
   private String querySession()
   {
     String sessid = mRequest.getStringProperty(IMqConstants.cKasPropertyQuerySessId, null);
-    if (sessid != null) mQuerySessionId = UniqueId.fromString(sessid);
+    if (sessid != null) mSessionId = UniqueId.fromString(sessid);
     
     StringBuilder sb = new StringBuilder();
     if (!isAccessPermitted(EResourceClass.COMMAND, mQueryType.name()))
@@ -190,9 +205,9 @@ public class QueryServerProcessor extends AProcessor
       mCode = EMqCode.cError;
       mDesc = "User is not permitted to query sessions";
     }
-    else if (mQuerySessionId != null)
+    else if (mSessionId != null)
     {
-      SessionHandler handler = mController.getHandler(mQuerySessionId);
+      SessionHandler handler = mController.getHandler(mSessionId);
       if (handler == null)
       {
         sb.append("No handlers displayed");
@@ -222,7 +237,7 @@ public class QueryServerProcessor extends AProcessor
   private String queryConnection()
   {
     String connid = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryConnId, null);
-    if (connid != null) mQueryConnectionId = UniqueId.fromString(connid);
+    if (connid != null) mConnectionId = UniqueId.fromString(connid);
     
     StringBuilder sb = new StringBuilder();
     if (!isAccessPermitted(EResourceClass.COMMAND, mQueryType.name()))
@@ -230,9 +245,9 @@ public class QueryServerProcessor extends AProcessor
       mCode = EMqCode.cError;
       mDesc = "User is not permitted to query connections";
     }
-    else if (mQueryConnectionId != null)
+    else if (mConnectionId != null)
     {
-      MqServerConnection conn = MqServerConnectionPool.getInstance().getConnection(mQueryConnectionId);
+      MqServerConnection conn = MqServerConnectionPool.getInstance().getConnection(mConnectionId);
       if (conn == null)
       {
         sb.append("No connections displayed");
@@ -260,30 +275,30 @@ public class QueryServerProcessor extends AProcessor
    */
   private String queryQueue()
   {
-    mQueryQueuePrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
-    mQueryAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryAllData, false);
-    mQueryFormat = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryFormatOutput, true);
-    mQueryQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQueueName, "");
-    if (mQueryQueue == null) mQueryQueue = "";
+    mIsPrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
+    mIsAllData = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryAllData, false);
+    mIsFormatted = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryFormatOutput, true);
+    mQueueName = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryQueueName, "");
+    if (mQueueName == null) mQueueName = "";
     
     String body = "";
     
-    String resName = String.format("%s%s", mQueryType.name(), (mQueryQueue.length() == 0 ? "" : "_" + mQueryQueue));
+    String resName = String.format("%s%s", mQueryType.name(), (mQueueName.length() == 0 ? "" : "_" + mQueueName));
     if (!isAccessPermitted(EResourceClass.COMMAND, resName))
     {
       mCode = EMqCode.cError;
-      mDesc = "User is not permitted to query connections";
+      mDesc = "User is not permitted to query queues";
     }
     else
     {
-      StringList qlist = mRepository.queryQueues(mQueryQueue, mQueryQueuePrefix, mQueryAllData);
+      StringList qlist = mRepository.queryQueues(mQueueName, mIsPrefix, mIsAllData);
       int total = qlist.size();
       
       mDesc = String.format("%s queues matched filtering criteria", (total == 0 ? "No" : total));
       mValue = total;
       mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
       
-      if (mQueryFormat)
+      if (mIsFormatted)
       {
         StringBuilder sb = new StringBuilder();
         for (String str : qlist)
@@ -296,6 +311,147 @@ public class QueryServerProcessor extends AProcessor
       {
         body = qlist.toString();
       }
+    }
+    
+    return body;
+  }
+
+  /**
+   * Return the output of the "q user" command
+   * 
+   * @return the output of the "q user" command
+   */
+  private String queryUser()
+  {
+    mIsPrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
+    mUserName = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryUserName, "");
+    if (mUserName == null) mUserName = "";
+    
+    String body = "";
+    
+    if (!isAccessPermitted(EResourceClass.COMMAND, String.format("%s%s", mQueryType.name(), (mUserName.length() == 0 ? "" : "_" + mUserName))))
+    {
+      mCode = EMqCode.cError;
+      mDesc = "User is not permitted to issue " + mQueryType.name() + " command";
+    }
+    else if (!isAccessPermitted(EResourceClass.USER, mUserName.length() == 0 ? "" : mUserName, AccessLevel.READ_ACCESS))
+    {
+      mCode = EMqCode.cError;
+      mDesc = "User is not permitted to query users";
+    }
+    else
+    {
+      List<UserEntity> ulist = null;
+      
+      if (mIsPrefix && (mUserName.isEmpty()))
+      {
+        ulist = UserEntityDao.getAll();
+      }
+      else if (mIsPrefix)
+      {
+        ulist = UserEntityDao.getByPattern(mUserName);
+      }
+      else
+      {
+        ulist = new ArrayList<UserEntity>();
+        UserEntity user = UserEntityDao.getByName(mUserName);
+        if (user != null)
+          ulist.add(user);
+      }
+      
+      int total = ulist == null ? 0 : ulist.size();
+      mDesc = String.format("%s users matched filtering criteria", (total == 0 ? "No" : total));
+      mValue = total;
+      mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
+      
+      StringBuilder sb = new StringBuilder();
+      for (UserEntity ue : ulist)
+      {
+        sb.append("User.............: ").append(ue.getName()).append('\n');
+        sb.append("  ID.........: ").append(ue.getId()).append('\n');
+        sb.append("  Description: ").append(ue.getDescription()).append('\n');
+        sb.append("  Groups.....: ");
+        
+        String groups = "\n    N/A";
+        List<Integer> gids = ue.getGroups();
+        if ((gids != null) && (gids.size() > 0))
+        {
+          StringBuffer sbg = new StringBuffer();
+          for (int gid : gids)
+          {
+            GroupEntity ge = GroupEntityDao.getById(gid);
+            sb.append("\n    ").append(ge.getName()).append(" (").append(ge.getId()).append(")");
+          }
+          groups = sbg.toString();
+        }
+        sb.append(groups).append('\n');
+      }
+      
+      sb.append(" \n");
+      body = sb.toString();
+    }
+    
+    return body;
+  }
+
+  /**
+   * Return the output of the "q group" command
+   * 
+   * @return the output of the "q group" command
+   */
+  private String queryGroup()
+  {
+    mIsPrefix = mRequest.getBoolProperty(IMqConstants.cKasPropertyQueryPrefix, false);
+    mGroupName = mRequest.getStringProperty(IMqConstants.cKasPropertyQueryGroupName, "");
+    if (mGroupName == null) mGroupName = "";
+    
+    String body = "";
+    
+    if (!isAccessPermitted(EResourceClass.COMMAND, String.format("%s%s", mQueryType.name(), (mGroupName.length() == 0 ? "" : "_" + mGroupName))))
+    {
+      mCode = EMqCode.cError;
+      mDesc = "User is not permitted to issue " + mQueryType.name() + " command";
+    }
+    else if (!isAccessPermitted(EResourceClass.GROUP, mGroupName.length() == 0 ? "" : mGroupName, AccessLevel.READ_ACCESS))
+    {
+      mCode = EMqCode.cError;
+      mDesc = "User is not permitted to query groups";
+    }
+    else
+    {
+      List<GroupEntity> glist = null;
+      
+      if (mIsPrefix && (mGroupName.isEmpty()))
+      {
+        glist = GroupEntityDao.getAll();
+      }
+      else if (mIsPrefix)
+      {
+        glist = GroupEntityDao.getByPattern(mGroupName);
+      }
+      else
+      {
+        glist = new ArrayList<GroupEntity>();
+        GroupEntity group = GroupEntityDao.getByName(mGroupName);
+        if (group != null)
+          glist.add(group);
+      }
+      
+      int total = glist == null ? 0 : glist.size();
+      mDesc = String.format("%s groups matched filtering criteria", (total == 0 ? "No" : total));
+      mValue = total;
+      mCode = mValue == 0 ? EMqCode.cWarn : EMqCode.cOkay;
+      
+      StringBuilder sb = new StringBuilder();
+      for (GroupEntity ge : glist)
+      {
+        sb.append("Group............: ").append(ge.getName()).append('\n');
+        sb.append("  ID.........: ").append(ge.getId()).append('\n');
+        sb.append("  Description: ").append(ge.getDescription()).append('\n');
+      }
+      
+      sb.append(" \n");
+      body = sb.toString();
     }
     
     return body;
