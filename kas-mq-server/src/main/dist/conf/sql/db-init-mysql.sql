@@ -1,5 +1,7 @@
 USE ${kas.db.schema};
 
+DROP TABLE IF EXISTS kas_mq_user_permissions;
+DROP TABLE IF EXISTS kas_mq_group_permissions;
 DROP TABLE IF EXISTS kas_mq_command_permissions;
 DROP TABLE IF EXISTS kas_mq_application_permissions;
 DROP TABLE IF EXISTS kas_mq_queue_permissions;
@@ -224,4 +226,51 @@ INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   FROM   kas_mq_groups
   WHERE group_name = 'samples';
 
+--
+-- user permissions:
+--   administrators can perform all actions against all users
+--   moderators can only display users details
+--
+CREATE TABLE kas_mq_user_permissions (
+  pattern      VARCHAR(100) NOT NULL,
+  group_id     INT NOT NULL,
+  access_level INT NOT NULL,
+  PRIMARY KEY(pattern, group_id),
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(group_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO kas_mq_user_permissions (pattern, group_id, access_level)
+  SELECT '.*', group_id, 3
+  FROM   kas_mq_groups
+  WHERE group_name = 'admins';
+
+INSERT INTO kas_mq_user_permissions (pattern, group_id, access_level)
+  SELECT '.*', group_id, 1
+  FROM   kas_mq_groups
+  WHERE group_name = 'mods';
+
+--
+-- group permissions:
+--   administrators can perform all actions against all groupss
+--   moderators can only display group details
+--
+CREATE TABLE kas_mq_group_permissions (
+  pattern      VARCHAR(100) NOT NULL,
+  group_id     INT NOT NULL,
+  access_level INT NOT NULL,
+  PRIMARY KEY(pattern, group_id),
+  FOREIGN KEY fk_group_id(group_id) REFERENCES kas_mq_groups(group_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO kas_mq_group_permissions (pattern, group_id, access_level)
+  SELECT '.*', group_id, 3
+  FROM   kas_mq_groups
+  WHERE group_name = 'admins';
+
+INSERT INTO kas_mq_group_permissions (pattern, group_id, access_level)
+  SELECT '.*', group_id, 1
+  FROM   kas_mq_groups
+  WHERE group_name = 'mods';
+
+  
 COMMIT;

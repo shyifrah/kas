@@ -27,6 +27,16 @@ public enum EQueryType
    * Query queues
    */
   QUERY_QUEUE,
+  
+  /**
+   * Query users
+   */
+  QUERY_USER,
+  
+  /**
+   * Query groups
+   */
+  QUERY_GROUP,
   ;
   
   static final private EQueryType [] cValues = EQueryType.values();

@@ -82,13 +82,12 @@ public interface IMqConstants
   static public final String cKasPropertyRepoQueueName = cKasPropertyPrefix + "repo.queue";
   static public final String cKasPropertyRepoOperation = cKasPropertyPrefix + "repo.added";
   
-  static public final String cKasPropertyQueryType       = cKasPropertyPrefix + "qry.type";
-  static public final String cKasPropertyQueryConfigType = cKasPropertyPrefix + "qry.conf.type";
-  
+  static public final String cKasPropertyQueryType         = cKasPropertyPrefix + "qry.type";
+  static public final String cKasPropertyQueryConfigType   = cKasPropertyPrefix + "qry.conf.type";
   static public final String cKasPropertyQuerySessId       = cKasPropertyPrefix + "qry.sessid";
-  
   static public final String cKasPropertyQueryConnId       = cKasPropertyPrefix + "qry.connid";
-  
+  static public final String cKasPropertyQueryUserName     = cKasPropertyPrefix + "qry.user";
+  static public final String cKasPropertyQueryGroupName    = cKasPropertyPrefix + "qry.group";
   static public final String cKasPropertyQueryQueueName    = cKasPropertyPrefix + "qry.queue";
   static public final String cKasPropertyQueryPrefix       = cKasPropertyPrefix + "qry.prefix";
   static public final String cKasPropertyQueryAllData      = cKasPropertyPrefix + "qry.alldata";

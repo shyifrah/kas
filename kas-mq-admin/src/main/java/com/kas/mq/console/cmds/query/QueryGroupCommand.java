@@ -1,7 +1,12 @@
 package com.kas.mq.console.cmds.query;
 
+import com.kas.infra.base.Properties;
 import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
+import com.kas.mq.impl.EQueryType;
+import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -41,6 +46,22 @@ public class QueryGroupCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+    Properties qprops = new Properties();
+    if (mName.endsWith("*"))
+    {
+      mName = mName.substring(0, mName.length()-1);
+      qprops.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, true);
+    }
+    
+    if ((mName.length() > 0) && (!Validators.isUserName(mName)))
+      throw new IllegalArgumentException("NAME was not specified or invalid: [" + mName + ']');
+    
+    qprops.setStringProperty(IMqConstants.cKasPropertyQueryGroupName, mName);
+    
+    MqStringMessage result = conn.queryServer(EQueryType.QUERY_GROUP, qprops);
+    if (result != null)
+      ConsoleUtils.writeln("%s", result.getBody());
+    ConsoleUtils.writeln("%s", conn.getResponse());
   }
   
   /**

@@ -12,11 +12,10 @@ import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IDao;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
-public class AccessEntryDao extends AKasObject implements IDao<AccessEntry>
+public class AccessEntryDao extends AKasObject
 {
   /**
    * Table columns and types

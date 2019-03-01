@@ -101,7 +101,7 @@ public class DbUtils
    * @return A result set, if one was generated
    * @throws SQLException if thrown by java.sql.* classes
    */
-  static public ResultSet execute(Connection conn, String fmt, Object... args) throws SQLException
+  static public ResultSet execute(Connection conn, String fmt, Object ... args) throws SQLException
   {
     sLogger.debug("DbUtils::execute() - IN");
     
