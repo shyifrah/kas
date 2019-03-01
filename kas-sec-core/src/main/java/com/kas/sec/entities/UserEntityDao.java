@@ -1,7 +1,6 @@
 package com.kas.sec.entities;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,10 +10,6 @@ import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
-import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.IDao;
-import com.kas.infra.utils.Base64Utils;
-import com.kas.infra.utils.StringUtils;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -23,7 +18,7 @@ import com.kas.logging.LoggerFactory;
  * 
  * @author Pippo
  */
-public class UserEntityDao extends AKasObject implements IDao<UserEntity>
+public class UserEntityDao
 {
   /**
    * Table name
@@ -46,7 +41,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private static ILogger sLogger = LoggerFactory.getLogger(UserEntityDao.class);
   
   /**
    * Get a {@link UserEntity} by its name
@@ -54,9 +49,9 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
    * @param name The name of the {@link UserEntity}
    * @return the {@link UserEntity} with the specified name or {@code null} if not found
    */
-  public UserEntity get(String name)
+  public static UserEntity getByName(String name)
   {
-    mLogger.debug("UserDao::get() - IN");
+    sLogger.debug("UserEntityDao::getByName() - IN");
     UserEntity ue = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -72,24 +67,24 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     }
     catch (SQLException e)
     {
-      mLogger.debug("UserDao::get() - Exception caught: ", e);
+      sLogger.debug("UserEntityDao::getByName() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("UserDao::get() - OUT, Returns=" + StringUtils.asString(ue));
+    sLogger.debug("UserEntityDao::getByName() - OUT, Returns=" + ue);
     return ue;
   }
   
   /**
-   * Get {@link UserEntity} associated with the specific name
+   * Get a list of {@link UserEntity}s by a pattern
    * 
-   * @param id The ID of the {@link UserEntity}
-   * @return The {@link UserEntity} that matches the query
+   * @param pattern The pattern that should be matched
+   * @return a list of all {@link UserEntity}s that their name matches {@code pattern}
    */
-  public UserEntity get(int id)
+  public static List<UserEntity> getByPattern(String pattern)
   {
-    mLogger.debug("UserDao::get() - IN");
-    UserEntity ue = null;
+    sLogger.debug("UserEntityDao::getByPattern() - IN");
+    List<UserEntity> list = new ArrayList<UserEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -97,29 +92,66 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     
     try
     {
-      String sql = "SELECT user_id, user_name, user_description, user_password FROM " + cKasTableName + " WHERE user_id = " + id + ";";
+      String sql = "SELECT user_id, user_name, user_description, user_password FROM " + cKasTableName + " WHERE user_name like '" + pattern + "%%';";
       ResultSet rs = DbUtils.execute(conn, sql);
-      if (rs.next()) ue = createUserEntity(rs, conn);
+      
+      while (rs.next())
+      {
+        UserEntity ue = createUserEntity(rs, conn);
+        list.add(ue);
+      }
       rs.close();
     }
     catch (SQLException e)
     {
-      mLogger.debug("UserDao::get() - Exception caught: ", e);
+      sLogger.debug("UserEntityDao::getByPattern() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("UserDao::get() - OUT, Returns=" + StringUtils.asString(ue));
-    return ue;
+    sLogger.debug("UserEntityDao::getByPattern() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    return list;
   }
-
+  
+//  /**
+//   * Get {@link UserEntity} associated with the specific name
+//   * 
+//   * @param id The ID of the {@link UserEntity}
+//   * @return The {@link UserEntity} that matches the query
+//   */
+//  public static UserEntity get(int id)
+//  {
+//    sLogger.debug("UserEntityDao::get() - IN");
+//    UserEntity ue = null;
+//    
+//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+//    DbConnection dbConn = dbPool.allocate();
+//    Connection conn = dbConn.getConn();
+//    
+//    try
+//    {
+//      String sql = "SELECT user_id, user_name, user_description, user_password FROM " + cKasTableName + " WHERE user_id = " + id + ";";
+//      ResultSet rs = DbUtils.execute(conn, sql);
+//      if (rs.next()) ue = createUserEntity(rs, conn);
+//      rs.close();
+//    }
+//    catch (SQLException e)
+//    {
+//      sLogger.debug("UserEntityDao::get() - Exception caught: ", e);
+//    }
+//    
+//    dbPool.release(dbConn);
+//    sLogger.debug("UserEntityDao::get() - OUT, Returns=" + StringUtils.asString(ue));
+//    return ue;
+//  }
+//
   /**
    * Get a list of all {@link UserEntity} objects
    * 
    * @return a list of all {@link UserEntity} objects
    */
-  public List<UserEntity> getAll()
+  public static List<UserEntity> getAll()
   {
-    mLogger.debug("UserDao::getAll() - IN");
+    sLogger.debug("UserEntityDao::getAll() - IN");
     List<UserEntity> list = new ArrayList<UserEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -140,125 +172,125 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     }
     catch (SQLException e)
     {
-      mLogger.debug("UserDao::getAll() - Exception caught: ", e);
+      sLogger.debug("UserEntityDao::getAll() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("UserDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    sLogger.debug("UserEntityDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
     return list;
   }
   
-  /**
-   * Update values of {@code t} with the {@code map}
-   * 
-   * @param t The {@link UserEntity} to update
-   * @param map Map of key-value pairs that indicate which fields should be updated with their new values
-   */
-  public void update(UserEntity t, Map<String, String> map)
-  {
-    mLogger.debug("UserDao::update() - IN");
-    
-    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-    DbConnection dbConn = dbPool.allocate();
-    
-    Connection conn = dbConn.getConn();
-    try
-    {
-      StringBuilder sb = new StringBuilder();
-      sb.append("UPDATE ")
-        .append(cKasTableName)
-        .append(" SET ");
-      
-      for (Map.Entry<String, String> entry : map.entrySet())
-      {
-        String col = entry.getKey().toString();
-        String val = entry.getValue().toString();
-        
-        sb.append(col);
-        Class<?> cls = cTableColumns.get(col);
-        if (String.class.equals(cls))
-          sb.append("='").append(val).append("',");
-        else
-          sb.append("=").append(val).append(",");
-      }
-      
-      String sql = sb.toString();
-      sql = sql.substring(0, sql.length()-1);
-      mLogger.debug("UserDao::update() - Execute SQL: [" + sql + "]");
-      
-      PreparedStatement ps = conn.prepareStatement(sql);
-      ps.execute();
-    }
-    catch (SQLException e)
-    {
-      mLogger.debug("UserDao::update() - Exception caught: ", e);
-    }
-    
-    dbPool.release(dbConn);
-    mLogger.debug("UserDao::update() - OUT");
-  }
-
-  /**
-   * Save specified {@link UserEntity} to the data layer
-   * 
-   * @param t The object to be saved
-   */
-  public void save(UserEntity t)
-  {
-    mLogger.debug("UserDao::save() - IN");
-    
-    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-    DbConnection dbConn = dbPool.allocate();
-    
-    Connection conn = dbConn.getConn();
-    try
-    {
-      String pswd = new String(Base64Utils.decode(t.getPassword()));
-      String sql = "INSERT INTO " + cKasTableName + " (user_name, user_description, user_password) " +
-        "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "', '" + pswd + "');";
-      mLogger.debug("UserDao::save() - Execute SQL: [" + sql + "]");
-      
-      PreparedStatement ps = conn.prepareStatement(sql);
-      ps.execute();
-    }
-    catch (SQLException e)
-    {
-      mLogger.debug("UserDao::save() - Exception caught: ", e);
-    }
-    
-    dbPool.release(dbConn);
-    mLogger.debug("UserDao::save() - OUT");
-  }
-
-  /**
-   * Delete the specified {@link UserEntity}
-   * 
-   * @param t The object to be deleted
-   */
-  public void delete(UserEntity t)
-  {
-    mLogger.debug("UserDao::delete() - IN");
-    
-    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-    DbConnection dbConn = dbPool.allocate();
-    
-    Connection conn = dbConn.getConn();
-    try
-    {
-      String sql = "DELETE FROM " + cKasTableName + " WHERE user_id = " + t.getId() + ";";
-      mLogger.debug("UserDao::delete() - Execute SQL: [" + sql + "]");
-      
-      PreparedStatement ps = conn.prepareStatement(sql);
-      ps.execute();
-    }
-    catch (SQLException e)
-    {
-      mLogger.debug("UserDao::delete() - Exception caught: ", e);
-    }
-    
-    dbPool.release(dbConn);
-    mLogger.debug("UserDao::delete() - OUT");
-  }
+//  /**
+//   * Update values of {@code t} with the {@code map}
+//   * 
+//   * @param t The {@link UserEntity} to update
+//   * @param map Map of key-value pairs that indicate which fields should be updated with their new values
+//   */
+//  public static void update(UserEntity t, Map<String, String> map)
+//  {
+//    sLogger.debug("UserEntityDao::update() - IN");
+//    
+//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+//    DbConnection dbConn = dbPool.allocate();
+//    
+//    Connection conn = dbConn.getConn();
+//    try
+//    {
+//      StringBuilder sb = new StringBuilder();
+//      sb.append("UPDATE ")
+//        .append(cKasTableName)
+//        .append(" SET ");
+//      
+//      for (Map.Entry<String, String> entry : map.entrySet())
+//      {
+//        String col = entry.getKey().toString();
+//        String val = entry.getValue().toString();
+//        
+//        sb.append(col);
+//        Class<?> cls = cTableColumns.get(col);
+//        if (String.class.equals(cls))
+//          sb.append("='").append(val).append("',");
+//        else
+//          sb.append("=").append(val).append(",");
+//      }
+//      
+//      String sql = sb.toString();
+//      sql = sql.substring(0, sql.length()-1);
+//      sLogger.debug("UserEntityDao::update() - Execute SQL: [" + sql + "]");
+//      
+//      PreparedStatement ps = conn.prepareStatement(sql);
+//      ps.execute();
+//    }
+//    catch (SQLException e)
+//    {
+//      sLogger.debug("UserEntityDao::update() - Exception caught: ", e);
+//    }
+//    
+//    dbPool.release(dbConn);
+//    sLogger.debug("UserEntityDao::update() - OUT");
+//  }
+//
+//  /**
+//   * Save specified {@link UserEntity} to the data layer
+//   * 
+//   * @param t The object to be saved
+//   */
+//  public static void save(UserEntity t)
+//  {
+//    sLogger.debug("UserEntityDao::save() - IN");
+//    
+//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+//    DbConnection dbConn = dbPool.allocate();
+//    
+//    Connection conn = dbConn.getConn();
+//    try
+//    {
+//      String pswd = new String(Base64Utils.decode(t.getPassword()));
+//      String sql = "INSERT INTO " + cKasTableName + " (user_name, user_description, user_password) " +
+//        "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "', '" + pswd + "');";
+//      sLogger.debug("UserEntityDao::save() - Execute SQL: [" + sql + "]");
+//      
+//      PreparedStatement ps = conn.prepareStatement(sql);
+//      ps.execute();
+//    }
+//    catch (SQLException e)
+//    {
+//      sLogger.debug("UserEntityDao::save() - Exception caught: ", e);
+//    }
+//    
+//    dbPool.release(dbConn);
+//    sLogger.debug("UserEntityDao::save() - OUT");
+//  }
+//
+//  /**
+//   * Delete the specified {@link UserEntity}
+//   * 
+//   * @param t The object to be deleted
+//   */
+//  public static void delete(UserEntity t)
+//  {
+//    sLogger.debug("UserEntityDao::delete() - IN");
+//    
+//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+//    DbConnection dbConn = dbPool.allocate();
+//    
+//    Connection conn = dbConn.getConn();
+//    try
+//    {
+//      String sql = "DELETE FROM " + cKasTableName + " WHERE user_id = " + t.getId() + ";";
+//      sLogger.debug("UserEntityDao::delete() - Execute SQL: [" + sql + "]");
+//      
+//      PreparedStatement ps = conn.prepareStatement(sql);
+//      ps.execute();
+//    }
+//    catch (SQLException e)
+//    {
+//      sLogger.debug("UserEntityDao::delete() - Exception caught: ", e);
+//    }
+//    
+//    dbPool.release(dbConn);
+//    sLogger.debug("UserEntityDao::delete() - OUT");
+//  }
   
   /**
    * Extract a list of groups in which a user participates
@@ -268,9 +300,9 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
    * @return a list of group IDs 
    * @throws SQLException
    */
-  private List<Integer> getUserGroups(Connection conn, int id) throws SQLException
+  private static List<Integer> getUserGroups(Connection conn, int id) throws SQLException
   {
-    mLogger.debug("UserDao::getUserGroups() - IN");
+    sLogger.debug("UserEntityDao::getUserGroups() - IN");
     
     String sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + id;
     ResultSet rs2 = DbUtils.execute(conn, sql);
@@ -282,7 +314,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     }
     rs2.close();
     
-    mLogger.debug("UserDao::getUserGroups() - OUT, List.size()=" + ugids.size());
+    sLogger.debug("UserEntityDao::getUserGroups() - OUT, List.size()=" + ugids.size());
     return ugids;
   }
   
@@ -294,9 +326,9 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
    * @return a {@link UserEntity} 
    * @throws SQLException
    */
-  private UserEntity createUserEntity(ResultSet rs, Connection conn) throws SQLException
+  private static UserEntity createUserEntity(ResultSet rs, Connection conn) throws SQLException
   {
-    mLogger.debug("UserDao::createUserEntity() - IN");
+    sLogger.debug("UserEntityDao::createUserEntity() - IN");
     
     int uid = rs.getInt("user_id");
     String uname = rs.getString("user_name");
@@ -306,20 +338,7 @@ public class UserEntityDao extends AKasObject implements IDao<UserEntity>
     List<Integer> ugids = getUserGroups(conn, uid);
     
     UserEntity ue = new UserEntity(uid, uname, udesc, upass, ugids);
-    mLogger.debug("UserDao::createUserEntity() - OUT, UserEntity=" + StringUtils.asString(ue));
+    sLogger.debug("UserEntityDao::createUserEntity() - OUT, UserEntity=" + ue);
     return ue;
   }
-  
-  /**
-   * Get the object's detailed string representation
-   * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   */
-  public String toPrintableString(int level)
-  {
-    return toString();
-  }    
 }
