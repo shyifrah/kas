@@ -2,10 +2,9 @@ package com.kas.mq.server;
 
 import com.kas.appl.IKasApp;
 import com.kas.db.DbConnectionPool;
-import com.kas.infra.base.IStoppable;
 import com.kas.mq.server.repo.ServerRepository;
 
-public interface IMqServer extends IKasApp, IStoppable
+public interface IMqServer extends IKasApp
 {
   /**
    * Get the {@link ServerRepository} object
@@ -27,4 +26,9 @@ public interface IMqServer extends IKasApp, IStoppable
    * @return the {@link DbConnectionPool} object
    */
   public abstract DbConnectionPool getDbConnectionPool();
+  
+  /**
+   * Indicate that the caller wants the object to change its state to "stopping" 
+   */
+  public abstract void stop();
 }
