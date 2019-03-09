@@ -8,6 +8,8 @@ import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.sec.access.AccessLevel;
+import com.kas.sec.resources.EResourceClass;
 
 /**
  * Processor for altering queues
@@ -64,6 +66,16 @@ public class AlterQueueProcessor extends AProcessor
       {
         mDesc = "Queue with name \"" + mQueue + "\" does not exists";
         mLogger.debug("AlterQueueProcessor::process() - " + mDesc);
+      }
+      else if (!isAccessPermitted(EResourceClass.COMMAND, String.format("ALTER_QUEUE_%s", mQueue)))
+      {
+        mDesc = "User is not permitted to issue ALTER_QUEUE command";
+        mLogger.warn(mDesc);
+      }
+      else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.ALTER_ACCESS))
+      {
+        mDesc = "User is not permitted to alter queues";
+        mLogger.warn(mDesc);
       }
       else
       {
