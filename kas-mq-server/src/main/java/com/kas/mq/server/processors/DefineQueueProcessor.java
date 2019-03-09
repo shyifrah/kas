@@ -80,7 +80,7 @@ public class DefineQueueProcessor extends AProcessor
       }
       else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.ALTER_ACCESS))
       {
-        mDesc = "User is not permitted to alter queues";
+        mDesc = "User is not permitted to define queues";
         mLogger.warn(mDesc);
       }
       else
