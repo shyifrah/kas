@@ -260,7 +260,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   {
     int errors = 0;
     sStartupLogger.info("KAS/MQ server " + mConfig.getManagerName() + " available on port " +  mConfig.getPort ());
-    while (!isStopping())
+    while (!mStop)
     {
       if (!mConfig.isEnabled())
       {
@@ -306,19 +306,9 @@ public class KasMqServer extends AKasApp implements IMqServer
   /**
    * Stop the main loop
    */
-  public synchronized void stop()
+  public void stop()
   {
     mStop = true;
-  }
-  
-  /**
-   * Return the stop-state of the server
-   * 
-   * @return the stop-state of the server
-   */
-  public synchronized boolean isStopping()
-  {
-    return mStop;
   }
   
   /**

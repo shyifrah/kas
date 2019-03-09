@@ -19,7 +19,7 @@ public class AppLauncher
 {
   static private final String cKasHomeSystemProperty = RunTimeUtils.cProductHomeDirProperty;
   
-  static private IBaseLogger sLogger = new ConsoleLogger(AppLauncher.class.getName());
+  static private IBaseLogger sStartupLogger = new ConsoleLogger(AppLauncher.class.getName());
   
   /**
    * Settings
@@ -29,7 +29,6 @@ public class AppLauncher
   /**
    * Construct the application launcher
    * 
-   * @param app The application to launch
    * @param mainArgs An array of arguments passed to main function
    * @param defaultSettings A map of default settings
    */
@@ -43,7 +42,7 @@ public class AppLauncher
   
   public void launch(AKasApp app)
   {
-    sLogger.info("Launching application " + app.getAppName());
+    sStartupLogger.info("Launching application " + app.getAppName());
     
     TimeStamp start = null;
     TimeStamp end = null;
@@ -58,13 +57,14 @@ public class AppLauncher
     }
     catch (Throwable e)
     {
-      sLogger.error("Exception caught: ", e);
+      sStartupLogger.error("Exception caught: ", e);
     }
     finally
     {
-      app.term();
+      if (!app.isTerminated())
+        app.term();
       end = TimeStamp.now();
-      sLogger.info(app.getAppName() + " ended");
+      sStartupLogger.info(app.getAppName() + " ended");
       reportRunTime(start, end);
     }
   }
@@ -85,21 +85,21 @@ public class AppLauncher
     Map<String, String> pArgumentsMap = new HashMap<String, String>();
     if ((args == null) || (args.length == 0))
     {
-      sLogger.info("No arguments passed to KAS launcher, continue...");
+      sStartupLogger.info("No arguments passed to KAS launcher, continue...");
     }
     else
     {
       for (String arg : args)
       {
-        sLogger.info("Processing argument: [" + arg + "]");
+        sStartupLogger.info("Processing argument: [" + arg + "]");
         String [] keyValue = arg.split("=");
         if (keyValue.length > 2)
         {
-          sLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
+          sStartupLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
         }
         else if (keyValue.length <= 1)
         {
-          sLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
+          sStartupLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
         }
         else
         {
@@ -129,7 +129,7 @@ public class AppLauncher
     }
     
     RunTimeUtils.setProperty(cKasHomeSystemProperty, kasHome, true);
-    sLogger.info("KAS launcher set system property '" + cKasHomeSystemProperty + "' to '" + kasHome + "'");
+    sStartupLogger.info("KAS launcher set system property '" + cKasHomeSystemProperty + "' to '" + kasHome + "'");
   }
   
  /**
@@ -148,7 +148,7 @@ public class AppLauncher
     long min = diff % 60;
     diff = diff / 60;
     long hr = diff; 
-    sLogger.info("Total run time: " + (hr > 0 ? hr + " hours, " : "") + (min > 0 ? min + " minutes, " : "") + String.format("%d.%03d seconds", sec, ms));
+    sStartupLogger.info("Total run time: " + (hr > 0 ? hr + " hours, " : "") + (min > 0 ? min + " minutes, " : "") + String.format("%d.%03d seconds", sec, ms));
   }
 //  
 //  /**
