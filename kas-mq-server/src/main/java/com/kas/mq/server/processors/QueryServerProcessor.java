@@ -161,8 +161,7 @@ public class QueryServerProcessor extends AProcessor
     mConfigType = EQueryConfigType.valueOf(qConfigType);
     
     String body = "";
-    String resName = String.format("%s_%s", mQueryType.name(), qConfigType);
-    if (!isAccessPermitted(EResourceClass.COMMAND, resName))
+    if (!isAccessPermitted(EResourceClass.COMMAND, String.format("%s_%s", mQueryType.name(), qConfigType)))
     {
       mCode = EMqCode.cError;
       mDesc = "User is not permitted to query configuration";
@@ -285,6 +284,11 @@ public class QueryServerProcessor extends AProcessor
     
     String resName = String.format("%s%s", mQueryType.name(), (mQueueName.length() == 0 ? "" : "_" + mQueueName));
     if (!isAccessPermitted(EResourceClass.COMMAND, resName))
+    {
+      mCode = EMqCode.cError;
+      mDesc = "User is not permitted to issue " + mQueryType.name() + " command";
+    }
+    else if (!isAccessPermitted(EResourceClass.QUEUE, mQueueName.length() == 0 ? "" : mQueueName, AccessLevel.READ_ACCESS))
     {
       mCode = EMqCode.cError;
       mDesc = "User is not permitted to query queues";
