@@ -73,7 +73,7 @@ public class DeleteQueueProcessor extends AProcessor
       }
       else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.ALTER_ACCESS))
       {
-        mDesc = "User is not permitted to alter queues";
+        mDesc = "User is not permitted to delete queues";
         mLogger.warn(mDesc);
       }
       else if (mqlq.size() == 0)
