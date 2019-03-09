@@ -46,24 +46,12 @@ public class AppShutdownHook extends AKasThread
    * Running the shutdown hook.<br>
    * <br>
    * The procedure is actually quite simple - invoking the application's {@link AKasApp#term()} method.
-   * 
-   * @see com.kas.infra.base.IInitializable#term()
    */
   public void run()
   {
+    mIsRunning = true;
     mLogger.warn("Shutdown hook was called. Terminating application...");
-    setRunning(true);
     mApplication.term();
-  }
-  
-  /**
-   * Mark the shutdown hook is running or not
-   * 
-   * @param b The running state of the shutdown hook
-   */
-  public synchronized void setRunning(boolean b)
-  {
-    mIsRunning = b;
   }
   
   /**
@@ -71,7 +59,7 @@ public class AppShutdownHook extends AKasThread
    * 
    * @return the shutdown hook running state
    */
-  public synchronized boolean isRunning()
+  public boolean isRunning()
   {
     return mIsRunning;
   }
