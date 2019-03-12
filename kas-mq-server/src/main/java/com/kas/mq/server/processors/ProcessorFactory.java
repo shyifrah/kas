@@ -35,6 +35,9 @@ public class ProcessorFactory
       case cDefineGroup:
         processor = new DefineGroupProcessor(request, handler, repository);
         break;
+      case cDeleteGroup:
+        processor = new DeleteGroupProcessor(request, handler, repository);
+        break;
       case cDefineQueue:
         processor = new DefineQueueProcessor(request, handler, repository);
         break;
