@@ -32,14 +32,17 @@ public class ProcessorFactory
       case cLogin:
         processor = new LoginProcessor(request, handler, repository);
         break;
+      case cDefineGroup:
+        processor = new DefineGroupProcessor(request, handler, repository);
+        break;
       case cDefineQueue:
         processor = new DefineQueueProcessor(request, handler, repository);
         break;
-      case cAlterQueue:
-          processor = new AlterQueueProcessor(request, handler, repository);
-          break;
       case cDeleteQueue:
         processor = new DeleteQueueProcessor(request, handler, repository);
+        break;
+      case cAlterQueue:
+        processor = new AlterQueueProcessor(request, handler, repository);
         break;
       case cQueryServer:
         processor = new QueryServerProcessor(request, handler, repository);

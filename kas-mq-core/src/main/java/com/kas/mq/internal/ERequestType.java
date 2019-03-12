@@ -25,6 +25,36 @@ public enum ERequestType implements IObject
   cGet,
   
   /**
+   * Define a group
+   */
+  cDefineGroup,
+  
+  /**
+   * Delete a group
+   */
+  cDeleteGroup,
+  
+  /**
+   * Alter a group
+   */
+  cAlterGroup,
+  
+  /**
+   * Define a user
+   */
+  cDefineUser,
+  
+  /**
+   * Delete a user
+   */
+  cDeleteUser,
+  
+  /**
+   * Alter a user
+   */
+  cAlterUser,
+  
+  /**
    * Define a queue
    */
   cDefineQueue,

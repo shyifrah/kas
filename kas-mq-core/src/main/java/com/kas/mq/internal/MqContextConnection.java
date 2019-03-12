@@ -25,6 +25,25 @@ public class MqContextConnection extends MqConnection
   }
 
   /**
+   * Define a new group.
+   * 
+   * @param group The name of the group to define
+   * @param desc The group description
+   * @return the {@code true} if group was defined, {@code false} otherwise
+   */
+  public boolean defineGroup(String group, String desc)
+  {
+    mLogger.debug("MqContextConnection::defineGroup() - IN");
+    
+    String name = group.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDefineGroupRequest(name, desc);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::defineGroup() - OUT");
+    return success;
+  }
+  
+  /**
    * Define a new queue.
    * 
    * @param queue The name of the queue to define

@@ -10,6 +10,15 @@ import com.kas.mq.impl.messages.MqMessageFactory;
 
 public class MqRequestFactory
 {
+  static public MqMessage createDefineGroupRequest(String group, String desc)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDefineGroup);
+    message.setStringProperty(IMqConstants.cKasPropertyDefGroupName, group);
+    message.setStringProperty(IMqConstants.cKasPropertyDefGroupDesc, desc);
+    return message;
+  }
+  
   static public MqMessage createLoginRequest(String user, String pass, String appName)
   {
     MqMessage message = MqMessageFactory.createMessage();
