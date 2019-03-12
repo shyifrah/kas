@@ -72,7 +72,7 @@ public class KasMqCons extends AKasApp
    * The main logic is quite simple: keep reading commands from the command line until
    * it is terminated via the "exit" or SIGTERM signal.
    * 
-   * @see IKasMqAppl#appExec()
+   * @see AKasApp#appExec()
    */
   public void appExec()
   {

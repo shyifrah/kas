@@ -107,6 +107,39 @@ public abstract class AProcessor extends AKasObject implements IProcessor
   }
   
   /**
+   * Get the processor's response code
+   * 
+   * @return
+   *   the processor's response code
+   */
+  public EMqCode getResponseCode()
+  {
+    return mCode;
+  }
+  
+  /**
+   * Get the processor's response value
+   * 
+   * @return
+   *   the processor's response value
+   */
+  public int getResponseValue()
+  {
+    return mValue;
+  }
+  
+  /**
+   * Get the processor's response description
+   * 
+   * @return
+   *   the processor's response description
+   */
+  public String getResponseDesc()
+  {
+    return mDesc;
+  }
+  
+  /**
    * Generate a response message which will be sent back to remote client.
    * 
    * @return the {@link MqStringMessage} response object

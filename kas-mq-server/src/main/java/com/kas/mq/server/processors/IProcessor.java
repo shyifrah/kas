@@ -4,6 +4,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
+import com.kas.mq.internal.EMqCode;
 
 /**
  * A {@link IProcessor processor} is an object that process request.
@@ -31,6 +32,30 @@ public interface IProcessor extends IObject
    * this request, {@code true} otherwise
    */
   public abstract boolean postprocess(IMqMessage reply);
+    
+  /**
+   * Get the processor's response code
+   * 
+   * @return
+   *   the processor's response code
+   */
+  public abstract EMqCode getResponseCode();
+  
+  /**
+   * Get the processor's response value
+   * 
+   * @return
+   *   the processor's response value
+   */
+  public abstract int getResponseValue();
+  
+  /**
+   * Get the processor's response description
+   * 
+   * @return
+   *   the processor's response description
+   */
+  public abstract String getResponseDesc();
   
   /**
    * Generate a response message which will be sent back to remote client.
