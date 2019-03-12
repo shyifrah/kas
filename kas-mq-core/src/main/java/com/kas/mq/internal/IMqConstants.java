@@ -66,6 +66,7 @@ public interface IMqConstants
   
   static public final String cKasPropertyDefGroupName   = cKasPropertyPrefix + "def.grp.group";
   static public final String cKasPropertyDefGroupDesc   = cKasPropertyPrefix + "def.grp.desc";
+  static public final String cKasPropertyDelGroupName   = cKasPropertyPrefix + "del.grp.group";
   
   static public final String cKasPropertyGetTimeout   = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval  = cKasPropertyPrefix + "get.interval";

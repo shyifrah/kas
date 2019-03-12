@@ -267,35 +267,40 @@ public class GroupEntityDao
     return ge;
   }
 
-//  /**
-//   * Delete the specified {@link GroupEntity}
-//   * 
-//   * @param t The object to be deleted
-//   */
-//  public static void delete(GroupEntity t)
-//  {
-//    sLogger.debug("GroupEntityDao::delete() - IN");
-//    
-//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-//    DbConnection dbConn = dbPool.allocate();
-//    
-//    Connection conn = dbConn.getConn();
-//    try
-//    {
-//      String sql = "DELETE FROM " + cKasTableName + " WHERE group_id = " + t.getId() + ";";
-//      sLogger.debug("GroupEntityDao::delete() - Execute SQL: [" + sql + "]");
-//      
-//      PreparedStatement ps = conn.prepareStatement(sql);
-//      ps.execute();
-//    }
-//    catch (SQLException e)
-//    {
-//      sLogger.debug("GroupEntityDao::delete() - Exception caught: ", e);
-//    }
-//    
-//    dbPool.release(dbConn);
-//    sLogger.debug("GroupEntityDao::delete() - OUT");
-//  }
+  /**
+   * Delete the specified {@link GroupEntity}
+   * 
+   * @param group The group name
+   * @return {@code true} if group was deleted, {@code false} otherwise
+   */
+  public static boolean delete(String group)
+  {
+    sLogger.debug("GroupEntityDao::delete() - IN");
+    
+    boolean result = false;
+    
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+    DbConnection dbConn = dbPool.allocate();
+    
+    Connection conn = dbConn.getConn();
+    try
+    {
+      String sql = "DELETE FROM " + cKasTableName + " WHERE group_name = '" + group + "';";
+      sLogger.debug("GroupEntityDao::delete() - Execute SQL: [" + sql + "]");
+      
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.execute();
+      result = true;
+    }
+    catch (SQLException e)
+    {
+      sLogger.debug("GroupEntityDao::delete() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    sLogger.debug("GroupEntityDao::delete() - OUT, Returns=" + result);
+    return result;
+  }
   
   /**
    * Create a group entity based on the output of a query
