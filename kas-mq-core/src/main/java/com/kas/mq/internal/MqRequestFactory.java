@@ -19,6 +19,14 @@ public class MqRequestFactory
     return message;
   }
   
+  static public MqMessage createDeleteGroupRequest(String group)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDeleteGroup);
+    message.setStringProperty(IMqConstants.cKasPropertyDelGroupName, group);
+    return message;
+  }
+  
   static public MqMessage createLoginRequest(String user, String pass, String appName)
   {
     MqMessage message = MqMessageFactory.createMessage();

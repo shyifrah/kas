@@ -44,6 +44,24 @@ public class MqContextConnection extends MqConnection
   }
   
   /**
+   * Delete an existing group.
+   * 
+   * @param group The name of the group to delete
+   * @return the {@code true} if group was deleted, {@code false} otherwise
+   */
+  public boolean deleteGroup(String group)
+  {
+    mLogger.debug("MqContextConnection::deleteGroup() - IN");
+    
+    String name = group.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDeleteGroupRequest(name);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::deleteGroup() - OUT");
+    return success;
+  }
+  
+  /**
    * Define a new queue.
    * 
    * @param queue The name of the queue to define
