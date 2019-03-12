@@ -285,7 +285,7 @@ public class GroupEntityDao
     Connection conn = dbConn.getConn();
     try
     {
-      String sql = "DELETE FROM " + cKasTableName + " WHERE group_name = " + group + ";";
+      String sql = "DELETE FROM " + cKasTableName + " WHERE group_name = '" + group + "';";
       sLogger.debug("GroupEntityDao::delete() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
