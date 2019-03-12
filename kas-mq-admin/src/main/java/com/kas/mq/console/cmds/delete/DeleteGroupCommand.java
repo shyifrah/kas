@@ -1,6 +1,7 @@
 package com.kas.mq.console.cmds.delete;
 
 import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -41,6 +42,11 @@ public class DeleteGroupCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("NAME was not specified or invalid: [" + mName + ']');
+    
+    conn.deleteGroup(mName);
+    ConsoleUtils.writeln("%s", conn.getResponse());
   }
   
   /**
