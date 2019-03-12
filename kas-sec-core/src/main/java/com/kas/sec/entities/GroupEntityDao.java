@@ -1,6 +1,7 @@
 package com.kas.sec.entities;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -228,37 +229,44 @@ public class GroupEntityDao
 //    sLogger.debug("GroupEntityDao::update() - OUT");
 //  }
 //
-//  /**
-//   * Save specified {@link GroupEntity} to the data layer
-//   * 
-//   * @param t The object to be saved
-//   */
-//  public static void save(GroupEntity t)
-//  {
-//    sLogger.debug("GroupEntityDao::save() - IN");
-//    
-//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-//    DbConnection dbConn = dbPool.allocate();
-//    
-//    Connection conn = dbConn.getConn();
-//    try
-//    {
-//      String sql = "INSERT INTO " + cKasTableName + " (group_name, group_description) " +
-//        "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "');";
-//      sLogger.debug("GroupEntityDao::save() - Execute SQL: [" + sql + "]");
-//      
-//      PreparedStatement ps = conn.prepareStatement(sql);
-//      ps.execute();
-//    }
-//    catch (SQLException e)
-//    {
-//      sLogger.debug("GroupEntityDao::save() - Exception caught: ", e);
-//    }
-//    
-//    dbPool.release(dbConn);
-//    sLogger.debug("GroupEntityDao::save() - OUT");
-//  }
-//
+  /**
+   * Save specified {@link GroupEntity} to the data layer
+   * 
+   * @param group The group name
+   * @param desc The group description
+   * @return The newly created group entity
+   */
+  public static GroupEntity create(String group, String desc)
+  {
+    sLogger.debug("GroupEntityDao::save() - IN");
+    
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+    DbConnection dbConn = dbPool.allocate();
+    
+    GroupEntity ge = null;
+    
+    Connection conn = dbConn.getConn();
+    try
+    {
+      String sql = "INSERT INTO " + cKasTableName + " (group_name, group_description) " +
+        "VALUES ('" + group + "', '"+ desc + "');";
+      sLogger.debug("GroupEntityDao::save() - Execute SQL: [" + sql + "]");
+      
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.execute();
+      
+      ge = getByName(group);
+    }
+    catch (SQLException e)
+    {
+      sLogger.debug("GroupEntityDao::save() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    sLogger.debug("GroupEntityDao::save() - OUT, Result=" + ge);
+    return ge;
+  }
+
 //  /**
 //   * Delete the specified {@link GroupEntity}
 //   * 

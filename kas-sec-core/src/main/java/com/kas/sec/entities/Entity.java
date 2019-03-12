@@ -93,8 +93,9 @@ public class Entity extends AKasObject
     String pad = pad(level);
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append("(\n")
-      .append(pad).append("  Name=").append(mName).append("\n")
-      .append(pad).append("  Description=").append(mDescription).append(")\n")
+      .append(pad).append("  ID=[").append(mId).append("]\n")
+      .append(pad).append("  Name=[").append(mName).append("]\n")
+      .append(pad).append("  Description=[").append(mDescription).append("]\n")
       .append(pad).append(")");
     return sb.toString();
   }
