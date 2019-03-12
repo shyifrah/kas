@@ -157,4 +157,17 @@ public class Validators
     if ((user == null) || (user.trim().length() == 0)) return false;
     return cUserNameCompiledPattern.matcher(user).matches();
   }
+  
+  /**
+   * Validate user description
+   * 
+   * @param desc The user description for validation
+   * @return {@code true} if {@code desc} is a valid user description, {@code false} otherwise
+   */
+  static public boolean isUserDesc(String desc)
+  {
+    if (desc == null) return false;
+    if (desc.trim().length() > cMaximumQueueDescriptionLength) return false;
+    return true;
+  }
 }
