@@ -42,6 +42,9 @@ public class CommandFactory implements ICommandFactory
     File dir = new File(resource.getFile());
     
     File [] files = dir.listFiles();
+    if (files == null)
+      return;
+    
     for (File file : files)
     {
       if (file.isFile() && (file.getName().endsWith(".class")))
