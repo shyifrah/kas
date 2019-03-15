@@ -2,6 +2,7 @@ package com.kas.mq.internal;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.EQueryType;
@@ -24,6 +25,25 @@ public class MqRequestFactory
     MqMessage message = MqMessageFactory.createMessage();
     message.setRequestType(ERequestType.cDeleteGroup);
     message.setStringProperty(IMqConstants.cKasPropertyDelGroupName, group);
+    return message;
+  }
+  
+  static public MqMessage createDefineUserRequest(String user, String pass, String desc, StringList groups)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDefineUser);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserName, user);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserPass, pass);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserDesc, desc);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserGrps, groups.toString());
+    return message;
+  }
+  
+  static public MqMessage createDeleteUserRequest(String user)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDeleteUser);
+    message.setStringProperty(IMqConstants.cKasPropertyDelUserName, user);
     return message;
   }
   
@@ -113,7 +133,7 @@ public class MqRequestFactory
   static public MqMessage createSystemStateMessage(String qmgr, boolean active)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cSysState);
+    message.setRequestType(ERequestType.cNotifySysState);
     message.setStringProperty(IMqConstants.cKasPropertySyssQmgrName, qmgr);
     message.setBoolProperty(IMqConstants.cKasPropertySyssActive, active);
     return message;
@@ -122,7 +142,7 @@ public class MqRequestFactory
   static public MqMessage createRepositoryUpdateMessage(String qmgr, String queue, boolean added)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cRepoUpdate);
+    message.setRequestType(ERequestType.cNotifyRepoUpdate);
     message.setStringProperty(IMqConstants.cKasPropertyRepoQmgrName, qmgr);
     message.setStringProperty(IMqConstants.cKasPropertyRepoQueueName, queue);
     message.setBoolProperty(IMqConstants.cKasPropertyRepoOperation, added);

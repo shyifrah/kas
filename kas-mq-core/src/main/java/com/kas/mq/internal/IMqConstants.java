@@ -64,9 +64,15 @@ public interface IMqConstants
   static public final String cKasPropertyAltDisp      = cKasPropertyPrefix + "alt.q.opt.disposition";
   static public final String cKasPropertyAltThreshold = cKasPropertyPrefix + "atl.q.opt.threshold";
   
-  static public final String cKasPropertyDefGroupName   = cKasPropertyPrefix + "def.grp.group";
-  static public final String cKasPropertyDefGroupDesc   = cKasPropertyPrefix + "def.grp.desc";
-  static public final String cKasPropertyDelGroupName   = cKasPropertyPrefix + "del.grp.group";
+  static public final String cKasPropertyDefGroupName = cKasPropertyPrefix + "def.grp.group";
+  static public final String cKasPropertyDefGroupDesc = cKasPropertyPrefix + "def.grp.desc";
+  static public final String cKasPropertyDelGroupName = cKasPropertyPrefix + "del.grp.group";
+  static public final String cKasPropertyDefUserName  = cKasPropertyPrefix + "def.usr.user";
+  static public final String cKasPropertyDefUserPass  = cKasPropertyPrefix + "def.usr.pass";
+  static public final String cKasPropertyDefUserGrps  = cKasPropertyPrefix + "def.usr.grps";
+  static public final String cKasPropertyDefUserDesc  = cKasPropertyPrefix + "def.usr.desc";
+  static public final String cKasPropertyDelUserName  = cKasPropertyPrefix + "del.usr.user";
+  
   
   static public final String cKasPropertyGetTimeout   = cKasPropertyPrefix + "get.timeout";
   static public final String cKasPropertyGetInterval  = cKasPropertyPrefix + "get.interval";

@@ -1,6 +1,7 @@
 package com.kas.sec.entities;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.Map;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
+import com.kas.infra.typedef.StringList;
 import com.kas.logging.ILogger;
 import com.kas.logging.LoggerFactory;
 
@@ -291,6 +293,106 @@ public class UserEntityDao
 //    dbPool.release(dbConn);
 //    sLogger.debug("UserEntityDao::delete() - OUT");
 //  }
+  /**
+   * Create a {@link UserEntity} and store it
+   * 
+   * @param user The user name
+   * @param pass The user's password
+   * @param desc The user description
+   * @param groups The list of groups the user needs to be a member of
+   * @return The newly created user entity
+   */
+  public static UserEntity create(String user, String password, String desc, StringList groups)
+  {
+    sLogger.debug("UserEntityDao::create() - IN");
+    
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+    DbConnection dbConn = dbPool.allocate();
+    
+    UserEntity ue = null;
+    
+    Connection conn = dbConn.getConn();
+    try
+    {
+      String sql = "INSERT INTO " + cKasTableName + " (user_name, user_password, user_description) " +
+        "VALUES ('" + user + "', '" + password + "', '"+ desc + "');";
+      sLogger.debug("UserEntityDao::create() - Execute SQL: [" + sql + "]");
+      
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.execute();
+      
+      ue = getByName(user);
+    }
+    catch (SQLException e)
+    {
+      sLogger.debug("UserEntityDao::create() - Exception caught: ", e);
+    }
+    
+    if (ue != null)
+    {
+      for (String group : groups)
+      {
+        GroupEntity ge = GroupEntityDao.getByName(group);
+        if (ge != null)
+        {
+          try
+          {
+            String sql = "INSERT INTO " + cKasUsersToGroupsTableName + " (user_id, group_id) " +
+              "VALUES (" + ue.getId() + ", " + ge.getId() + ");";
+            sLogger.debug("UserEntityDao::create() - Execute SQL: [" + sql + "]");
+            
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.execute();
+            
+            ue = getByName(user);
+          }
+          catch (SQLException e)
+          {
+            sLogger.debug("UserEntityDao::create() - Exception caught: ", e);
+          }
+        }
+      }
+    }
+    
+    dbPool.release(dbConn);
+    sLogger.debug("UserEntityDao::create() - OUT, Result=" + ue);
+    return ue;
+  }
+
+  /**
+   * Delete the specified {@link UserEntity}
+   * 
+   * @param user The user name
+   * @return {@code true} if user was deleted, {@code false} otherwise
+   */
+  public static boolean delete(String user)
+  {
+    sLogger.debug("UserEntityDao::delete() - IN");
+    
+    boolean result = false;
+    
+    DbConnectionPool dbPool = DbConnectionPool.getInstance();
+    DbConnection dbConn = dbPool.allocate();
+    
+    Connection conn = dbConn.getConn();
+    try
+    {
+      String sql = "DELETE FROM " + cKasTableName + " WHERE user_name = '" + user + "';";
+      sLogger.debug("UserEntityDao::delete() - Execute SQL: [" + sql + "]");
+      
+      PreparedStatement ps = conn.prepareStatement(sql);
+      ps.execute();
+      result = true;
+    }
+    catch (SQLException e)
+    {
+      sLogger.debug("UserEntityDao::delete() - Exception caught: ", e);
+    }
+    
+    dbPool.release(dbConn);
+    sLogger.debug("UserEntityDao::delete() - OUT, Returns=" + result);
+    return result;
+  }
   
   /**
    * Extract a list of groups in which a user participates

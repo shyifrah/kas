@@ -38,6 +38,12 @@ public class ProcessorFactory
       case cDeleteGroup:
         processor = new DeleteGroupProcessor(request, handler, repository);
         break;
+      case cDefineUser:
+        processor = new DefineUserProcessor(request, handler, repository);
+        break;
+      case cDeleteUser:
+        processor = new DeleteUserProcessor(request, handler, repository);
+        break;
       case cDefineQueue:
         processor = new DefineQueueProcessor(request, handler, repository);
         break;
@@ -50,10 +56,10 @@ public class ProcessorFactory
       case cQueryServer:
         processor = new QueryServerProcessor(request, handler, repository);
         break;
-      case cRepoUpdate:
+      case cNotifyRepoUpdate:
         processor = new RepoUpdateProcessor(request, handler, repository);
         break;
-      case cSysState:
+      case cNotifySysState:
         processor = new SysStateProcessor(request, handler, repository);
         break;
       case cTermServer:

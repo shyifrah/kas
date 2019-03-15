@@ -2,6 +2,7 @@ package com.kas.mq.internal;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
+import com.kas.infra.typedef.StringList;
 import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
@@ -58,6 +59,45 @@ public class MqContextConnection extends MqConnection
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.debug("MqContextConnection::deleteGroup() - OUT");
+    return success;
+  }
+  
+  /**
+   * Define a new user
+   * 
+   * @param user The name of the user to define
+   * @param pass The user's password
+   * @param desc The user description
+   * @param groups The list of groups the user is to be a member of
+   * @return the {@code true} if user was defined, {@code false} otherwise
+   */
+  public boolean defineUser(String user, String pass, String desc, StringList groups)
+  {
+    mLogger.debug("MqContextConnection::defineUser() - IN");
+    
+    String name = user.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDefineUserRequest(name, pass, desc, groups);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::defineUser() - OUT");
+    return success;
+  }
+  
+  /**
+   * Delete an existing user
+   * 
+   * @param user The name of the user to delete
+   * @return the {@code true} if user was deleted, {@code false} otherwise
+   */
+  public boolean deleteUser(String user)
+  {
+    mLogger.debug("MqContextConnection::deleteUser() - IN");
+    
+    String name = user.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDeleteUserRequest(name);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.debug("MqContextConnection::deleteUser() - OUT");
     return success;
   }
   
@@ -259,3 +299,4 @@ public class MqContextConnection extends MqConnection
     return success;
   }
 }
+
