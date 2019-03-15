@@ -33,22 +33,27 @@ public class StringList extends ArrayList<String> implements IObject
    */
   static public StringList fromString(String string, boolean enclosed)
   {
-    if (enclosed)
-    {
-      if (!string.startsWith("["))
-        return null;
-      if (!string.endsWith("]"))
-        return null;
-    }
-    
-    String [] array = string.substring(1, string.length()-1).split(", ");
-    if (array.length == 0)
-      return null;
     StringList result = new StringList();
+    if (string == null)
+      return result;
+    
+    String [] array;
+    if (!enclosed)
+      array = string.split(",");
+    else if (!string.startsWith("["))
+      return result;
+    else if (!string.endsWith("]"))
+        return result;
+    else
+      array = string.substring(1, string.length()-1).split(",");
+    
+    if (array.length == 0)
+      return result;
+    
     for (String str : array)
     {
       if (str.length() > 0)
-        result.add(str);
+        result.add(str.trim());
     }
     return result;
   }

@@ -230,7 +230,7 @@ public class GroupEntityDao
 //  }
 //
   /**
-   * Save specified {@link GroupEntity} to the data layer
+   * Create a {@link GroupEntity} and store it
    * 
    * @param group The group name
    * @param desc The group description
@@ -238,7 +238,7 @@ public class GroupEntityDao
    */
   public static GroupEntity create(String group, String desc)
   {
-    sLogger.debug("GroupEntityDao::save() - IN");
+    sLogger.debug("GroupEntityDao::create() - IN");
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -250,7 +250,7 @@ public class GroupEntityDao
     {
       String sql = "INSERT INTO " + cKasTableName + " (group_name, group_description) " +
         "VALUES ('" + group + "', '"+ desc + "');";
-      sLogger.debug("GroupEntityDao::save() - Execute SQL: [" + sql + "]");
+      sLogger.debug("GroupEntityDao::create() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.execute();
@@ -259,11 +259,11 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::save() - Exception caught: ", e);
+      sLogger.debug("GroupEntityDao::create() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::save() - OUT, Result=" + ge);
+    sLogger.debug("GroupEntityDao::create() - OUT, Result=" + ge);
     return ge;
   }
 

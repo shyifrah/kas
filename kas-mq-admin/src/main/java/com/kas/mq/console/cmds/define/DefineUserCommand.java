@@ -2,6 +2,7 @@ package com.kas.mq.console.cmds.define;
 
 import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.ConsoleUtils;
+import com.kas.infra.utils.Validators;
 import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -49,6 +50,17 @@ public class DefineUserCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
+    if (!Validators.isUserName(mName))
+      throw new IllegalArgumentException("NAME was not specified or invalid: [" + mName + ']');
+    mName = mName.trim();
+    if (mPassword == null)
+      throw new IllegalArgumentException("PASSWORD was not specified or invalid: [" + mPassword + ']');
+    if (!Validators.isUserDesc(mDescription))
+      throw new IllegalArgumentException("Invalid DESCRIPTION: [" + mDescription + "]; Value cannot exceed 256 characters");
+    mDescription = mDescription.trim();
+    
+    conn.defineUser(mName, mPassword, mDescription, mGroups);
+    ConsoleUtils.writeln("%s", conn.getResponse());
   }
   
   /**

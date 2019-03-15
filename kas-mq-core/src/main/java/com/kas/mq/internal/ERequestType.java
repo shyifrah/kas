@@ -25,48 +25,24 @@ public enum ERequestType implements IObject
   cGet,
   
   /**
-   * Define a group
+   * Group operations
    */
   cDefineGroup,
-  
-  /**
-   * Delete a group
-   */
   cDeleteGroup,
-  
-  /**
-   * Alter a group
-   */
   cAlterGroup,
   
   /**
-   * Define a user
+   * User operations
    */
   cDefineUser,
-  
-  /**
-   * Delete a user
-   */
   cDeleteUser,
-  
-  /**
-   * Alter a user
-   */
   cAlterUser,
   
   /**
-   * Define a queue
+   * Queue operations
    */
   cDefineQueue,
-  
-  /**
-   * Delete a queue
-   */
   cDeleteQueue,
-  
-  /**
-   * Alter a queue
-   */
   cAlterQueue,
   
   /**
@@ -75,29 +51,17 @@ public enum ERequestType implements IObject
   cQueryServer,
   
   /**
-   * Terminate active connection
+   * Terminate operations
    */
   cTermConn,
-  
-  /**
-   * Terminate active session
-   */
   cTermSess,
-  
-  /**
-   * Shutdown KAS/MQ server
-   */
   cTermServer,
   
   /**
-   * Notify system state changed
+   * Notifications
    */
-  cSysState,
-  
-  /**
-   * Notify repository changed
-   */
-  cRepoUpdate,
+  cNotifySysState,
+  cNotifyRepoUpdate,
   ;
   
   static final private ERequestType [] cValues = ERequestType.values();
