@@ -9,37 +9,13 @@ import java.util.Calendar;
  */
 public class TimeStamp extends AKasObject
 {
-  /**
-   * A {@link Calendar} object used in coversions
-   */
   static private Calendar sCalendar = Calendar.getInstance();
-  
-  /**
-   * Get current timestamp as long
-   * 
-   * @return current timestamp as a long value
-   * 
-   * @see System#currentTimeMillis()
-   */
-  static public long nowAsLong()
-  {
-    return System.currentTimeMillis();
-  }
-  
-  /**
-   * Get current timestamp in string format
-   * 
-   * @return current timestamp in string format
-   */
-  static public String nowAsString()
-  {
-    return now().toString();
-  }
   
   /**
    * Get current timestamp
    * 
-   * @return current timestamp
+   * @return
+   *   current timestamp
    */
   static public TimeStamp now()
   {
@@ -47,66 +23,65 @@ public class TimeStamp extends AKasObject
   }
   
   /**
+   * Get timestamp of specified long value
+   * 
+   * @return
+   *   specified timestamp
+   */
+  static public TimeStamp toTimeStamp(long timeInMillis)
+  {
+    return new TimeStamp(timeInMillis);
+  }
+  
+  /**
+   * Get the difference, in milliseconds, between two timestamps
+   * 
+   * @return
+   *   the difference, in milliseconds
+   */
+  static public long diff(TimeStamp first, TimeStamp second)
+  {
+    return first.mTimeInMillis - second.mTimeInMillis;
+  }
+  
+  /**
    * The timestamp represented as milliseconds since January 1st, 1970
    */
-  private long mTimeInMilliSeconds;
+  private long mTimeInMillis;
   
   /**
-   * The milliseconds portion of the timestamp
+   * Portions of the converted timestamp
    */
-  private long mMilliseconds;
-  
-  /**
-   * The seconds portion of the timestamp
-   */
-  private long mSecond;
-  
-  /**
-   * The minutes portion of the timestamp
-   */
-  private long mMinute;
-  
-  /**
-   * The hours portion of the timestamp
-   */
-  private long mHour;
-  
-  /**
-   * The days portion of the timestamp
-   */
+  private long mMillis;
+  private long mSeconds;
+  private long mMinutes;
+  private long mHours;
   private long mDay;
-  
-  /**
-   * The months portion of the timestamp
-   */
   private long mMonth;
-  
-  /**
-   * The years portion of the timestamp
-   */
   private long mYear;
   
   /**
-   * Construct a {@link TimeStamp} object using the current timestamp in milliseconds.
+   * Construct a {@link TestTimeStamp} object using the current timestamp in milliseconds.
    * 
-   * @see java.lang.System#currentTimeMillis()
+   * @see System#currentTimeMillis()
    */
-  public TimeStamp()
+  private TimeStamp()
   {
-    mTimeInMilliSeconds = System.currentTimeMillis();
+    mTimeInMillis = System.currentTimeMillis();
     init();
   }
   
   /**
-   * Construct a {@link TimeStamp} object using a specified milliseconds value
+   * Construct a {@link TestTimeStamp} object using a specified milliseconds value
    * 
-   * @param milliseconds A timestamp represented as milliseconds since January 1st, 1970.
+   * @param milliseconds
+   *   A timestamp represented as milliseconds since January 1st, 1970.
    * 
-   * @see java.lang.System#currentTimeMillis()
+   * @see System#currentTimeMillis()
    */
-  public TimeStamp(long milliseconds)
+  private TimeStamp(long milliseconds)
   {
-    mTimeInMilliSeconds = milliseconds;
+    mTimeInMillis = milliseconds;
     init();
   }
   
@@ -115,126 +90,129 @@ public class TimeStamp extends AKasObject
    */
   private void init()
   {
-    sCalendar.setTimeInMillis(mTimeInMilliSeconds);
-    mMilliseconds = sCalendar.get(Calendar.MILLISECOND);
-    mSecond       = sCalendar.get(Calendar.SECOND);
-    mMinute       = sCalendar.get(Calendar.MINUTE);
-    mHour         = sCalendar.get(Calendar.HOUR_OF_DAY);
-    mDay          = sCalendar.get(Calendar.DAY_OF_MONTH);
-    mMonth        = sCalendar.get(Calendar.MONTH) + 1;
-    mYear         = sCalendar.get(Calendar.YEAR);
+    sCalendar.setTimeInMillis(mTimeInMillis);
+    mMillis  = sCalendar.get(Calendar.MILLISECOND);
+    mSeconds = sCalendar.get(Calendar.SECOND);
+    mMinutes = sCalendar.get(Calendar.MINUTE);
+    mHours   = sCalendar.get(Calendar.HOUR_OF_DAY);
+    mDay     = sCalendar.get(Calendar.DAY_OF_MONTH);
+    mMonth   = sCalendar.get(Calendar.MONTH) + 1;
+    mYear    = sCalendar.get(Calendar.YEAR);
   }
   
   /**
-   * Get the timestamp milliseconds in string format
+   * Get the timestamp in milliseconds
    * 
-   * @return the timestamp string
+   * @return
+   *   {@link System#currentTimeMillis()} format timestamp
    */
-  private String toRawString()
+  public long getTimeInMillis()
   {
-    return Long.toString(mTimeInMilliSeconds);
+    return mTimeInMillis;
   }
   
   /**
-   * Get only the date portion of the timestamp in string format.
+   * Get the milliseconds portion of the timestamp
    * 
-   * @return the date string
+   * @return
+   *   the milliseconds portion of the timestamp
    */
-  public String getDateString()
+  public long getMillis()
   {
-    return getDateString("");
+    return mMillis;
   }
   
   /**
-   * Get only the date portion of the timestamp in string format.
+   * Get the seconds portion of the timestamp
    * 
-   * @param seperator A character used to separate between years, months and days 
-   * @return the date string
+   * @return
+   *   the seconds portion of the timestamp
    */
-  public String getDateString(String seperator)
+  public long getSeconds()
   {
-    return String.format("%04d" + seperator + "%02d" + seperator + "%02d", mYear, mMonth, mDay);
+    return mSeconds;
   }
   
   /**
-   * Get only the time portion of the timestamp in string format.
+   * Get the minutes portion of the timestamp
    * 
-   * @return the time string
+   * @return
+   *   the minutes portion of the timestamp
    */
-  public String getTimeString()
+  public long getMinutes()
   {
-    return getTimeString("");
+    return mMinutes;
   }
   
   /**
-   * Get only the time portion of the timestamp in string format.
+   * Get the hours portion of the timestamp
    * 
-   * @param seperator A character used to separate between hours, minutes and seconds 
-   * @return the time string
+   * @return
+   *   the hours portion of the timestamp
    */
-  public String getTimeString(String seperator)
+  public long getHours()
   {
-    return String.format("%02d" + seperator + "%02d" + seperator + "%02d", mHour, mMinute, mSecond);
+    return mHours;
   }
   
   /**
-   * Get the timestamp as long value
+   * Get the day (of the month) portion of the timestamp
    * 
-   * @return the timestamp as long value
+   * @return
+   *   the day (of the month) portion of the timestamp
    */
-  public long getAsLong()
+  public long getDay()
   {
-    return mTimeInMilliSeconds;
+    return mDay;
   }
   
   /**
-   * Return the difference, in milliseconds, between this TimeStamp object and other one
+   * Get the month portion of the timestamp
    * 
-   * @param other A second timestamp represented by milliseconds
-   * @return The difference, expressed in milliseconds
+   * @return
+   *   the month portion of the timestamp
    */
-  public long diff(long other)
+  public long getMonth()
   {
-    return mTimeInMilliSeconds-other;
+    return mMonth;
   }
   
   /**
-   * Return the difference, in milliseconds, between this TimeStamp object and other one
+   * Get the year portion of the timestamp
    * 
-   * @param other A second timestamp represented by {@link TimeStamp}
-   * @return The difference, expressed in milliseconds
+   * @return
+   *   the year portion of the timestamp
    */
-  public long diff(TimeStamp other)
+  public long getYear()
   {
-    return diff(other.mTimeInMilliSeconds);
+    return mYear;
   }
   
   /**
    * Return a formatted timestamp string.<br>
-   * <br>
    * The string is in "YYYY-MM-DD hh:mm:ss,nnn" format
    * 
-   * @return the timestamp in string format
+   * @return
+   *   the timestamp in string format
    */
   public String toString()
   {
-    return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", mYear, mMonth, mDay, mHour, mMinute, mSecond, mMilliseconds);
+    return String.format("%04d-%02d-%02d %02d:%02d:%02d,%03d", mYear, mMonth, mDay, mHours, mMinutes, mSeconds, mMillis);
   }
   
   /**
    * Get the object's detailed string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   * @see #toString()
+   * @param level
+   *   The string padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
     StringBuilder sb = new StringBuilder();
     sb.append(name()).append('(')
-      .append(toRawString())
+      .append(getTimeInMillis())
       .append("),(")
       .append(toString())
       .append(')');
