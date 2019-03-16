@@ -7,8 +7,6 @@ import com.kas.infra.utils.StringUtils;
  * This class implements some of the methods that described in {@link IObject} 
  * 
  * @author Pippo
- * 
- * @see com.kas.infra.base.IObject
  */
 public abstract class AKasObject implements IObject
 {

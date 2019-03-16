@@ -3,14 +3,25 @@ package com.kas.infra.base.threads;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 
+/**
+ * A handler that will handle rejected work requests.<br>
+ * Basically, it will simply force them into the work queue.
+ * 
+ * @see ThreadPoolWorkQueue#force(Runnable)
+ * 
+ * @author Pippo
+ */
 public class ThreadPoolRejectHandler extends AKasObject implements RejectedExecutionHandler
 {
   /**
    * Forcing the {@code Runnable} into the work queue
    * 
-   * @param r the task to be executed
-   * @param executor the {@code ThreadPoolExecutor} from which the task was rejected 
+   * @param r
+   *   The task to be executed
+   * @param executor
+   *   The {@code ThreadPoolExecutor} from which the task was rejected 
    */
   public void rejectedExecution(Runnable r, ThreadPoolExecutor executor)
   {
@@ -19,14 +30,12 @@ public class ThreadPoolRejectHandler extends AKasObject implements RejectedExecu
   }
   
   /**
-   * Get the object's detailed string representation. For {@code ThreadPoolRejectHandler}, this method returns the same 
-   * result as {@link #name()}.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   * @see #toString()
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

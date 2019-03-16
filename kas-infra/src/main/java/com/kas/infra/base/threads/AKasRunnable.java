@@ -1,6 +1,7 @@
 package com.kas.infra.base.threads;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 
 /**
  * A {@link Runnable} object that equipped with a "stop" flag
@@ -30,12 +31,12 @@ public abstract class AKasRunnable extends AKasObject implements Runnable
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public abstract String toPrintableString(int level);
 }

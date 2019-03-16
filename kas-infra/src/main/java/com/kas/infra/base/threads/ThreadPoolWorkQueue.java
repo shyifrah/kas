@@ -4,6 +4,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
+/**
+ * KAS implementation for a thread pool work queue.<br>
+ * The major difference is described in {@link #offer(Runnable)} and {@link #force(Runnable)}.
+ * 
+ * @author Pippo
+ */
 public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implements IObject
 {
   private static final long serialVersionUID = 1L;
@@ -19,7 +25,8 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
    * <br>
    * This work queue is capped at the specified {@code maxSize} value.
    * 
-   * @param maxSize the work queue cap 
+   * @param maxSize
+   *   the work queue cap 
    */
   ThreadPoolWorkQueue(int maxSize)
   {
@@ -33,8 +40,10 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
    * a {@code ThreadPoolExecutor} that works with this type of queue will never spawn new threads.<br>
    * By "capping" the work queue, we gain the ability to spawn new threads.
    * 
-   * @param cmd the {@code Runnable} to be executed
-   * @return true if the {@code Runnable} was queued, false otherwise
+   * @param cmd
+   *   The {@code Runnable} to be executed
+   * @return
+   *   {@code true} if the {@code Runnable} was queued, {@code false} otherwise
    */
   public boolean offer(Runnable cmd)
   {
@@ -47,8 +56,10 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
   /**
    * This method is used to queue a {@code Runnable} regardless of queue cap limitations
    * 
-   * @param cmd the {@code Runnable} to be executed
-   * @return true if the {@code Runnable} was queued, false otherwise
+   * @param cmd
+   *   The {@code Runnable} to be executed
+   * @return
+   *   {@code true} if the {@code Runnable} was queued, {@code false} otherwise
    */
   public boolean force(Runnable cmd)
   {
@@ -56,28 +67,23 @@ public class ThreadPoolWorkQueue extends LinkedBlockingQueue<Runnable> implement
   }
   
   /**
-   * Returns the {@link #KasRunnableThread} simple class name enclosed with chevrons.
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
   
   /**
-   * Get the work queue's detailed string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
