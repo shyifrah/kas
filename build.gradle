@@ -11,24 +11,14 @@ subprojects {
 
   dependencies {
     testCompile 'junit:junit:4.10'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
   }
 }
 
 project(':kas-config') {
   dependencies {
     compile project(':kas-infra')
-  }
-}
-
-project(':kas-logging') {
-  dependencies {
-    compile project(':kas-config')
-  }
-}
-
-configure(subprojects - project(':kas-infra') - project(':kas-config') - project(':kas-logging')) {
-  dependencies {
-    compile project(':kas-logging')
   }
 }
 
