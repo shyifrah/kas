@@ -2,8 +2,6 @@ package com.kas.infra.base;
 
 import org.junit.Assert;
 import org.junit.Test;
-import com.kas.infra.base.KasException;
-import com.kas.infra.base.Properties;
 
 public class TestProperties
 {
@@ -40,7 +38,6 @@ public class TestProperties
     Assert.assertEquals(mProps.size(), 12);
     Assert.assertTrue(mProps.containsKey("key.bool"));
     Assert.assertFalse(mProps.isEmpty());
-    Assert.assertEquals(mProps.name(), "<Properties>");
   }
   
   @Test
@@ -48,14 +45,17 @@ public class TestProperties
   {
     String key = "key.bool";
     boolean exr = true;
-    String msgpref = "getBoolProperty()";
     try
     {
       Assert.assertEquals(mProps.getBoolProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -64,14 +64,17 @@ public class TestProperties
   {
     String key = "key.byte";
     byte exr = 3;
-    String msgpref = "getByteProperty()";
     try
     {
       Assert.assertEquals(mProps.getByteProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -80,14 +83,17 @@ public class TestProperties
   {
     String key = "key.byte[]";
     byte [] exr = "shyush.pippo.ifrah".getBytes();
-    String msgpref = "getBytesProperty()";
     try
     {
       Assert.assertEquals(mProps.getBytesProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -96,14 +102,17 @@ public class TestProperties
   {
     String key = "key.byte[]2";
     byte [] exr = "pippo".getBytes();
-    String msgpref = "getBytesProperty()";
     try
     {
       Assert.assertEquals(mProps.getBytesProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -112,14 +121,17 @@ public class TestProperties
   {
     String key = "key.char";
     char exr = 'x';
-    String msgpref = "getCharProperty()";
     try
     {
       Assert.assertEquals(mProps.getCharProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -128,14 +140,17 @@ public class TestProperties
   {
     String key = "key.double";
     double exr = 0.002;
-    String msgpref = "getDoubleProperty()";
     try
     {
       Assert.assertTrue(mProps.getDoubleProperty(key) == exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -144,14 +159,17 @@ public class TestProperties
   {
     String key = "key.float";
     float exr = (float) 1.2;
-    String msgpref = "getFloatProperty()";
     try
     {
       Assert.assertTrue(mProps.getFloatProperty(key) == exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -160,14 +178,17 @@ public class TestProperties
   {
     String key = "key.int";
     int exr = 9;
-    String msgpref = "getIntProperty()";
     try
     {
       Assert.assertTrue(mProps.getIntProperty(key) == exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -176,14 +197,17 @@ public class TestProperties
   {
     String key = "key.long";
     long exr = 123456789000L;
-    String msgpref = "getLongProperty()";
     try
     {
       Assert.assertTrue(mProps.getLongProperty(key) == exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -192,14 +216,13 @@ public class TestProperties
   {
     String key = "key.object";
     Object exr = new String("lalakers");
-    String msgpref = "getObjectProperty()";
     try
     {
       Assert.assertEquals(mProps.getObjectProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
     }
   }
   
@@ -208,14 +231,17 @@ public class TestProperties
   {
     String key = "key.short";
     short exr = 320;
-    String msgpref = "getShortProperty()";
     try
     {
       Assert.assertEquals(mProps.getShortProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
   
@@ -224,14 +250,17 @@ public class TestProperties
   {
     String key = "key.string";
     String exr = "SHY";
-    String msgpref = "getStringProperty()";
     try
     {
       Assert.assertEquals(mProps.getStringProperty(key), exr);
     }
-    catch (KasException e)
+    catch (PropertyNotFoundException e)
     {
-      Assert.assertTrue(e.getMessage().startsWith(msgpref));
+      Assert.assertTrue(e.getMessage().startsWith("Property not found"));
+    }
+    catch (InvalidPropertyValueException e)
+    {
+      Assert.assertTrue(e.getMessage().startsWith("Invalid property value"));
     }
   }
 }
