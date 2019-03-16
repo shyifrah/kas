@@ -45,7 +45,7 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   private void stdout(ELogLevel level, String message)
   {
     String msg = String.format("%s %5d:%-2d %-5s (%s) %s", 
-      TimeStamp.nowAsString(),
+      TimeStamp.now(),
       RunTimeUtils.getProcessId(),
       RunTimeUtils.getThreadId(),
       level.toString(), 
