@@ -29,7 +29,8 @@ public class Sequence extends AKasObject
   /**
    * Initializing the sequence with the specified {@code initialValue}
    * 
-   * @param initialValue The initial value
+   * @param initialValue
+   *   The initial value
    */
   public Sequence(int initialValue)
   {
@@ -39,7 +40,8 @@ public class Sequence extends AKasObject
   /**
    * Get the sequence current value
    * 
-   * @return the sequence value
+   * @return
+   *   the sequence value
    */
   public int get()
   {
@@ -65,7 +67,8 @@ public class Sequence extends AKasObject
   /**
    * Get the sequence value and then increment it by 1
    * 
-   * @return the sequence value prior to increment
+   * @return
+   *   the sequence value prior to increment
    */
   public int getAndIncrement()
   {
@@ -81,10 +84,10 @@ public class Sequence extends AKasObject
   /**
    * Get the object's detailed string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The string padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

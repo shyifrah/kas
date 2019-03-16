@@ -1,7 +1,7 @@
 package com.kas.infra.base;
 
 /**
- * A KAS exception.
+ * A KAS general purpose exception.
  * 
  * @author Pippo
  */
@@ -21,7 +21,8 @@ public class KasException extends Exception
   /**
    * Construct a {@link KasException} object.
    * 
-   * @param message the exception message
+   * @param message
+   *   The exception message
    */
   public KasException(String message)
   {
@@ -31,7 +32,8 @@ public class KasException extends Exception
   /**
    * Construct a {@link KasQException} object with the associated cause
    * 
-   * @param cause the causer exception
+   * @param cause
+   *   The causer exception
    */
   public KasException(Throwable cause)
   {
@@ -41,8 +43,10 @@ public class KasException extends Exception
   /**
    * Construct a {@link KasException} object with the associated message and cause
    * 
-   * @param message the exception message
-   * @param cause the causer exception
+   * @param message
+   *   The exception message
+   * @param cause
+   *   The causer exception
    */
   public KasException(String message, Throwable cause)
   {
