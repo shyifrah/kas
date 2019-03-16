@@ -11,14 +11,16 @@ public interface IInitializable
   /**
    * Initialize the object
    * 
-   * @return {@code true} if object was initialized successfully, {@code false} otherwise
+   * @return
+   *   {@code true} if object was initialized successfully, {@code false} otherwise
    */
   public abstract boolean init();
   
   /**
    * Terminate the object
    * 
-   * @return {@code true} if object was terminated successfully, {@code false} otherwise
+   * @return
+   *   {@code true} if object was terminated successfully, {@code false} otherwise
    */
   public abstract boolean term();
 }

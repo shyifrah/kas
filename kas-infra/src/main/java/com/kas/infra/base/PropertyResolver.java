@@ -23,10 +23,10 @@ public class PropertyResolver
   /**
    * Resolve the value of {@code rawValue}. 
    * 
-   * @param rawValue The value that needs resolving
-   * @return the resolved value
-   * 
-   * @see #resolve(String, Properties)
+   * @param rawValue
+   *   The value that needs resolving
+   * @return
+   *   the resolved value
    */
   static public String resolve(String rawValue)
   {
@@ -39,11 +39,12 @@ public class PropertyResolver
    * occurrences with their associated values. To get a variable's value this method
    * calls {@link #getVarValue(String)} method. 
    * 
-   * @param rawValue The value that needs resolving
-   * @param props A set of {@link Properties} that is used to determine a variable's value
-   * @return the resolved value
-   * 
-   * @see #getVarValue(String)
+   * @param rawValue
+   *   The value that needs resolving
+   * @param props
+   *   A set of {@link Properties} that is used to determine a variable's value
+   * @return
+   *   the resolved value
    */
   static public String resolve(String rawValue, Properties props)
   {
@@ -70,9 +71,11 @@ public class PropertyResolver
    * Remove the enclosing "${" and "}"
    * 
    * @param var
+   *   The enclosed variable name
    * @return
+   *   strip the enclosing "${" and "}"
    */
-  static private String strip(String var)
+  static String strip(String var)
   {
     return var.substring(2, var.length()-1);
   }
@@ -84,11 +87,14 @@ public class PropertyResolver
    * If it's still {@code null}, the resolver got a set of properties upon construction,
    * we try getting its value from there.
    * 
-   * @param var The variable. e.g. ${kas.user.name}
-   * @param props A set of {@link Properties} which will be used in resolving
-   * @return the value associated with the variable.
+   * @param var
+   *   The variable. e.g. ${kas.user.name}
+   * @param props
+   *   A set of {@link Properties} which will be used in resolving
+   * @return
+   *   the value associated with the variable.
    */
-  static private String getVarValue(String var, Properties props)
+  static String getVarValue(String var, Properties props)
   {
     String strippedvar = strip(var);
     String val = RunTimeUtils.getProperty(strippedvar);

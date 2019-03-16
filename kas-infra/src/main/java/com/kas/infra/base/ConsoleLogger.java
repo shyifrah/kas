@@ -19,7 +19,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Construct a logger with the specified name
    * 
-   * @param name The name of the logger
+   * @param name
+   *   The name of the logger
    */
   public ConsoleLogger(String name)
   {
@@ -29,7 +30,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Get the logger's name
    * 
-   * @return the logger's name
+   * @return
+   *   the logger's name
    */
   public String getLoggerName()
   {
@@ -39,8 +41,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Writing {@code message} with the specified {@code level} to {@code stdout}.
    * 
-   * @param level The message's log level
-   * @param message The message's text
+   * @param level
+   *   The message's log level
+   * @param message
+   *   The message's text
    */
   private void stdout(ELogLevel level, String message)
   {
@@ -57,9 +61,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a DIAG message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#DIAG
+   * @param message
+   *   The message to write
    */
   public void diag(String message)
   {
@@ -69,9 +72,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a DEBUG message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#DEBUG
+   * @param message
+   *   The message to write
    */
   public void debug(String message)
   {
@@ -81,9 +83,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a TRACE message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#TRACE
+   * @param message
+   *   The message to write
    */
   public void trace(String message)
   {
@@ -93,9 +94,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a INFO message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#INFO
+   * @param message
+   *   The message to write
    */
   public void info(String message)
   {
@@ -105,9 +105,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a WARN message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#WARN
+   * @param message
+   *   The message to write
    */
   public void warn(String message)
   {
@@ -117,9 +116,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a ERROR message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#ERROR
+   * @param message
+   *   The message to write
    */
   public void error(String message)
   {
@@ -129,9 +127,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a FATAL message with the specified log level
    * 
-   * @param message The message to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#FATAL
+   * @param message
+   *   The message to write
    */
   public void fatal(String message)
   {
@@ -141,10 +138,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a DIAG message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#DIAG
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void diag(String message, Throwable e)
   {
@@ -155,10 +152,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a DEBUG message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#DEBUG
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void debug(String message, Throwable e)
   {
@@ -169,10 +166,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a TRACE message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#TRACE
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void trace(String message, Throwable e)
   {
@@ -183,10 +180,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a INFO message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#INFO
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void info(String message, Throwable e)
   {
@@ -197,10 +194,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a WARN message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#WARN
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void warn(String message, Throwable e)
   {
@@ -211,10 +208,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a ERROR message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#ERROR
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void error(String message, Throwable e)
   {
@@ -225,10 +222,10 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Write a FATAL message and append the {@link Throwable} object with the specified log level
    * 
-   * @param message The message to write
-   * @param e The throwable object to write
-   * 
-   * @see com.kas.infra.logging.ELogLevel#FATAL
+   * @param message
+   *   The message to write
+   * @param e
+   *   The throwable object to write
    */
   public void fatal(String message, Throwable e)
   {
@@ -239,9 +236,8 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   /**
    * Get the object's string representation.
    * 
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @return
+   *   the string representation
    */
   public String toString()
   {
@@ -253,13 +249,12 @@ public class ConsoleLogger extends AKasObject implements IBaseLogger
   }
   
   /**
-   * Get the object's detailed string representation. For {@link #toPrintableString(int)} the result
-   * is the same as the one returned by {@link #toString()}.
+   * Get the object's detailed string representation
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The string padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

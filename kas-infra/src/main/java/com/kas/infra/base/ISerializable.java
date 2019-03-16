@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
- * A serializable {@link IObject}.
+ * A serializable method
  * 
  * @author Pippo
  */
@@ -13,9 +13,11 @@ public interface ISerializable
   /**
    * Serialize an object to the specified output stream
    * 
-   * @param ostream {@link ObjectOutputStream} to which the object will be serialized
+   * @param ostream
+   *   {@link ObjectOutputStream} to which the object will be serialized
    * 
-   * @throws IOException if an I/O error occurs
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract void serialize(ObjectOutputStream ostream) throws IOException;
 }

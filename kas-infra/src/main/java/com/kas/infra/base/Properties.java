@@ -123,8 +123,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    *   The name of the property
    * @return
    *   {@code true} if the value is not null and is equal, ignoring case, to the string "true". {@code false} otherwise
-   * @throws {@link PropertyException}
-   *   if property is not found or some other error occurred
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public boolean getBoolProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -156,9 +158,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Boolean property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
@@ -178,8 +183,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a Boolean property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setBoolProperty(String key, boolean value)
   {
@@ -195,10 +202,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code char} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Char} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Char} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public char getCharProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -232,9 +243,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Character property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public char getCharProperty(String key, char defaultValue)
   {
@@ -254,8 +268,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set an Character property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setCharProperty(String key, char value)
   {
@@ -271,10 +287,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code int} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Integer} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Integer} value 
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public int getIntProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -306,9 +326,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Integer property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public int getIntProperty(String key, int defaultValue)
   {
@@ -328,8 +351,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set an Integer property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setIntProperty(String key, int value)
   {
@@ -345,10 +370,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link String} value or the {@link Object}'s {@link java.lang.Object#toString()} value 
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link String} value or the {@link Object}'s {@link java.lang.Object#toString()} value 
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public String getStringProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -379,9 +408,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a String property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public String getStringProperty(String key, String defaultValue)
   {
@@ -401,8 +433,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a String property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setStringProperty(String key, String value)
   {
@@ -418,10 +452,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code long} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Long} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Long} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public long getLongProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -453,9 +491,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Long property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public long getLongProperty(String key, long defaultValue)
   {
@@ -475,8 +516,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a Long property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setLongProperty(String key, long value)
   {
@@ -492,10 +535,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code byte} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Byte} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Byte} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public byte getByteProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -527,9 +574,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Byte property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public byte getByteProperty(String key, byte defaultValue)
   {
@@ -549,8 +599,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a Byte property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setByteProperty(String key, byte value)
   {
@@ -566,10 +618,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code byte} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the an array of bytes value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   an array of bytes value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public byte [] getBytesProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -596,9 +652,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a byte [] property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public byte [] getBytesProperty(String key, byte [] defaultValue)
   {
@@ -618,8 +677,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a byte [] property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setBytesProperty(String key, byte [] value)
   {
@@ -631,10 +692,16 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   }
   
   /**
-   * Set a Byte property.
+   * Set a byte [] property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
+   * @param offset
+   *   The offset from the beginning of the array
+   * @param length
+   *   The length to copy
    */
   public void setBytesProperty(String key, byte [] value, int offset, int length)
   {
@@ -652,10 +719,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code double} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Double} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Double} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public double getDoubleProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -687,9 +758,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Double property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public double getDoubleProperty(String key, double defaultValue)
   {
@@ -709,8 +783,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a Double property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setDoubleProperty(String key, double value)
   {
@@ -726,10 +802,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code float} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Float} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Float} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public float getFloatProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -761,9 +841,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Float property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public float getFloatProperty(String key, float defaultValue)
   {
@@ -783,8 +866,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a Float property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setFloatProperty(String key, float value)
   {
@@ -800,10 +885,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Object} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Object} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public Object getObjectProperty(String key) throws PropertyNotFoundException
   {
@@ -820,9 +909,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Object property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public Object getObjectProperty(String key, Object defaultValue)
   {
@@ -842,8 +934,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set an Object property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setObjectProperty(String key, Object value)
   {
@@ -859,10 +953,14 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * <br>
    * If the property does not exist, or property does not designate a valid {@code short} value, an exception is thrown.
    * 
-   * @param key The name of the property
-   * @return the {@link Short} value
-   * 
-   * @throws {@link PropertyException} if property is not found or some other error occurred
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Short} value
+   * @throws {@link PropertyNotFoundException}
+   *   if property is not found
+   * @throws {@link InvalidPropertyValueException}
+   *   if other error occurred
    */
   public short getShortProperty(String key) throws PropertyNotFoundException, InvalidPropertyValueException
   {
@@ -894,9 +992,12 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Get a Short property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public short getShortProperty(String key, short defaultValue)
   {
@@ -916,8 +1017,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Set a Short property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setShortProperty(String key, short value)
   {
@@ -934,8 +1037,10 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * All properties in the subset have a common prefix specified by {@code keyPrefix}.<br>
    * For a {@code null} or empty string, all contents are replicated.
    * 
-   * @param keyPrefix The prefix of the keys to include in the subset
-   * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
+   * @param keyPrefix
+   *   The prefix of the keys to include in the subset
+   * @return
+   *   a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
    */
   public Properties getSubset(String keyPrefix)
   {
@@ -954,10 +1059,13 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
    * and a common suffix specified by {@code keySuffix}.<br>
    * For a {@code null} or empty string, all contents are replicated.
    * 
-   * @param keyPrefix The prefix of the keys to include in the subset
-   * @param keySuffix The suffix of the keys to include in the subset
-   * @return a new {@link Properties} object including only keys that are prefixed
-   * with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
+   * @param keyPrefix
+   *   The prefix of the keys to include in the subset
+   * @param keySuffix
+   *   The suffix of the keys to include in the subset
+   * @return
+   *   a new {@link Properties} object including only keys that are prefixed
+   *   with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
    */
   public Properties getSubset(String keyPrefix, String keySuffix)
   {
@@ -984,22 +1092,21 @@ public class Properties extends ConcurrentHashMap<Object, Object> implements ISe
   /**
    * Returns the {@link Properties} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
   
   /**
    * Get the object's detailed string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
+   * @param level
+   *   The string padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
