@@ -3,6 +3,9 @@ package com.kas.config.impl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.threads.AKasRunnable;
 import com.kas.infra.config.IMainConfiguration;
 import com.kas.infra.utils.StringUtils;
@@ -16,6 +19,8 @@ import com.kas.infra.utils.StringUtils;
  */
 final public class ConfigTask extends AKasRunnable
 {
+  static private Logger sLogger = LogManager.getLogger(ConfigTask.class);
+  
   /**
    * The main configuration
    */
@@ -26,11 +31,11 @@ final public class ConfigTask extends AKasRunnable
    */
   private Map<String, Long>  mMonitoredFilesMap;
   
-
   /**
    * Construct the configuration monitoring task
    * 
-   * @param config The main configuration object
+   * @param config
+   *   The main configuration object
    */
   public ConfigTask(IMainConfiguration config)
   {
@@ -50,23 +55,28 @@ final public class ConfigTask extends AKasRunnable
   /**
    * Running the monitoring task.<br>
    * <br>
-   * Each time the task is executed, it scans the map of configuration files and compares the
-   * last modification timestamp of the file against the value previously saved. If the value has changed,
-   * it means a user updated this configuration file and it should be reloaded. In that case, the saved
+   * Each time the task is executed, it scans the map of configuration files
+   * and compares the last modification timestamp of the file against the value
+   * previously saved. If the value has changed, it means a user updated this
+   * configuration file and it should be reloaded. In that case, the saved
    * timestamp is also updated.
    */
   public void run()
   {
+    sLogger.trace("ConfigTask::run() - IN");
+    
     boolean reload = false;
     
     for (Map.Entry<String, Long> pair : mMonitoredFilesMap.entrySet())
     {
       String fileName = pair.getKey();
       Long prevModTs  = pair.getValue();
+      sLogger.debug("ConfigTask::run() - Checking File={}, LastModified={}", fileName, prevModTs);
       
       // if the file was removed from monitored list, remove it from modification map
       if (!mMainConfig.getConfigFiles().contains(fileName))
       {
+        sLogger.debug("ConfigTask::run() - File {} does not exist in config map, remove it", fileName);
         mMonitoredFilesMap.remove(fileName);
       }
       else
@@ -78,6 +88,7 @@ final public class ConfigTask extends AKasRunnable
           currModTs = file.lastModified();
           if (currModTs > prevModTs)
           {
+            sLogger.debug("ConfigTask::run() - File {} was updated", fileName);
             mMonitoredFilesMap.put(fileName, currModTs);
             reload = true;
           }
@@ -86,15 +97,17 @@ final public class ConfigTask extends AKasRunnable
     }
     
     if (reload) mMainConfig.refresh();
+    
+    sLogger.trace("ConfigTask::run() - OUT");
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

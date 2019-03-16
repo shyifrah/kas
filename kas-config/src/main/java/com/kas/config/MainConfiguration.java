@@ -4,9 +4,12 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.config.impl.ConfigProperties;
 import com.kas.config.impl.ConfigTask;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.config.IBaseListener;
@@ -31,6 +34,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   
   static private final String cMainConfigFileName = "kas.properties";
   static private final String cConfigPropPrefix   = "kas.config.";
+  
+  static private Logger sLogger = LogManager.getLogger(MainConfiguration.class);
   
   /**
    * The {@link MainConfiguration} singleton instance
@@ -75,7 +80,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Get the singleton
    * 
-   * @return the {@link MainConfiguration} singleton instance
+   * @return
+   *   the {@link MainConfiguration} singleton instance
    */
   public static MainConfiguration getInstance()
   {
@@ -85,7 +91,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Get the object's initialization status
    * 
-   * @return {@code true} if the object was successfully initialized, {@code false} otherwise
+   * @return
+   *   {@code true} if the object was successfully initialized, {@code false} otherwise
    */
   public boolean isInitialized()
   {
@@ -97,31 +104,33 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * <br>
    * Initialization includes loading the properties and starting the configuration monitor task.
    * 
-   * @return the initialization value of the object. If initialization succeeded, this method will return {@code true}.
-   * 
-   * @see com.kas.infra.base.IInitializable#init()
+   * @return
+   *   the initialization value of the object. If initialization succeeded, this method will return {@code true}.
    */
   public boolean init()
   {
+    sLogger.trace("MainConfiguration::init() - IN");
+    
     if (!mInitialized)
     {
       mConfigDir = RunTimeUtils.getProductHomeDir() + File.separatorChar + "conf";
+      sLogger.trace("MainConfiguration::init() - ConfigDir is {}", mConfigDir);
+      
       boolean loaded = load();
-      if (!loaded)
+      if (loaded)
       {
-        return false;
+        mConfigTask  = new ConfigTask(this);
+        
+        mConfigMonitoringDelay    = getLongProperty( cConfigPropPrefix + "delay"    , mConfigMonitoringDelay    );
+        mConfigMonitoringInterval = getLongProperty( cConfigPropPrefix + "interval" , mConfigMonitoringInterval );
+        
+        ThreadPool.scheduleAtFixedRate(mConfigTask, mConfigMonitoringDelay, mConfigMonitoringInterval, TimeUnit.MILLISECONDS);
+        
+        mInitialized = true;
       }
-      
-      mConfigTask  = new ConfigTask(this);
-      
-      mConfigMonitoringDelay    = getLongProperty( cConfigPropPrefix + "delay"    , mConfigMonitoringDelay    );
-      mConfigMonitoringInterval = getLongProperty( cConfigPropPrefix + "interval" , mConfigMonitoringInterval );
-      
-      ThreadPool.scheduleAtFixedRate(mConfigTask, mConfigMonitoringDelay, mConfigMonitoringInterval, TimeUnit.MILLISECONDS);
-      
-      mInitialized = true;
     }
     
+    sLogger.trace("MainConfiguration::init() - OUT, Result={}", mInitialized);
     return true;
   }
   
@@ -130,12 +139,13 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * <br>
    * Termination includes clearing all properties and canceling the configuration task
    * 
-   * @return the initialization value of the object. If termination succeeded, this method will return {@code false}.
-   * 
-   * @see com.kas.infra.base.IInitializable#term()
+   * @return
+   *   the initialization value of the object. If termination succeeded, this method will return {@code false}.
    */
   public boolean term()
   {
+    sLogger.trace("MainConfiguration::term() - IN");
+    
     if (mInitialized)
     {
       ThreadPool.removeSchedule(mConfigTask);
@@ -145,23 +155,30 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
       
       mInitialized = false;
     }
+    
+    sLogger.trace("MainConfiguration::term() - OUT, Result={}", mInitialized);
     return mInitialized;
   }
   
   /**
    * Load configuration properties
    * 
-   * @return {@code false} if the properties are empty or no configuration files could be found, {@code true} otherwise 
+   * @return
+   *   {@code false} if the properties are empty or no configuration files could be found, {@code true} otherwise 
    */
   private boolean load()
   {
+    sLogger.trace("MainConfiguration::load() - IN");
+    
     mProperties = new ConfigProperties();
     mProperties.load(mConfigDir + File.separatorChar + cMainConfigFileName);
     
-    if (mProperties.isEmpty())
-      return false;
+    boolean result = false;
+    if (!mProperties.isEmpty())
+      result = true;
     
-    return true;
+    sLogger.trace("MainConfiguration::load() - OUT, Result={}", result);
+    return result;
   }
 
   /**
@@ -169,6 +186,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    */
   public void refresh()
   {
+    sLogger.trace("MainConfiguration::refresh() - IN");
+    
     // load new properties
     load();
     
@@ -181,14 +200,15 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
           listener.refresh();
       }
     }
+    
+    sLogger.trace("MainConfiguration::refresh() - OUT");
   }
   
   /**
    * Register a configuration listener
    * 
-   * @param listener A configuration listener to register in this {@link IBaseRegistrar} object.
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
+   * @param listener
+   *   A configuration listener to register in this {@link IBaseRegistrar} object.
    */
   public synchronized void register(IBaseListener listener)
   {
@@ -198,9 +218,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Unregister a configuration listener
    * 
-   * @param listener A configuration listener to unregister from this {@link IBaseRegistrar} object.
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
+   * @param listener
+   *   A configuration listener to unregister from this {@link IBaseRegistrar} object.
    */
   public synchronized void unregister(IBaseListener listener)
   {
@@ -223,7 +242,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
    * This includes the main configuration file - kas.properties - as well as all configuration files
    * that are included via the {@code kas.include} statement.
    * 
-   * @return a list of the configuration files
+   * @return
+   *   a list of the configuration files
    */
   public StringList getConfigFiles()
   {
@@ -233,7 +253,8 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Get the configuration directory path
    * 
-   * @return the configuration directory path
+   * @return
+   *   the configuration directory path
    */
   public String getConfigDir()
   {
@@ -243,12 +264,13 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Returns the value of a string configuration property
    * 
-   * @param key The name of the configuration property
-   * @param defaultValue The default value that will be returned if the configuration property does not exist
-   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
-   * if the property does not exist.
-   * 
-   * @see com.kas.infra.config.IConfiguration#getStringProperty(String, String)
+   * @param key
+   *   The name of the configuration property
+   * @param defaultValue
+   *   The default value that will be returned if the configuration property does not exist
+   * @return
+   *   the value of the configuration property as stored in the configuration files,
+   *   or {@code defaultValue} if the property does not exist.
    */
   public String getStringProperty(String key, String defaultValue)
   {
@@ -258,12 +280,13 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Returns the value of an integer configuration property
    * 
-   * @param key The name of the configuration property
-   * @param defaultValue The default value that will be returned if the configuration property does not exist
-   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
-   * if the property does not exist.
-   * 
-   * @see com.kas.infra.config.IConfiguration#getIntProperty(String, int)
+   * @param key
+   *   The name of the configuration property
+   * @param defaultValue
+   *   The default value that will be returned if the configuration property does not exist
+   * @return
+   *   the value of the configuration property as stored in the configuration files,
+   *   or {@code defaultValue} if the property does not exist.
    */
   public int getIntProperty(String key, int defaultValue)
   {
@@ -273,12 +296,13 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Returns the value of a long configuration property
    * 
-   * @param key The name of the configuration property
-   * @param defaultValue The default value that will be returned if the configuration property does not exist
-   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
-   * if the property does not exist.
-   * 
-   * @see com.kas.infra.config.IConfiguration#getLongProperty(String, long)
+   * @param key
+   *   The name of the configuration property
+   * @param defaultValue
+   *   The default value that will be returned if the configuration property does not exist
+   * @return
+   *   the value of the configuration property as stored in the configuration files,
+   *   or {@code defaultValue} if the property does not exist.
    */
   public long getLongProperty(String key, long defaultValue)
   {
@@ -288,12 +312,13 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Returns the value of a boolean configuration property
    * 
-   * @param key The name of the configuration property
-   * @param defaultValue The default value that will be returned if the configuration property does not exist
-   * @return the value of the configuration property as stored in the configuration files, or {@code defaultValue}
-   * if the property does not exist.
-   * 
-   * @see com.kas.infra.config.IConfiguration#getBoolProperty(String, boolean)
+   * @param key
+   *   The name of the configuration property
+   * @param defaultValue
+   *   The default value that will be returned if the configuration property does not exist
+   * @return
+   *   the value of the configuration property as stored in the configuration files,
+   *   or {@code defaultValue} if the property does not exist.
    */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
@@ -303,10 +328,10 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Get a subset of the {@link IConfiguration} object.
    * 
-   * @param keyPrefix The prefix of the keys to include in the subset
-   * @return a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
-   * 
-   * @see com.kas.infra.config.IConfiguration#getSubset(String)
+   * @param keyPrefix
+   *   The prefix of the keys to include in the subset
+   * @return
+   *   a new {@link Properties} object including only keys that are prefixed with {@code keyPrefix}
    */
   public Properties getSubset(String keyPrefix)
   {
@@ -316,12 +341,13 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   /**
    * Get a subset of the {@link IConfiguration} object.
    * 
-   * @param keyPrefix The prefix of the keys to include in the subset
-   * @param keySuffix The suffix of the keys to include in the subset
-   * @return a new {@link Properties} object including only keys that are
-   * prefixed with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
-   * 
-   * @see com.kas.infra.config.IConfiguration#getSubset(String, String)
+   * @param keyPrefix
+   *   The prefix of the keys to include in the subset
+   * @param keySuffix
+   *   The suffix of the keys to include in the subset
+   * @return
+   *   a new {@link Properties} object including only keys that are
+   *   prefixed with {@code keyPrefix} <b>AND</b> suffixed with {@code keySuffix}
    */
   public Properties getSubset(String keyPrefix, String keySuffix)
   {
@@ -329,12 +355,12 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
@@ -357,7 +383,6 @@ final public class MainConfiguration extends AKasObject implements IMainConfigur
     }
     
     sb.append(pad).append(")\n");
-    
     return sb.toString();
   }
 }

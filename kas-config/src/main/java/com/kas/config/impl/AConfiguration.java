@@ -2,6 +2,7 @@ package com.kas.config.impl;
 
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.config.IBaseListener;
 
 /**
@@ -49,7 +50,8 @@ public abstract class AConfiguration extends AKasObject implements IBaseListener
   /**
    * Returns the configuration object's state.
    * 
-   * @return true if the configuration object was initialized
+   * @return
+   *   {@code true} if the configuration object was initialized
    */
   public boolean isInitialized()
   {
@@ -58,18 +60,16 @@ public abstract class AConfiguration extends AKasObject implements IBaseListener
   
   /**
    * Refreshes the configuration object
-   * 
-   * @see com.kas.infra.config.IBaseListener#refresh()
    */
   public abstract void refresh();
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public abstract String toPrintableString(int level);
 }
