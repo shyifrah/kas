@@ -6,7 +6,7 @@ import com.kas.infra.base.IObject;
 import com.kas.infra.utils.helpers.ThrowableFormatter;
 
 /**
- * Utility functions
+ * A list of utility methods used to manipulate strings
  * 
  * @author Pippo
  */
@@ -286,8 +286,27 @@ public class StringUtils
   
   /**
    * Truncate a string to a specified length.<br>
-   * If the given string is longer than the requested length, it is truncated, and if it is shorter, it is
-   * padded with the specified padding character. If one is not specified, space is used.<br>
+   * If the given string is longer than the requested length, it is truncated,
+   * and if it is shorter, it is padded with blanks.
+   * 
+   * @param str
+   *   The string to be truncated/padded
+   * @param len
+   *   The requested length of the new string
+   * @return
+   *   the truncated string
+   * @throws IllegalArgumentException
+   *   if {@code len} is negative or if {@code str} is null
+   */
+  static public String trunc(String str, int len)
+  {
+    return trunc(str, len, ' ');
+  }
+  
+  /**
+   * Truncate a string to a specified length.<br>
+   * If the given string is longer than the requested length, it is truncated,
+   * and if it is shorter, it is padded with the specified padding character.
    * 
    * @param str
    *   The string to be truncated/padded
@@ -297,14 +316,9 @@ public class StringUtils
    *   The padding character
    * @return
    *   the truncated string
-   * 
-   * @throws IllegalArgumentException if {@code len} is negative or if {@code str} is null
+   * @throws IllegalArgumentException
+   *   if {@code len} is negative or if {@code str} is null
    */
-  static public String trunc(String str, int len)
-  {
-    return trunc(str, len, ' ');
-  }
-  
   static public String trunc(String str, int len, char pad)
   {
     if (str == null)
@@ -355,8 +369,7 @@ public class StringUtils
   /**
    * Clear all blanks from a string.<br>
    * Example<br>
-   * The string {@code " banana     apple    "} will yield a return value
-   * of {@code "banana apple"
+   * The string {@code " banana     apple    "} will yield a return value of {@code "banana apple"}
    * 
    * @param bytearray
    *   The byte array

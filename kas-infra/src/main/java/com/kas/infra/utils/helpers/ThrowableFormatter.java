@@ -20,7 +20,8 @@ public final class ThrowableFormatter
   /**
    * Construct the object
    * 
-   * @param t The {@link Throwable} to be formatted
+   * @param t
+   *   The {@link Throwable} to be formatted
    */
   public ThrowableFormatter(Throwable t)
   {
@@ -30,7 +31,8 @@ public final class ThrowableFormatter
   /**
    * Return the formatted string
    * 
-   * @return the formatted exception
+   * @return
+   *   the formatted exception
    */
   public String toString()
   {
@@ -56,8 +58,10 @@ public final class ThrowableFormatter
    * This method is invoked recursively (in case there's a causer exception), so it receives the buffer
    * and not just returns it.
    * 
-   * @param buffer The buffer (a {@link StringBuilder} object) which will receive the formatted string
-   * @param e The exception to format
+   * @param buffer
+   *   The buffer (a {@link StringBuilder} object) which will receive the formatted string
+   * @param e
+   *   The exception to format
    */
   private void format(StringBuilder buffer, Throwable e)
   {

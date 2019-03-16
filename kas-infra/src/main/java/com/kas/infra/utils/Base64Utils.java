@@ -12,8 +12,10 @@ public class Base64Utils
   /**
    * Encode {@code plaintext} data to BASE64-encoded data
    * 
-   * @param plaintext The input data to encrypt
-   * @return BASE64-encoded data
+   * @param plaintext
+   *   The input data to encrypt
+   * @return
+   *   BASE64-encoded data
    */
   static public byte [] encode(byte [] plaintext)
   {
@@ -23,8 +25,10 @@ public class Base64Utils
   /**
    * Decode {@code cyphertext} - a BASE64-decoded data - back to plain text
    * 
-   * @param cyphertext The input data to decrypt
-   * @return plain text
+   * @param cyphertext
+   *   The input data to decrypt
+   * @return
+   *   plain text
    */
   static public byte [] decode(byte [] cyphertext)
   {
