@@ -16,8 +16,10 @@ public class StringList extends ArrayList<String> implements IObject
   /**
    * Create a StringList object from a comma-separated list which is enclosed with brackets
    *  
-   * @param string The comma-separated list
-   * @return The StringList object
+   * @param string
+   *   The comma-separated list
+   * @return
+   *   the StringList object
    */
   static public StringList fromString(String string)
   {
@@ -27,9 +29,12 @@ public class StringList extends ArrayList<String> implements IObject
   /**
    * Create a StringList object from a comma-separated list which is enclosed with brackets
    *  
-   * @param string The comma-separated list
-   * @param enclosed Whether {@code string} is enclosed with brackets
-   * @return The StringList object
+   * @param string
+   *   The comma-separated list
+   * @param enclosed
+   *   Whether {@code string} is enclosed with brackets
+   * @return
+   *   the StringList object
    */
   static public StringList fromString(String string, boolean enclosed)
   {
@@ -61,26 +66,21 @@ public class StringList extends ArrayList<String> implements IObject
   /**
    * Returns the {@link StringList} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
 
   /**
-   * Returns the {@link StringList} string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

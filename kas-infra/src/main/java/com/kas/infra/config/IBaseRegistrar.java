@@ -11,14 +11,16 @@ public interface IBaseRegistrar
   /**
    * Register a new listener
    * 
-   * @param listener the listener to register with the registrar
+   * @param listener
+   *   The listener to register with the registrar
    */
   public abstract void register(IBaseListener listener);
   
   /**
    * Unregister a listener
    * 
-   * @param listener the listener to unregister with the registrar
+   * @param listener
+   *   The listener to unregister with the registrar
    */
   public abstract void unregister(IBaseListener listener);
 }

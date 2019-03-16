@@ -11,7 +11,6 @@ public interface IBaseListener extends IObject
 {
   /**
    * Refresh configuration.<br>
-   * <br>
    * When called, the object should update its configuration
    */
   public abstract void refresh();

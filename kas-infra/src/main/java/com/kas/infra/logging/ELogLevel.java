@@ -53,9 +53,10 @@ public enum ELogLevel implements IObject
   /**
    * Is one log level greater or equal to an other
    * 
-   * @param other A second {@link ELogLevel} to compare
-   * 
-   * @return {@code true} if this {@link ELogLevel} is greater or equal to {@code other}
+   * @param other
+   *   A second {@link ELogLevel} to compare
+   * @return
+   *   {@code true} if this {@link ELogLevel} is greater or equal to {@code other}
    */
   public boolean isGreaterOrEqual(ELogLevel other)
   {
@@ -65,7 +66,8 @@ public enum ELogLevel implements IObject
   /**
    * Return a formatted version of the enum name
    * 
-   * @return a five-character length log-level, padded with blanks to the right, if necessary
+   * @return
+   *   a five-character length log-level, padded with blanks to the right, if necessary
    */
   public String toString()
   {
@@ -78,13 +80,12 @@ public enum ELogLevel implements IObject
   }
 
   /**
-   * Get the enum detailed string representation. For {@link ELogLevel} this is the same as calling
-   * {@link #toString()} method.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
