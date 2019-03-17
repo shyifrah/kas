@@ -2,13 +2,11 @@ package com.kas.appl;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
-import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.threads.ThreadPool;
-import com.kas.infra.logging.IBaseLogger;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 
 /**
  * A KAS/MQ application
@@ -17,15 +15,17 @@ import com.kas.logging.LoggerFactory;
  */
 public abstract class AKasApp extends AKasObject implements IKasApp
 {
-  static protected IBaseLogger sStartupLogger = new ConsoleLogger(AKasApp.class.getName());
+  static protected Logger sStartupLogger = LogManager.getLogger(AKasApp.class);
   
   private boolean mTerminated = false;
   
   /**
    * Check validity of startup arguments and return a map of arguments of keys and values
    * 
-   * @param args An array of arguments passed to {@link #main(String[] main} function
-   * @return a map of arguments
+   * @param args
+   *   An array of arguments passed to {@link #main(String[] main} function
+   * @return
+   *   a map of arguments
    */
   static protected Map<String, String> getAndProcessStartupArguments(String [] args)
   {
@@ -38,15 +38,15 @@ public abstract class AKasApp extends AKasObject implements IKasApp
     {
       for (String arg : args)
       {
-        sStartupLogger.info("Processing argument: [" + arg + "]");
+        sStartupLogger.info("Processing argument: [{}]", arg);
         String [] keyValue = arg.split("=");
         if (keyValue.length > 2)
         {
-          sStartupLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
+          sStartupLogger.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
         }
         else if (keyValue.length <= 1)
         {
-          sStartupLogger.warn("Invalid argument: '" + arg + "'. Argument should be in key=value format. Ignoring...");
+          sStartupLogger.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
         }
         else
         {
@@ -62,7 +62,7 @@ public abstract class AKasApp extends AKasObject implements IKasApp
   /**
    * Logger
    */
-  protected ILogger mLogger = null;
+  protected Logger mLogger = null;
   
   /**
    * Shutdown hook
@@ -95,21 +95,22 @@ public abstract class AKasApp extends AKasObject implements IKasApp
   
   /**
    * Initializing the base KAS application.<br>
-   * <br>
    * Initialization consisting of:
    * - application version
    * - register a shutdown hook
    * - get a logger
    * - invoking the application initialization method
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean init()
   {
     sStartupLogger.info("KAS base application startup in progress...");
     
-    mVersion = new ProductVersion(this.getClass());
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mVersion = new ProductVersion(getClass());
+    mLogger = LogManager.getLogger(getClass());
+    
     mShutdownHook = new AppShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
     sStartupLogger.info("Logging services are now active, switching to log file");
@@ -142,7 +143,7 @@ public abstract class AKasApp extends AKasObject implements IKasApp
       try
       {
         boolean okay = Runtime.getRuntime().removeShutdownHook(mShutdownHook);
-        mLogger.debug("AKasAppl::run() - Shutdown hook deregistration: " + okay);
+        mLogger.debug("AKasAppl::run() - Shutdown hook deregistration: {}", okay);
       }
       catch (IllegalStateException e)
       {
@@ -153,10 +154,10 @@ public abstract class AKasApp extends AKasObject implements IKasApp
   
   /**
    * Terminating the application.<br>
-   * <br>
    * Most application doesn't require real termination, so we provide default initialization.
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean appTerm()
   {
@@ -165,12 +166,12 @@ public abstract class AKasApp extends AKasObject implements IKasApp
 
   /**
    * Terminating the base KAS application.<br>
-   * <br>
    * Termination consisting of:
    * - invoking the application termination method
    * - thread pool shutdown
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public synchronized boolean term()
   {
@@ -184,7 +185,7 @@ public abstract class AKasApp extends AKasObject implements IKasApp
     }
     
     ThreadPool.shutdownNow();
-    sStartupLogger.info(getAppName() + " shutdown complete");
+    sStartupLogger.info("{} shutdown complete", getAppName());
     return term;
   }
   
@@ -201,8 +202,6 @@ public abstract class AKasApp extends AKasObject implements IKasApp
   
   /**
    * Refreshing the configuration
-   * 
-   * @see IBaseListener#refresh()
    */
   public void refresh()
   {

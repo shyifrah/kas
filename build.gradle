@@ -16,9 +16,15 @@ subprojects {
   }
 }
 
-project(':kas-config') {
+configure(project(':kas-config')) {
   dependencies {
     compile project(':kas-infra')
+  }
+}
+
+configure(subprojects - project(':kas-infra') - project(':kas-config')) {
+  dependencies {
+    compile project(':kas-config')
   }
 }
 
