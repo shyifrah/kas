@@ -13,14 +13,15 @@ public class MessengerFactory
 {
   /**
    * Create a {@link Messenger} object with an active socket.<br> 
-   * <br>
-   * This method is intended for use by server-side applications where a new socket was created
-   * as a result of calling {@link ServerSocket#accept() accept()}
+   * This method is intended for use by server-side applications where
+   * a new socket was created as a result of calling {@link ServerSocket#accept() accept()}
    * 
-   * @param socket An active socket
-   * @return a newly-created {@link Messenger} object
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param socket
+   *   An active socket
+   * @return
+   *   a newly-created {@link Messenger} object
+   * @throws IOException
+   *   if an I/O error occurs
    */
   static public Messenger create(Socket socket) throws IOException
   {
@@ -29,14 +30,16 @@ public class MessengerFactory
   
   /**
    * Create a {@link Messenger} object with an active socket.<br> 
-   * <br>
-   * This method is intended for use by client-side applications where the socket was not
-   * created yet, and the {@link Messenger} object will be the one to establish the connection.
+   * This method is intended for use by client-side applications where the socket
+   * was not created yet, and the {@link Messenger} object will be the one to establish
+   * the connection.
    * 
-   * @param socket An active socket
-   * @return a newly-created {@link Messenger} object
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param socket
+   *   An active socket
+   * @return
+   *   a newly-created {@link Messenger} object
+   * @throws IOException
+   *   if an I/O error occurs
    */
   static public Messenger create(String host, int port) throws IOException
   {

@@ -15,28 +15,23 @@ public class ClassIdMap extends ConcurrentHashMap<EClassId, Class<? extends IPac
   private static final long serialVersionUID = 1L;
 
   /**
-   * Returns the {@link ClassIdMap} simple class name enclosed with chevrons.
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
 
   /**
-   * Returns the {@link ClassIdMap} string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

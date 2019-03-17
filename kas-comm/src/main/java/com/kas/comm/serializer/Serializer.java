@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * An object that helps in serialization
@@ -19,17 +19,19 @@ public class Serializer
   /**
    * Logger
    */
-  static private ILogger sLogger = LoggerFactory.getLogger(Serializer.class);
+  static private Logger sLogger = LogManager.getLogger(Serializer.class);
   
   /**
    * Convert {@link Serializable} object to a byte array
    * 
-   * @param object The {@link Serializable} object to convert
-   * @return the byte array
+   * @param object
+   *   The {@link Serializable} object to convert
+   * @return
+   *   the byte array
    */
   static public byte [] toByteArray(Serializable object)
   {
-    sLogger.diag("Serializer::toByteArray() - IN");
+    sLogger.trace("Serializer::toByteArray() - IN");
     
     byte [] result = null;
     if (object != null)
@@ -43,11 +45,11 @@ public class Serializer
         oos.flush();
         baos.flush();
         result = baos.toByteArray();
-        sLogger.diag("Serializer::toByteArray() - Converted object to byte array. byte [] size: " + result.length);
+        sLogger.trace("Serializer::toByteArray() - Converted object to byte array. byte [] size: {}", result.length);
       }
       catch (IOException e)
       {
-        sLogger.diag("Serializer::toByteArray() - An exception caught while converting Serializable object to byte-array. Exception: ", e);
+        sLogger.trace("Serializer::toByteArray() - An exception caught while converting Serializable object to byte-array. Exception: ", e);
       }
       finally
       {
@@ -65,19 +67,21 @@ public class Serializer
       }
     }
     
-    sLogger.diag("Serializer::toByteArray() - OUT");
+    sLogger.trace("Serializer::toByteArray() - OUT");
     return result;
   }
   
   /**
    * Convert a byte array to {@link Serializable} object 
    * 
-   * @param bytearray The byte array to convert
-   * @return the {@link Serializable} object
+   * @param bytearray
+   *   The byte array to convert
+   * @return
+   *   the {@link Serializable} object
    */
   static public Serializable toSerializable(byte [] bytearray)
   {
-    sLogger.diag("Serializer::toSerializable() - IN");
+    sLogger.trace("Serializer::toSerializable() - IN");
     
     Serializable result = null;
     if ((bytearray != null) && (bytearray.length > 0))
@@ -88,11 +92,11 @@ public class Serializer
       {
         ois = new ObjectInputStream(bais);
         result = (Serializable)ois.readObject();
-        sLogger.diag("Serializer::toSerializable() - Converted byte array to object: " + result.toString());
+        sLogger.trace("Serializer::toSerializable() - Converted byte array to object: {}", result);
       }
       catch (IOException | ClassNotFoundException e)
       {
-        sLogger.diag("Serializer::toSerializable() - An exception caught while converting byte-array to Serializable object. Exception: ", e);
+        sLogger.trace("Serializer::toSerializable() - An exception caught while converting byte-array to Serializable object. Exception: ", e);
       }
       finally
       {
@@ -105,7 +109,7 @@ public class Serializer
       }
     }
     
-    sLogger.diag("Serializer::toSerializable() - OUT");
+    sLogger.trace("Serializer::toSerializable() - OUT");
     return result;
   }
 }

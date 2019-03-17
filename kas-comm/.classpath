@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-config"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry kind="src" output="bin/main" path="src/main/java">
 		<attributes>
 			<attribute name="gradle_scope" value="main"/>

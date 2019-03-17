@@ -15,9 +15,10 @@ public interface IPacket extends ISerializable, IObject
   /**
    * Create a header describing the packet
    * 
-   * @return the header describing the packet 
-   * 
-   * @throws IOException if an I/O error occurs
+   * @return
+   *   the header describing the packet
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract PacketHeader createHeader();
 }
