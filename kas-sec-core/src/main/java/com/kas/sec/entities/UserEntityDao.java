@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
 import com.kas.infra.typedef.StringList;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 
 /**
  * An implementation layer for {@link UserEntity}
@@ -43,17 +43,19 @@ public class UserEntityDao
   /**
    * Logger
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(UserEntityDao.class);
+  private static Logger sLogger = LogManager.getLogger(UserEntityDao.class);
   
   /**
    * Get a {@link UserEntity} by its name
    * 
-   * @param name The name of the {@link UserEntity}
-   * @return the {@link UserEntity} with the specified name or {@code null} if not found
+   * @param name
+   *   The name of the {@link UserEntity}
+   * @return
+   *   the {@link UserEntity} with the specified name or {@code null} if not found
    */
   public static UserEntity getByName(String name)
   {
-    sLogger.debug("UserEntityDao::getByName() - IN");
+    sLogger.trace("UserEntityDao::getByName() - IN");
     UserEntity ue = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -69,23 +71,25 @@ public class UserEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("UserEntityDao::getByName() - Exception caught: ", e);
+      sLogger.trace("UserEntityDao::getByName() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("UserEntityDao::getByName() - OUT, Returns=" + ue);
+    sLogger.trace("UserEntityDao::getByName() - OUT, Returns=" + ue);
     return ue;
   }
   
   /**
    * Get a list of {@link UserEntity}s by a pattern
    * 
-   * @param pattern The pattern that should be matched
-   * @return a list of all {@link UserEntity}s that their name matches {@code pattern}
+   * @param pattern
+   *   The pattern that should be matched
+   * @return
+   *   a list of all {@link UserEntity}s that their name matches {@code pattern}
    */
   public static List<UserEntity> getByPattern(String pattern)
   {
-    sLogger.debug("UserEntityDao::getByPattern() - IN");
+    sLogger.trace("UserEntityDao::getByPattern() - IN");
     List<UserEntity> list = new ArrayList<UserEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -106,11 +110,11 @@ public class UserEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("UserEntityDao::getByPattern() - Exception caught: ", e);
+      sLogger.trace("UserEntityDao::getByPattern() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("UserEntityDao::getByPattern() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    sLogger.trace("UserEntityDao::getByPattern() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
     return list;
   }
   
@@ -122,7 +126,7 @@ public class UserEntityDao
 //   */
 //  public static UserEntity get(int id)
 //  {
-//    sLogger.debug("UserEntityDao::get() - IN");
+//    sLogger.trace("UserEntityDao::get() - IN");
 //    UserEntity ue = null;
 //    
 //    DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -138,22 +142,23 @@ public class UserEntityDao
 //    }
 //    catch (SQLException e)
 //    {
-//      sLogger.debug("UserEntityDao::get() - Exception caught: ", e);
+//      sLogger.trace("UserEntityDao::get() - Exception caught: ", e);
 //    }
 //    
 //    dbPool.release(dbConn);
-//    sLogger.debug("UserEntityDao::get() - OUT, Returns=" + StringUtils.asString(ue));
+//    sLogger.trace("UserEntityDao::get() - OUT, Returns=" + StringUtils.asString(ue));
 //    return ue;
 //  }
 //
   /**
    * Get a list of all {@link UserEntity} objects
    * 
-   * @return a list of all {@link UserEntity} objects
+   * @return
+   *   a list of all {@link UserEntity} objects
    */
   public static List<UserEntity> getAll()
   {
-    sLogger.debug("UserEntityDao::getAll() - IN");
+    sLogger.trace("UserEntityDao::getAll() - IN");
     List<UserEntity> list = new ArrayList<UserEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -174,11 +179,11 @@ public class UserEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("UserEntityDao::getAll() - Exception caught: ", e);
+      sLogger.trace("UserEntityDao::getAll() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("UserEntityDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    sLogger.trace("UserEntityDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
     return list;
   }
   
@@ -190,7 +195,7 @@ public class UserEntityDao
 //   */
 //  public static void update(UserEntity t, Map<String, String> map)
 //  {
-//    sLogger.debug("UserEntityDao::update() - IN");
+//    sLogger.trace("UserEntityDao::update() - IN");
 //    
 //    DbConnectionPool dbPool = DbConnectionPool.getInstance();
 //    DbConnection dbConn = dbPool.allocate();
@@ -218,93 +223,38 @@ public class UserEntityDao
 //      
 //      String sql = sb.toString();
 //      sql = sql.substring(0, sql.length()-1);
-//      sLogger.debug("UserEntityDao::update() - Execute SQL: [" + sql + "]");
+//      sLogger.trace("UserEntityDao::update() - Execute SQL: [" + sql + "]");
 //      
 //      PreparedStatement ps = conn.prepareStatement(sql);
 //      ps.execute();
 //    }
 //    catch (SQLException e)
 //    {
-//      sLogger.debug("UserEntityDao::update() - Exception caught: ", e);
+//      sLogger.trace("UserEntityDao::update() - Exception caught: ", e);
 //    }
 //    
 //    dbPool.release(dbConn);
-//    sLogger.debug("UserEntityDao::update() - OUT");
+//    sLogger.trace("UserEntityDao::update() - OUT");
 //  }
 //
-//  /**
-//   * Save specified {@link UserEntity} to the data layer
-//   * 
-//   * @param t The object to be saved
-//   */
-//  public static void save(UserEntity t)
-//  {
-//    sLogger.debug("UserEntityDao::save() - IN");
-//    
-//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-//    DbConnection dbConn = dbPool.allocate();
-//    
-//    Connection conn = dbConn.getConn();
-//    try
-//    {
-//      String pswd = new String(Base64Utils.decode(t.getPassword()));
-//      String sql = "INSERT INTO " + cKasTableName + " (user_name, user_description, user_password) " +
-//        "VALUES ('" + t.getName() + "', '"+ t.getDescription() + "', '" + pswd + "');";
-//      sLogger.debug("UserEntityDao::save() - Execute SQL: [" + sql + "]");
-//      
-//      PreparedStatement ps = conn.prepareStatement(sql);
-//      ps.execute();
-//    }
-//    catch (SQLException e)
-//    {
-//      sLogger.debug("UserEntityDao::save() - Exception caught: ", e);
-//    }
-//    
-//    dbPool.release(dbConn);
-//    sLogger.debug("UserEntityDao::save() - OUT");
-//  }
-//
-//  /**
-//   * Delete the specified {@link UserEntity}
-//   * 
-//   * @param t The object to be deleted
-//   */
-//  public static void delete(UserEntity t)
-//  {
-//    sLogger.debug("UserEntityDao::delete() - IN");
-//    
-//    DbConnectionPool dbPool = DbConnectionPool.getInstance();
-//    DbConnection dbConn = dbPool.allocate();
-//    
-//    Connection conn = dbConn.getConn();
-//    try
-//    {
-//      String sql = "DELETE FROM " + cKasTableName + " WHERE user_id = " + t.getId() + ";";
-//      sLogger.debug("UserEntityDao::delete() - Execute SQL: [" + sql + "]");
-//      
-//      PreparedStatement ps = conn.prepareStatement(sql);
-//      ps.execute();
-//    }
-//    catch (SQLException e)
-//    {
-//      sLogger.debug("UserEntityDao::delete() - Exception caught: ", e);
-//    }
-//    
-//    dbPool.release(dbConn);
-//    sLogger.debug("UserEntityDao::delete() - OUT");
-//  }
+  
   /**
    * Create a {@link UserEntity} and store it
    * 
-   * @param user The user name
-   * @param pass The user's password
-   * @param desc The user description
-   * @param groups The list of groups the user needs to be a member of
-   * @return The newly created user entity
+   * @param user
+   *   The user name
+   * @param pass
+   *   The user's password
+   * @param desc
+   *   The user description
+   * @param groups
+   *   The list of groups the user needs to be a member of
+   * @return
+   *   the newly created user entity
    */
   public static UserEntity create(String user, String password, String desc, StringList groups)
   {
-    sLogger.debug("UserEntityDao::create() - IN");
+    sLogger.trace("UserEntityDao::create() - IN");
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -316,7 +266,7 @@ public class UserEntityDao
     {
       String sql = "INSERT INTO " + cKasTableName + " (user_name, user_password, user_description) " +
         "VALUES ('" + user + "', '" + password + "', '"+ desc + "');";
-      sLogger.debug("UserEntityDao::create() - Execute SQL: [" + sql + "]");
+      sLogger.trace("UserEntityDao::create() - Execute SQL: [{}]", sql);
       
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.execute();
@@ -325,7 +275,7 @@ public class UserEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("UserEntityDao::create() - Exception caught: ", e);
+      sLogger.trace("UserEntityDao::create() - Exception caught: ", e);
     }
     
     if (ue != null)
@@ -339,7 +289,7 @@ public class UserEntityDao
           {
             String sql = "INSERT INTO " + cKasUsersToGroupsTableName + " (user_id, group_id) " +
               "VALUES (" + ue.getId() + ", " + ge.getId() + ");";
-            sLogger.debug("UserEntityDao::create() - Execute SQL: [" + sql + "]");
+            sLogger.trace("UserEntityDao::create() - Execute SQL: [{}]", sql);
             
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.execute();
@@ -348,26 +298,28 @@ public class UserEntityDao
           }
           catch (SQLException e)
           {
-            sLogger.debug("UserEntityDao::create() - Exception caught: ", e);
+            sLogger.trace("UserEntityDao::create() - Exception caught: ", e);
           }
         }
       }
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("UserEntityDao::create() - OUT, Result=" + ue);
+    sLogger.trace("UserEntityDao::create() - OUT, Result={}", ue);
     return ue;
   }
 
   /**
    * Delete the specified {@link UserEntity}
    * 
-   * @param user The user name
-   * @return {@code true} if user was deleted, {@code false} otherwise
+   * @param user
+   *   The user name
+   * @return
+   *   {@code true} if user was deleted, {@code false} otherwise
    */
   public static boolean delete(String user)
   {
-    sLogger.debug("UserEntityDao::delete() - IN");
+    sLogger.trace("UserEntityDao::delete() - IN");
     
     boolean result = false;
     
@@ -378,7 +330,7 @@ public class UserEntityDao
     try
     {
       String sql = "DELETE FROM " + cKasTableName + " WHERE user_name = '" + user + "';";
-      sLogger.debug("UserEntityDao::delete() - Execute SQL: [" + sql + "]");
+      sLogger.trace("UserEntityDao::delete() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.execute();
@@ -386,25 +338,29 @@ public class UserEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("UserEntityDao::delete() - Exception caught: ", e);
+      sLogger.trace("UserEntityDao::delete() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("UserEntityDao::delete() - OUT, Returns=" + result);
+    sLogger.trace("UserEntityDao::delete() - OUT, Returns={}", result);
     return result;
   }
   
   /**
    * Extract a list of groups in which a user participates
    * 
-   * @param conn The connection to be used to query the DB
-   * @param id The {@link UserEntity user entity's} ID
-   * @return a list of group IDs 
+   * @param conn
+   *   The connection to be used to query the DB
+   * @param id
+   *   The {@link UserEntity user entity's} ID
+   * @return
+   *   a list of group IDs 
    * @throws SQLException
+   *   If one is thrown by java.sql.* classes
    */
   private static List<Integer> getUserGroups(Connection conn, int id) throws SQLException
   {
-    sLogger.debug("UserEntityDao::getUserGroups() - IN");
+    sLogger.trace("UserEntityDao::getUserGroups() - IN");
     
     String sql = "SELECT group_id FROM " + cKasUsersToGroupsTableName + " WHERE user_id = " + id;
     ResultSet rs2 = DbUtils.execute(conn, sql);
@@ -416,21 +372,25 @@ public class UserEntityDao
     }
     rs2.close();
     
-    sLogger.debug("UserEntityDao::getUserGroups() - OUT, List.size()=" + ugids.size());
+    sLogger.trace("UserEntityDao::getUserGroups() - OUT, List.size()={}", ugids.size());
     return ugids;
   }
   
   /**
    * Create a user entity based on the output of a query
    * 
-   * @param rs The output of a query
-   * @param conn An open Connection to the DB for further queries
-   * @return a {@link UserEntity} 
+   * @param rs
+   *   The output of a query
+   * @param conn
+   *   An open Connection to the DB for further queries
+   * @return
+   *   a {@link UserEntity} 
    * @throws SQLException
+   *   If one is thrown by java.sql.* classes
    */
   private static UserEntity createUserEntity(ResultSet rs, Connection conn) throws SQLException
   {
-    sLogger.debug("UserEntityDao::createUserEntity() - IN");
+    sLogger.trace("UserEntityDao::createUserEntity() - IN");
     
     int uid = rs.getInt("user_id");
     String uname = rs.getString("user_name");
@@ -440,7 +400,7 @@ public class UserEntityDao
     List<Integer> ugids = getUserGroups(conn, uid);
     
     UserEntity ue = new UserEntity(uid, uname, udesc, upass, ugids);
-    sLogger.debug("UserEntityDao::createUserEntity() - OUT, UserEntity=" + ue);
+    sLogger.trace("UserEntityDao::createUserEntity() - OUT, UserEntity={}", ue);
     return ue;
   }
 }

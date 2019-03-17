@@ -1,6 +1,7 @@
 package com.kas.sec.access;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 
 /**
@@ -48,7 +49,8 @@ public class AccessLevel extends AKasObject
   /**
    * Construct an access level with the specified byte.
    * 
-   * @param accessLevel The bit-string that should be turned on 
+   * @param accessLevel
+   *   The bit-string that should be turned on 
    */
   public AccessLevel(int accessLevel)
   {
@@ -58,7 +60,8 @@ public class AccessLevel extends AKasObject
   /**
    * Get the integer value of the access level 
    *  
-   * @return the access level in its integer value
+   * @return
+   *   the access level in its integer value
    */
   public int getAccessLevel()
   {
@@ -68,8 +71,10 @@ public class AccessLevel extends AKasObject
   /**
    * Get an indication if access levels are enabled or not 
    *  
-   * @param levels A bit-string of access levels
-   * @return {@code true} if all bits of {@code levels} are turned on, {@code false} otherwise
+   * @param levels
+   *   A bit-string of access levels
+   * @return
+   *   {@code true} if all bits of {@code levels} are turned on, {@code false} otherwise
    */
   public boolean isLevelEnabled(int levels)
   {
@@ -79,7 +84,8 @@ public class AccessLevel extends AKasObject
   /**
    * Get the bit-string as a hexa-decimal character.
    * 
-   * @return the bit-string as a hexa-decimal character.
+   * @return
+   *   the bit-string as a hexa-decimal character.
    */
   public boolean equals(Object other)
   {
@@ -89,7 +95,8 @@ public class AccessLevel extends AKasObject
   /**
    * Get the bit-string as a hexa-decimal character.
    * 
-   * @return the bit-string as a hexa-decimal character.
+   * @return
+   *   the bit-string as a hexa-decimal character.
    */
   public String toString()
   {
@@ -97,12 +104,12 @@ public class AccessLevel extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

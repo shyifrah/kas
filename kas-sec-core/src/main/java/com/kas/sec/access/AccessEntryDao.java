@@ -8,13 +8,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
 import com.kas.infra.base.AKasObject;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
+import com.kas.infra.base.IObject;
 
+/**
+ * Object responsible for managing, storing, retrieving and updating
+ * {@link AccessEntry} to the database.
+ * 
+ * @author Pippo
+ */
 public class AccessEntryDao extends AKasObject
 {
   /**
@@ -31,7 +38,7 @@ public class AccessEntryDao extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private Logger mLogger = LogManager.getLogger(getClass());
   
   /**
    * Name of table that holds ACEs data
@@ -41,45 +48,23 @@ public class AccessEntryDao extends AKasObject
   /**
    * Construct the the DAO object
    * 
-   * @param resTypeName Name of the resource
+   * @param resTypeNam
+   *    Name of the resource
    */
   AccessEntryDao(String resTypeName)
   {
     mTableName = "kas_mq_" + resTypeName.toLowerCase() + "_permissions";
   }
-  
-  /**
-   * Get a {@link AccessEntry} by its name
-   * 
-   * @param name The name of the {@link AccessEntry}
-   * @return the {@link AccessEntry} with the specified name or {@code null} if not found
-   */
-  public AccessEntry get(String name)
-  {
-    mLogger.debug("AccessEntryDao::get() - IN/OUT");
-    throw new RuntimeException("AccessEntryDao.get(String) not supported");
-  }
-  
-  /**
-   * Get {@link AccessEntry} associated with the specific name
-   * 
-   * @param id The ID of the {@link AccessEntry}
-   * @return The {@link AccessEntry} that matches the query
-   */
-  public AccessEntry get(int id)
-  {
-    mLogger.debug("AccessEntryDao::get() - IN/OUT");
-    throw new RuntimeException("AccessEntryDao.get(int) not supported");
-  }
 
   /**
    * Get a list of all {@link AccessEntry} objects
    * 
-   * @return a list of all {@link AccessEntry} objects
+   * @return
+   *   a list of all {@link AccessEntry} objects
    */
   public List<AccessEntry> getAll()
   {
-    mLogger.debug("AccessEntryDao::getAll() - IN");
+    mLogger.trace("AccessEntryDao::getAll() - IN");
     List<AccessEntry> list = new ArrayList<AccessEntry>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -99,43 +84,29 @@ public class AccessEntryDao extends AKasObject
     }
     catch (SQLException e)
     {
-      mLogger.debug("AccessEntryDao::getAll() - Exception caught: ", e);
+      mLogger.trace("AccessEntryDao::getAll() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    mLogger.debug("AccessEntryDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    mLogger.trace("AccessEntryDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
     return list;
-  }
-
-  public void save(AccessEntry t)
-  {
-    mLogger.debug("AccessEntryDao::save() - IN/OUT");
-    throw new RuntimeException("AccessEntryDao.save(AccessEntry) not supported");
-  }
-
-  public void update(AccessEntry t, Map<String, String> params)
-  {
-    mLogger.debug("AccessEntryDao::update() - IN/OUT");
-    throw new RuntimeException("AccessEntryDao.update(AccessEntry, Map) not supported");
-  }
-
-  public void delete(AccessEntry t)
-  {
-    mLogger.debug("AccessEntryDao::delete() - IN/OUT");
-    throw new RuntimeException("AccessEntryDao.delete(AccessEntry) not supported");
   }
 
   /**
    * Create a ACE based on the output of a query
    * 
-   * @param rs The output of a query
-   * @param conn An open Connection to the DB for further queries
-   * @return a {@link AccessEntry}
+   * @param rs
+   *   The output of a query
+   * @param conn
+   *   An open Connection to the DB for further queries
+   * @return
+   *   a {@link AccessEntry}
    * @throws SQLException
+   *   if one is thrown by java.sql.* classes
    */
   private AccessEntry createAccessEntry(ResultSet rs, Connection conn) throws SQLException
   {
-    mLogger.debug("AccessEntryDao::createAccessEntry() - IN");
+    mLogger.trace("AccessEntryDao::createAccessEntry() - IN");
     
     String pat = rs.getString("pattern");
     String sql = "SELECT group_id, access_level FROM " + mTableName + " WHERE pattern = '" + pat + "';";
@@ -150,17 +121,17 @@ public class AccessEntryDao extends AKasObject
     rs2.close();
     
     AccessEntry ace = new AccessEntry(pat, permissions);
-    mLogger.debug("AccessEntryDao::createAccessEntry() - OUT, UserEntity=" + ace.toString());
+    mLogger.trace("AccessEntryDao::createAccessEntry() - OUT, UserEntity=" + ace.toString());
     return ace;
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

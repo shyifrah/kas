@@ -3,18 +3,18 @@ package com.kas.sec.access;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.sec.entities.UserEntity;
 
 /**
  * An access entry is a an entry in an access list that grants certain permissions to
  * the resource (designated by the regular expression) to a certain entity.<br>
- * <br>
- * The resources protected by this entry are designated by the regular expression {@code mResourceRegEx}
- * and the permitted access level by the {@code mPermittedAccess}.
+ * The resources protected by this entry are designated by the regular expression
+ * {@code mResourceRegEx} and the permitted access level by the {@code mPermittedAccess}.
  * 
  * @author Pippo
  */
@@ -23,7 +23,7 @@ public class AccessEntry extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private Logger mLogger = LogManager.getLogger(getClass());
   
   /**
    * The regular expression that matches the resources controlled by this ACE
@@ -43,7 +43,8 @@ public class AccessEntry extends AKasObject
   /**
    * Construct an access-entry
    * 
-   * @param map A map of group IDs to their allowed access level
+   * @param map
+   *   A map of group IDs to their allowed access level
    */
   AccessEntry(String regex, Map<Integer, AccessLevel> map)
   {
@@ -54,7 +55,8 @@ public class AccessEntry extends AKasObject
   /**
    * Get the regular expression
    * 
-   * @return the regular expression
+   * @return
+   *   the regular expression
    */
   public String getResourceRegEx()
   {
@@ -64,7 +66,8 @@ public class AccessEntry extends AKasObject
   /**
    * Test if a specific resource is protected by this {@link AccessEntry} 
    * 
-   * @return {@code true} if the resource name matches the regular expression, {@code false} otherwise
+   * @return
+   *   {@code true} if the resource name matches the regular expression, {@code false} otherwise
    */
   public boolean isResourceMatch(String resource)
   {
@@ -76,13 +79,15 @@ public class AccessEntry extends AKasObject
   /**
    * Get the access level allowed for {@code user}
    * 
-   * @param user The user entity
-   * @return The first {@link AccessLevel} that maps to one of the user's groups,
-   * or {@code null} if none found
+   * @param user
+   *   The user entity
+   * @return
+   *   the first {@link AccessLevel} that maps to one of the user's groups,
+   *   or {@code null} if none found
    */
   public AccessLevel getAccessLevelFor(UserEntity user)
   {
-    mLogger.debug("AccessEntry::getAccessLevelFor() - IN, UE=" + user);
+    mLogger.trace("AccessEntry::getAccessLevelFor() - IN, UE={}", user);
     
     AccessLevel level = null;
     List<Integer> gids = user.getGroups();
@@ -92,14 +97,15 @@ public class AccessEntry extends AKasObject
       level = mPermittedEntities.get(groupId);
     }
     
-    mLogger.debug("AccessEntry::getAccessLevelFor() - OUT, Level=" + level);
+    mLogger.trace("AccessEntry::getAccessLevelFor() - OUT, Level={}", level);
     return level;
   }
   
   /**
-   * Get the object's string representation
+   * Get the string representation
    * 
-   * @return the string representation with the specified level of padding
+   * @return
+   *   the string representation
    */
   public String toString()
   {
@@ -109,12 +115,12 @@ public class AccessEntry extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

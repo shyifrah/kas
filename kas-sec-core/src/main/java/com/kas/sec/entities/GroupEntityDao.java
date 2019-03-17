@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.db.DbConnection;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 
 /**
  * An implementation layer for {@link GroupEntity}
@@ -40,17 +40,19 @@ public class GroupEntityDao
   /**
    * Logger
    */
-  private static ILogger sLogger = LoggerFactory.getLogger(GroupEntityDao.class);
+  private static Logger sLogger = LogManager.getLogger(GroupEntityDao.class);
   
   /**
    * Get a {@link GroupEntity} by its name
    * 
-   * @param name The name of the {@link GroupEntity}
-   * @return the {@link GroupEntity} with the specified name or {@code null} if not found
+   * @param name
+   *   The name of the {@link GroupEntity}
+   * @return
+   *   the {@link GroupEntity} with the specified name or {@code null} if not found
    */
   public static GroupEntity getByName(String name)
   {
-    sLogger.debug("GroupEntityDao::getByName() - IN");
+    sLogger.trace("GroupEntityDao::getByName() - IN");
     GroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -66,23 +68,25 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::getByName() - Exception caught: ", e);
+      sLogger.trace("GroupEntityDao::getByName() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::getByName() - OUT, Returns=" + ge);
+    sLogger.trace("GroupEntityDao::getByName() - OUT, Returns={}", ge);
     return ge;
   }
   
   /**
    * Get {@link GroupEntity} associated with the specific name
    * 
-   * @param id The ID of the {@link GroupEntity}
-   * @return The {@link GroupEntity} that matches the query
+   * @param id
+   *   The ID of the {@link GroupEntity}
+   * @return
+   *   the {@link GroupEntity} that matches the query
    */
   public static GroupEntity getById(int id)
   {
-    sLogger.debug("GroupEntityDao::get() - IN");
+    sLogger.trace("GroupEntityDao::get() - IN");
     GroupEntity ge = null;
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -98,23 +102,25 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::get() - Exception caught: ", e);
+      sLogger.trace("GroupEntityDao::get() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::get() - OUT, Returns=" + ge);
+    sLogger.trace("GroupEntityDao::get() - OUT, Returns={}", ge);
     return ge;
   }
   
   /**
    * Get a list of {@link GroupEntity}s by a pattern
    * 
-   * @param pattern The pattern that should be matched
-   * @return a list of all {@link GroupEntity}s that their name matches {@code pattern}
+   * @param pattern
+   *   The pattern that should be matched
+   * @return
+   *   a list of all {@link GroupEntity}s that their name matches {@code pattern}
    */
   public static List<GroupEntity> getByPattern(String pattern)
   {
-    sLogger.debug("GroupEntityDao::getByPattern() - IN");
+    sLogger.trace("GroupEntityDao::getByPattern() - IN");
     List<GroupEntity> list = new ArrayList<GroupEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -135,22 +141,23 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::getByPattern() - Exception caught: ", e);
+      sLogger.trace("GroupEntityDao::getByPattern() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::getByPattern() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    sLogger.trace("GroupEntityDao::getByPattern() - OUT, Returns={}; Size={}", list, list.size());
     return list;
   }
 
   /**
    * Get a list of all {@link GroupEntity} objects
    * 
-   * @return a list of all {@link GroupEntity} objects
+   * @return
+   *   a list of all {@link GroupEntity} objects
    */
   public static List<GroupEntity> getAll()
   {
-    sLogger.debug("GroupEntityDao::getAll() - IN");
+    sLogger.trace("GroupEntityDao::getAll() - IN");
     List<GroupEntity> list = new ArrayList<GroupEntity>();
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
@@ -171,11 +178,11 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::getAll() - Exception caught: ", e);
+      sLogger.trace("GroupEntityDao::getAll() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::getAll() - OUT, Returns=" + list.toString() + "; Size=" + list.size());
+    sLogger.trace("GroupEntityDao::getAll() - OUT, Returns={}; Size={}", list, list.size());
     return list;
   }
 
@@ -187,7 +194,7 @@ public class GroupEntityDao
 //   */
 //  public static void update(GroupEntity t, Map<String, String> map)
 //  {
-//    sLogger.debug("GroupEntityDao::update() - IN");
+//    sLogger.trace("GroupEntityDao::update() - IN");
 //    
 //    DbConnectionPool dbPool = DbConnectionPool.getInstance();
 //    DbConnection dbConn = dbPool.allocate();
@@ -215,30 +222,33 @@ public class GroupEntityDao
 //      
 //      String sql = sb.toString();
 //      sql = sql.substring(0, sql.length()-1);
-//      sLogger.debug("GroupEntityDao::update() - Execute SQL: [" + sql + "]");
+//      sLogger.trace("GroupEntityDao::update() - Execute SQL: [" + sql + "]");
 //      
 //      PreparedStatement ps = conn.prepareStatement(sql);
 //      ps.execute();
 //    }
 //    catch (SQLException e)
 //    {
-//      sLogger.debug("GroupEntityDao::update() - Exception caught: ", e);
+//      sLogger.trace("GroupEntityDao::update() - Exception caught: ", e);
 //    }
 //    
 //    dbPool.release(dbConn);
-//    sLogger.debug("GroupEntityDao::update() - OUT");
+//    sLogger.trace("GroupEntityDao::update() - OUT");
 //  }
 //
   /**
    * Create a {@link GroupEntity} and store it
    * 
-   * @param group The group name
-   * @param desc The group description
-   * @return The newly created group entity
+   * @param group
+   *   The group name
+   * @param desc
+   *   The group description
+   * @return
+   *   the newly created group entity
    */
   public static GroupEntity create(String group, String desc)
   {
-    sLogger.debug("GroupEntityDao::create() - IN");
+    sLogger.trace("GroupEntityDao::create() - IN");
     
     DbConnectionPool dbPool = DbConnectionPool.getInstance();
     DbConnection dbConn = dbPool.allocate();
@@ -250,7 +260,7 @@ public class GroupEntityDao
     {
       String sql = "INSERT INTO " + cKasTableName + " (group_name, group_description) " +
         "VALUES ('" + group + "', '"+ desc + "');";
-      sLogger.debug("GroupEntityDao::create() - Execute SQL: [" + sql + "]");
+      sLogger.trace("GroupEntityDao::create() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.execute();
@@ -259,23 +269,25 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::create() - Exception caught: ", e);
+      sLogger.trace("GroupEntityDao::create() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::create() - OUT, Result=" + ge);
+    sLogger.trace("GroupEntityDao::create() - OUT, Result={}", ge);
     return ge;
   }
 
   /**
    * Delete the specified {@link GroupEntity}
    * 
-   * @param group The group name
-   * @return {@code true} if group was deleted, {@code false} otherwise
+   * @param group
+   *   The group name
+   * @return
+   *   {@code true} if group was deleted, {@code false} otherwise
    */
   public static boolean delete(String group)
   {
-    sLogger.debug("GroupEntityDao::delete() - IN");
+    sLogger.trace("GroupEntityDao::delete() - IN");
     
     boolean result = false;
     
@@ -286,7 +298,7 @@ public class GroupEntityDao
     try
     {
       String sql = "DELETE FROM " + cKasTableName + " WHERE group_name = '" + group + "';";
-      sLogger.debug("GroupEntityDao::delete() - Execute SQL: [" + sql + "]");
+      sLogger.trace("GroupEntityDao::delete() - Execute SQL: [" + sql + "]");
       
       PreparedStatement ps = conn.prepareStatement(sql);
       ps.execute();
@@ -294,32 +306,36 @@ public class GroupEntityDao
     }
     catch (SQLException e)
     {
-      sLogger.debug("GroupEntityDao::delete() - Exception caught: ", e);
+      sLogger.trace("GroupEntityDao::delete() - Exception caught: ", e);
     }
     
     dbPool.release(dbConn);
-    sLogger.debug("GroupEntityDao::delete() - OUT, Returns=" + result);
+    sLogger.trace("GroupEntityDao::delete() - OUT, Returns={}", result);
     return result;
   }
   
   /**
    * Create a group entity based on the output of a query
    * 
-   * @param rs The output of a query
-   * @param conn An open Connection to the DB for further queries
-   * @return a {@link GroupEntity} 
+   * @param rs
+   *   The output of a query
+   * @param conn
+   *   An open Connection to the DB for further queries
+   * @return
+   *   a {@link GroupEntity} 
    * @throws SQLException
+   *   if one is thrown by java.sql.* classes
    */
   private static GroupEntity createGroupEntity(ResultSet rs, Connection conn) throws SQLException
   {
-    sLogger.debug("GroupEntityDao::createGroupEntity() - IN");
+    sLogger.trace("GroupEntityDao::createGroupEntity() - IN");
     
     int gid = rs.getInt("group_id");
     String gname = rs.getString("group_name");
     String gdesc = rs.getString("group_description");
     
     GroupEntity ge = new GroupEntity(gid, gname, gdesc);
-    sLogger.debug("GroupEntityDao::createGroupEntity() - OUT, UserEntity=" + ge);
+    sLogger.trace("GroupEntityDao::createGroupEntity() - OUT, UserEntity={}", ge);
     return ge;
   }
 }

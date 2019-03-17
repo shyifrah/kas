@@ -1,9 +1,10 @@
 package com.kas.sec.resources;
 
 import java.util.Enumeration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
+import com.kas.infra.base.IObject;
 import com.kas.sec.access.AccessEntry;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.access.AccessList;
@@ -21,7 +22,7 @@ public class ResourceClass extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private Logger mLogger = LogManager.getLogger(getClass());
   
   /**
    * The resource class ID
@@ -46,12 +47,15 @@ public class ResourceClass extends AKasObject
   /**
    * Construct a {@link ResourceClass}
    * 
-   * @param id The Id of the resource class
-   * @param name The name of the resource class
-   * @param accessLevels A list of logically-ORed access-levels (integers)
-   * that are supported by this resource class
-   * 
-   * @throws RuntimeException if name or description are invalid
+   * @param id
+   *   The Id of the resource class
+   * @param name
+   *   The name of the resource class
+   * @param accessLevels
+   *   A list of logically-ORed access-levels (integers)
+   *   that are supported by this resource class
+   * @throws IllegalArgumentException
+   *   if name or description are invalid
    */
   public ResourceClass(int id, String name, int accessLevels)
   {
@@ -70,7 +74,8 @@ public class ResourceClass extends AKasObject
   /**
    * Get the ID of the resource class
    * 
-   * @return the ID of the resource class
+   * @return
+   *   the ID of the resource class
    */
   public int getId()
   {
@@ -80,7 +85,8 @@ public class ResourceClass extends AKasObject
   /**
    * Get the name of the resource class
    * 
-   * @return the name of the resource class
+   * @return
+   *   the name of the resource class
    */
   public String getName()
   {
@@ -90,7 +96,8 @@ public class ResourceClass extends AKasObject
   /**
    * Get the access levels that are enabled for this resource class
    * 
-   * @return the access levels that are enabled for this resource class
+   * @return
+   *   the access levels that are enabled for this resource class
    */
   public AccessLevel getEnabledAccessLevels()
   {
@@ -100,7 +107,8 @@ public class ResourceClass extends AKasObject
   /**
    * Get a one-line string representation of this resource class
    * 
-   * @return a one-line string representation of this resource class
+   * @return
+   *   a one-line string representation of this resource class
    */
   public String toString()
   {
@@ -109,18 +117,20 @@ public class ResourceClass extends AKasObject
   
   /**
    * Get the access level in which {@code user} can access the {@code resName}.<br>
-   * <br>
    * First, obtain all ACEs that potentially protect the specified resource.
    * Secondly, for each ACE, we check if it grants some sort of access to the resource,
    * if it does, the search is stopped.
    * 
-   * @param resName The name of the resource
-   * @param user The {@link UserEntity}
-   * @return the {@link AccessLevel} allowed for the specified user
+   * @param resName
+   *   The name of the resource
+   * @param user
+   *   The {@link UserEntity}
+   * @return
+   *   the {@link AccessLevel} allowed for the specified user
    */
   public AccessLevel getAccessLevelFor(String resName, UserEntity user)
   {
-    mLogger.debug("ResourceClass::getAccessLevelFor() - IN, UE=" + user + "; Res=" + resName);
+    mLogger.trace("ResourceClass::getAccessLevelFor() - IN, UE={}; Res={}", user, resName);
     
     AccessLevel level = null;
     Enumeration<AccessEntry> aces = mAccessList.getAccessEntries(resName);
@@ -132,17 +142,17 @@ public class ResourceClass extends AKasObject
     
     if (level == null) level = AccessLevel.NONE_ACCESS;
     
-    mLogger.debug("ResourceClass::getAccessLevelFor() - OUT, Level=" + level);
+    mLogger.trace("ResourceClass::getAccessLevelFor() - OUT, Level={}", level);
     return level;
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

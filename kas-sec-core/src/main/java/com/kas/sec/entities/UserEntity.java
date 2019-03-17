@@ -28,11 +28,16 @@ public class UserEntity extends Entity
    * Construct a new user entity with the specified parameters and
    * an empty list of groups attached.
    * 
-   * @param id The entity ID
-   * @param name The entity Name
-   * @param desc The entity description
-   * @param password The user's password
-   * @param groups A list of group IDs
+   * @param id
+   *   The entity ID
+   * @param name
+   *   The entity Name
+   * @param desc
+   *   The entity description
+   * @param password
+   *   The user's password
+   * @param groups
+   *   A list of group IDs
    */
   public UserEntity(int id, String name, String desc, String password, List<Integer> groups)
   {
@@ -44,7 +49,8 @@ public class UserEntity extends Entity
   /**
    * Get the user's password
    * 
-   * @return the user's password
+   * @return
+   *   the user's password
    */
   public byte[] getPassword()
   {
@@ -54,7 +60,8 @@ public class UserEntity extends Entity
   /**
    * Get the groups in which a user is member
    * 
-   * @return list of {@link GroupEntity}
+   * @return
+   *   list of {@link GroupEntity}
    */
   public List<Integer> getGroups()
   {
@@ -64,8 +71,10 @@ public class UserEntity extends Entity
   /**
    * Test if specified password matches the one stored in data base
    * 
-   * @param password Supplied password
-   * @return {@code true} if match, {@code false} otherwise
+   * @param password
+   *   Supplied password
+   * @return
+   *   {@code true} if match, {@code false} otherwise
    */
   public boolean isPasswordMatch(String password)
   {
@@ -85,9 +94,12 @@ public class UserEntity extends Entity
   /**
    * Test if this user is permitted to access {@code resName} of {@code resClass}.
    * 
-   * @param resClass The class of the resource
-   * @param resName The name of the resource
-   * @return {@code true} if access is permitted, {@code false} if access is prohibited
+   * @param resClass
+   *   The class of the resource
+   * @param resName
+   *   The name of the resource
+   * @return
+   *   {@code true} if access is permitted, {@code false} if access is prohibited
    */
   public boolean isAccessPermitted(EResourceClass resClass, String resName)
   {
@@ -99,10 +111,14 @@ public class UserEntity extends Entity
    * with access level {@code level}.<br>
    * If {@code level} is not supported by this {@code resType} an exception is thrown.
    * 
-   * @param resType The type of the resource
-   * @param resName The name of the resource
-   * @param level The requested access level
-   * @return {@code true} if access is permitted, {@code false} if access is prohibited
+   * @param resType
+   *   The type of the resource
+   * @param resName
+   *   The name of the resource
+   * @param level
+   *   The requested access level
+   * @return
+   *   {@code true} if access is permitted, {@code false} if access is prohibited
    */
   public boolean isAccessPermitted(EResourceClass resType, String resName, AccessLevel level)
   {

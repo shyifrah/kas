@@ -3,9 +3,10 @@ package com.kas.sec.access;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
+import com.kas.infra.base.IObject;
 import com.kas.sec.resources.ResourceClass;
 
 /**
@@ -21,7 +22,7 @@ public class AccessList extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * Resource class name
@@ -36,23 +37,26 @@ public class AccessList extends AKasObject
   /**
    * Construct an {@link AccessList}
    * 
-   * @param name The name of the resource class on which this access list controls
+   * @param name
+   *   The name of the resource class on which this access list controls
    */
   public AccessList(String name)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mEntries = new AccessEntryDao(name);
   }
   
   /**
    * Get an enumeration of {@link AccessEntry access entries} that protect {@code resource}.
    * 
-   * @param resource The resource checked
-   * @return the matching {@link AccessEntry access entries} that protects the specified resource
+   * @param resource
+   *   The resource checked
+   * @return
+   *   the matching {@link AccessEntry access entries} that protects the specified resource
    */
   public Enumeration<AccessEntry> getAccessEntries(String resource)
   {
-    mLogger.debug("AccessList::getAccessEntry() - IN");
+    mLogger.trace("AccessList::getAccessEntry() - IN");
     
     List<AccessEntry> entries = mEntries.getAll();
     Vector<AccessEntry> result = new Vector<AccessEntry>();
@@ -62,17 +66,17 @@ public class AccessList extends AKasObject
         result.add(ace);
     }
     
-    mLogger.debug("AccessList::getAccessEntry() - OUT, Returns=" + result.size() + " ACEs");
+    mLogger.trace("AccessList::getAccessEntry() - OUT, Returns={} ACEs", result.size());
     return result.elements();
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

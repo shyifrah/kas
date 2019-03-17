@@ -3,7 +3,7 @@ package com.kas.sec.resources;
 import com.kas.sec.access.AccessLevel;
 
 /**
- * This ENUM is used to simplify the the code when requesting to check
+ * This enum is used to simplify the the code when requesting to check
  * permissions for a user against a specific resource.<br>
  * 
  * @author Pippo
@@ -58,6 +58,10 @@ public enum EResourceClass
   
   /**
    * Construct the Resource type
+   * 
+   * @param enabledAccessLevels
+   *   An integer representing the access-levels that are valid
+   *   for this resource class
    */
   private EResourceClass(int enabledAccessLevels)
   {
@@ -70,7 +74,8 @@ public enum EResourceClass
   /**
    * Get the resource class
    * 
-   * @return the resource class
+   * @return
+   *   the resource class
    */
   public ResourceClass getResourceClass()
   {
