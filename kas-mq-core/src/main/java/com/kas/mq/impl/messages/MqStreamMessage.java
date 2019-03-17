@@ -7,13 +7,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ABaseBytesMessage;
 
 /**
  * A KAS/MQ message with a stream of primitives payload.<br>
- * <br>
  * The message body is a byte []
  * 
  * @author Pippo
@@ -39,9 +39,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Constructs a {@link MqStreamMessage} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public MqStreamMessage(ObjectInputStream istream) throws IOException
   {
@@ -52,11 +53,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Serialize the {@link MqStreamMessage} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
-   * 
-   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the message will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -67,8 +67,9 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Return the message's state
    * 
-   * @return {@code true} if message can only be read from, {@code false} if the message
-   * can only be written to.
+   * @return
+   *   {@code true} if message can only be read from, {@code false} if the message
+   *   can only be written to.
    */
   private boolean isReadOnly()
   {
@@ -129,8 +130,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a boolean from the stream message.
    * 
-   * @return read boolean value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read boolean value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public boolean readBoolean() throws KasException
   {
@@ -151,8 +154,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a byte value from the stream message.
    * 
-   * @return read byte value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read byte value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public byte readByte() throws KasException
   {
@@ -173,9 +178,12 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a byte array field from the stream message into the specified byte[] object (the read buffer).
    * 
-   * @param value The read buffer
-   * @return the number of bytes read
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @param value
+   *   The read buffer
+   * @return
+   *   the number of bytes read
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public int readBytes(byte [] value) throws KasException
   {
@@ -196,8 +204,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a Unicode character value from the stream message.
    * 
-   * @return read char value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read char value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public char readChar() throws KasException
   {
@@ -218,8 +228,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a double from the stream message.
    * 
-   * @return read double value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read double value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public double readDouble() throws KasException
   {
@@ -240,8 +252,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a float from the stream message.
    * 
-   * @return read float value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read float value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public float readFloat() throws KasException
   {
@@ -262,8 +276,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a 32-bit integer from the stream message.
    * 
-   * @return read integer value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read integer value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public int readInt() throws KasException
   {
@@ -284,8 +300,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a 64-bit integer from the stream message.
    * 
-   * @return read long value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read long value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public long readLong() throws KasException
   {
@@ -306,8 +324,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads an object from the stream message.
    * 
-   * @return read Object value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read Object value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public Object readObject() throws KasException
   {
@@ -328,8 +348,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a 16-bit integer from the stream message.
    * 
-   * @return read short value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read short value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public short readShort() throws KasException
   {
@@ -350,8 +372,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Reads a String from the stream message.
    * 
-   * @return read String value from the stream
-   * @throws KasException if Message is not in read only mode or an IOException was thrown
+   * @return
+   *   read String value from the stream
+   * @throws KasException
+   *   if Message is not in read only mode or an IOException was thrown
    */
   public String readString() throws KasException
   {
@@ -372,8 +396,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a boolean to the stream message.
    * 
-   * @param value The boolean value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The boolean value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeBoolean(boolean value) throws KasException
   {
@@ -392,8 +418,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a byte to the stream message.
    * 
-   * @param value The byte value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The byte value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeByte(byte value) throws KasException
   {
@@ -412,8 +440,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a byte array field to the stream message.
    * 
-   * @param value The byte [] value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The byte [] value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeBytes(byte[] value) throws KasException
   {
@@ -432,10 +462,14 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a portion of a byte array as a byte array field to the stream message.
    * 
-   * @param value The byte array that contains the portion to write
-   * @param offset The offset on which the portion starts 
-   * @param length The length of the portion
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The byte array that contains the portion to write
+   * @param offset
+   *   The offset on which the portion starts 
+   * @param length
+   *   The length of the portion
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeBytes(byte[] value, int offset, int length) throws KasException
   {
@@ -454,8 +488,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a char to the stream message.
    * 
-   * @param value The char value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The char value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeChar(char value) throws KasException
   {
@@ -474,8 +510,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a double to the stream message.
    * 
-   * @param value The double value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The double value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeDouble(double value) throws KasException
   {
@@ -494,8 +532,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a float to the stream message.
    * 
-   * @param value The float value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The float value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeFloat(float value) throws KasException
   {
@@ -514,8 +554,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes an int to the stream message.
    * 
-   * @param value The integer value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The integer value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeInt(int value) throws KasException
   {
@@ -534,8 +576,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a long to the stream message.
    * 
-   * @param value The long value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The long value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeLong(long value) throws KasException
   {
@@ -554,8 +598,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes an object to the stream message.
    * 
-   * @param value The Object value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The Object value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeObject(Object value) throws KasException
   {
@@ -574,8 +620,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a short to the stream message.
    * 
-   * @param value The short value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The short value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeShort(short value) throws KasException
   {
@@ -594,8 +642,10 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Writes a String to the stream message.
    * 
-   * @param value The String value to write
-   * @throws KasException if message is in read only mode or an IOException was thrown
+   * @param value
+   *   The String value to write
+   * @throws KasException
+   *   if message is in read only mode or an IOException was thrown
    */
   public void writeString(String value) throws KasException
   {
@@ -614,7 +664,8 @@ public final class MqStreamMessage extends ABaseBytesMessage
   /**
    * Create the {@link PacketHeader} describing this {@link MqStreamMessage}
    * 
-   * @return the packet header
+   * @return
+   *   the packet header
    */
   public PacketHeader createHeader()
   {
@@ -622,12 +673,12 @@ public final class MqStreamMessage extends ABaseBytesMessage
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

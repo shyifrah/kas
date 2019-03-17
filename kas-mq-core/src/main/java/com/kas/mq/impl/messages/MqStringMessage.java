@@ -5,12 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ABaseMessage;
 
 /**
  * A KAS/MQ message with a String payload.<br>
- * <br>
  * The message body is a single {@link String} object
  * 
  * @author Pippo
@@ -34,9 +34,10 @@ public final class MqStringMessage extends ABaseMessage
   /**
    * Constructs a {@link MqStringMessage} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public MqStringMessage(ObjectInputStream istream) throws IOException
   {
@@ -58,11 +59,10 @@ public final class MqStringMessage extends ABaseMessage
   /**
    * Serialize the {@link MqStringMessage} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
-   * 
-   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the message will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -74,7 +74,8 @@ public final class MqStringMessage extends ABaseMessage
   /**
    * Set the message body
    * 
-   * @param body The message body
+   * @param body
+   *   The message body
    */
   public void setBody(String body)
   {
@@ -84,7 +85,8 @@ public final class MqStringMessage extends ABaseMessage
   /**
    * Get the message body
    * 
-   * @return the message body
+   * @return
+   *   the message body
    */
   public String getBody()
   {
@@ -94,7 +96,8 @@ public final class MqStringMessage extends ABaseMessage
   /**
    * Create the {@link PacketHeader} describing this {@link MqStringMessage}
    * 
-   * @return the packet header
+   * @return
+   *   the packet header
    */
   public PacketHeader createHeader()
   {
@@ -102,12 +105,12 @@ public final class MqStringMessage extends ABaseMessage
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

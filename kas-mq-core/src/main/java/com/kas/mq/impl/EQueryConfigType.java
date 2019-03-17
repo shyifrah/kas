@@ -1,5 +1,10 @@
 package com.kas.mq.impl;
 
+/**
+ * Configuration types
+ * 
+ * @author Pippo
+ */
 public enum EQueryConfigType
 {
   /**
@@ -39,7 +44,8 @@ public enum EQueryConfigType
   /**
    * Return a more friendly string
    * 
-   * @return the name of the constant in addition to the ordinal value
+   * @return
+   *   the name of the constant in addition to the ordinal value
    */
   public String toString()
   {

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-infra"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/kas-logging"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-config"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/kas-comm"/>
 	<classpathentry kind="src" output="bin/main" path="src/main/java">

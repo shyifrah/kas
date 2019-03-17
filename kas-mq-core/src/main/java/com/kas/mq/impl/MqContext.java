@@ -1,12 +1,13 @@
 package com.kas.mq.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.infra.utils.Validators;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
 import com.kas.mq.internal.EQueueDisp;
@@ -23,7 +24,7 @@ public final class MqContext extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private Logger mLogger = LogManager.getLogger(getClass());
   
   /**
    * The actual client
@@ -33,7 +34,8 @@ public final class MqContext extends AKasObject
   /**
    * Construct the client
    * 
-   * @param clientName The client application name
+   * @param clientName
+   *   The client application name
    */
   public MqContext(String clientName)
   {
@@ -43,23 +45,27 @@ public final class MqContext extends AKasObject
   /**
    * Connect client to the KAS/MQ server.
    * 
-   * @param host The host name or IP address
-   * @param port The port number
-   * @param user The user's name
-   * @param pwd The user's password
-   * 
-   * @throws KasException if client failed to connect to KAS/MQ server
+   * @param host
+   *   The host name or IP address
+   * @param port
+   *   The port number
+   * @param user
+   *   The user's name
+   * @param pwd
+   *   The user's password
+   * @throws KasException
+   *   if client failed to connect to KAS/MQ server
    */
   public void connect(String host, int port, String user, String pwd) throws KasException
   {
-    mLogger.debug("MqContext::connect() - IN, Host=" + host + ", Port=" + port + ", User=" + user + ", Pwd=" + pwd);
+    mLogger.trace("MqContext::connect() - IN, Host={}, Port={}, User={}, Pwd={}", host, port, user, pwd);
     
     if (!Validators.isHostName(host) && !Validators.isIpAddress(host))
-      throw new KasException("Validation failed. \"" + host + "\" is neither a valid host name nor a valid IP address");
+      throw new KasException("Validation failed. '" + host + "' is neither a valid host name nor a valid IP address");
     if (!Validators.isPort(port))
-      throw new KasException("Validation failed. \"" + port + "\" is not a valid port number");
+      throw new KasException("Validation failed. '" + port + "' is not a valid port number");
     if (!Validators.isUserName(user))
-      throw new KasException("Validation failed. \"" + user + "\" is not a valid user name");
+      throw new KasException("Validation failed. '" + user + "' is not a valid user name");
     
     mConnection.connect(host, port);
     if (!isConnected())
@@ -69,31 +75,32 @@ public final class MqContext extends AKasObject
     if (!authenticated)
       throw new KasException("Error - login() failed. Client response: " + mConnection.getResponse());
     
-    mLogger.debug("MqContext::connect() - OUT");
+    mLogger.trace("MqContext::connect() - OUT");
   }
 
   /**
    * Disconnecting from the remote KAS/MQ server.<br>
-   * <br>
    * If client was not previously connected, this method has no effect
    * 
-   * @throws KasException if client failed to disconnect from KAS/MQ server
+   * @throws KasException
+   *   if client failed to disconnect from KAS/MQ server
    */
   public void disconnect() throws KasException
   {
-    mLogger.debug("MqContext::disconnect() - IN");
+    mLogger.trace("MqContext::disconnect() - IN");
     
     mConnection.disconnect();
     if (isConnected())
       throw new KasException("Error - disconnect() failed. Client response: " + mConnection.getResponse());
     
-    mLogger.debug("MqContext::disconnect() - OUT");
+    mLogger.trace("MqContext::disconnect() - OUT");
   }
 
   /**
    * Get the connection status.
    * 
-   * @return {@code true} if client is connected, {@code false} otherwise
+   * @return
+   *   {@code true} if client is connected, {@code false} otherwise
    */
   public boolean isConnected()
   {
@@ -103,15 +110,20 @@ public final class MqContext extends AKasObject
   /**
    * Define a new queue.
    * 
-   * @param queue The name of the queue to define.
-   * @param desc The queue description
-   * @param threshold The queue threshold
-   * @param disp The queue disposition
-   * @return the {@code true} if queue was defined, {@code false} otherwise
+   * @param queue
+   *   The name of the queue to define.
+   * @param desc
+   *   The queue description
+   * @param threshold
+   *   The queue threshold
+   * @param disp
+   *   The queue disposition
+   * @return
+   *   the {@code true} if queue was defined, {@code false} otherwise
    */
   public boolean defineQueue(String queue, String desc, int threshold, EQueueDisp disp)
   {
-    mLogger.debug("MqContext::defineQueue() - IN, Queue=" + queue);
+    mLogger.trace("MqContext::defineQueue() - IN, Queue={}", queue);
     
     boolean success = false;
     if (!Validators.isQueueName(queue))
@@ -127,38 +139,44 @@ public final class MqContext extends AKasObject
       success = mConnection.defineQueue(queue, desc, threshold, disp);
     }
     
-    mLogger.debug("MqContext::defineQueue() - OUT, Returns=" + success);
+    mLogger.trace("MqContext::defineQueue() - OUT, Returns={}", success);
     return success;
   }
   
   /**
    * Alter a queue.
    * 
-   * @param queue The queue name to alter
-   * @param qProps The properties to alter for this queue 
-   * @return the {@code true} if queue was altered, {@code false} otherwise
+   * @param queue
+   *   The queue name to alter
+   * @param qProps
+   *   The properties to alter for this queue 
+   * @return
+   *   the {@code true} if queue was altered, {@code false} otherwise
    */
   public boolean alterQueue(String queue, Properties qProps)
   {
-    mLogger.debug("MqContext::alterQueue() - IN, Queue=" + queue);
+    mLogger.trace("MqContext::alterQueue() - IN, Queue={}", queue);
     
     boolean success = false;  
     success = mConnection.alterQueue(queue, qProps);
       
-    mLogger.debug("MqContext::alterQueue() - OUT, Returns=" + success);
+    mLogger.trace("MqContext::alterQueue() - OUT, Returns={}", success);
     return success;
   }
   
   /**
    * Delete an existing queue.
    * 
-   * @param queue The queue name to delete.
-   * @param force Should the queue be deleted even if its not empty.
-   * @return {@code true} if queue was deleted, {@code false} otherwise
+   * @param queue
+   *   The queue name to delete.
+   * @param force
+   *   Should the queue be deleted even if its not empty.
+   * @return
+   *   {@code true} if queue was deleted, {@code false} otherwise
    */
   public boolean deleteQueue(String queue, boolean force)
   {
-    mLogger.debug("MqContext::deleteQueue() - IN, Queue=" + queue);
+    mLogger.trace("MqContext::deleteQueue() - IN, Queue={}", queue);
     
     boolean success = false;
     if (Validators.isQueueName(queue))
@@ -170,38 +188,45 @@ public final class MqContext extends AKasObject
       setResponse("Failed to delete queue, invalid queue name: " + queue);
     }
     
-    mLogger.debug("MqContext::deleteQueue() - OUT, Returns=" + success);
+    mLogger.trace("MqContext::deleteQueue() - OUT, Returns={}", success);
     return success;
   }
   
   /**
    * Query KAS/MQ server for information
    * 
-   * @param qType a {@link EQueryType} value that describes the type of query
-   * @param qProps a {@link Properties} object used as query parameters for refining the query
-   * @return the message returned by the KAS/MQ server
+   * @param qType
+   *   A {@link EQueryType} value that describes the type of query
+   * @param qProps
+   *   A {@link Properties} object used as query parameters for refining the query
+   * @return
+   *   the message returned by the KAS/MQ server
    */
   public MqStringMessage queryServer(EQueryType qType, Properties qProps)
   {
-    mLogger.debug("MqContext::queryServer() - IN, QueryType=" + qType);
+    mLogger.trace("MqContext::queryServer() - IN, QueryType={}", qType);
     
     MqStringMessage result = mConnection.queryServer(qType, qProps);
     
-    mLogger.debug("MqContext::queryServer() - OUT, Returns=" + result);
+    mLogger.trace("MqContext::queryServer() - OUT, Returns={}", result);
     return result;
   }
   
   /**
    * Get a message from queue.
    * 
-   * @param queue The target queue name
-   * @param timeout The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
-   * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
+   * @param queue
+   *   The target queue name
+   * @param timeout
+   *   The number of milliseconds to wait until a message available. A value of 0 means to wait indefinitely.
+   * @param interval
+   *   The number in milliseconds the thread execution is suspended between each polling operation
+   * @return
+   *   the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
   public IMqMessage get(String queue, long timeout, long interval)
   {
-    mLogger.debug("MqContext::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
+    mLogger.trace("MqContext::get() - IN, Timeout={}, Interval={}", timeout, interval);
     
     IMqMessage result = null;
     if (Validators.isQueueName(queue))
@@ -213,19 +238,21 @@ public final class MqContext extends AKasObject
       setResponse("Failed to get message, invalid queue name: " + queue);
     }
     
-    mLogger.debug("MqContext::get() - OUT, Returns=" + StringUtils.asPrintableString(result));
+    mLogger.trace("MqContext::get() - OUT, Returns={}", StringUtils.asPrintableString(result));
     return result;
   }
   
   /**
    * Put a message into queue.
    * 
-   * @param queue The target queue name
-   * @param message The message to be put
+   * @param queue
+   *   The target queue name
+   * @param message
+   *   The message to be put
    */
   public void put(String queue, IMqMessage message)
   {
-    mLogger.debug("MqContext::put() - IN, Message=" + StringUtils.asPrintableString(message));
+    mLogger.trace("MqContext::put() - IN, Message={}", StringUtils.asPrintableString(message));
     
     if (Validators.isQueueName(queue))
     {
@@ -236,13 +263,14 @@ public final class MqContext extends AKasObject
       setResponse("Failed to put message, invalid queue name: " + queue);
     }
     
-    mLogger.debug("MqContext::put() - OUT");
+    mLogger.trace("MqContext::put() - OUT");
   }
   
   /**
    * Get response from last call.
    * 
-   * @return the response got from the last {@link MqConnection} call
+   * @return
+   *   the response got from the last {@link MqConnection} call
    */
   public String getResponse()
   {
@@ -252,7 +280,8 @@ public final class MqContext extends AKasObject
   /**
    * Set last response to {@code response}.
    * 
-   * @param response The text that will be saved for {@link #getResponse} call
+   * @param response
+   *   The text that will be saved for {@link #getResponse} call
    */
   public void setResponse(String response)
   {
@@ -260,9 +289,10 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Get string representation of the object
+   * Get the string representation
    * 
-   * @return string representation of the object
+   * @return
+   *   the string representation
    */
   public String toString()
   {
@@ -270,12 +300,12 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

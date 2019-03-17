@@ -11,8 +11,6 @@ import com.kas.mq.internal.ABaseMessage;
  * A KAS/MQ message, without a payload.
  * 
  * @author Pippo
- * 
- * @see com.kas.mq.internal.ABaseMessage
  */
 public final class MqMessage extends ABaseMessage implements IPacket
 {

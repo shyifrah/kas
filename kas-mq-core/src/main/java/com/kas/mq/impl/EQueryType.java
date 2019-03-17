@@ -1,6 +1,10 @@
 package com.kas.mq.impl;
 
-
+/**
+ * Query types
+ * 
+ * @author Pippo
+ */
 public enum EQueryType
 {
   /**
@@ -44,8 +48,10 @@ public enum EQueryType
   /**
    * Get the enum value by its ordinal.
    * 
-   * @param id The ordinal of the enum
-   * @return the enum value
+   * @param id
+   *   The ordinal of the enum
+   * @return
+   *   the enum value
    */
   static public EQueryType fromInt(int id)
   {
@@ -55,7 +61,8 @@ public enum EQueryType
   /**
    * Return a more friendly string
    * 
-   * @return the name of the constant in addition to the ordinal value
+   * @return
+   *   the name of the constant in addition to the ordinal value
    */
   public String toString()
   {

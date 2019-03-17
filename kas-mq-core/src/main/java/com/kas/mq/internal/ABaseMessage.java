@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
@@ -16,10 +17,9 @@ import com.kas.mq.internal.MqResponse;
 
 /**
  * A KAS/MQ base message, without a payload.<br>
- * <br>
- * Each message has an unique ID that differentiates it from other messages in this KAS/MQ system, 
- * a few other characteristics such as priority or expiration, that determines the behavior of
- * KAS/MQ system when processing the message.<br>
+ * Each message has an unique ID that differentiates it from other messages in
+ * this KAS/MQ system, a few other characteristics such as priority or expiration,
+ * that determines the behavior of KAS/MQ system when processing the message.<br>
  * Optionally, a message can have a payload (not this class, though).
  * 
  * @author Pippo
@@ -83,9 +83,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Constructs a {@link ABaseMessage} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public ABaseMessage(ObjectInputStream istream) throws IOException
   {
@@ -123,11 +124,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Serialize the {@link ABaseMessage} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
-   * 
-   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the message will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -159,18 +159,18 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Create a header describing the packet
    * 
-   * @return the header describing the packet 
-   * 
-   * @throws IOException if an I/O error occurs
+   * @return
+   *   the header describing the packet
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract PacketHeader createHeader();
   
   /**
    * Get the message ID
    * 
-   * @return the message id
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getMessageId()
+   * @return
+   *   the message id
    */
   public UniqueId getMessageId()
   {
@@ -180,9 +180,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set the reference ID
    * 
-   * @param id The reference ID to set
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setReferenceId(UniqueId)
+   * @param id
+   *   The reference ID to set
    */
   public void setReferenceId(UniqueId id)
   {
@@ -192,9 +191,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get the reference ID
    * 
-   * @return the reference id
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getReferenceId()
+   * @return
+   *   the reference id
    */
   public UniqueId getReferenceId()
   {
@@ -204,11 +202,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set the message priority
    * 
-   * @param priority The message priority
-   * 
-   * @throws IllegalArgumentException if the new priority is invalid
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setPriority(int)
+   * @param priority
+   *   The message priority
+   * @throws IllegalArgumentException
+   *   if the new priority is invalid
    */
   public void setPriority(int priority)
   {
@@ -221,9 +218,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get the message priority
    * 
-   * @return the message priority
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getPriority()
+   * @return
+   *   the message priority
    */
   public int getPriority()
   {
@@ -232,12 +228,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
 
   /**
    * Set the request type.<br>
-   * <br>
    * Note that this property must be set for administrative messages.
    * 
-   * @param type The {@link ERequestType} of the message
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setRequestType(ERequestType)
+   * @param type
+   *   The {@link ERequestType} of the message
    */
   public void setRequestType(ERequestType type)
   {
@@ -247,9 +241,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get the message's request type
    * 
-   * @return the message's request type
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getRequestType()
+   * @return
+   *   the message's request type
    */
   public ERequestType getRequestType()
   {
@@ -259,9 +252,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get the timestamp at which the message was created
    * 
-   * @return the timestamp at which the message was created
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getTimeStamp()
+   * @return
+   *   the timestamp at which the message was created
    */
   public long getTimeStamp()
   {
@@ -271,9 +263,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set the number of milliseconds from message creation till the message expires
    * 
-   * @param exp The number of milliseconds from message creation till the message expires
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setExpiration(long)
+   * @param exp
+   *   The number of milliseconds from message creation till the message expires
    */
   public void setExpiration(long exp)
   {
@@ -283,9 +274,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get the number of milliseconds from message creation till the message expires
    * 
-   * @return the number of milliseconds from message creation till the message expires
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getExpiration()
+   * @return
+   *   the number of milliseconds from message creation till the message expires
    */
   public long getExpiration()
   {
@@ -295,9 +285,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * An indicator whether the message is expired
    * 
-   * @return {@code true} if message expired, {@code false} otherwise
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#isExpired()
+   * @return
+   *   {@code true} if message expired, {@code false} otherwise
    */
   public boolean isExpired()
   {
@@ -308,9 +297,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set the {@link MqResponse}
    * 
-   * @param the {@link MqResponse} to set
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setResponse(MqResponse)
+   * @param resp
+   *   The {@link MqResponse} to set
    */
   public void setResponse(MqResponse resp)
   {
@@ -320,9 +308,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get the {@link MqResponse}
    * 
-   * @return the {@link MqResponse}
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getResponse()
+   * @return
+   *   the {@link MqResponse}
    */
   public MqResponse getResponse()
   {
@@ -332,10 +319,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Object property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setObjectProperty(String, Object)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setObjectProperty(String key, Object value)
   {
@@ -345,11 +332,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Object property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getObjectProperty(String, Object)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public Object getObjectProperty(String key, Object defaultValue)
   {
@@ -359,10 +347,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Boolean property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setBoolProperty(String, boolean)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setBoolProperty(String key, boolean value)
   {
@@ -372,11 +360,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Boolean property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getBoolProperty(String, boolean)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public boolean getBoolProperty(String key, boolean defaultValue)
   {
@@ -386,10 +375,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a String property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setStringProperty(String, String)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setStringProperty(String key, String value)
   {
@@ -399,11 +388,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a String property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getStringProperty(String, String)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public String getStringProperty(String key, String defaultValue)
   {
@@ -413,10 +403,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Byte property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setByteProperty(String, byte)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setByteProperty(String key, byte value)
   {
@@ -426,11 +416,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Byte property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getByteProperty(String, byte)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public byte getByteProperty(String key, byte defaultValue)
   {
@@ -440,10 +431,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Short property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setShortProperty(String, short)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setShortProperty(String key, short value)
   {
@@ -453,11 +444,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Short property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getShortProperty(String, short)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public short getShortProperty(String key, short defaultValue)
   {
@@ -467,10 +459,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set an Integer property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setIntProperty(String, int)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setIntProperty(String key, int value)
   {
@@ -480,11 +472,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get an Integer property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getIntProperty(String, int)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public int getIntProperty(String key, int defaultValue)
   {
@@ -494,10 +487,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Long property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setLongProperty(String, long)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setLongProperty(String key, long value)
   {
@@ -507,11 +500,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Long property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getLongProperty(String, long)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public long getLongProperty(String key, long defaultValue)
   {
@@ -521,10 +515,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Float property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setFloatProperty(String, float)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setFloatProperty(String key, float value)
   {
@@ -534,11 +528,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Float property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getFloatProperty(String, float)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public float getFloatProperty(String key, float defaultValue)
   {
@@ -548,10 +543,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Set a Double property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setDoubleProperty(String, double)
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setDoubleProperty(String key, double value)
   {
@@ -561,11 +556,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a Double property with default value if one is not present
    * 
-   * @param key The name of the property
-   * @param defaultValue The default value of the property
-   * @return the property value, or {@code defaultValue} if one is not present
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getDoubleProperty(String, double)
+   * @param key
+   *   The name of the property
+   * @param defaultValue
+   *   The default value of the property
+   * @return
+   *   the property value, or {@code defaultValue} if one is not present
    */
   public double getDoubleProperty(String key, double defaultValue)
   {
@@ -575,10 +571,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Get a subset of the properties from the message's properties
    * 
-   * @param prefix A string that all returned properties are prefixed with
-   * @return a subset of the properties collection
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#getSubset(String)
+   * @param prefix
+   *   A string that all returned properties are prefixed with
+   * @return
+   *   a subset of the properties collection
    */
   public Properties getSubset(String prefix)
   {
@@ -588,10 +584,10 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Include a subset of properties in the message's properties
    * 
-   * @param props A subset of {@link Properties} to include
-   * @return the number of properties included
-   * 
-   * @see com.kas.mq.impl.messages.IMqMessage#setSubset(Properties)
+   * @param props
+   *   A subset of {@link Properties} to include
+   * @return
+   *   the number of properties included
    */
   public void setSubset(Properties props)
   {
@@ -600,12 +596,12 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
