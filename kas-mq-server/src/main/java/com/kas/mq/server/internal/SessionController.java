@@ -5,13 +5,14 @@ import java.net.Socket;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IMqServer;
 import com.kas.mq.server.IRepository;
@@ -27,7 +28,7 @@ public class SessionController extends AKasObject implements IController
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * A map of session id to session handler
@@ -52,12 +53,12 @@ public class SessionController extends AKasObject implements IController
   /**
    * Constructs a {@link SessionController} which is basically the object that supervises active sessions
    * 
-   * @param config The {@link MqConfiguration}
-   * @param repository The repository of queues
+   * @param config
+   *   The {@link IMqServer} object
    */
   public SessionController(IMqServer server)
   {
-    mLogger  = LoggerFactory.getLogger(this.getClass());
+    mLogger  = LogManager.getLogger(getClass());
     mHandlers = new ConcurrentHashMap<UniqueId, SessionHandler>();
     mServer = server;
     mConfig = mServer.getConfig();
@@ -66,22 +67,23 @@ public class SessionController extends AKasObject implements IController
   
   /**
    * Create a new session handler.<br>
-   * <br>
    * This method actually creates a new {@link SessionHandler} object that will handle incoming traffic
    * from the {@code socket} and responds, if needed, over it.<br> 
    * Once created, the {@link SessionHandler} is then sent for execution on a different thread.
    * 
-   * @param socket the session's socket
-   * @throws IOException if creation of new {@link SessionHandler} throws
+   * @param socket
+   *   the session's socket
+   * @throws IOException
+   *   if creation of new {@link SessionHandler} throws
    */
   public void newSession(Socket socket) throws IOException
   {
-    mLogger.trace("About to spawn a new SessionHandler for socket: " + socket.getRemoteSocketAddress().toString());
+    mLogger.debug("About to spawn a new SessionHandler for socket: {}", socket.getRemoteSocketAddress());
     
     SessionHandler handler = new SessionHandler(socket, this, mRepository);
     
     String remoteAddress = new NetworkAddress(socket).toString();
-    mLogger.info("New connection accepted from " + remoteAddress);
+    mLogger.info("New connection accepted from {}", remoteAddress);
     ThreadPool.execute(handler);
   }
   
@@ -89,55 +91,60 @@ public class SessionController extends AKasObject implements IController
    * A callback that is invoked under the handler's thread right before
    * the handler starts its run() method.
    * 
-   * @param handler The handler that invoked the callback
+   * @param handler
+   *   The handler that invoked the callback
    */
   public void onHandlerStart(SessionHandler handler)
   {
-    mLogger.debug("SessionController::onHandlerStart() - IN");
+    mLogger.trace("SessionController::onHandlerStart() - IN");
     UniqueId id = handler.getSessionId();
-    mLogger.trace("Started handler for session ID: " + id);
+    mLogger.debug("Started handler for session ID: {}", id);
     mHandlers.put(id, handler);
-    mLogger.debug("SessionController::onHandlerStart() - OUT");
+    mLogger.trace("SessionController::onHandlerStart() - OUT");
   }
   
   /**
    * A callback that is invoked under the handler's thread right before
    * the handler ends its run() method.
    * 
-   * @param handler The handler that invoked the callback
+   * @param handler
+   *   The handler that invoked the callback
    */
   public void onHandlerEnd(SessionHandler handler)
   {
-    mLogger.debug("SessionController::onHandlerEnd() - IN");
+    mLogger.trace("SessionController::onHandlerEnd() - IN");
     UniqueId id = handler.getSessionId();
-    mLogger.trace("Ending handler for session ID: " + id);
+    mLogger.debug("Ending handler for session ID: ", id);
     SessionHandler removed = mHandlers.remove(id);
-    mLogger.debug("SessionController::onHandlerEnd() - Removed handler: " + (removed == null ? "null" : removed.toPrintableString()));
-    mLogger.debug("SessionController::onHandlerEnd() - OUT");
+    mLogger.trace("SessionController::onHandlerEnd() - Removed handler: {}", (removed == null ? "null" : removed.toPrintableString()));
+    mLogger.trace("SessionController::onHandlerEnd() - OUT");
   }
   
   /**
    * Get the handler serving session ID with {@code id}
    * 
-   * @param id The {@link UniqueId} of the session
-   * @return The {@link SessionHandler handler} associated with the specified session ID
+   * @param id
+   *   The {@link UniqueId} of the session
+   * @return
+   *   the {@link SessionHandler handler} associated with the specified session ID
    */
   public SessionHandler getHandler(UniqueId id)
   {
-    mLogger.debug("SessionController::getHandler() - IN, HandlerId=" + id);
+    mLogger.trace("SessionController::getHandler() - IN, HandlerId={}", id);
     
-    if (id == null)
-      return null;
+    SessionHandler handler = null;
+    if (id != null)
+      handler = mHandlers.get(id);
     
-    SessionHandler handler = mHandlers.get(id);
-    mLogger.debug("SessionController::getHandler() - OUT");
+    mLogger.trace("SessionController::getHandler() - OUT");
     return handler;
   }
   
   /**
    * Get all handlers
    * 
-   * @return a collection of all handlers
+   * @return
+   *   a collection of all handlers
    */
   public Collection<SessionHandler> getHandlers()
   {
@@ -147,9 +154,8 @@ public class SessionController extends AKasObject implements IController
   /**
    * Get the controller's MQ configuration
    * 
-   * @return the controller's MQ configuration
-   * 
-   * @see com.kas.mq.server.IController#getConfig()
+   * @return
+   *   the controller's MQ configuration
    */
   public MqConfiguration getConfig()
   {
@@ -159,9 +165,8 @@ public class SessionController extends AKasObject implements IController
   /**
    * Get the server's repository
    * 
-   * @return the server's repository
-   * 
-   * @see com.kas.mq.server.IController#getRepository()
+   * @return
+   *   the server's repository
    */
   public IRepository getRepository()
   {
@@ -177,7 +182,6 @@ public class SessionController extends AKasObject implements IController
   
   /**
    * Graceful shutdown.<br>
-   * <br>
    * First, we signal all handlers to shutdown, so the next time a handler
    * tests if it should shutdown the result will be that it needs to end.<br>
    * Than, we're closing all opened connections, so if a handler depends on one
@@ -186,16 +190,17 @@ public class SessionController extends AKasObject implements IController
    */
   public void shutdown()
   {
-    mLogger.debug("SessionController::shutdown() - IN");
+    mLogger.trace("SessionController::shutdown() - IN");
     
     mLogger.info("KAS/MQ server received a Shutdown request");
     mLogger.info("Signaling all handlers to terminate...");
+    
     for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
     {
       UniqueId uid = entry.getKey();
       SessionHandler handler = entry.getValue();
       
-      mLogger.trace("Handler " + uid.toString() + " was signaled to terminate processing...");
+      mLogger.debug("Handler {} was signaled to terminate processing...", uid);
       handler.stop();
     }
     
@@ -205,16 +210,16 @@ public class SessionController extends AKasObject implements IController
     mLogger.info("Signaling main thread to terminate...");
     mServer.stop();
     
-    mLogger.debug("SessionController::shutdown() - OUT");
+    mLogger.trace("SessionController::shutdown() - OUT");
   }
 
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

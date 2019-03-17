@@ -5,6 +5,7 @@ import java.util.Map;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
 import com.kas.infra.base.ConsoleLogger;
+import com.kas.infra.base.IObject;
 import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -56,7 +57,8 @@ public class KasMqStopper extends AKasApp
   /**
    * Construct the {@link KasMqStopper} passing it the startup arguments
    * 
-   * @param settings The startup arguments
+   * @param settings
+   *   The startup arguments
    */
   protected KasMqStopper(Map<String, String> settings)
   {
@@ -67,7 +69,8 @@ public class KasMqStopper extends AKasApp
   /**
    * Get the application name
    * 
-   * @return the application name
+   * @return
+   *   the application name
    */
   public String getAppName()
   {
@@ -77,7 +80,8 @@ public class KasMqStopper extends AKasApp
   /**
    * Initializing the KAS/MQ stopper
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean appInit()
   {
@@ -93,7 +97,8 @@ public class KasMqStopper extends AKasApp
   /**
    * Terminating the KAS/MQ stopper
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public boolean appTerm()
   {
@@ -103,7 +108,6 @@ public class KasMqStopper extends AKasApp
   
   /**
    * Run KAS/MQ stopper.<br>
-   * <br>
    * The main logic is quite simple: open a new session to the KAS/MQ server and send it
    * a shutdown request. 
    */
@@ -167,12 +171,12 @@ public class KasMqStopper extends AKasApp
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

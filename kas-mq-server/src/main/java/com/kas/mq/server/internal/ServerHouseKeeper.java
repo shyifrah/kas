@@ -1,9 +1,10 @@
 package com.kas.mq.server.internal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.threads.AKasRunnable;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.internal.MqQueue;
 import com.kas.mq.server.IController;
 import com.kas.mq.server.IRepository;
@@ -23,7 +24,7 @@ public class ServerHouseKeeper extends AKasRunnable
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * Queue repository
@@ -31,51 +32,52 @@ public class ServerHouseKeeper extends AKasRunnable
   private IRepository mRepository;
   
   /**
-   * Construct the {@link ServerHouseKeeper}, passing it the {@link IController} and the {@link ServerRepository}
+   * Construct the {@link ServerHouseKeeper}, passing it the {@link IController}
+   * and the {@link ServerRepository}
    * 
-   * @param repository The server's queue repository
+   * @param repository
+   *   The server's queue repository
    */
   public ServerHouseKeeper(IRepository repository)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mRepository = repository;
   }
   
   /**
    * Running the task.<br>
-   * <br>
    * First we scan all client handlers and check if any of them have finished their executions.
-   * If a finished handler is found, remove it from the map.
-   * 
-   * Secondly, the admin task goes over all defined queues and expires messages which their expiration date has already passed.
+   * If a finished handler is found, remove it from the map.<br>
+   * Secondly, the admin task goes over all defined queues and expires messages which
+   * their expiration date has already passed.
    * 
    * @see java.lang.Runnable#run()
    */
   public void run()
   {
-    mLogger.debug("ServerHouseKeeper::run() - IN");
+    mLogger.trace("ServerHouseKeeper::run() - IN");
     
-    mLogger.debug("ServerHouseKeeper::run() - Expiring messages...");
+    mLogger.trace("ServerHouseKeeper::run() - Expiring messages...");
     
     Object [] destinations = mRepository.getLocalQueues().toArray();
     for (int i = 0; (i < destinations.length) && (!mStop); ++i)
     {
       MqQueue dest = (MqQueue)destinations[i];
-      mLogger.debug("ServerHouseKeeper::run() - Expiring messages in destination " + dest.getName() + ":");
+      mLogger.trace("ServerHouseKeeper::run() - Expiring messages in destination {}:", dest.getName());
       int exp = dest.expire();
-      mLogger.debug("ServerHouseKeeper::run() - Total messages expired: " + exp);
+      mLogger.trace("ServerHouseKeeper::run() - Total messages expired: {}", exp);
     }
     
-    mLogger.debug("ServerHouseKeeper::run() - OUT");
+    mLogger.trace("ServerHouseKeeper::run() - OUT");
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

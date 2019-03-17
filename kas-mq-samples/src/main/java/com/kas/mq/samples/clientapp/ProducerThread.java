@@ -1,8 +1,8 @@
 package com.kas.mq.samples.clientapp;
 
+import org.apache.logging.log4j.LogManager;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
 import com.kas.mq.impl.messages.MqStreamMessage;
@@ -19,7 +19,7 @@ class ProducerThread extends GenThread
   ProducerThread(int tix, ClientAppParams params)
   {
     super("SAMPLE-" + ProducerThread.class.getSimpleName() + tix, params);
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mThreadIndex = tix;
     mParams = params;
     mTotalMessages = mParams.mTotalMessages / mParams.mTotalProducers;
@@ -28,9 +28,9 @@ class ProducerThread extends GenThread
   
   public void work()
   {
-    mLogger.debug("ProducerThread::work() - IN");
+    mLogger.trace("ProducerThread::work() - IN");
   
-    mLogger.debug("ProducerThread::work() - Starting actual work...");
+    mLogger.trace("ProducerThread::work() - Starting actual work...");
     for (int i = 0; i < mTotalMessages; ++i)
     {
       IMqMessage putMessage = createMessage(i);
@@ -40,7 +40,7 @@ class ProducerThread extends GenThread
       if (i % 100 == 0) System.out.println(String.format("[P%d] ... %d", mThreadIndex, i));
     }
     
-    mLogger.debug("ProducerThread::work() - OUT");
+    mLogger.trace("ProducerThread::work() - OUT");
   }
   
   private IMqMessage createMessage(int idx)
@@ -72,7 +72,7 @@ class ProducerThread extends GenThread
         }
         catch (KasException e)
         {
-          mLogger.debug("an error occurred while trying to write some data into message body");
+          mLogger.trace("an error occurred while trying to write some data into message body");
         }
         msg = m;
         break;

@@ -12,6 +12,7 @@ import com.kas.appl.AppLauncher;
 import com.kas.db.DbConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.threads.ThreadPool;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
@@ -109,7 +110,6 @@ public class KasMqServer extends AKasApp implements IMqServer
   
   /**
    * Initializing the KAS/MQ server.<br>
-   * <br>
    * Initialization consisting of:
    * - creating and initializing configuration object
    * - creating and initializing the db connection pool, and initialize schema if necessary
@@ -120,12 +120,13 @@ public class KasMqServer extends AKasApp implements IMqServer
    * - creating the server's listener socket
    * - notifying remote servers of activation
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
-    sStartupLogger.info("KAS/MQ server will use " + mDbConfig.getDbType() + " DB on " + mDbConfig.getHost() + ":" + mDbConfig.getPort());
+    sStartupLogger.info("KAS/MQ server will use {} DB on {}:{}", mDbConfig.getDbType(), mDbConfig.getHost(), mDbConfig.getPort());
     mDbConfig.init();
     
     mConfig = new MqConfiguration();
@@ -139,7 +140,7 @@ public class KasMqServer extends AKasApp implements IMqServer
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
     }
-    sStartupLogger.info("DB additional information: Version=" + DbConnectionPool.getInstance().getDbVersion() + ", Schema=" + mDbConfig.getSchemaName() + ", User=" + mDbConfig.getUserName());
+    sStartupLogger.info("DB additional information: Version={}, Schema={}, User={}", DbConnectionPool.getInstance().getDbVersion(), mDbConfig.getSchemaName(), mDbConfig.getUserName());
     DbUtils.initSchema();
 
     mRepository = new ServerRepository(mConfig);
@@ -154,8 +155,8 @@ public class KasMqServer extends AKasApp implements IMqServer
     }
     catch (IOException e)
     {
-    	sStartupLogger.error("An error occurred while trying to bind server socket with port: " + mConfig.getPort());
-    	sStartupLogger.error("Exception caught: " +  e.getMessage());
+    	sStartupLogger.error("An error occurred while trying to bind server socket with port: {}", mConfig.getPort());
+    	sStartupLogger.error("Exception caught: {}",  e.getMessage());
       return false;
     }
     
@@ -173,7 +174,6 @@ public class KasMqServer extends AKasApp implements IMqServer
   
   /**
    * Terminating the KAS/MQ server.<br>
-   * <br>
    * Termination is synchronized because it could be executed by the main thread (if a SHUTDOWN request has arrived)
    * or by the Shutdown Hook thread, if, for instance, the user sent a SIGTERM signal (via CTRL-C).
    * <br>
@@ -185,7 +185,8 @@ public class KasMqServer extends AKasApp implements IMqServer
    * - shutdown the db connection pool
    * - terminate configuration object
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public synchronized boolean appTerm()
   {	  
@@ -224,13 +225,12 @@ public class KasMqServer extends AKasApp implements IMqServer
   
   /**
    * Configuration has been refreshed.<br>
-   * <br>
    * If KAS/MQ server's configuration has been refreshed, it means that the server
    * should restart (if necessary) the house-keeper task
    */
   public void refresh()
   {
-    mLogger.debug("KasMqServer::refresh() - IN");
+    mLogger.trace("KasMqServer::refresh() - IN");
     
     /*
      * need to update housekeeper task state according to this scheme:
@@ -243,7 +243,7 @@ public class KasMqServer extends AKasApp implements IMqServer
      *   else - do nothing
      */
     
-    mLogger.debug("KasMqServer::refresh() - OUT");
+    mLogger.trace("KasMqServer::refresh() - OUT");
   }
   
   /**
@@ -264,7 +264,7 @@ public class KasMqServer extends AKasApp implements IMqServer
     {
       if (!mConfig.isEnabled())
       {
-        mLogger.diag("KasMqServer::run() - KAS/MQ server is disabled");
+        mLogger.trace("KasMqServer::run() - KAS/MQ server is disabled");
         RunTimeUtils.sleepForMilliSeconds(mConfig.getConnSocketTimeout());
       }
       else
@@ -276,7 +276,7 @@ public class KasMqServer extends AKasApp implements IMqServer
         }
         catch (SocketTimeoutException e)
         {
-          mLogger.diag("KasMqServer::run() - Accept() timed out, no new connections...");
+          mLogger.trace("KasMqServer::run() - Accept() timed out, no new connections...");
         }
         catch (IOException e)
         {
@@ -292,14 +292,14 @@ public class KasMqServer extends AKasApp implements IMqServer
             if (errors >= mConfig.getConnMaxErrors())
             {
               stop();
-              mLogger.error("Number of connection errors reached the maximum number of " + mConfig.getConnMaxErrors());
+              mLogger.error("Number of connection errors reached the maximum number of {}", mConfig.getConnMaxErrors());
               mLogger.error("This could indicate a severe network connectivity issue. Terminating KAS/MQ server...");
             }
           }
         }
       }
       
-      mLogger.diag("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... " + (mStop ? "yep. Terminating main loop..." : "nope..."));
+      mLogger.trace("KasMqServer::run() - Checking if KAS/MQ server needs to shutdown... {}", (mStop ? "yep. Terminating main loop..." : "nope..."));
     }
   }
   
@@ -314,9 +314,8 @@ public class KasMqServer extends AKasApp implements IMqServer
   /**
    * Get the {@link ServerRepository} object
    * 
-   * @return the {@link ServerRepository} object
-   * 
-   * @see IMqServer#getRepository()
+   * @return
+   *   the {@link ServerRepository} object
    */
   public IRepository getRepository()
   {
@@ -326,9 +325,8 @@ public class KasMqServer extends AKasApp implements IMqServer
   /**
    * Get the {@link MqConfiguration} object
    * 
-   * @return the {@link MqConfiguration} object
-   * 
-   * @see IMqServer#getConfig()
+   * @return
+   *   the {@link MqConfiguration} object
    */
   public MqConfiguration getConfig()
   {
@@ -338,9 +336,8 @@ public class KasMqServer extends AKasApp implements IMqServer
   /**
    * Get the {@link DbConnectionPool} object
    * 
-   * @return the {@link DbConnectionPool} object
-   * 
-   * @see IMqServer#getDbConnectionPool()
+   * @return
+   *   the {@link DbConnectionPool} object
    */
   public DbConnectionPool getDbConnectionPool()
   {
@@ -368,12 +365,12 @@ public class KasMqServer extends AKasApp implements IMqServer
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

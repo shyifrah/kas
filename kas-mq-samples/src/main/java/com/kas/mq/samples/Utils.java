@@ -41,7 +41,7 @@ public class Utils
    */
   static public String reportTime(TimeStamp start, TimeStamp end)
   {
-    long diff = end.diff(start);
+    long diff = TimeStamp.diff(end, start);
     long millis = diff % 1000;
     diff = diff / 1000;
     long seconds = diff % 60;

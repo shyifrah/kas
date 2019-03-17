@@ -1,6 +1,6 @@
 package com.kas.mq.samples.clientapp;
 
-import com.kas.logging.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.samples.GenThread;
 
@@ -17,7 +17,7 @@ class ConsumerThread extends GenThread
   ConsumerThread(int tix, ClientAppParams params)
   {
     super("SAMPLE-" + ConsumerThread.class.getSimpleName() + tix, params);
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mThreadIndex = tix;
     mParams = params;
     mQueueName = mParams.mConsQueueName;
@@ -25,9 +25,9 @@ class ConsumerThread extends GenThread
   
   public void work()
   {
-    mLogger.debug("ConsumerThread::work() - IN");
+    mLogger.trace("ConsumerThread::work() - IN");
     
-    mLogger.debug("ConsumerThread::work() - Starting actual work...");
+    mLogger.trace("ConsumerThread::work() - Starting actual work...");
     int total = 0;
     IMqMessage getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
     while (getMessage != null)
@@ -37,6 +37,6 @@ class ConsumerThread extends GenThread
       getMessage = mContext.get(mQueueName, cConsumerGetTimeout, cConsumerPollingInterval);
     }
     
-    mLogger.debug("ConsumerThread::work() - OUT");
+    mLogger.trace("ConsumerThread::work() - OUT");
   }
 }

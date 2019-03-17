@@ -2,8 +2,11 @@ package com.kas.mq.server.repo;
 
 import java.io.File;
 import java.util.Collection;
+import com.kas.infra.base.IObject;
+import com.kas.infra.base.InvalidPropertyValueException;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
+import com.kas.infra.base.PropertyNotFoundException;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.EQueueDisp;
@@ -27,9 +30,12 @@ public class MqLocalManager extends MqManager
   /**
    * Construct the {@link MqLocalManager}
    * 
-   * @param name The name of the local manager
-   * @param port The port on which the manager listens
-   * @param deadq The name of the dead queue
+   * @param name
+   *   The name of the local manager
+   * @param port
+   *   The port on which the manager listens
+   * @param deadq
+   *   The name of the dead queue
    */
   MqLocalManager(String name, int port, String deadq)
   {
@@ -39,14 +45,13 @@ public class MqLocalManager extends MqManager
   
   /**
    * Activate {@link MqLocalManager}: restore local queues from file system.<br>
-   * <br>
    * If the {@code repo} directory does not exist, create it
    * If it exists but it's not a directory, end with an error.
    * Otherwise, read the directory contents and construct a {@link MqLocalQueue} per ".qbk" file.
    */
   public void activate()
   {
-    mLogger.debug("MqLocalManager::activate() - IN");
+    mLogger.trace("MqLocalManager::activate() - IN");
     
     boolean success = true;
     String repoDirPath = RunTimeUtils.getProductHomeDir() + File.separatorChar + "repo";
@@ -54,7 +59,7 @@ public class MqLocalManager extends MqManager
     if (!repoDir.exists())
     {
       success = repoDir.mkdir();
-      mLogger.info("MqLocalManager::activate() - Repository directory does not exist, try to create. result=" + success);
+      mLogger.info("MqLocalManager::activate() - Repository directory does not exist, try to create. result={}", success);
     }
     else if (!repoDir.isDirectory())
     {
@@ -73,27 +78,26 @@ public class MqLocalManager extends MqManager
         if (qFile.isFile())
         {
           String qName = entry.substring(0, entry.lastIndexOf('.'));
-          mLogger.trace("MqLocalManager::activate() - Restoring contents of queue [" + qName + ']');
+          mLogger.debug("MqLocalManager::activate() - Restoring contents of queue [{}]", qName);
           MqLocalQueue q = defineQueue(qName, "", IMqConstants.cDefaultQueueThreshold, EQueueDisp.PERMANENT);
           boolean restored = q.restore();
-          mLogger.trace("MqLocalManager::activate() - Restore operation for queue " + qName + (restored ? " succeeded" : " failed"));
+          mLogger.debug("MqLocalManager::activate() - Restore operation for queue {} {}", qName, (restored ? " succeeded" : " failed"));
           success = success && restored;
         }
       }
     }
     
     mActive = success;
-    mLogger.debug("MqLocalManager::activate() - OUT");
+    mLogger.trace("MqLocalManager::activate() - OUT");
   }
   
   /**
    * Deactivate {@link MqLocalManager}: Backup queues to the file system.<br>
-   * <br>
    * For each queue in the map, save its contents as a file in the {@code repo} directory.
    */
   public void deactivate()
   {
-    mLogger.debug("MqLocalManager::deactivate() - IN");
+    mLogger.trace("MqLocalManager::deactivate() - IN");
     boolean success = true;
     
     for (MqQueue queue : mQueues.values())
@@ -101,29 +105,34 @@ public class MqLocalManager extends MqManager
       MqLocalQueue lq = (MqLocalQueue)queue;
       boolean backed = true;
       String name = queue.getName();
-      mLogger.debug("MqLocalManager::deactivate() - Writing queue contents. Queue=[" + name + "]; Messages=[" + lq.size() + "]");
+      mLogger.debug("MqLocalManager::deactivate() - Writing queue contents. Queue=[{}]; Messages=[{}]", name, lq.size());
       backed = queue.backup();  
       
-      mLogger.debug("MqLocalManager::deactivate() - Writing queue contents completed " + (success ? "successfully" : "with errors"));
+      mLogger.debug("MqLocalManager::deactivate() - Writing queue contents completed {}", (success ? "successfully" : "with errors"));
       success = success && backed;
     }
     
     mActive = false;
-    mLogger.debug("MqLocalManager::deactivate() - OUT");
+    mLogger.trace("MqLocalManager::deactivate() - OUT");
   }
   
   /**
    * Define a local queue object
    * 
-   * @param name The name of the queue to define
-   * @param desc The description of the queue
-   * @param threshold The threshold of the queue
-   * @param disp Queue disposition
-   * @return the created {@link MqLocalQueue}
+   * @param name
+   *   The name of the queue to define
+   * @param desc
+   *   The description of the queue
+   * @param threshold
+   *   The threshold of the queue
+   * @param disp
+   *   Queue disposition
+   * @return
+   *   the created {@link MqLocalQueue}
    */
   MqLocalQueue defineQueue(String name, String desc, int threshold, EQueueDisp disp)
   {
-    mLogger.debug("MqLocalManager::defineQueue() - IN, Name=" + name + ", Threshold=" + threshold + ", Disposition=" + disp);
+    mLogger.trace("MqLocalManager::defineQueue() - IN, Name={}, Threshold={}, Disposition={}", name, threshold, disp);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -133,20 +142,23 @@ public class MqLocalManager extends MqManager
       mQueues.put(name, queue);
     }
     
-    mLogger.debug("MqLocalManager::defineQueue() - OUT, Returns=" + StringUtils.asString(queue));
+    mLogger.trace("MqLocalManager::defineQueue() - OUT, Returns={}", StringUtils.asString(queue));
     return queue;
   }
   
   /**
    * Alter a local queue object
    * 
-   * @param name The name of the queue to define
-   * @param qprops The properties to be altered
-   * @return the altered {@link MqLocalQueue}
+   * @param name
+   *   The name of the queue to define
+   * @param qprops
+   *   The properties to be altered
+   * @return
+   *   the altered {@link MqLocalQueue}
    */
   MqLocalQueue alterQueue(String name, Properties qprops)
   {
-    mLogger.debug("MqLocalManager::alterQueue() - IN, Name=" + name);
+    mLogger.trace("MqLocalManager::alterQueue() - IN, Name={}", name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -162,9 +174,13 @@ public class MqLocalManager extends MqManager
           queue.setThreshold(newThreshold);
         }
       }
-      catch (KasException e)
+      catch (PropertyNotFoundException e)
       {
-        mLogger.error("Unable to set Threshold for queue " + name + ". Exception: ", e);		
+        mLogger.error("Unable to set threshold for queue " + name + ". Exception: ", e);    
+      }
+      catch (InvalidPropertyValueException e)
+      {
+        mLogger.error("Unable to set threshold for queue " + name + ". Exception: ", e);		
       }
       
       try
@@ -175,25 +191,32 @@ public class MqLocalManager extends MqManager
           queue.setDisposition(newDisp);
         }
       }
-      catch (KasException e)
+
+      catch (PropertyNotFoundException e)
       {
-        mLogger.error("Unable to set disposition for queue " + name + ". Exception: ", e);
-      }      
+        mLogger.error("Unable to set disposition for queue " + name + ". Exception: ", e);    
+      }
+      catch (InvalidPropertyValueException e)
+      {
+        mLogger.error("Unable to set disposition for queue " + name + ". Exception: ", e);    
+      }
     }
     
-    mLogger.debug("MqLocalManager::alterQueue() - OUT, Returns=" + StringUtils.asString(queue));
+    mLogger.trace("MqLocalManager::alterQueue() - OUT, Returns=" + StringUtils.asString(queue));
     return queue;
   }
   
   /**
    * Delete a local queue object
    * 
-   * @param name The name of the queue to be removed
-   * @return the deleted {@link MqLocalQueue}
+   * @param name
+   *   The name of the queue to be removed
+   * @return
+   *   the deleted {@link MqLocalQueue}
    */
   MqLocalQueue deleteQueue(String name)
   {
-    mLogger.debug("MqLocalManager::deleteQueue() - IN, Name=" + name);
+    mLogger.trace("MqLocalManager::deleteQueue() - IN, Name={}", name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -202,19 +225,21 @@ public class MqLocalManager extends MqManager
       queue = (MqLocalQueue)mQueues.remove(name);
     }
     
-    mLogger.debug("MqLocalManager::deleteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("MqLocalManager::deleteQueue() - OUT, Returns=[{}]", StringUtils.asString(queue));
     return queue;
   }
   
   /**
    * Get a local queue object.
    * 
-   * @param name The name of the queue to be retrieved
-   * @return the retrieved {@link MqLocalQueue}
+   * @param name
+   *   The name of the queue to be retrieved
+   * @return
+   *   the retrieved {@link MqLocalQueue}
    */
   MqLocalQueue getQueue(String name)
   {
-    mLogger.debug("MqLocalManager::getQueue() - IN, Name=" + name);
+    mLogger.trace("MqLocalManager::getQueue() - IN, Name={}", name);
     MqLocalQueue queue = null;
     
     if (name != null)
@@ -223,14 +248,15 @@ public class MqLocalManager extends MqManager
       queue = (MqLocalQueue)mQueues.get(name);
     }
     
-    mLogger.debug("MqLocalManager::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("MqLocalManager::getQueue() - OUT, Returns=[{}]", StringUtils.asString(queue));
     return queue;
   }
   
   /**
    * Get a collection of all local queues
    * 
-   * @return a collection of all local queues
+   * @return
+   *   a collection of all local queues
    */
   Collection<MqQueue> getAll()
   {
@@ -240,7 +266,8 @@ public class MqLocalManager extends MqManager
   /**
    * Get the dead queue
    * 
-   * @return the dead queue
+   * @return
+   *   the dead queue
    */
   MqLocalQueue getDeadQueue()
   {
@@ -248,12 +275,12 @@ public class MqLocalManager extends MqManager
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
