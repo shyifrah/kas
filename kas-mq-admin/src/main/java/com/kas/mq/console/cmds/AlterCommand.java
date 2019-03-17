@@ -8,7 +8,7 @@ import com.kas.mq.console.cmds.alter.AlterCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
- * DELETE command
+ * ALTER command
  * 
  * @author Pippo
  */
@@ -35,7 +35,8 @@ public class AlterCommand extends ACommand
   /**
    * Overriding the default {@link ACommand#parse(String)}
    * 
-   * @param text The text passed to this command
+   * @param text
+   *   The text passed to this command
    */
   public void parse(String text)
   {
@@ -45,7 +46,8 @@ public class AlterCommand extends ACommand
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
-   * @param conn The {@link MqContextConnection} that will be used to execute the command
+   * @param conn
+   *   The {@link MqContextConnection} that will be used to execute the command
    */
   public void exec(MqContextConnection conn)
   {
@@ -98,7 +100,8 @@ public class AlterCommand extends ACommand
   /**
    * Get the command text
    * 
-   * @return the command text
+   * @return
+   *   the command text
    */
   public String toString()
   {

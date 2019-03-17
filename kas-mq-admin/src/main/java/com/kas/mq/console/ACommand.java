@@ -10,9 +10,8 @@ import com.kas.mq.internal.MqContextConnection;
 
 /**
  * An abstract basic command.<br>
- * <br>
- * Parsing command text has the same logic for all types of commands and is implemented
- * here via the {@link #parse()} method.<br>
+ * Parsing command text has the same logic for all types of commands
+ * and is implemented here via the {@link #parse()} method.<br>
  * Driven classes should implement the {@link #exec(MqContextConnection)} method.
  * 
  * @author Pippo
@@ -41,7 +40,6 @@ public abstract class ACommand implements ICommand
   
   /**
    * Parse the command arguments and populate the arguments map.<br>
-   * <br>
    * First, the method scans the arguments string, parsing argument followed
    * by its associated value. If a value is missing, parsing fails.<br>
    * After parsing is over, the {@link #setArguments()} method is called
@@ -88,7 +86,6 @@ public abstract class ACommand implements ICommand
   
   /**
    * An empty method for setting the arguments of the driven command parser.<br>
-   * <br>
    * Setting the data members is done by calling the {@link #getBoolean(String, Boolean)}, 
    * {@link #getInteger(String, Integer)} and {@link #getString(String, String)} methods
    * and assign the returned value.<br>
@@ -101,7 +98,8 @@ public abstract class ACommand implements ICommand
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
-   * @param conn The {@link MqContextConnection} that will be used to execute the command
+   * @param conn
+   *   The {@link MqContextConnection} that will be used to execute the command
    */
   public abstract void exec(MqContextConnection conn);
 
@@ -115,7 +113,8 @@ public abstract class ACommand implements ICommand
   /**
    * Get the list of command verbs acceptable by this command
    * 
-   * @return the list of command verbs acceptable by this command
+   * @return
+   *   the list of command verbs acceptable by this command
    */
   public List<String> getCommandVerbs()
   {
@@ -125,9 +124,12 @@ public abstract class ACommand implements ICommand
   /**
    * Read a string value from the arguments map
    * 
-   * @param key The name of the argument
-   * @param defval Default value to assign, in case no matching entry is found
-   * @return The value from the map, or {@code defval} if {@code key} was not found
+   * @param key
+   *   The name of the argument
+   * @param defval
+   *   Default value to assign, in case no matching entry is found
+   * @return
+   *   the value from the map, or {@code defval} if {@code key} was not found
    */
   protected String getString(String key, String defval)
   {
@@ -140,9 +142,12 @@ public abstract class ACommand implements ICommand
   /**
    * Read an integer value from the arguments map
    * 
-   * @param key The name of the argument
-   * @param defval Default value to assign, in case no matching entry is found
-   * @return The value from the map, or {@code defval} if {@code key} was not found
+   * @param key
+   *   The name of the argument
+   * @param defval
+   *   Default value to assign, in case no matching entry is found
+   * @return
+   *   the value from the map, or {@code defval} if {@code key} was not found
    */
   protected Integer getInteger(String key, Integer defval)
   {
@@ -165,9 +170,12 @@ public abstract class ACommand implements ICommand
   /**
    * Read a long value from the arguments map
    * 
-   * @param key The name of the argument
-   * @param defval Default value to assign, in case no matching entry is found
-   * @return The value from the map, or {@code defval} if {@code key} was not found
+   * @param key
+   *   The name of the argument
+   * @param defval
+   *   Default value to assign, in case no matching entry is found
+   * @return
+   *   the value from the map, or {@code defval} if {@code key} was not found
    */
   protected Long getLong(String key, Long defval)
   {
@@ -190,9 +198,12 @@ public abstract class ACommand implements ICommand
   /**
    * Read a boolean value from the arguments map
    * 
-   * @param key The name of the argument
-   * @param defval Default value to assign, in case no matching entry is found
-   * @return The value from the map, or {@code defval} if {@code key} was not found
+   * @param key
+   *   The name of the argument
+   * @param defval
+   *   Default value to assign, in case no matching entry is found
+   * @return
+   *   the value from the map, or {@code defval} if {@code key} was not found
    */
   protected Boolean getBoolean(String key, Boolean defval)
   {
@@ -213,10 +224,14 @@ public abstract class ACommand implements ICommand
   /**
    * Read an Enum value from the arguments map
    * 
-   * @param key The name of the argument
-   * @param type The class of the enum
-   * @param defval Default value to assign, in case no matching entry is found
-   * @return The value from the map, or {@code defval} if {@code key} was not found
+   * @param key
+   *   The name of the argument
+   * @param type
+   *   The class of the enum
+   * @param defval
+   *   Default value to assign, in case no matching entry is found
+   * @return
+   *   the value from the map, or {@code defval} if {@code key} was not found
    */
   protected <T extends Enum<T>> T getEnum(String key, Class<T> type, T defval)
   {

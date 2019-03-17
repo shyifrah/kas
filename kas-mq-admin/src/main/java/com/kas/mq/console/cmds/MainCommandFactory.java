@@ -17,7 +17,8 @@ public class MainCommandFactory extends CommandFactory
   /**
    * Get the singleton
    * 
-   * @return the singleton instance
+   * @return
+   *   the singleton instance
    */
   static public MainCommandFactory getInstance()
   {

@@ -6,7 +6,7 @@ import com.kas.mq.console.ICommand;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
- * EXIT command
+ * HELP command
  * 
  * @author Pippo
  */
@@ -23,7 +23,8 @@ public class HelpCommand extends ACommand
   /**
    * Overriding the default {@link ACommand#parse(String)}
    * 
-   * @param text The text passed to this command
+   * @param text
+   *   The text passed to this command
    */
   public void parse(String text)
   {
@@ -33,7 +34,8 @@ public class HelpCommand extends ACommand
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
-   * @param conn The {@link MqContextConnection} that will be used to execute the command
+   * @param conn
+   *   The {@link MqContextConnection} that will be used to execute the command
    */
   public void exec(MqContextConnection conn)
   {
@@ -99,7 +101,8 @@ public class HelpCommand extends ACommand
   /**
    * Get the command text
    * 
-   * @return the command text
+   * @return
+   *   the command text
    */
   public String toString()
   {

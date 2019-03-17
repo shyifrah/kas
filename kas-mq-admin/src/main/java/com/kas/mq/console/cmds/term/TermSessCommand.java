@@ -38,7 +38,8 @@ public class TermSessCommand extends ACommand
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
-   * @param conn The {@link MqContextConnection} that will be used to execute the command
+   * @param conn
+   *   The {@link MqContextConnection} that will be used to execute the command
    */
   public void exec(MqContextConnection conn)
   {
@@ -85,7 +86,8 @@ public class TermSessCommand extends ACommand
   /**
    * Get the command text
    * 
-   * @return the command text
+   * @return
+   *   the command text
    */
   public String toString()
   {
