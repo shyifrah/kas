@@ -9,11 +9,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.IPool;
 import com.kas.infra.base.UniqueId;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 
 /**
  * A pool of database connections.<br>
@@ -35,8 +36,10 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Initialize the pool. This method must be called prior to {@link #getInstance()}
    * 
-   * @param config The {@link DbConfiguration} object that will initialize the pool
-   * @return {@code true} if the pool was initialized successfully, {@code false} otherwise
+   * @param config
+   *   The {@link DbConfiguration} object that will initialize the pool
+   * @return
+   *   {@code true} if the pool was initialized successfully, {@code false} otherwise
    */
   static public boolean init(DbConfiguration config)
   {
@@ -47,7 +50,8 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Get the pool
    * 
-   * @return the instance previously created
+   * @return
+   *   the instance previously created
    */
   static public DbConnectionPool getInstance()
   {
@@ -60,7 +64,7 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * Configuration object
@@ -85,7 +89,8 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Get the DB configuration
    * 
-   * @return the DB configuration
+   * @return
+   *   the DB configuration
    */
   public DbConfiguration getConfig()
   {
@@ -95,14 +100,15 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Construct the DB pool
    * 
-   * @param config The configuration object
+   * @param config
+   *   The configuration object
    */
   private DbConnectionPool(DbConfiguration config)
   {
     if (sInstance != null)
       throw new RuntimeException("Multiple instances of DbConnectionPool are prohibited");
     
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(this.getClass());
     
     mConfig = config;
     
@@ -120,7 +126,8 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Allocate new {@link DbConnection}
    * 
-   * @return the newly allocated {@link DbConnection}
+   * @return
+   *   the newly allocated {@link DbConnection}
    */
   public DbConnection allocate()
   {
@@ -145,11 +152,12 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   /**
    * Release a previously allocated {@link DbConnection}
    * 
-   * @param dbConn A previously allocated {@link DbConnection}
+   * @param dbConn
+   *   A previously allocated {@link DbConnection}
    */
   public void release(DbConnection dbConn)
   {
-    mLogger.debug("DbConnectionPool::release() - IN");
+    mLogger.trace("DbConnectionPool::release() - IN");
     
     mConnMap.remove(dbConn.getConnId());
     
@@ -160,21 +168,23 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     }
     catch (SQLException e) {}
     
-    mLogger.debug("DbConnectionPool::release() - OUT");
+    mLogger.trace("DbConnectionPool::release() - OUT");
   }
    
   /**
    * Get DB version
    * 
-   * @return {@code version} if connectivity works fine
+   * @return
+   *   {@code version} if connectivity works fine
    */
   public String getDbVersion() 
   {
-	  mLogger.debug("DbConnectionPool::getDbVersion() - IN");
+	  mLogger.trace("DbConnectionPool::getDbVersion() - IN");
 	  
 	  DbConnection dbConn = allocate();
 	  Connection conn = dbConn.getConn();
-	  String version=null;
+	  String version = null;
+	  
 	  try
 		{
 		  PreparedStatement st = conn.prepareStatement("SELECT VERSION() AS VER;");
@@ -184,31 +194,35 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
 		}
 	  catch (SQLException ex)
 	  {
-    	 mLogger.error("DbConnectionPool::getDbVersion() - unable to get DB version. error=" + ex.getMessage());;
+    	 mLogger.error("Unable to get DB version. error={}", ex.getMessage());;
 	  }
-	  release(dbConn);
-	  mLogger.debug("DbConnectionPool::getDbVersion() - Connection pool successfully connected to DB");
 	  
-	  mLogger.debug("DbConnectionPool::getDbVersion() - OUT, Returns=" + version);
+	  release(dbConn);
+	  
+	  mLogger.trace("DbConnectionPool::getDbVersion() - OUT, Returns=" + version);
 	  return version;	  
   }
   
   /**
    * Check DB connectivity
    * 
-   * @return {@code true} if connectivity works fine, {@code false} otherwise
+   * @return
+   *   {@code true} if connectivity works fine, {@code false} otherwise
    */
   private boolean isConnectivityAvailable()
   {
-    mLogger.debug("DbConnectionPool::isConnectivityAvailable() - IN");
+    mLogger.trace("DbConnectionPool::isConnectivityAvailable() - IN");
     
     boolean available = false;
     
     DbConnection dbConn = allocate();
-    if ( dbConn == null ) {
+    if (dbConn == null)
+    {
     	mLogger.error("Unable to allocate DB Connection");
-    	available=false;
-    }else {    	
+    	available = false;
+    }
+    else
+    {
     	Connection conn = dbConn.getConn();    
 	    try
 	    {	    	
@@ -221,10 +235,10 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
 	    catch (SQLException e)
 	    {	
 	      mLogger.error("Unable to validate DB connction. Exception caught: ", e);
-	    }
-    
-	    mLogger.debug("DbConnectionPool::isConnectivityAvailable() - OUT, Return=" + available);
+	    }  
     }
+    
+    mLogger.trace("DbConnectionPool::isConnectivityAvailable() - OUT, Return={}", available);
     return available;
   }
   
@@ -233,14 +247,14 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
    */
   public void shutdown()
   {
-    mLogger.debug("DbConnectionPool::shutdown() - IN");
+    mLogger.trace("DbConnectionPool::shutdown() - IN");
     
     Collection<DbConnection> col = mConnMap.values();
     for (Iterator<DbConnection> iter = col.iterator(); iter.hasNext();)
     {
       DbConnection conn = iter.next();
       UniqueId id = conn.getConnId();
-      mLogger.debug("DbConnectionPool::shutdown() - Closing connection ID " + id);
+      mLogger.trace("DbConnectionPool::shutdown() - Closing connection ID " + id);
       conn.close();
       iter.remove();
     }
@@ -248,13 +262,14 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
     mConnMap.clear();
     sInstance = null;
     
-    mLogger.debug("DbConnectionPool::shutdown() - OUT");
+    mLogger.trace("DbConnectionPool::shutdown() - OUT");
   }
   
   /**
    * Create a new Connection
    * 
-   * @return a new Connection
+   * @return
+   *   a new Connection
    */
   private Connection createConnection()
   {
@@ -268,12 +283,12 @@ public class DbConnectionPool extends AKasObject implements IPool<DbConnection>
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

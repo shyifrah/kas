@@ -1,11 +1,12 @@
 package com.kas.db;
 
 import java.util.HashSet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.config.impl.AConfiguration;
+import com.kas.infra.base.IObject;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 
 /**
  * This {@link AConfiguration} object holds all DB related configuration properties
@@ -33,7 +34,7 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private Logger mLogger = LogManager.getLogger(this.getClass());
   
   /**
    * The DB type
@@ -81,7 +82,7 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
    */
   public void refresh()
   {
-    mLogger.debug("DbConfiguration::refresh() - IN");
+    mLogger.trace("DbConfiguration::refresh() - IN");
     
     mDbType         = mMainConfig.getStringProperty  ( cDbConfigPrefix + "type"           , mDbType         );
     mHostName       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "host"           , mHostName       );
@@ -91,19 +92,18 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
     mPassword       = mMainConfig.getStringProperty  ( cDbConfigPrefix + "password"       , mPassword       );
     mMaxConnections = mMainConfig.getIntProperty     ( cDbConfigPrefix + "maxConnections" , mMaxConnections );
     
-    mLogger.debug("DbConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
+    mLogger.trace("DbConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
     for (IBaseListener listener : mListeners)
       listener.refresh();
     
-    mLogger.debug("DbConfiguration::refresh() - OUT");
+    mLogger.trace("DbConfiguration::refresh() - OUT");
   }
   
   /**
    * Register an object as a listener to to configuration changes
    * 
-   * @param listener The listener
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
+   * @param listener
+   *   The listener
    */
   public synchronized void register(IBaseListener listener)
   {
@@ -111,11 +111,10 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   }
   
   /**
-   * Register an object as a listener to to configuration changes
+   * Unregister an object as a listener to to configuration changes
    * 
-   * @param listener The listener
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
+   * @param listener
+   *   The listener
    */
   public synchronized void unregister(IBaseListener listener)
   {
@@ -125,7 +124,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the DB type
    * 
-   * @return the DB type
+   * @return
+   *   the DB type
    */
   public String getDbType()
   {
@@ -135,7 +135,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the DB host
    * 
-   * @return the DB host
+   * @return
+   *   the DB host
    */
   public String getHost()
   {
@@ -145,7 +146,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the port number on which the DB listens for new connections
    * 
-   * @return DB listen port number
+   * @return
+   *   DB listen port number
    */
   public int getPort()
   {
@@ -155,7 +157,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the name of the schema
    * 
-   * @return the name of the schema
+   * @return
+   *   the name of the schema
    */
   public String getSchemaName()
   {
@@ -165,7 +168,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the DB user's name
    * 
-   * @return the DB user's name
+   * @return
+   *   the DB user's name
    */
   public String getUserName()
   {
@@ -175,7 +179,8 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the DB user's password
    * 
-   * @return the DB user's password
+   * @return
+   *   the DB user's password
    */
   public String getPassword()
   {
@@ -184,7 +189,9 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   
   /**
    * Get the maximum number of active DB connections
+   * 
    * @return
+   *   the maximum number of active DB connections
    */
   public int getMaxConnections()
   {
@@ -192,12 +199,12 @@ public class DbConfiguration extends AConfiguration implements IBaseRegistrar
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

@@ -3,10 +3,12 @@ package com.kas.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 
 /**
- * A {@link DbConnection} is merely a wrapper to a {@link Connection} that associates it with a {@link UniqueId}.
+ * A {@link DbConnection} is merely a wrapper to a {@link Connection}
+ * that associates it with a {@link UniqueId}.
  * 
  * @author Pippo
  */
@@ -25,7 +27,8 @@ public class DbConnection extends AKasObject
   /**
    * Construct a DB connection object
    * 
-   * @param conn The actual connection
+   * @param conn
+   *   The actual connection
    */
   DbConnection(Connection conn)
   {
@@ -36,7 +39,8 @@ public class DbConnection extends AKasObject
   /**
    * Get the Connection object
    * 
-   * @return the Connection object
+   * @return
+   *   the Connection object
    */
   public Connection getConn()
   {
@@ -46,7 +50,8 @@ public class DbConnection extends AKasObject
   /**
    * Get the connection ID
    * 
-   * @return the connection ID
+   * @return
+   *   the connection ID
    */
   public UniqueId getConnId()
   {
@@ -66,12 +71,12 @@ public class DbConnection extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
