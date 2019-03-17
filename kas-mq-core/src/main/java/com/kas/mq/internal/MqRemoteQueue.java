@@ -17,8 +17,10 @@ public class MqRemoteQueue extends MqQueue
   /**
    * Construct a {@link MqRemoteQueue} object
    * 
-   * @param mgr The owning {@link MqManager} object
-   * @param name The name of this destination object
+   * @param mgr
+   *   The owning {@link MqManager} object
+   * @param name
+   *   The name of this destination object
    */
   public MqRemoteQueue(MqManager mgr, String name, IMqConnectionPool pool)
   {
@@ -28,15 +30,16 @@ public class MqRemoteQueue extends MqQueue
   
   /**
    * The actual implementation of the Put method.<br>
-   * <br>
    * Connecting to the KAS/MQ server, putting the message and disconnecting from it.
    * 
-   * @param message The message to put
-   * @return {@code true} if message was put, {@code false} otherwise
+   * @param message
+   *   The message to put
+   * @return
+   *   {@code true} if message was put, {@code false} otherwise
    */
   protected boolean internalPut(IMqMessage message)
   {
-    mLogger.debug("MqRemoteQueue::put() - IN");
+    mLogger.trace("MqRemoteQueue::put() - IN");
     
     boolean success = false;
     if (message != null)
@@ -55,21 +58,22 @@ public class MqRemoteQueue extends MqQueue
       mPool.release(conn);
     }
     
-    mLogger.debug("MqRemoteQueue::put() - OUT, Returns=" + success);
+    mLogger.trace("MqRemoteQueue::put() - OUT, Returns=" + success);
     return success;
   }
 
   /**
    * The actual implementation of the Get method.<br>
-   * <br>
    * Connecting to the KAS/MQ server, getting the message and disconnecting from it.
    * 
-   * @param message The message to put
-   * @return {@code true} if message was put, {@code false} otherwise
+   * @param message
+   *   The message to put
+   * @return
+   *   {@code true} if message was put, {@code false} otherwise
    */
   protected IMqMessage internalGet(long timeout, long interval)
   {
-    mLogger.debug("MqRemoteQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
+    mLogger.trace("MqRemoteQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
     IMqMessage result = null;
     
@@ -85,7 +89,7 @@ public class MqRemoteQueue extends MqQueue
     
     mPool.release(conn);
     
-    mLogger.debug("MqRemoteQueue::get() - OUT");
+    mLogger.trace("MqRemoteQueue::get() - OUT");
     return result;
   }
 }

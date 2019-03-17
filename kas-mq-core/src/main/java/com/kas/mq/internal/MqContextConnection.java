@@ -18,7 +18,8 @@ public class MqContextConnection extends MqConnection
   /**
    * Constructing the connection
    * 
-   * @param clientName A name used by the client application
+   * @param clientName
+   *   A name used by the client application
    */
   public MqContextConnection(String clientName)
   {
@@ -28,148 +29,174 @@ public class MqContextConnection extends MqConnection
   /**
    * Define a new group.
    * 
-   * @param group The name of the group to define
-   * @param desc The group description
-   * @return the {@code true} if group was defined, {@code false} otherwise
+   * @param group
+   *   The name of the group to define
+   * @param desc
+   *   The group description
+   * @return
+   *   {@code true} if group was defined, {@code false} otherwise
    */
   public boolean defineGroup(String group, String desc)
   {
-    mLogger.debug("MqContextConnection::defineGroup() - IN");
+    mLogger.trace("MqContextConnection::defineGroup() - IN");
     
     String name = group.toUpperCase();
     IMqMessage request = MqRequestFactory.createDefineGroupRequest(name, desc);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::defineGroup() - OUT");
+    mLogger.trace("MqContextConnection::defineGroup() - OUT");
     return success;
   }
   
   /**
    * Delete an existing group.
    * 
-   * @param group The name of the group to delete
-   * @return the {@code true} if group was deleted, {@code false} otherwise
+   * @param group
+   *   The name of the group to delete
+   * @return
+   *   {@code true} if group was deleted, {@code false} otherwise
    */
   public boolean deleteGroup(String group)
   {
-    mLogger.debug("MqContextConnection::deleteGroup() - IN");
+    mLogger.trace("MqContextConnection::deleteGroup() - IN");
     
     String name = group.toUpperCase();
     IMqMessage request = MqRequestFactory.createDeleteGroupRequest(name);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::deleteGroup() - OUT");
+    mLogger.trace("MqContextConnection::deleteGroup() - OUT");
     return success;
   }
   
   /**
    * Define a new user
    * 
-   * @param user The name of the user to define
-   * @param pass The user's password
-   * @param desc The user description
-   * @param groups The list of groups the user is to be a member of
-   * @return the {@code true} if user was defined, {@code false} otherwise
+   * @param user
+   *   The name of the user to define
+   * @param pass
+   *   The user's password
+   * @param desc
+   *   The user description
+   * @param groups
+   *   The list of groups the user is to be a member of
+   * @return
+   *   {@code true} if user was defined, {@code false} otherwise
    */
   public boolean defineUser(String user, String pass, String desc, StringList groups)
   {
-    mLogger.debug("MqContextConnection::defineUser() - IN");
+    mLogger.trace("MqContextConnection::defineUser() - IN");
     
     String name = user.toUpperCase();
     IMqMessage request = MqRequestFactory.createDefineUserRequest(name, pass, desc, groups);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::defineUser() - OUT");
+    mLogger.trace("MqContextConnection::defineUser() - OUT");
     return success;
   }
   
   /**
    * Delete an existing user
    * 
-   * @param user The name of the user to delete
-   * @return the {@code true} if user was deleted, {@code false} otherwise
+   * @param user
+   *   The name of the user to delete
+   * @return
+   *   {@code true} if user was deleted, {@code false} otherwise
    */
   public boolean deleteUser(String user)
   {
-    mLogger.debug("MqContextConnection::deleteUser() - IN");
+    mLogger.trace("MqContextConnection::deleteUser() - IN");
     
     String name = user.toUpperCase();
     IMqMessage request = MqRequestFactory.createDeleteUserRequest(name);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::deleteUser() - OUT");
+    mLogger.trace("MqContextConnection::deleteUser() - OUT");
     return success;
   }
   
   /**
    * Define a new queue.
    * 
-   * @param queue The name of the queue to define
-   * @param desc The queue description
-   * @param threshold The queue threshold
-   * @param disp The queue disposition
-   * @return the {@code true} if queue was defined, {@code false} otherwise
+   * @param queue
+   *   The name of the queue to define
+   * @param desc
+   *   The queue description
+   * @param threshold
+   *   The queue threshold
+   * @param disp
+   *   The queue disposition
+   * @return
+   *   {@code true} if queue was defined, {@code false} otherwise
    */
   public boolean defineQueue(String queue, String desc, int threshold, EQueueDisp disp)
   {
-    mLogger.debug("MqContextConnection::defineQueue() - IN");
+    mLogger.trace("MqContextConnection::defineQueue() - IN");
     
     String qname = queue.toUpperCase();
     IMqMessage request = MqRequestFactory.createDefineQueueRequest(qname, desc, threshold, disp);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::defineQueue() - OUT");
+    mLogger.trace("MqContextConnection::defineQueue() - OUT");
     return success;
   }
   
   /**
    * Alter a new queue.
    * 
-   * @param queue The queue name to be altered.
-   * @param qProps The queue properties to be altered
-   * @return the {@code true} if queue was altered, {@code false} otherwise
+   * @param queue
+   *   The queue name to be altered.
+   * @param qProps
+   *   The queue properties to be altered
+   * @return
+   *   {@code true} if queue was altered, {@code false} otherwise
    */
   public boolean alterQueue(String queue, Properties qProps)
   {
-    mLogger.debug("MqContextConnection::alterQueue() - IN");
+    mLogger.trace("MqContextConnection::alterQueue() - IN");
     
     String qname = queue.toUpperCase();
     IMqMessage request = MqRequestFactory.createAlterQueueRequest(qname, qProps);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::alterQueue() - OUT");
+    mLogger.trace("MqContextConnection::alterQueue() - OUT");
     return success;
   }
   
   /**
    * Define a new queue.
    * 
-   * @param queue The queue name to delete.
-   * @param force Should the queue be deleted even if its not empty.
-   * @return the {@code true} if queue was deleted, {@code false} otherwise
+   * @param queue
+   *   The queue name to delete.
+   * @param force
+   *   Should the queue be deleted even if its not empty.
+   * @return
+   *   {@code true} if queue was deleted, {@code false} otherwise
    */
   public boolean deleteQueue(String queue, boolean force)
   {
-    mLogger.debug("MqContextConnection::deleteQueue() - IN");
+    mLogger.trace("MqContextConnection::deleteQueue() - IN");
     
     String qname = queue.toUpperCase();
     IMqMessage request = MqRequestFactory.createDeleteQueueRequest(qname, force);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::deleteQueue() - OUT");
+    mLogger.trace("MqContextConnection::deleteQueue() - OUT");
     return success;
   }
 
   /**
    * Query KAS/MQ server for information
    * 
-   * @param qType a {@link EQueryType} value that describes the type of query
-   * @param qProps a {@link Properties} object used as query parameters for refining the query
-   * @return the message returned by the KAS/MQ server
+   * @param qType
+   *   A {@link EQueryType} value that describes the type of query
+   * @param qProps
+   *   A {@link Properties} object used as query parameters for refining the query
+   * @return
+   *   the message returned by the KAS/MQ server
    */
   public MqStringMessage queryServer(EQueryType qType, Properties qProps)
   {
-    mLogger.debug("MqContextConnection::queryServer() - IN");
+    mLogger.trace("MqContextConnection::queryServer() - IN");
     
     IMqMessage reply = null;
     if (!isConnected())
@@ -188,69 +215,76 @@ public class MqContextConnection extends MqConnection
       logInfoAndSetResponse(resp);
     }
     
-    mLogger.debug("MqContextConnection::queryServer() - OUT");
+    mLogger.trace("MqContextConnection::queryServer() - OUT");
     return (MqStringMessage)reply;
   }
 
   /**
    * Terminate a connection
    * 
-   * @param id The connection ID to terminate
-   * @return the {@code true} if connection was terminated, {@code false} otherwise
+   * @param id
+   *   The connection ID to terminate
+   * @return
+   *   the {@code true} if connection was terminated, {@code false} otherwise
    */
   public boolean termConn(UniqueId id)
   {
-    mLogger.debug("MqContextConnection::termConn() - IN");
+    mLogger.trace("MqContextConnection::termConn() - IN");
     
     IMqMessage request = MqRequestFactory.createTermConnRequest(id);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::termConn() - OUT");
+    mLogger.trace("MqContextConnection::termConn() - OUT");
     return success;
   }
   
   /**
    * Terminate a session
    * 
-   * @param id The session ID to terminate
-   * @return the {@code true} if session was terminated, {@code false} otherwise
+   * @param id
+   *   The session ID to terminate
+   * @return
+   *   the {@code true} if session was terminated, {@code false} otherwise
    */
   public boolean termSess(UniqueId id)
   {
-    mLogger.debug("MqContextConnection::termSess() - IN");
+    mLogger.trace("MqContextConnection::termSess() - IN");
     
     IMqMessage request = MqRequestFactory.createTermSessRequest(id);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::termSess() - OUT");
+    mLogger.trace("MqContextConnection::termSess() - OUT");
     return success;
   }
   
   /**
-   * Mark the KAS/MQ server it should shutdown
+   * Signal the KAS/MQ server it should shutdown
    * 
-   * @return {@code true} if the server accepted the request, {@code false} otherwise
+   * @return
+   *   {@code true} if the server accepted the request, {@code false} otherwise
    */
   public boolean termServer()
   {
-    mLogger.debug("MqContextConnection::termServer() - IN");
+    mLogger.trace("MqContextConnection::termServer() - IN");
     
     IMqMessage request = MqRequestFactory.createTermServerRequest(mUser);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqContextConnection::termServer() - OUT");
+    mLogger.trace("MqContextConnection::termServer() - OUT");
     return success;
   }
   
   /**
    * Send an administrative request to KAS/MQ server.
    * 
-   * @param request The request message
-   * @return The reply message, if there is one.
+   * @param request
+   *   The request message
+   * @return
+   *   the reply message, if there is one.
    */
   protected IMqMessage requestReply(IMqMessage request)
   {
-    mLogger.debug("MqContextConnection::requestReply() - IN");
+    mLogger.trace("MqContextConnection::requestReply() - IN");
     
     IMqMessage reply = null;
     if (!isConnected())
@@ -262,21 +296,22 @@ public class MqContextConnection extends MqConnection
       reply = put(IMqConstants.cAdminQueueName, request);
     }
     
-    mLogger.debug("MqContextConnection::requestReply() - OUT");
+    mLogger.trace("MqContextConnection::requestReply() - OUT");
     return reply;
   }
   
   /**
    * Send an administrative request to KAS/MQ server and analyze response.<br>
-   * <br>
    * The reply's description will be set to the latest response
    * 
-   * @param request The request message
-   * @return {@code true} if successful, {@code false} otherwise
+   * @param request
+   *   The request message
+   * @return
+   *   {@code true} if successful, {@code false} otherwise
    */
   protected boolean requestReplyAndAnalyze(IMqMessage request)
   {
-    mLogger.debug("MqContextConnection::requestReplyAndAnalyze() - IN");
+    mLogger.trace("MqContextConnection::requestReplyAndAnalyze() - IN");
     
     boolean success = false;
     if (!isConnected())
@@ -295,7 +330,7 @@ public class MqContextConnection extends MqConnection
       logInfoAndSetResponse(resp);
     }
     
-    mLogger.debug("MqContextConnection::requestReplyAndAnalyze() - OUT");
+    mLogger.trace("MqContextConnection::requestReplyAndAnalyze() - OUT");
     return success;
   }
 }

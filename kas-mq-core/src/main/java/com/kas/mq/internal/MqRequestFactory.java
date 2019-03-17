@@ -9,6 +9,11 @@ import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
 
+/**
+ * Internal factory for generating various types of requests
+ * 
+ * @author Pippo
+ */
 public class MqRequestFactory
 {
   static public MqMessage createDefineGroupRequest(String group, String desc)

@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.ISerializable;
 
 /**
  * A KAS/MQ response.<br>
- * <br>
- * The response is composed of three fields: a {@link EMqCode code}, an integer value and a description.
+ * The response is composed of three fields:
+ * 1) a {@link EMqCode code}, 2) an integer value and 3) a description.
  * 
  * @author Pippo
  */
@@ -33,9 +34,12 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Construct a response object using the specified {@link EMqCode} and description
    * 
-   * @param code The {@link EMqCode response code}
-   * @param val Additional integer value
-   * @param desc The description of the response code
+   * @param code
+   *   The {@link EMqCode response code}
+   * @param val
+   *   Additional integer value
+   * @param desc
+   *   The description of the response code
    */
   public MqResponse(EMqCode code, int val, String desc)
   {
@@ -47,9 +51,10 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Constructs a {@link MqResponse} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public MqResponse(ObjectInputStream istream) throws IOException
   {
@@ -72,11 +77,10 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Serialize the {@link MqResponse} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the response will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
-   * 
-   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the response will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public synchronized void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -91,7 +95,8 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Get the response code
    * 
-   * @return the response code
+   * @return
+   *   the response code
    */
   public EMqCode getCode()
   {
@@ -101,7 +106,8 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Set the response code
    * 
-   * @param code The response code
+   * @param code
+   *   The response code
    */
   public void setCode(EMqCode code)
   {
@@ -111,7 +117,8 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Get the response value
    * 
-   * @return the response value
+   * @return
+   *   the response value
    */
   public int getValue()
   {
@@ -121,7 +128,8 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Set the response value
    * 
-   * @param val The response value
+   * @param val
+   *   The response value
    */
   public void setValue(int val)
   {
@@ -131,7 +139,8 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Get the response description
    * 
-   * @return the response description
+   * @return
+   *   the response description
    */
   public String getDesc()
   {
@@ -141,7 +150,8 @@ public class MqResponse extends AKasObject implements ISerializable
   /**
    * Set the response description
    * 
-   * @param desc The response description
+   * @param desc
+   *   The response description
    */
   public void setDesc(String desc)
   {
@@ -149,12 +159,12 @@ public class MqResponse extends AKasObject implements ISerializable
   }
     
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

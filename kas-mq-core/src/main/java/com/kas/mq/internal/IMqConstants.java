@@ -1,5 +1,10 @@
 package com.kas.mq.internal;
 
+/**
+ * Various constants
+ * 
+ * @author Pippo
+ */
 public interface IMqConstants
 {
   /**
