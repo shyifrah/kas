@@ -1,0 +1,40 @@
+<Configuration>
+  
+  <!-- ======================================================================================= -->
+  <!-- Appenders                                                                               -->
+  <!-- ======================================================================================= -->
+  <Appenders>
+  
+    <Console name="Stdout">
+      <PatternLayout>
+        <pattern>%d{DEFAULT} [%-5T] [%-5p] (%c{1}) - %m%n</pattern>
+      </PatternLayout>
+    </Console>
+    
+    <File name="File" fileName="${kas.home}/logs/kas.log" filePattern="${kas.home}/logs/kas.log.%d{yyyy-MM-dd-hh.mm.ss}.%i">
+      <PatternLayout>
+        <Pattern>%d{DEFAULT} [%-5T] [%-5p] (%c{1}) - %m%n</Pattern>
+      </PatternLayout>
+      <Policies>
+        <OnStartupTriggeringPolicy />
+        <SizeBasedTriggeringPolicy size="20 MB" />
+        <TimeBasedTriggeringPolicy />
+      </Policies>
+    </File>
+    
+  </Appenders>
+  
+  <!-- ======================================================================================= -->
+  <!-- Loggers                                                                                 -->
+  <!-- ======================================================================================= -->
+  <Loggers>
+    <logger name="com" level="INFO" additivity="false">
+      <AppenderRef ref="File"/>
+    </logger>
+    
+    <Root level="INFO" additivity="false">
+      <AppenderRef ref="Stdout"/>
+    </Root>
+  </Loggers>
+  
+</Configuration>
