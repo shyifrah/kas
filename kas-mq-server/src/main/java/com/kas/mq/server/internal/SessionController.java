@@ -29,6 +29,7 @@ public class SessionController extends AKasObject implements IController
    * Logger
    */
   private Logger mLogger;
+  private Logger mStdout;
   
   /**
    * A map of session id to session handler
@@ -58,7 +59,8 @@ public class SessionController extends AKasObject implements IController
    */
   public SessionController(IMqServer server)
   {
-    mLogger  = LogManager.getLogger(getClass());
+    mLogger = LogManager.getLogger(getClass());
+    mStdout = LogManager.getLogger("Stdout");
     mHandlers = new ConcurrentHashMap<UniqueId, SessionHandler>();
     mServer = server;
     mConfig = mServer.getConfig();
@@ -83,7 +85,8 @@ public class SessionController extends AKasObject implements IController
     SessionHandler handler = new SessionHandler(socket, this, mRepository);
     
     String remoteAddress = new NetworkAddress(socket).toString();
-    mLogger.info("New connection accepted from {}", remoteAddress);
+    
+    logBoth("New connection accepted from {}", remoteAddress);
     ThreadPool.execute(handler);
   }
   
@@ -192,8 +195,7 @@ public class SessionController extends AKasObject implements IController
   {
     mLogger.trace("SessionController::shutdown() - IN");
     
-    mLogger.info("KAS/MQ server received a Shutdown request");
-    mLogger.info("Signaling all handlers to terminate...");
+    logBoth("KAS/MQ server received a Shutdown request, signaling all handlers to terminate...");
     
     for (Map.Entry<UniqueId, SessionHandler> entry : mHandlers.entrySet())
     {
@@ -204,13 +206,27 @@ public class SessionController extends AKasObject implements IController
       handler.stop();
     }
     
-    mLogger.info("Closing all opened connections...");
+    logBoth("Closing all opened connections...");
     MqServerConnectionPool.getInstance().shutdown();
     
-    mLogger.info("Signaling main thread to terminate...");
+    logBoth("Signaling main thread to terminate...");
     mServer.stop();
     
     mLogger.trace("SessionController::shutdown() - OUT");
+  }
+  
+  /**
+   * Issue a message to both the logger and stdout
+   * 
+   * @param message
+   *   The message to issue
+   * @param args
+   *   Arguments to pass the logger and stdout
+   */
+  private void logBoth(String message, Object ... args)
+  {
+    mLogger.info(message, args);
+    mStdout.info(message, args);
   }
 
   /**

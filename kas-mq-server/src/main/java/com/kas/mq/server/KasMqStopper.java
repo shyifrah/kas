@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
-import com.kas.infra.base.ConsoleLogger;
 import com.kas.infra.base.IObject;
-import com.kas.infra.logging.IBaseLogger;
 import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.IMqConstants;
@@ -24,8 +22,6 @@ public class KasMqStopper extends AKasApp
   static private final String cAppName = "KAS/MQ server-stopper";
   static private final String cKasUser = "kas.user";
   static private final String cKasPass = "kas.pass";
-  
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqStopper.class.getName());
   
   static public void main(String [] args)
   {
@@ -123,7 +119,7 @@ public class KasMqStopper extends AKasApp
     }
     catch (Throwable e)
     {
-      sStartupLogger.error("Exception caught: ", e);
+      sStdout.error("Exception caught: ", e);
       shouldContinue = false;
     }
     
@@ -134,13 +130,13 @@ public class KasMqStopper extends AKasApp
         boolean authed = conn.login(mUserName, mPassword);
         if (!authed)
         {
-          sStartupLogger.error(conn.getResponse());
+          sStdout.error(conn.getResponse());
           shouldContinue = false;
         }
       }
       catch (Throwable e)
       {
-        sStartupLogger.error("Exception caught: ", e);
+        sStdout.error("Exception caught: ", e);
         shouldContinue = false;
       }
     }
@@ -152,17 +148,17 @@ public class KasMqStopper extends AKasApp
         boolean termed = conn.termServer();
         if (!termed)
         {
-          sStartupLogger.error(conn.getResponse());
+          sStdout.error(conn.getResponse());
           shouldContinue = false;
         }
         else
         {
-          sStartupLogger.info(conn.getResponse());
+          sStdout.info(conn.getResponse());
         }
       }
       catch (Throwable e)
       {
-        sStartupLogger.error("Exception caught: ", e);
+        sStdout.error("Exception caught: ", e);
         shouldContinue = false;
       }
     }

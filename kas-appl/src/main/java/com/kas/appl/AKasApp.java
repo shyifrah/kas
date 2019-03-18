@@ -15,7 +15,7 @@ import com.kas.infra.base.threads.ThreadPool;
  */
 public abstract class AKasApp extends AKasObject implements IKasApp
 {
-  static protected Logger sStartupLogger = LogManager.getLogger(AKasApp.class);
+  static protected Logger sStdout = LogManager.getLogger("Stdout");
   
   private boolean mTerminated = false;
   
@@ -32,21 +32,21 @@ public abstract class AKasApp extends AKasObject implements IKasApp
     Map<String, String> pArgumentsMap = new HashMap<String, String>();
     if ((args == null) || (args.length == 0))
     {
-      sStartupLogger.info("No arguments passed to KAS launcher, continue...");
+      sStdout.info("No arguments passed to KAS launcher, continue...");
     }
     else
     {
       for (String arg : args)
       {
-        sStartupLogger.info("Processing argument: [{}]", arg);
+        sStdout.info("Processing argument: [{}]", arg);
         String [] keyValue = arg.split("=");
         if (keyValue.length > 2)
         {
-          sStartupLogger.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
+          sStdout.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
         }
         else if (keyValue.length <= 1)
         {
-          sStartupLogger.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
+          sStdout.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
         }
         else
         {
@@ -106,18 +106,18 @@ public abstract class AKasApp extends AKasObject implements IKasApp
    */
   public boolean init()
   {
-    sStartupLogger.info("KAS base application startup in progress...");
+    sStdout.info("KAS base application startup in progress...");
     
     mVersion = new ProductVersion(getClass());
     mLogger = LogManager.getLogger(getClass());
     
     mShutdownHook = new AppShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
-    sStartupLogger.info("Logging services are now active, switching to log file");
+    sStdout.info("Logging services are now active, switching to log file");
     
     boolean init = appInit();    
     String message = getAppName() + " V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStartupLogger.info(message);
+    sStdout.info(message);
     mLogger.info(message);
     
     return init;
@@ -175,17 +175,17 @@ public abstract class AKasApp extends AKasObject implements IKasApp
    */
   public synchronized boolean term()
   {
-    sStartupLogger.info("KAS base application termination in progress...");
+    sStdout.info("KAS base application termination in progress...");
     mTerminated = true;
     
     boolean term = appTerm();
     if (!term)
     {
-      sStartupLogger.warn("An error occurred during KAS base application termination");
+      sStdout.warn("An error occurred during KAS base application termination");
     }
     
     ThreadPool.shutdownNow();
-    sStartupLogger.info("{} shutdown complete", getAppName());
+    sStdout.info("{} shutdown complete", getAppName());
     return term;
   }
   

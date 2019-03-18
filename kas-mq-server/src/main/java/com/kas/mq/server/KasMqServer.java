@@ -126,7 +126,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
-    sStartupLogger.info("KAS/MQ server will use {} DB on {}:{}", mDbConfig.getDbType(), mDbConfig.getHost(), mDbConfig.getPort());
+    sStdout.info("KAS/MQ server will use {} DB on {}:{}", mDbConfig.getDbType(), mDbConfig.getHost(), mDbConfig.getPort());
     mDbConfig.init();
     
     mConfig = new MqConfiguration();
@@ -140,7 +140,7 @@ public class KasMqServer extends AKasApp implements IMqServer
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
     }
-    sStartupLogger.info("DB additional information: Version={}, Schema={}, User={}", DbConnectionPool.getInstance().getDbVersion(), mDbConfig.getSchemaName(), mDbConfig.getUserName());
+    sStdout.info("DB additional information: Version={}, Schema={}, User={}", DbConnectionPool.getInstance().getDbVersion(), mDbConfig.getSchemaName(), mDbConfig.getUserName());
     DbUtils.initSchema();
 
     mRepository = new ServerRepository(mConfig);
@@ -155,8 +155,8 @@ public class KasMqServer extends AKasApp implements IMqServer
     }
     catch (IOException e)
     {
-    	sStartupLogger.error("An error occurred while trying to bind server socket with port: {}", mConfig.getPort());
-    	sStartupLogger.error("Exception caught: {}",  e.getMessage());
+    	sStdout.error("An error occurred while trying to bind server socket with port: {}", mConfig.getPort());
+    	sStdout.error("Exception caught: {}",  e.getMessage());
       return false;
     }
     
@@ -259,7 +259,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public void appExec()
   {
     int errors = 0;
-    sStartupLogger.info("KAS/MQ server " + mConfig.getManagerName() + " available on port " +  mConfig.getPort ());
+    sStdout.info("KAS/MQ server " + mConfig.getManagerName() + " available on port " +  mConfig.getPort ());
     while (!mStop)
     {
       if (!mConfig.isEnabled())
