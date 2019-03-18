@@ -13,11 +13,6 @@ public enum EQueryConfigType
   ALL,
   
   /**
-   * Logging configuration data
-   */
-  LOGGING,
-  
-  /**
    * MQ configuration data
    */
   MQ,
