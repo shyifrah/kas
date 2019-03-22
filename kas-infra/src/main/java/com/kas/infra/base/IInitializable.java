@@ -2,7 +2,7 @@ package com.kas.infra.base;
 
 /**
  * Implementors of this interface are usually classes that requires some sort of initialization
- * prior their usage, and optionally, requires some sort of termination as well.
+ * prior to their usage, and optionally, requires some sort of termination as well.
  * 
  * @author Pippo
  */

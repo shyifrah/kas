@@ -7,7 +7,6 @@ import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
-import com.kas.infra.utils.helpers.EOsType;
 
 /**
  * A list of utility methods used to extract run-time information

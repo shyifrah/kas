@@ -3,7 +3,6 @@ package com.kas.infra.utils;
 import java.io.Console;
 import java.io.PrintStream;
 import java.util.Scanner;
-import com.kas.infra.utils.helpers.EOsType;
 
 /**
  * Console related utilities

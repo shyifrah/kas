@@ -1,8 +1,7 @@
 package com.kas.infra.base;
 
 /**
- * An exception thrown by {@link Properties} whenever
- * a property is not found
+ * An exception thrown by {@link Properties} whenever a property is not found
  * 
  * @author Pippo
  */

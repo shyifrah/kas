@@ -7,6 +7,11 @@ public class TestProperties
 {
   private Properties mProps = new Properties();
   
+  public TestProperties()
+  {
+    System.setProperty("log4j.configurationFile", "./src/test/resources");
+  }
+  
   @Test
   public void testProperties()
   {

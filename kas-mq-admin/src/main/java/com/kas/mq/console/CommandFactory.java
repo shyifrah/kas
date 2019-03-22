@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import com.kas.infra.utils.ConsoleUtils;
-import com.kas.infra.utils.helpers.ThrowableFormatter;
+import com.kas.infra.utils.ThrowableFormatter;
 
 /**
  * A base factory for commands

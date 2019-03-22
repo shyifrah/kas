@@ -7,7 +7,8 @@ package com.kas.infra.base;
  */
 public class KasException extends Exception
 {
-  static private final long   serialVersionUID = 1L;
+    static final private long serialVersionUID = 346012753124287014L;
+  
   static private final String cDefaultMessage = "KAS Exception";
 
   /**

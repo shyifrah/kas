@@ -3,7 +3,6 @@ package com.kas.infra.utils;
 import java.util.Collection;
 import java.util.Map;
 import com.kas.infra.base.IObject;
-import com.kas.infra.utils.helpers.ThrowableFormatter;
 
 /**
  * A list of utility methods used to manipulate strings
