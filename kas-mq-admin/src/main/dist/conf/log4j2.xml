@@ -1,49 +1,40 @@
-<Configuration>
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
   
   <!-- ======================================================================================= -->
   <!-- Properties                                                                              -->
   <!-- ======================================================================================= -->
   <Properties>
-    <Property name="logFileDir">$${sys:kas.home:.}/logs</Property>
-    <Property name="logPattern">%d{DEFAULT} [%-5T] [%-5p] (%c{1}) - %m%n</Property>
-    <Property name="archiveFileMaxSize">10 MB</Property>
+    <Property name="logPattern">%d{DEFAULT} %-5t %5p (%c{1}) - %m%n</Property>
+    <Property name="fileMaxSize">10 MB</Property>
   </Properties>
   
   <!-- ======================================================================================= -->
   <!-- Appenders                                                                               -->
   <!-- ======================================================================================= -->
   <Appenders>
-  
-    <Console name="Stdout">
-      <PatternLayout>
-        <pattern>$${logPattern}</pattern>
-      </PatternLayout>
+    <Console name="stdout">
+      <PatternLayout pattern="${logPattern}" />
     </Console>
-    
-    <File name="File" fileName="${logFileDir}/kas.log" filePattern="${logFileDir}/kas.log.%d{yyyy-MM-dd-hh.mm.ss}.%i">
-      <PatternLayout>
-        <Pattern>$${logPattern}</Pattern>
-      </PatternLayout>
+    <RollingFile name="file" fileName="../logs/kas.log" filePattern="../logs/kas.log.%d{yyyy-MM-dd-hh.mm.ss}.%i">
+      <PatternLayout pattern="${logPattern}" />
       <Policies>
         <OnStartupTriggeringPolicy />
-        <SizeBasedTriggeringPolicy size="${archiveFileMaxSize}" />
+        <SizeBasedTriggeringPolicy size="${fileMaxSize}" />
         <TimeBasedTriggeringPolicy />
       </Policies>
-    </File>
-    
+    </RollingFile>
   </Appenders>
   
   <!-- ======================================================================================= -->
   <!-- Loggers                                                                                 -->
   <!-- ======================================================================================= -->
   <Loggers>
-    <logger name="com" level="INFO" additivity="false">
-      <AppenderRef ref="File"/>
+    <logger name="com.kas" level="trace" additivity="false">
+      <AppenderRef ref="file"/>
     </logger>
-    
-    <Root level="INFO" additivity="false">
-      <AppenderRef ref="Stdout"/>
+    <Root level="info" additivity="false">
+      <AppenderRef ref="stdout"/>
     </Root>
   </Loggers>
-  
 </Configuration>

@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
@@ -39,6 +40,10 @@ public class KasMqServer extends AKasApp implements IMqServer
     
     AppLauncher launcher = new AppLauncher(args, defaults);
     Map<String, String> settings = launcher.getSettings();
+    
+    Properties sysprops = System.getProperties();
+    for (Map.Entry<Object, Object> entry : sysprops.entrySet())
+      System.out.println(String.format("[%s]=[%s]", entry.getKey().toString(), entry.getValue().toString()));
     
     KasMqServer app = new KasMqServer(settings);
     launcher.launch(app);

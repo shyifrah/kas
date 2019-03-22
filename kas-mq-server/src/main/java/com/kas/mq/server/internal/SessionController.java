@@ -60,7 +60,7 @@ public class SessionController extends AKasObject implements IController
   public SessionController(IMqServer server)
   {
     mLogger = LogManager.getLogger(getClass());
-    mStdout = LogManager.getLogger("Stdout");
+    mStdout = LogManager.getLogger("stdout");
     mHandlers = new ConcurrentHashMap<UniqueId, SessionHandler>();
     mServer = server;
     mConfig = mServer.getConfig();

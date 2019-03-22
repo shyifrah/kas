@@ -15,7 +15,7 @@ import com.kas.infra.base.threads.ThreadPool;
  */
 public abstract class AKasApp extends AKasObject implements IKasApp
 {
-  static protected Logger sStdout = LogManager.getLogger("Stdout");
+  static protected Logger sStdout = LogManager.getLogger("stdout");
   
   private boolean mTerminated = false;
   
