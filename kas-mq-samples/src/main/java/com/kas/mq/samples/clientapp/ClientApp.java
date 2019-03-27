@@ -1,12 +1,9 @@
 package com.kas.mq.samples.clientapp;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
-import com.kas.appl.AppLauncher;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.samples.Utils;
 import com.kas.mq.samples.mdbsim.MdbSimulator;
@@ -29,27 +26,8 @@ import com.kas.mq.samples.mdbsim.MdbSimulator;
  */
 public class ClientApp extends AKasApp 
 {
-  static final String cKasHome      = "/build/install/kas-mq-samples";
   static final String cAppName      = "SampleClientApp";
   static final String cConfigPrefix = "client.app.";
-  
-  static public void main(String [] args)
-  {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    defaults.put(cConfigPrefix + "put.queuename", "mdb.req.queue");
-    defaults.put(cConfigPrefix + "get.queuename", "mdb.rep.queue");
-    defaults.put(cConfigPrefix + "username", "guest");
-    defaults.put(cConfigPrefix + "password", "guest");
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    ClientApp app = new ClientApp(settings);
-    System.out.println("ClientApp parameters=" + app.mParams.toPrintableString());
-    launcher.launch(app);
-  }
   
   /**
    * ClientApp data members
@@ -66,6 +44,7 @@ public class ClientApp extends AKasApp
    */
   public ClientApp(Map<String, String> args)
   {
+    super(args);
     mParams = new ClientAppParams(args);
   }
   

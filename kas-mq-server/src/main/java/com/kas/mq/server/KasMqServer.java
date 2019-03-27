@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import com.kas.appl.AKasApp;
-import com.kas.appl.AppLauncher;
 import com.kas.db.DbConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
@@ -29,25 +26,7 @@ import com.kas.mq.server.internal.ServerNotifier;
  */
 public class KasMqServer extends AKasApp implements IMqServer
 {
-  static private final String cKasHome = "/build/install/kas-mq-server";
   static private final String cAppName = "KAS/MQ server";
-  
-  static public void main(String [] args)
-  {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    Properties sysprops = System.getProperties();
-    for (Map.Entry<Object, Object> entry : sysprops.entrySet())
-      System.out.println(String.format("[%s]=[%s]", entry.getKey().toString(), entry.getValue().toString()));
-    
-    KasMqServer app = new KasMqServer(settings);
-    launcher.launch(app);
-  }
   
   /**
    * Server socket
@@ -95,18 +74,21 @@ public class KasMqServer extends AKasApp implements IMqServer
   private boolean mStop = false;
   
   /**
-   * Construct the {@link KasMqServer} passing it the startup arguments
+   * Construct main KAS/MQ server
    * 
-   * @param settings The startup arguments
+   * @param args
+   *   Map of arguments passed via launcher's main function
    */
-  protected KasMqServer(Map<String, String> settings)
+  public KasMqServer(Map<String, String> args)
   {
+    super(args);
   }
   
   /**
    * Get the application name
    * 
-   * @return the application name
+   * @return
+   *   the application name
    */
   public String getAppName()
   {
@@ -264,7 +246,8 @@ public class KasMqServer extends AKasApp implements IMqServer
   public void appExec()
   {
     int errors = 0;
-    sStdout.info("KAS/MQ server " + mConfig.getManagerName() + " available on port " +  mConfig.getPort ());
+    sStdout.info("KAS/MQ server {} available on port {}", mConfig.getManagerName(), mConfig.getPort ());
+    
     while (!mStop)
     {
       if (!mConfig.isEnabled())

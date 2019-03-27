@@ -16,6 +16,7 @@
 # this means that any value passed to this batch script override the value specified below
 
 PASSED_ARGS="${@}"
+CLASS_NAME="com.kas.mq.samples.mdbsim.MdbSimulator"
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Setup
@@ -26,7 +27,8 @@ SCRIPT_DIR=`dirname ${0}`
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Run command
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.mq.samples.mdbsim.MdbSimulator \
+${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.appl.AppLauncher \
+  kas.class=${CLASS_NAME} \
   mdb.sim.create.res=true \
   mdb.sim.req.queuename=mdb.req.queue \
   mdb.sim.rep.queuename=mdb.rep.queue \

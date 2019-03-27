@@ -1,11 +1,11 @@
 package com.kas.appl;
 
-import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.TimeStamp;
+import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.RunTimeUtils;
 
 /**
@@ -18,27 +18,59 @@ public class AppLauncher
 {
   static private final String cKasHomeSystemProperty = RunTimeUtils.cProductHomeDirProperty;
   
-  static private Logger sStartupLogger = LogManager.getLogger(AppLauncher.class);
-  
   /**
-   * Settings
-   */
-  private Map<String, String> mSettings;
-  
-  /**
-   * Construct the application launcher
+   * Main entry point for all projects
    * 
-   * @param mainArgs
-   *   An array of arguments passed to main function
-   * @param defaultSettings
-   *   A map of default settings
+   * @param args
+   *   Map of string arguments passed from outside
    */
-  public AppLauncher(String [] mainArgs, Map<String, String> defaultSettings)
+  static public void main(String [] args)
   {
-    mSettings = defaultSettings;
-    mSettings.putAll(getAndProcessStartupArguments(mainArgs));
-    String kasHome = mSettings.get(cKasHomeSystemProperty);
-    setHomeDirectory(kasHome);
+    Map<String, String> argsMap = getAndProcessStartupArguments(args);
+    String kasAppClassName = argsMap.get(IAppConstants.cKasExecutableClass);
+    if (kasAppClassName == null)
+    {
+      ConsoleUtils.writelnRed("No application was specified. exit");
+      return;
+    }
+    
+    String [] temp = kasAppClassName.split("\\.");
+    String log4jLogFile = temp[temp.length-1].toLowerCase();
+    
+    String kasHome = RunTimeUtils.getProperty(cKasHomeSystemProperty, ".");
+    String log4jConfigFile = kasHome + "/conf/log4j2.xml";
+    String log4jLogDirectory = kasHome + "/logs";
+    
+    RunTimeUtils.setProperty(IAppConstants.cLog4jConfigFileProperty, log4jConfigFile, true);
+    RunTimeUtils.setProperty(IAppConstants.cLog4jLogDirectoryProperty, log4jLogDirectory, true);
+    RunTimeUtils.setProperty(IAppConstants.cLog4jLogFileProperty, log4jLogFile, true);
+    
+    AKasApp app = null;
+    
+    try
+    {
+      Class<?> kasAppClass = Class.forName(kasAppClassName);
+      Constructor<?> ctor = kasAppClass.getConstructor(Map.class);
+      app = (AKasApp)ctor.newInstance(argsMap);
+    }
+    catch (ClassNotFoundException e)
+    {
+      ConsoleUtils.writelnRed("Class not found: Class=[%s]. exit", kasAppClassName);
+      return;
+    }
+    catch (NoSuchMethodException | ClassCastException e)
+    {
+      ConsoleUtils.writelnRed("Class [%s] not a valid KAS application. exit", kasAppClassName);
+      return;
+    }
+    catch (SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+    {
+      ConsoleUtils.writelnRed("Failed to construct object of type class=[%s]. exit", kasAppClassName);
+      return;
+    }
+    
+    // third: if here, application was successfully loaded. launch it
+    launch(app);
   }
   
   /**
@@ -47,9 +79,9 @@ public class AppLauncher
    * @param app
    *   Application to launch
    */
-  public void launch(AKasApp app)
+  static public void launch(AKasApp app)
   {
-    sStartupLogger.info("Launching application " + app.getAppName());
+    ConsoleUtils.writeln("Launching application " + app.getAppName());
     
     TimeStamp start = null;
     TimeStamp end = null;
@@ -64,27 +96,16 @@ public class AppLauncher
     }
     catch (Throwable e)
     {
-      sStartupLogger.error("Exception caught: ", e);
+      ConsoleUtils.writelnRed("Exception caught: ", e);
     }
     finally
     {
       if (!app.isTerminated())
         app.term();
       end = TimeStamp.now();
-      sStartupLogger.info("Application {} ended", app.getAppName());
+      ConsoleUtils.writeln("Application %s ended", app.getAppName());
       reportRunTime(start, end);
     }
-  }
-  
-  /**
-   * Get application's settings map
-   * 
-   * @return
-   *   application's settings map
-   */
-  public Map<String, String> getSettings()
-  {
-    return mSettings;
   }
   
   /**
@@ -100,21 +121,21 @@ public class AppLauncher
     Map<String, String> pArgumentsMap = new HashMap<String, String>();
     if ((args == null) || (args.length == 0))
     {
-      sStartupLogger.info("No arguments passed to KAS launcher, continue...");
+      ConsoleUtils.writeln("No arguments passed to KAS launcher, continue...");
     }
     else
     {
       for (String arg : args)
       {
-        sStartupLogger.info("Processing argument: {}", arg);
+        ConsoleUtils.writeln("Processing argument: [%s]", arg);
         String [] keyValue = arg.split("=");
         if (keyValue.length > 2)
         {
-          sStartupLogger.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
+          ConsoleUtils.writelnRed("Invalid argument: '%s'. Argument should be in key=value format. Ignoring...", arg);
         }
         else if (keyValue.length <= 1)
         {
-          sStartupLogger.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
+          ConsoleUtils.writelnRed("Invalid argument: '%s'. Argument should be in key=value format. Ignoring...", arg);
         }
         else
         {
@@ -125,27 +146,6 @@ public class AppLauncher
       }
     }
     return pArgumentsMap;
-  }
-  
-  /**
-   * Set the home directory in a system property
-   * 
-   * @param kasHome
-   *   the value of the "kas.home" argument passed to {@link #main(String[]) main} function
-   */
-  static private void setHomeDirectory(String kasHome)
-  {
-    if (kasHome != null)
-    {
-      File dir = new File(kasHome);
-      if ((dir.exists()) && (dir.isDirectory()) && (dir.canRead()))
-      {
-        kasHome = dir.getAbsolutePath();
-      }
-    }
-    
-    RunTimeUtils.setProperty(cKasHomeSystemProperty, kasHome, true);
-    sStartupLogger.info("KAS launcher set system property '{}' to '{}'", cKasHomeSystemProperty, kasHome);
   }
   
  /**
@@ -166,6 +166,6 @@ public class AppLauncher
     long min = diff % 60;
     diff = diff / 60;
     long hr = diff; 
-    sStartupLogger.info("Total run time: {}{}{}", (hr > 0 ? hr + " hours, " : ""), (min > 0 ? min + " minutes, " : ""), String.format("%d.%03d seconds", sec, ms));
+    ConsoleUtils.writeln("Total run time: %s%s%d.%03d", (hr > 0 ? hr + " hours, " : ""), (min > 0 ? min + " minutes, " : ""), sec, ms);
   }
 }

@@ -11,8 +11,8 @@ subprojects {
 
   dependencies {
     testCompile 'junit:junit:4.10'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.1'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.1'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
   }
 }
 
@@ -30,8 +30,8 @@ configure(subprojects - project(':kas-infra') - project(':kas-config')) {
 
 project(':kas-db') {
   dependencies {
-    compile('mysql:mysql-connector-java:8.0.12')
-    compile('org.postgresql:postgresql:42.2.5')
+    compile group: 'mysql'         , name: 'mysql-connector-java', version: '8.0.12'
+    compile group: 'org.postgresql', name: 'postgresql'          , version: '42.2.5'
   }
 }
 

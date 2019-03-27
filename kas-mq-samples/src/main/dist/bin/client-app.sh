@@ -20,6 +20,7 @@
 # this means that any value passed to this batch script override the value specified below
 
 PASSED_ARGS="${@}"
+CLASS_NAME="com.kas.mq.samples.clientapp.ClientApp"
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Setup
@@ -30,7 +31,8 @@ SCRIPT_DIR=`dirname ${0}`
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Run command
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.mq.samples.clientapp.ClientApp \
+${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.appl.AppLauncher \
+  kas.class=${CLASS_NAME} \
   client.app.message.type=0 \
   client.app.put.queuename=mdb.req.queue \
   client.app.get.queuename=mdb.rep.queue \

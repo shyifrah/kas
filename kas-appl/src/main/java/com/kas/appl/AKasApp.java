@@ -1,6 +1,5 @@
 package com.kas.appl;
 
-import java.util.HashMap;
 import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,52 +16,20 @@ public abstract class AKasApp extends AKasObject implements IKasApp
 {
   static protected Logger sStdout = LogManager.getLogger("stdout");
   
-  private boolean mTerminated = false;
-  
   /**
-   * Check validity of startup arguments and return a map of arguments of keys and values
-   * 
-   * @param args
-   *   An array of arguments passed to {@link #main(String[] main} function
-   * @return
-   *   a map of arguments
+   * Map of arguments
    */
-  static protected Map<String, String> getAndProcessStartupArguments(String [] args)
-  {
-    Map<String, String> pArgumentsMap = new HashMap<String, String>();
-    if ((args == null) || (args.length == 0))
-    {
-      sStdout.info("No arguments passed to KAS launcher, continue...");
-    }
-    else
-    {
-      for (String arg : args)
-      {
-        sStdout.info("Processing argument: [{}]", arg);
-        String [] keyValue = arg.split("=");
-        if (keyValue.length > 2)
-        {
-          sStdout.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
-        }
-        else if (keyValue.length <= 1)
-        {
-          sStdout.warn("Invalid argument: '{}'. Argument should be in key=value format. Ignoring...", arg);
-        }
-        else
-        {
-          String key = keyValue[0];
-          String value = keyValue[1];
-          pArgumentsMap.put(key, value);
-        }
-      }
-    }
-    return pArgumentsMap;
-  }
+  protected Map<String, String> mArgMap;
   
   /**
    * Logger
    */
   protected Logger mLogger = null;
+  
+  /**
+   * Indicator for termination
+   */
+  private boolean mTerminated = false;
   
   /**
    * Shutdown hook
@@ -77,8 +44,9 @@ public abstract class AKasApp extends AKasObject implements IKasApp
   /**
    * Construct the {@link AKasApp application}
    */
-  protected AKasApp()
+  protected AKasApp(Map<String, String> args)
   {
+    mArgMap = args;
   }
   
   /**

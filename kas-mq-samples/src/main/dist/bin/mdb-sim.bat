@@ -19,6 +19,7 @@
 
 title MDB-Simulator
 set "PASSED_ARGS=%*"
+set "CLASS_NAME=com.kas.mq.samples.mdbsim.MdbSimulator"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Setup
@@ -29,7 +30,8 @@ call %SCRIPT_DIR%/launcher.bat
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Run command
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.mq.samples.mdbsim.MdbSimulator ^ 
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.appl.AppLauncher ^
+  kas.class=%CLASS_NAME% ^
   mdb.sim.create.res=true ^
   mdb.sim.req.queuename=mdb.req.queue ^
   mdb.sim.rep.queuename=mdb.rep.queue ^

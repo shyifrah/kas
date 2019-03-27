@@ -1,13 +1,9 @@
 package com.kas.mq.server;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
-import com.kas.appl.AppLauncher;
 import com.kas.infra.base.IObject;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 
@@ -18,26 +14,9 @@ import com.kas.mq.server.internal.MqServerConnectionPool;
  */
 public class KasMqStopper extends AKasApp 
 {
-  static private final String cKasHome = "./build/install/kas-mq-server";
   static private final String cAppName = "KAS/MQ server-stopper";
   static private final String cKasUser = "kas.user";
   static private final String cKasPass = "kas.pass";
-  
-  static public void main(String [] args)
-  {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    
-    defaults.put(cKasUser, IMqConstants.cSystemUserName);
-    defaults.put(cKasPass, IMqConstants.cSystemPassWord);
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    KasMqStopper app = new KasMqStopper(settings);
-    launcher.launch(app);
-  }
   
   /**
    * KAS/MQ server's configuration
@@ -51,15 +30,16 @@ public class KasMqStopper extends AKasApp
   private String mPassword;
   
   /**
-   * Construct the {@link KasMqStopper} passing it the startup arguments
+   * Construct main KAS/MQ server's stopper
    * 
-   * @param settings
-   *   The startup arguments
+   * @param args
+   *   Map of arguments passed via launcher's main function
    */
-  protected KasMqStopper(Map<String, String> settings)
+  public KasMqStopper(Map<String, String> args)
   {
-    mUserName = settings.get(cKasUser);
-    mPassword = settings.get(cKasPass);
+    super(args);
+    mUserName = args.get(cKasUser);
+    mPassword = args.get(cKasPass);
   }
   
   /**

@@ -1,12 +1,9 @@
 package com.kas.mq.console;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
-import com.kas.appl.AppLauncher;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.ConsoleUtils;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.console.cmds.MainCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
@@ -25,19 +22,6 @@ public class KasMqCons extends AKasApp
   static final String cExitCommand = "EXIT";
   static final String cCommandTerminator = ";";
   
-  static public void main(String [] args)
-  {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    KasMqCons app = new KasMqCons(settings);
-    launcher.launch(app);
-  }
-  
   /**
    * A {@link MqContextConnection} which will act as the client
    */
@@ -49,12 +33,14 @@ public class KasMqCons extends AKasApp
   private MainCommandFactory mCommandFactory = MainCommandFactory.getInstance();
   
   /**
-   * Construct the {@link KasMqCons} passing it the startup arguments
+   * Construct main KAS/MQ admin console object
    * 
-   * @param args The startup arguments
+   * @param args
+   *   Map of arguments passed via launcher's main function
    */
   public KasMqCons(Map<String, String> args)
   {
+    super(args);
   }
   
   /**

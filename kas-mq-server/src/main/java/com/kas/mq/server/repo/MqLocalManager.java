@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Collection;
 import com.kas.infra.base.IObject;
 import com.kas.infra.base.InvalidPropertyValueException;
-import com.kas.infra.base.KasException;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.PropertyNotFoundException;
 import com.kas.infra.utils.RunTimeUtils;
