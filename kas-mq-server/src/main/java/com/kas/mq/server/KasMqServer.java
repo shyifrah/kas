@@ -7,7 +7,6 @@ import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import com.kas.appl.AKasApp;
-import com.kas.appl.AppLauncher;
 import com.kas.db.DbConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
@@ -28,14 +27,6 @@ import com.kas.mq.server.internal.ServerNotifier;
 public class KasMqServer extends AKasApp implements IMqServer
 {
   static private final String cAppName = "KAS/MQ server";
-  
-  static public void main(String [] args)
-  {
-    String [] argArray = {
-      "kas.class=" + KasMqServer.class.getName()                    
-    };
-    AppLauncher.main(argArray);
-  }
   
   /**
    * Server socket
@@ -122,7 +113,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public boolean appInit()
   {
     mDbConfig = new DbConfiguration();
-    sStdout.info("KAS/MQ server will use {} DB on {}:{}", mDbConfig.getDbType(), mDbConfig.getHost(), mDbConfig.getPort());
+    mStdout.info("KAS/MQ server will use {} DB on {}:{}", mDbConfig.getDbType(), mDbConfig.getHost(), mDbConfig.getPort());
     mDbConfig.init();
     
     mConfig = new MqConfiguration();
@@ -136,7 +127,7 @@ public class KasMqServer extends AKasApp implements IMqServer
       mLogger.fatal("Server DB connection pool failed initialization");
       return false;
     }
-    sStdout.info("DB additional information: Version={}, Schema={}, User={}", DbConnectionPool.getInstance().getDbVersion(), mDbConfig.getSchemaName(), mDbConfig.getUserName());
+    mStdout.info("DB additional information: Version={}, Schema={}, User={}", DbConnectionPool.getInstance().getDbVersion(), mDbConfig.getSchemaName(), mDbConfig.getUserName());
     DbUtils.initSchema();
 
     mRepository = new ServerRepository(mConfig);
@@ -151,8 +142,8 @@ public class KasMqServer extends AKasApp implements IMqServer
     }
     catch (IOException e)
     {
-    	sStdout.error("An error occurred while trying to bind server socket with port: {}", mConfig.getPort());
-    	sStdout.error("Exception caught: {}",  e.getMessage());
+      mStdout.error("An error occurred while trying to bind server socket with port: {}", mConfig.getPort());
+      mStdout.error("Exception caught: {}",  e.getMessage());
       return false;
     }
     
@@ -255,7 +246,7 @@ public class KasMqServer extends AKasApp implements IMqServer
   public void appExec()
   {
     int errors = 0;
-    sStdout.info("KAS/MQ server {} available on port {}", mConfig.getManagerName(), mConfig.getPort ());
+    mStdout.info("KAS/MQ server {} available on port {}", mConfig.getManagerName(), mConfig.getPort ());
     
     while (!mStop)
     {
