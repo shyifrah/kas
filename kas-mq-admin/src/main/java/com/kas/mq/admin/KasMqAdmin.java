@@ -15,7 +15,7 @@ import com.kas.mq.internal.MqContextConnection;
  * 
  * @author Pippo
  */
-public class KasMqCons extends AKasApp 
+public class KasMqAdmin extends AKasApp 
 {
   static final String cKasHome = "/build/install/kas-mq-admin";
   static final String cAppName = "KAS/MQ Admin Console";
@@ -29,7 +29,7 @@ public class KasMqCons extends AKasApp
     RunTimeUtils.setProperty("kas.home", "./build/install/kas-mq-admin", true);
     
     String [] argArray = {
-      "kas.class=" + KasMqCons.class.getName()
+      "kas.class=" + KasMqAdmin.class.getName()
     };
     AppLauncher.main(argArray);
   }
@@ -50,7 +50,7 @@ public class KasMqCons extends AKasApp
    * @param args
    *   Map of arguments passed via launcher's main function
    */
-  public KasMqCons(Map<String, String> args)
+  public KasMqAdmin(Map<String, String> args)
   {
     super(args);
   }
