@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PASSED_ARGS="${@}"
+CLASS_NAME="com.kas.mq.server.KasMqStopper"
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Setup
@@ -11,4 +12,8 @@ SCRIPT_DIR=`dirname ${0}`
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Run command
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.mq.server.KasMqStopper ${PASSED_ARGS}
+${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.appl.AppLauncher \
+  kas.class=${CLASS_NAME} \
+  kas.user=system \
+  kas.pass=system \
+  ${PASSED_ARGS}

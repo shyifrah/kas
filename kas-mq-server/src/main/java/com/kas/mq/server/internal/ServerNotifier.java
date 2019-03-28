@@ -1,10 +1,11 @@
 package com.kas.mq.server.internal;
 
 import java.util.Collection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.typedef.StringList;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqRequestFactory;
@@ -22,7 +23,7 @@ public class ServerNotifier extends AKasObject
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * Server's repository
@@ -37,11 +38,12 @@ public class ServerNotifier extends AKasObject
   /**
    * Construct a {@link ServerNotifier server notifier}, specifying the {@link IRepository}
    * 
-   * @param repository The {@link IRepository server repository}
+   * @param repository
+   *   The {@link IRepository server repository}
    */
   public ServerNotifier(IRepository repository)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mRepository = repository;
     mPool = MqServerConnectionPool.getInstance();
   }
@@ -53,7 +55,7 @@ public class ServerNotifier extends AKasObject
    */
   public void notifyServerActivated()
   {
-    mLogger.debug("ServerNotifier::notifyServerActivated() - IN");
+    mLogger.trace("ServerNotifier::notifyServerActivated() - IN");
     
     String qmgr = mRepository.getLocalManager().getName();
     IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, true);
@@ -70,7 +72,7 @@ public class ServerNotifier extends AKasObject
       mLogger.warn("Failed to notify remote KAS/MQ servers on server activation");
     }
     
-    mLogger.debug("ServerNotifier::notifyServerActivated() - OUT");
+    mLogger.trace("ServerNotifier::notifyServerActivated() - OUT");
   }
   
   /**
@@ -81,7 +83,7 @@ public class ServerNotifier extends AKasObject
    */
   public void notifyServerDeactivated()
   {
-    mLogger.debug("ServerNotifier::notifyServerDeactivated() - IN");
+    mLogger.trace("ServerNotifier::notifyServerDeactivated() - IN");
     
     String qmgr = mRepository.getLocalManager().getName();
     IMqMessage message = MqRequestFactory.createSystemStateMessage(qmgr, false);
@@ -95,22 +97,23 @@ public class ServerNotifier extends AKasObject
       mLogger.warn("Failed to notify remote KAS/MQ servers on server deactivation");
     }
     
-    mLogger.debug("ServerNotifier::notifyServerDeactivated() - OUT");
+    mLogger.trace("ServerNotifier::notifyServerDeactivated() - OUT");
   }
   
   /**
    * Send the specified message to remote KAS/MQ servers.<br>
-   * <br>
    * Note that since the sent message is a notification message (this is not verified),
    * the queue name is not tested because the {@link SessionHandler} will handle the message
    * prior to assuming it should be put into a queue.
    * 
-   * @param message The {@link IMqMessage} that will be sent to each and every remote address
-   * @return the reply message received from receiver 
+   * @param message
+   *   The {@link IMqMessage} that will be sent to each and every remote address
+   * @return
+   *   the reply message received from receiver 
    */
   private void notify(IMqMessage message, boolean activate)
   {
-    mLogger.debug("ServerNotifier::notify() - IN");
+    mLogger.trace("ServerNotifier::notify() - IN");
     
     Collection<MqRemoteManager> remoteManagers = mRepository.getRemoteManagers();
     for (MqRemoteManager remoteManager : remoteManagers)
@@ -119,7 +122,7 @@ public class ServerNotifier extends AKasObject
       String host = remoteManager.getHost();
       int port = remoteManager.getPort();
       
-      mLogger.debug("ServerNotifier::notify() - Notifying KAS/MQ server \"" + name + "\" (" + host + ':' + port + ") on server state change");
+      mLogger.trace("ServerNotifier::notify() - Notifying KAS/MQ server \"" + name + "\" (" + host + ':' + port + ") on server state change");
       MqServerConnection conn = mPool.allocate();
       
       conn.connect(host, port);
@@ -143,16 +146,16 @@ public class ServerNotifier extends AKasObject
       mPool.release(conn);
     }
     
-    mLogger.debug("ServerNotifier::notify() - OUT");
+    mLogger.trace("ServerNotifier::notify() - OUT");
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

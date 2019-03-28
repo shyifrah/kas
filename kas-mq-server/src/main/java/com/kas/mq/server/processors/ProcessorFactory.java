@@ -1,8 +1,8 @@
 package com.kas.mq.server.processors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IRepository;
@@ -17,14 +17,14 @@ import com.kas.mq.server.internal.SessionHandler;
  */
 public class ProcessorFactory
 {
-  static private ILogger sLogger = LoggerFactory.getLogger(ProcessorFactory.class);
+  static private Logger sLogger = LogManager.getLogger(ProcessorFactory.class);
   
   static public IProcessor newProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
-    sLogger.debug("ProcessorFactory::newProcessor() - IN");
+    sLogger.trace("ProcessorFactory::newProcessor() - IN");
     
     ERequestType type = request.getRequestType();
-    sLogger.debug("ProcessorFactory::newProcessor() - RequestType is: " + type);
+    sLogger.trace("ProcessorFactory::newProcessor() - RequestType is: {}", type);
     
     IProcessor processor = null;
     switch (type)
@@ -80,7 +80,7 @@ public class ProcessorFactory
         break;
     }
     
-    sLogger.debug("ProcessorFactory::newProcessor() - OUT, Returns=" + StringUtils.asPrintableString(processor));
+    sLogger.trace("ProcessorFactory::newProcessor() - OUT, Returns={}", StringUtils.asPrintableString(processor));
     return processor;
   }
 }

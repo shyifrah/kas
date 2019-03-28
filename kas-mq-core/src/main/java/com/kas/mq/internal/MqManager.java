@@ -1,9 +1,10 @@
 package com.kas.mq.internal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.typedef.StringList;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.typedef.QueueMap;
 
 /**
@@ -16,7 +17,7 @@ public class MqManager extends AKasObject
   /**
    * Logger
    */
-  protected ILogger mLogger;
+  protected Logger mLogger;
   
   /**
    * The name of this manager
@@ -52,7 +53,7 @@ public class MqManager extends AKasObject
    */
   public MqManager(String name, String host, int port)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mName = name;
     mHost = host;
     mPort = port;
@@ -62,7 +63,8 @@ public class MqManager extends AKasObject
   /**
    * Get the {@link MqManager} name
    * 
-   * @return the {@link MqManager} name
+   * @return
+   *   the {@link MqManager} name
    */
   public String getName()
   {
@@ -72,7 +74,8 @@ public class MqManager extends AKasObject
   /**
    * Get the {@link MqManager} host name or IP address
    * 
-   * @return the {@link MqManager} host name or IP address
+   * @return
+   *   the {@link MqManager} host name or IP address
    */
   public String getHost()
   {
@@ -82,7 +85,8 @@ public class MqManager extends AKasObject
   /**
    * Get the port on which the {@link MqManager} listens
    * 
-   * @return the port on which the {@link MqManager} listens
+   * @return
+   *   the port on which the {@link MqManager} listens
    */
   public int getPort()
   {
@@ -108,7 +112,8 @@ public class MqManager extends AKasObject
   /**
    * Get an indication if {@link MqManager} is active
    * 
-   * @return {@code true} if {@link MqManager} is active, {@code false} otherwise
+   * @return
+   *   {@code true} if {@link MqManager} is active, {@code false} otherwise
    */
   public boolean isActive()
   {
@@ -118,14 +123,18 @@ public class MqManager extends AKasObject
   /**
    * Query queues
    * 
-   * @param name The queue name/prefix.
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
-   * @return A properties object that holds the queried data
+   * @param name
+   *   The queue name/prefix.
+   * @param prefix
+   *   If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all
+   *   If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return
+   *   a properties object that holds the queried data
    */
   public StringList queryQueue(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("MqManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.trace("MqManager::queryQueue() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
     
     StringList qlist = new StringList();
     for (MqQueue queue : mQueues.values())
@@ -136,21 +145,22 @@ public class MqManager extends AKasObject
       else
         include = queue.getName().equals(name);
       
-      mLogger.debug("MqManager::queryQueue() - Checking if current queue [" + queue.getName() + "] matches query: " + include);
+      mLogger.trace("MqManager::queryQueue() - Checking if current queue [" + queue.getName() + "] matches query: " + include);
       if (include)
       {
         qlist.add(queue.queryResponse(all));
       }
     }
     
-    mLogger.debug("MqManager::queryQueue() - OUT, Returns=" + qlist.size() + " queues");
+    mLogger.trace("MqManager::queryQueue() - OUT, Returns=" + qlist.size() + " queues");
     return qlist;
   }
   
   /**
-   * Get the object's string representation: <name>@<host>:<port>
+   * Get the object's string representation
    * 
-   * @return the string representation
+   * @return
+   *   the string representation
    */
   public String toString()
   {
@@ -158,12 +168,12 @@ public class MqManager extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

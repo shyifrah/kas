@@ -8,8 +8,9 @@ import com.kas.mq.internal.MqQueue;
 /**
  * {@link QueueMap} is the actual container for {@link com.kas.mq.impl.messages.IMqMessage}.<br>
  * <br>
- * It is actually an extension of {@link ConcurrentHashMap} that maps a name to the associated {@link MqQueue}.
- * The {@link MqQueue} object can be either {@link com.kas.mq.internal.MqLocalQueue local} or {@link com.kas.mq.internal.MqRemoteQueue remote}.
+ * It is actually an extension of {@link ConcurrentHashMap} that maps a name to
+ * the associated {@link MqQueue}. The {@link MqQueue} object can be either
+ * {@link com.kas.mq.internal.MqLocalQueue local} or {@link com.kas.mq.internal.MqRemoteQueue remote}.
  * 
  * @author Pippo
  */
@@ -18,28 +19,23 @@ public class QueueMap extends ConcurrentHashMap<String, MqQueue> implements IObj
   private static final long serialVersionUID = 1L;
   
   /**
-   * Returns the {@link QueueMap} simple class name enclosed with chevrons.
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
   
   /**
-   * Returns the {@link QueueMap} string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

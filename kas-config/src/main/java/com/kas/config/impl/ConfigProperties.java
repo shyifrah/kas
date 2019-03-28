@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.PropertyResolver;
 import com.kas.infra.typedef.StringList;
@@ -25,6 +28,8 @@ public class ConfigProperties extends Properties
   static public  final String cIncludeKey      = "kas.include";
   static private final long   serialVersionUID = 1L;
   
+  static private Logger sLogger = LogManager.getLogger(ConfigProperties.class);
+  
   /**
    * The list of fully-pathed file names that compose this set of {@link ConfigProperties} 
    */
@@ -43,7 +48,8 @@ public class ConfigProperties extends Properties
    * <br>
    * After construction, this {@link ConfigProperties} object will have the same entries as {@code map}.
    * 
-   * @param map The map.
+   * @param map
+   *   The map.
    */
   public ConfigProperties(Map<?, ?> other)
   {
@@ -53,9 +59,10 @@ public class ConfigProperties extends Properties
   /**
    * Constructs a set of {@link ConfigProperties} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   If I/O error occurs
    */
   public ConfigProperties(ObjectInputStream istream) throws IOException
   {
@@ -65,7 +72,8 @@ public class ConfigProperties extends Properties
   /**
    * Get the list of config files
    * 
-   * @return the list of config files
+   * @return
+   *   the list of config files
    */
   public StringList getConfigFiles()
   {
@@ -77,7 +85,8 @@ public class ConfigProperties extends Properties
    * <br>
    * This method is used by outside callers to allow properties refresh.  
    * 
-   * @param fileName The fully-pathed name of the file to be loaded
+   * @param fileName
+   *   The fully-pathed name of the file to be loaded
    */
   public void load(String fileName)
   {
@@ -91,11 +100,15 @@ public class ConfigProperties extends Properties
    * to have valid syntax. That is, non-comment lines should have a format of key=value.<br>
    * When {@code include} statement is encountered, it actually points to a new file that should be loaded as well.  
    * 
-   * @param fileName The fully-pathed name of the file to be loaded
-   * @param properties The {@link ConfigProperties} object into which keys will be mapped to values.
+   * @param fileName
+   *   The fully-pathed name of the file to be loaded
+   * @param properties
+   *   The {@link ConfigProperties} object into which keys will be mapped to values.
    */
   private void load(String fileName, ConfigProperties properties)
   {
+    sLogger.trace("ConfigProperties::load() - IN, File={}", fileName);
+    
     // now try to load the properties inside this file
     File file = new File(fileName);
     List<String> input = null;
@@ -126,30 +139,28 @@ public class ConfigProperties extends Properties
       
       mConfigFiles.add(fileName);
     }
+    
+    sLogger.trace("ConfigProperties::load() - OUT");
   }
   
   /**
-   * Returns the {@link ConfigProperties} simple class name enclosed with chevrons.
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
   
   /**
-   * Get the object's detailed string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   * @see #toString()
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

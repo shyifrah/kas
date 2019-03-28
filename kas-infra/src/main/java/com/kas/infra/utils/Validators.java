@@ -2,6 +2,11 @@ package com.kas.infra.utils;
 
 import java.util.regex.Pattern;
 
+/**
+ * A list of utility methods using for validation
+ * 
+ * @author Pippo
+ */
 public class Validators
 {
   static private final String cIpAddressPattern = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
@@ -30,9 +35,11 @@ public class Validators
   /**
    * Validate {@code string} can be converted into a numeric value
    * 
-   * @param string The string to validate
-   * @return {@code true} if {@link Integer#valueOf(String)} can be called for {@code string}
-   * without throwing an exception, {@code false} otherwise
+   * @param string
+   *   The string to validate
+   * @return
+   *   {@code true} if {@link Integer#valueOf(String)} can be called for {@code string}
+   *   without throwing an exception, {@code false} otherwise
    */
   static public boolean isNumeric(String string)
   {
@@ -44,8 +51,10 @@ public class Validators
   /**
    * Validate {@code threshold} can be set for queue 
    * 
-   * @param threshold The Threshold to validate
-   * @return {@code true} if {@code threshold} is valid, {@code false} otherwise
+   * @param threshold
+   *   The Threshold to validate
+   * @return
+   *   {@code true} if {@code threshold} is valid, {@code false} otherwise
    */
   static public boolean isThreshold(String threshold)
   {
@@ -60,8 +69,10 @@ public class Validators
   /**
    * Validate {@code threshold} can be set for queue 
    * 
-   * @param threshold The Threshold to validate
-   * @return {@code true} if {@code threshold} is valid, {@code false} otherwise
+   * @param threshold
+   *   The Threshold to validate
+   * @return
+   *   {@code true} if {@code threshold} is valid, {@code false} otherwise
    */
   static public boolean isThreshold(int threshold)
   {
@@ -73,8 +84,10 @@ public class Validators
   /**
    * Validate IP address with regular expression
    * 
-   * @param ip The IP address for validation
-   * @return {@code true} if {@code ip} is a valid IP address, {@code false} otherwise
+   * @param ip
+   *   The IP address for validation
+   * @return
+   *   {@code true} if {@code ip} is a valid IP address, {@code false} otherwise
    */
   static public boolean isIpAddress(String ip)
   {
@@ -85,8 +98,10 @@ public class Validators
   /**
    * Validate Host name with regular expression
    * 
-   * @param host The host name for validation
-   * @return {@code true} if {@code host} is a valid host name, {@code false} otherwise
+   * @param host
+   *   The host name for validation
+   * @return
+   *   {@code true} if {@code host} is a valid host name, {@code false} otherwise
    */
   static public boolean isHostName(String host)
   {
@@ -97,8 +112,10 @@ public class Validators
   /**
    * Validate port number
    * 
-   * @param port The port number for validation
-   * @return {@code true} if {@code port} is a valid port number, {@code false} otherwise
+   * @param port
+   *   The port number for validation
+   * @return
+   *   {@code true} if {@code port} is a valid port number, {@code false} otherwise
    */
   static public boolean isPort(String port)
   {
@@ -124,8 +141,10 @@ public class Validators
   /**
    * Validate queue name with regular expression
    * 
-   * @param queue The queue name for validation
-   * @return {@code true} if {@code queue} is a valid queue name, {@code false} otherwise
+   * @param queue
+   *   The queue name for validation
+   * @return
+   *   {@code true} if {@code queue} is a valid queue name, {@code false} otherwise
    */
   static public boolean isQueueName(String queue)
   {
@@ -136,8 +155,10 @@ public class Validators
   /**
    * Validate queue description
    * 
-   * @param desc The queue description for validation
-   * @return {@code true} if {@code desc} is a valid queue description, {@code false} otherwise
+   * @param desc
+   *   The queue description for validation
+   * @return
+   *   {@code true} if {@code desc} is a valid queue description, {@code false} otherwise
    */
   static public boolean isQueueDesc(String desc)
   {
@@ -149,8 +170,10 @@ public class Validators
   /**
    * Validate user name with regular expression
    * 
-   * @param user The user name for validation
-   * @return {@code true} if {@code user} is a valid user name, {@code false} otherwise
+   * @param user
+   *   The user name for validation
+   * @return
+   *   {@code true} if {@code user} is a valid user name, {@code false} otherwise
    */
   static public boolean isUserName(String user)
   {
@@ -161,8 +184,10 @@ public class Validators
   /**
    * Validate user description
    * 
-   * @param desc The user description for validation
-   * @return {@code true} if {@code desc} is a valid user description, {@code false} otherwise
+   * @param desc
+   *   The user description for validation
+   * @return
+   *   {@code true} if {@code desc} is a valid user description, {@code false} otherwise
    */
   static public boolean isUserDesc(String desc)
   {

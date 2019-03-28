@@ -1,6 +1,7 @@
 #!/bin/sh
 
 PASSED_ARGS="${@}"
+CLASS_NAME="com.kas.mq.server.KasMqServer"
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Setup
@@ -11,4 +12,6 @@ SCRIPT_DIR=`dirname ${0}`
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Run command
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.mq.server.KasMqServer ${PASSED_ARGS}
+${JAVA_EXEC} ${DEBUG_OPTS} -classpath ${CLASS_PATH} com.kas.appl.AppLauncher \
+  kas.class=${CLASS_NAME} \
+  ${PASSED_ARGS}

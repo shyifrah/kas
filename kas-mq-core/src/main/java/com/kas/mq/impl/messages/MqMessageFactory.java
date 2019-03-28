@@ -5,6 +5,11 @@ import java.util.Map;
 import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
 
+/**
+ * A factory for creating various types of messages
+ * 
+ * @author Pippo
+ */
 public class MqMessageFactory
 {
   static
@@ -20,7 +25,8 @@ public class MqMessageFactory
   /**
    * Create a no-body message
    * 
-   * @return a new {@link MqMessage}
+   * @return
+   *   a new {@link MqMessage}
    */
   static public MqMessage createMessage()
   {
@@ -30,8 +36,10 @@ public class MqMessageFactory
   /**
    * Create a string message, with a body containing {@code body}
    * 
-   * @param body The message body
-   * @return a new {@link MqStringMessage}
+   * @param body
+   *   The message body
+   * @return
+   *   a new {@link MqStringMessage}
    */
   static public MqStringMessage createStringMessage(String body)
   {
@@ -43,8 +51,10 @@ public class MqMessageFactory
   /**
    * Create a Object message, with a body containing {@code body}
    * 
-   * @param body The message body
-   * @return a new {@link MqObjectMessage}
+   * @param body
+   *   The message body
+   * @return
+   *   a new {@link MqObjectMessage}
    */
   static public MqObjectMessage createObjectMessage(Serializable body)
   {
@@ -56,8 +66,10 @@ public class MqMessageFactory
   /**
    * Create a byte [] message, with a body containing {@code body}
    * 
-   * @param body The message body
-   * @return a new {@link MqBytesMessage}
+   * @param body
+   *   The message body
+   * @return
+   *   a new {@link MqBytesMessage}
    */
   static public MqBytesMessage createBytesMessage(byte [] body)
   {
@@ -69,8 +81,10 @@ public class MqMessageFactory
   /**
    * Create a map message, with a body containing {@code body}
    * 
-   * @param body The message body
-   * @return a new {@link MqMapMessage}
+   * @param body
+   *   The message body
+   * @return
+   *   a new {@link MqMapMessage}
    */
   static public MqMapMessage createMapMessage(Map<?, ?> body)
   {
@@ -81,7 +95,8 @@ public class MqMessageFactory
   /**
    * Create a stream message, without a body
    * 
-   * @return a new {@link MqStreamMessage}
+   * @return
+   *   a new {@link MqStreamMessage}
    */
   static public MqStreamMessage createStreamMessage()
   {

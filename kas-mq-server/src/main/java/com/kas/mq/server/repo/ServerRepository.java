@@ -3,13 +3,13 @@ package com.kas.mq.server.repo;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.StringList;
-import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.internal.MqManager;
@@ -28,7 +28,7 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * KAS/MQ configuration
@@ -48,11 +48,12 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Construct the server repository object.
    * 
-   * @param config The {@link MqConfiguration}
+   * @param config
+   *   The {@link MqConfiguration}
    */
   public ServerRepository(MqConfiguration config)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mConfig = config;
     mLocalManager = new MqLocalManager(mConfig.getManagerName(), mConfig.getPort(), mConfig.getDeadQueueName());
     mRemoteManagersMap = new ConcurrentHashMap<String, MqRemoteManager>();
@@ -63,11 +64,12 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Initialize the server repository
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise
+   * @return
+   *   {@code true} if initialization completed successfully, {@code false} otherwise
    */
   public boolean init()
   {
-    mLogger.debug("ServerRepository::init() - IN");
+    mLogger.trace("ServerRepository::init() - IN");
     boolean success = false;
     
     mLogger.trace("ServerRepository::init() - Initializing repository...");
@@ -87,257 +89,295 @@ public class ServerRepository extends AKasObject implements IRepository
       mRemoteManagersMap.put(name, mgr);
     }
     
-    mLogger.debug("ServerRepository::init() - OUT, Returns=" + success);
+    mLogger.trace("ServerRepository::init() - OUT, Returns={}", success);
     return success;
   }
   
   /**
    * Terminate the server repository
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise
+   * @return
+   *   {@code true} if termination completed successfully, {@code false} otherwise
    */
   public boolean term()
   {
-    mLogger.debug("ServerRepository::term() - IN");
+    mLogger.trace("ServerRepository::term() - IN");
     boolean success = true;
     
     mLocalManager.deactivate();
     
-    mLogger.debug("ServerRepository::term() - OUT, Returns=" + success);
+    mLogger.trace("ServerRepository::term() - OUT, Returns={}", success);
     return success;
   }
   
   /**
    * Configuration has been refreshed.<br>
-   * <br>
    * If KAS/MQ server's configuration has been refreshed, it means that the repository
    * should re-create (if necessary) the list of pre-defined queues.
    */
   public void refresh()
   {
-    mLogger.debug("ServerRepository::refresh() - IN");
+    mLogger.trace("ServerRepository::refresh() - IN");
     
     createPredefinedQueues();
     
-    mLogger.debug("ServerRepository::refresh() - OUT");
+    mLogger.trace("ServerRepository::refresh() - OUT");
   }
   
   /**
    * Create a {@link MqLocalQueue} object with the specified {@code name} and {@code threshold}.
    * 
-   * @param name The name of the queue
-   * @param desc The queue description
-   * @param thoreshold The queue threshold
-   * @param disp The queue disposition
-   * @return the {@link MqLocalQueue} object created
+   * @param name
+   *   The name of the queue
+   * @param desc
+   *   The queue description
+   * @param thoreshold
+   *   The queue threshold
+   * @param disp
+   *   The queue disposition
+   * @return
+   *   the {@link MqLocalQueue} object created
    */
   public MqLocalQueue defineLocalQueue(String name, String desc, int threshold, EQueueDisp disp)
   {
-    mLogger.debug("ServerRepository::defineLocalQueue() - IN, Name=" + name + ", Threshold=" + threshold);
+    mLogger.trace("ServerRepository::defineLocalQueue() - IN, Name={}, Threshold={}", name, threshold);
     MqLocalQueue queue = mLocalManager.defineQueue(name, desc, threshold, disp);
-    mLogger.debug("ServerRepository::defineLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::defineLocalQueue() - OUT, Returns=[{}]", queue);
     return queue;
   }    
   
   /**
    * Add a {@link MqRemoteQueue} object to a specific {@link MqRemoteManager}
    * 
-   * @param qmgr The name of the KAS/MQ server
-   * @param queue The name of queue
-   * @return the {@link MqRemoteQueue} object created
+   * @param qmgr
+   *   The name of the KAS/MQ server
+   * @param queue
+   *   The name of queue
+   * @return
+   *   the {@link MqRemoteQueue} object created
    */
   public MqRemoteQueue defineRemoteQueue(String qmgr, String queue)
   {
-    mLogger.debug("ServerRepository::defineRemoteQueue() - IN, Qmgr=" + qmgr + ", Queue=" + queue);
+    mLogger.trace("ServerRepository::defineRemoteQueue() - IN, Qmgr={}, Queue={}", qmgr, queue);
     
     MqRemoteQueue mqrq = null;
     MqRemoteManager rqmgr = getRemoteManager(qmgr);
     if (rqmgr != null)
       mqrq = rqmgr.addQueue(queue);
       
-    mLogger.debug("ServerRepository::defineRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::defineRemoteQueue() - OUT,  Returns=[{}]", queue);
     return mqrq;
   }    
   
   /**
    * alter a {@link MqLocalQueue} object with the specified {@code name} and {@code properties}.
    * 
-   * @param name The name of the queue
-   * @param qprops The queue properties we want to alter 
-   * @return the {@link MqLocalQueue} object created
+   * @param name
+   *   The name of the queue
+   * @param qprops
+   *   The queue properties we want to alter 
+   * @return
+   *   the {@link MqLocalQueue} object created
    */
   public MqLocalQueue alterLocalQueue(String name, Properties qprops)
   {
-    mLogger.debug("ServerRepository::alterLocalQueue() - IN, Name=" + name);
+    mLogger.trace("ServerRepository::alterLocalQueue() - IN, Name={}", name);
     MqLocalQueue queue = mLocalManager.alterQueue(name, qprops);
-    mLogger.debug("ServerRepository::alterLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::alterLocalQueue() - OUT, Returns=[{}]", queue);
     return queue;
   }
   
   /**
    * Delete a {@link MqRemoteQueue} object from a specific {@link MqRemoteManager}.
    * 
-   * @param name The name of the queue to be removed
-   * @return the {@link MqLocalQueue} object removed
+   * @param name
+   *   The name of the queue to be removed
+   * @return
+   *   the {@link MqLocalQueue} object removed
    */
   public MqLocalQueue deleteLocalQueue(String name)
   {
-    mLogger.debug("ServerRepository::deleteLocalQueue() - IN, Name=" + name);
+    mLogger.trace("ServerRepository::deleteLocalQueue() - IN, Name={}", name);
     MqLocalQueue queue = mLocalManager.deleteQueue(name);
-    mLogger.debug("ServerRepository::deleteLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::deleteLocalQueue() - OUT,  Returns=[{}]", queue);
     return queue;
   }
   
   /**
    * Delete a {@link MqRemoteQueue} object from a specific {@link MqRemoteManager}.
    * 
-   * @param qmgr The name of the KAS/MQ server
-   * @param queue The name of queue
-   * @return the {@link MqRemoteQueue} object deleted
+   * @param qmgr
+   *   The name of the KAS/MQ server
+   * @param queue
+   *   The name of queue
+   * @return
+   *   the {@link MqRemoteQueue} object deleted
    */
   public MqRemoteQueue deleteRemoteQueue(String qmgr, String queue)
   {
-    mLogger.debug("ServerRepository::deleteRemoteQueue() - IN, Qmgr=" + qmgr + ", Queue=" + queue);
+    mLogger.trace("ServerRepository::deleteRemoteQueue() - IN, Qmgr={}, Queue={}", qmgr, queue);
     MqRemoteQueue mqrq = null;
     MqRemoteManager rqmgr = getRemoteManager(qmgr);
     if (rqmgr != null)
       mqrq = rqmgr.removeQueue(queue);
     
-    mLogger.debug("ServerRepository::deleteRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::deleteRemoteQueue() - OUT, Returns=[{}]", queue);
     return mqrq;
   }
   
   /**
    * Get a {@link MqLocalQueue} object with the specified {@code name}.
    * 
-   * @param name The name of the destination to be retrieved
-   * @return the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   * @param name
+   *   The name of the destination to be retrieved
+   * @return
+   *   the {@link MqLocalQueue} object or {@code null} if {@code name} is {@code null},
+   *   or there's no queue with this name.
    */
   public MqLocalQueue getLocalQueue(String name)
   {
-    mLogger.debug("ServerRepository::getLocalQueue() - IN, Name=" + name);
+    mLogger.trace("ServerRepository::getLocalQueue() - IN, Name={}", name);
     MqLocalQueue queue = mLocalManager.getQueue(name);
-    mLogger.debug("ServerRepository::getLocalQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::getLocalQueue() - OUT, Returns=[{}]", queue);
     return queue;
   }
   
   /**
    * Get a {@link MqRemoteQueue} object with the specified {@code name}.
    * 
-   * @param name The name of the remote queue to be retrieved
-   * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   * @param name
+   *   The name of the remote queue to be retrieved
+   * @return
+   *   the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null},
+   *   or there's no queue with this name.
    */
   public MqRemoteQueue getRemoteQueue(String name)
   {
-    mLogger.debug("ServerRepository::getRemoteQueue() - IN, Name=" + name);
+    mLogger.trace("ServerRepository::getRemoteQueue() - IN, Name={}", name);
     MqRemoteQueue queue = null;
     for (Map.Entry<String, MqRemoteManager> entry : mRemoteManagersMap.entrySet())
     {
       String qmgrName = entry.getKey();
       MqRemoteManager qmgr = entry.getValue();
       
-      mLogger.debug("ServerRepository::getRemoteQueue() - Check if remote KAS/MQ server " + qmgrName + " has a queue named " + name);
+      mLogger.trace("ServerRepository::getRemoteQueue() - Check if remote KAS/MQ server {} has a queue named {}", qmgrName, name);
       queue = qmgr.getQueue(name);
       if (queue != null) break;
     }
-    mLogger.debug("ServerRepository::getRemoteQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::getRemoteQueue() - OUT, Returns=[{}]", queue);
     return queue;
   }
   
   /**
    * Get a {@link MqQueue} object with the specified {@code name}.<br>
-   * <br>
    * We search for a local queue with the specified name, and if we don't find, we look for a remote one.
    * 
-   * @param name The name of the queue to be retrieved
-   * @return the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null}, or there's no queue with this name.
+   * @param name
+   *   The name of the queue to be retrieved
+   * @return
+   *   the {@link MqRemoteQueue} object or {@code null} if {@code name} is {@code null},
+   *   or there's no queue with this name.
    */
   public MqQueue getQueue(String name)
   {
-    mLogger.debug("ServerRepository::getQueue() - IN, Name=" + name);
+    mLogger.trace("ServerRepository::getQueue() - IN, Name={}", name);
     MqQueue queue = getLocalQueue(name);
     if (queue == null)
     {
       queue = getRemoteQueue(name);
     }
     
-    mLogger.debug("ServerRepository::getQueue() - OUT, Returns=[" + StringUtils.asString(queue) + "]");
+    mLogger.trace("ServerRepository::getQueue() - OUT, Returns=[{}]", queue);
     return queue;
   }
   
   /**
    * Get information regarding local queues whose name begins with the specified prefix.
    * 
-   * @param name The queue name/prefix.
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
-   * @return A properties object that holds the queried data
+   * @param name
+   *   The queue name/prefix.
+   * @param prefix
+   *   If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all
+   *   If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return
+   *   a {@link StringList} object that holds the queried data
    */
   public StringList queryLocalQueues(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("ServerRepository::queryLocalQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.trace("ServerRepository::queryLocalQueues() - IN, Name={}, Prefix={}, All={}", name, prefix, all);
     
-    mLogger.debug("ServerRepository::queryLocalQueues() - Checking if LocalQueuesManager " + mLocalManager.getName() + " has results for this query...");
+    mLogger.trace("ServerRepository::queryLocalQueues() - Checking if LocalQueuesManager {} has results for this query...", mLocalManager.getName());
     StringList result = mLocalManager.queryQueue(name, prefix, all);
     
-    mLogger.debug("ServerRepository::queryLocalQueues() - OUT, Returns=" + result.size() + " records");
+    mLogger.trace("ServerRepository::queryLocalQueues() - OUT, Returns={} records", result.size());
     return result;
   }
   
   /**
    * Get information regarding remote queues whose name begins with the specified prefix.
    * 
-   * @param name The queue name/prefix.
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
-   * @return A properties object that holds the queried data
+   * @param name
+   *   The queue name/prefix.
+   * @param prefix
+   *   If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all
+   *   If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return
+   *   a {@link StringList} object that holds the queried data
    */
   public StringList queryRemoteQueues(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("ServerRepository::queryRemoteQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.trace("ServerRepository::queryRemoteQueues() - IN, Name={}, Prefix={}, All={}", name, prefix, all);
     
     StringList result = new StringList();
     for (Map.Entry<String, MqRemoteManager> entry : mRemoteManagersMap.entrySet())
     {
       MqRemoteManager mgr = entry.getValue();
-      mLogger.debug("ServerRepository::queryRemoteQueues() - Checking if RemoteQueuesManager " + mgr.getName() + " has results for this query...");
+      mLogger.trace("ServerRepository::queryRemoteQueues() - Checking if RemoteQueuesManager {} has results for this query...", mgr.getName());
       StringList list = mgr.queryQueue(name, prefix, all);
       result.addAll(list);
     }
     
-    mLogger.debug("ServerRepository::queryRemoteQueues() - OUT, Returns=" + result.size() + " records");
+    mLogger.trace("ServerRepository::queryRemoteQueues() - OUT, Returns={} records", result.size());
     return result;
   }
   
   /**
    * Get information regarding all queues whose name begins with the specified prefix.<br>
-   * <br>
    * Note we add the local queues to the result so local queues will override the remote ones
    * if there are any duplicates.
    * 
-   * @param locals When {@code true}, result of query will include only local queues
-   * @param name The queue name/prefix.
-   * @param prefix If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
-   * @param all If {@code true}, display all information on all queues, otherwise, display only names 
-   * @return A properties object that holds the queried data
+   * @param locals
+   *   When {@code true}, result of query will include only local queues
+   * @param name
+   *   The queue name/prefix.
+   * @param prefix
+   *   If {@code true}, the {@code name} designates a queue name prefix. If {@code false}, it's a queue name
+   * @param all
+   *   If {@code true}, display all information on all queues, otherwise, display only names 
+   * @return
+   *   a {@link StringList} object that holds the queried data
    */
   public StringList queryQueues(String name, boolean prefix, boolean all)
   {
-    mLogger.debug("ServerRepository::queryQueues() - IN, Name=" + name + ", Prefix=" + prefix + ", All=" + all);
+    mLogger.trace("ServerRepository::queryQueues() - IN, Name={}, Prefix={}, All={}", name, prefix, all);
     
     StringList result = queryRemoteQueues(name, prefix, all);
     StringList locals = queryLocalQueues(name, prefix, all);
     result.addAll(locals);
     
-    mLogger.debug("ServerRepository::queryQueues() - OUT, Returns=" + result.size() + " records");
+    mLogger.trace("ServerRepository::queryQueues() - OUT, Returns={} records", result.size());
     return result;
   }
   
   /**
    * Get {@link MqManager} by its name 
    * 
-   * @param name The name of the {@link MqManager}
-   * @return the {@link MqManager}
+   * @param name
+   *   The name of the {@link MqManager}
+   * @return
+   *   the {@link MqManager}
    */
   public MqRemoteManager getRemoteManager(String name)
   {
@@ -347,7 +387,8 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Get all remote {@link MqRemoteManager managers} 
    * 
-   * @return the {@link MqManager}
+   * @return
+   *   a collection of all {@link MqRemoteManager}
    */
   public Collection<MqRemoteManager> getRemoteManagers()
   {
@@ -357,7 +398,8 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Get the local {@link MqLocalManager} 
    * 
-   * @return the local {@link MqLocalManager}
+   * @return
+   *   the local {@link MqLocalManager}
    */
   public MqLocalManager getLocalManager()
   {
@@ -367,7 +409,8 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Get the {@link MqLocalQueue} object representing the dead queue
    * 
-   * @return the {@link MqLocalQueue} object of the dead queue
+   * @return
+   *   the {@link MqLocalQueue} object of the dead queue
    */
   public MqLocalQueue getDeadQueue()
   {
@@ -377,7 +420,8 @@ public class ServerRepository extends AKasObject implements IRepository
   /**
    * Get a collection of all local queues
    * 
-   * @return a collection of all local queues
+   * @return
+   *   a collection of all {@link MqLocalQueue}
    */
   public Collection<MqQueue> getLocalQueues()
   {
@@ -389,7 +433,7 @@ public class ServerRepository extends AKasObject implements IRepository
    */
   private void createPredefinedQueues()
   {
-    mLogger.debug("ServerRepository::createPredefinedQueues() - IN");
+    mLogger.trace("ServerRepository::createPredefinedQueues() - IN");
     
     int total = 0, defined = 0;
     for (Map.Entry<String, Integer> entry : mConfig.getQueueDefinitions().entrySet())
@@ -405,16 +449,18 @@ public class ServerRepository extends AKasObject implements IRepository
       }
     }
     
-    mLogger.debug("ServerRepository::createPredefinedQueues() - Total pre-defined queues: " + total + ", defined: " + defined);
+    mLogger.trace("ServerRepository::createPredefinedQueues() - Total pre-defined queues: {}, defined: {}", total, defined);
     
-    mLogger.debug("ServerRepository::createPredefinedQueues() - OUT");
+    mLogger.trace("ServerRepository::createPredefinedQueues() - OUT");
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

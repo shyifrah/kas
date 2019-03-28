@@ -1,8 +1,9 @@
 package com.kas.mq.internal;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
+import com.kas.infra.base.IObject;
 import com.kas.mq.impl.messages.IMqMessage;
 
 /**
@@ -15,7 +16,7 @@ public abstract class MqQueue extends AKasObject
   /**
    * Logger
    */
-  protected transient ILogger mLogger;
+  protected transient Logger mLogger;
   
   /**
    * The manager that owns this queue
@@ -30,12 +31,14 @@ public abstract class MqQueue extends AKasObject
   /**
    * Constructing a {@link MqQueue} object with the specified name.
    * 
-   * @param mgr The name of the manager that owns this {@link MqQueue}
-   * @param name The name of this {@link MqQueue} object.
+   * @param mgr
+   *   The name of the manager that owns this {@link MqQueue}
+   * @param name
+   *   The name of this {@link MqQueue} object.
    */
   protected MqQueue(MqManager mgr, String name)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mManager = mgr;
     mName = name;
   }
@@ -43,7 +46,8 @@ public abstract class MqQueue extends AKasObject
   /**
    * Get the owner manager
    * 
-   * @return the owner manager
+   * @return
+   *   the owner manager
    */
   public MqManager getManager()
   {
@@ -53,7 +57,8 @@ public abstract class MqQueue extends AKasObject
   /**
    * Get the name of the queue
    * 
-   * @return the name of the queue
+   * @return
+   *   the name of the queue
    */
   public String getName()
   {
@@ -62,11 +67,11 @@ public abstract class MqQueue extends AKasObject
   
   /**
    * Restore the {@link MqQueue} contents from the file system.<br>
-   * <br>
-   * The default implementation is empty and return {@code true}. Driven classes should decide
-   * whether to implement it or not.
+   * The default implementation is empty and return {@code true}.
+   * Driven classes should decide whether to implement it or not.
    * 
-   * @return {@code true} if queue contents restored successfully, {@code false} otherwise
+   * @return
+   *   {@code true} if queue contents restored successfully, {@code false} otherwise
    */
   public boolean restore()
   {
@@ -75,11 +80,11 @@ public abstract class MqQueue extends AKasObject
 
   /**
    * Backup the {@link MqQueue} contents to file system.<br>
-   * <br>
-   * The default implementation is empty and return {@code true}. Driven classes should decide
-   * whether to implement it or not.
+   * The default implementation is empty and return {@code true}.
+   * Driven classes should decide whether to implement it or not.
    * 
-   * @return {@code true} if completed writing all queue contents successfully, {@code false} otherwise
+   * @return
+   *   {@code true} if completed writing all queue contents successfully, {@code false} otherwise
    */
   public boolean backup()
   {
@@ -88,11 +93,11 @@ public abstract class MqQueue extends AKasObject
   
   /**
    * Expire old messages.<br>
-   * <br>
-   * The default implementation is empty and return 0. Driven classes should decide
-   * whether to implement it or not.
+   * The default implementation is empty and return 0.
+   * Driven classes should decide whether to implement it or not.
    * 
-   * @return the total number of messages expired
+   * @return
+   *   the total number of messages expired
    */
   public int expire()
   {
@@ -102,83 +107,89 @@ public abstract class MqQueue extends AKasObject
   /**
    * Put a message into this {@link MqQueue} object.
    * 
-   * @param message The message that should be put to this {@link MqQueue}
-   * @return {@code true} if message was put, {@code false} otherwise
+   * @param message
+   *   The message that should be put to this {@link MqQueue}
+   * @return
+   *   {@code true} if message was put, {@code false} otherwise
    */
   public boolean put(IMqMessage message)
   {
-    mLogger.debug("MqQueue::put() - IN");
+    mLogger.trace("MqQueue::put() - IN");
     
     boolean success = false;
     if (message != null)
-    {
       success = internalPut(message);
-    }
     
-    mLogger.debug("MqQueue::put() - OUT, Returns=" + success);
+    mLogger.trace("MqQueue::put() - OUT, Returns=" + success);
     return success;
   }
   
   /**
    * The actual implementation of the Put method
    * 
-   * @param message The message to put
-   * @return {@code true} if message was put, {@code false} otherwise
+   * @param message
+   *   The message to put
+   * @return
+   *   {@code true} if message was put, {@code false} otherwise
    */
   protected abstract boolean internalPut(IMqMessage message);
   
   /**
    * Get a message and wait indefinitely for one to be available.
    * 
-   * @return The {@link IMqMessage}
+   * @return
+   *   the {@link IMqMessage}
    */
   public IMqMessage get()
   {
-    mLogger.debug("MqQueue::get() - IN");
+    mLogger.trace("MqQueue::get() - IN");
     
     IMqMessage msg = internalGet(0, IMqConstants.cDefaultPollingInterval);
     
-    mLogger.debug("MqQueue::get() - OUT");
+    mLogger.trace("MqQueue::get() - OUT");
     return msg;
   }
   
   /**
    * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
-   * <br>
    * If {@code timeout} is 0, this method is equivalent to {@link #get()}.
    * 
-   * @param timeout The amount of time to wait for message availability before giving up
-   * @return The {@link IMqMessage} or {@code null} if one is unavailable
-   * 
-   * @throws IllegalArgumentException if {@code timeout} is lower than 0
+   * @param timeout
+   *   The amount of time to wait for message availability before giving up
+   * @return
+   *   the {@link IMqMessage} or {@code null} if one is unavailable
+   * @throws IllegalArgumentException
+   *   if {@code timeout} is lower than 0
    */
   public IMqMessage get(long timeout)
   {
-    mLogger.debug("MqQueue::get() - IN, Timeout=" + timeout);
+    mLogger.trace("MqQueue::get() - IN, Timeout=" + timeout);
     
     if (timeout < 0)
       throw new IllegalArgumentException("Invalid timeout: " + timeout);
     
     IMqMessage msg = internalGet(timeout, IMqConstants.cDefaultPollingInterval);
     
-    mLogger.debug("MqQueue::get() - OUT");
+    mLogger.trace("MqQueue::get() - OUT");
     return msg;
   }
   
   /**
    * Get a message and wait {@code timeout} milliseconds for one to be available.<br>
-   * <br>
    * Execution is suspended for {@code interval} milliseconds between each polling operation.
    * 
-   * @param timeout The amount of time to wait for message availability before giving up
-   * @param interval The polling interval length
-   * @return The {@link IMqMessage} or {@code null} if one is unavailable
-   * 
-   * @throws IllegalArgumentException if {@code timeout} or {@code interval} are lower than 0
+   * @param timeout
+   *   The amount of time to wait for message availability before giving up
+   * @param interval
+   *   The polling interval length
+   * @return
+   *   the {@link IMqMessage} or {@code null} if one is unavailable
+   * @throws IllegalArgumentException
+   *   if {@code timeout} or {@code interval} are lower than 0
    */
   public IMqMessage get(long timeout, long interval)
   {
-    mLogger.debug("MqQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
+    mLogger.trace("MqQueue::get() - IN, Timeout=" + timeout + ", Interval=" + interval);
     
     if (timeout < 0)
       throw new IllegalArgumentException("Invalid timeout: " + timeout);
@@ -188,23 +199,27 @@ public abstract class MqQueue extends AKasObject
     
     IMqMessage msg = internalGet(timeout, interval);
     
-    mLogger.debug("MqQueue::get() - OUT");
+    mLogger.trace("MqQueue::get() - OUT");
     return msg;
   }
   
   /**
    * The actual implementation of the Get method
    * 
-   * @param message The message to put
-   * @return {@code true} if message was put, {@code false} otherwise
+   * @param message
+   *   The message to put
+   * @return
+   *   {@code true} if message was put, {@code false} otherwise
    */
   protected abstract IMqMessage internalGet(long timeout, long interval);
   
   /**
    * Response to Query request
    * 
-   * @param all Whether to include all data in the response
-   * @return a string that describes the queue 
+   * @param all
+   *   Whether to include all data in the response
+   * @return
+   *   a string that describes the queue 
    */
   public String queryResponse(boolean all)
   {
@@ -218,7 +233,8 @@ public abstract class MqQueue extends AKasObject
   /**
    * Get the object's string representation
    * 
-   * @return the string representation
+   * @return
+   *   the string representation
    */
   public String toString()
   {
@@ -228,12 +244,12 @@ public abstract class MqQueue extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

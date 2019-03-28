@@ -6,13 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.config.MainConfiguration;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.PropertyResolver;
 import com.kas.infra.utils.FileUtils;
 import com.kas.infra.utils.RunTimeUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 
 /**
  * This class is used to help facilitate operations against the DB
@@ -24,7 +24,7 @@ final public class SchemaHelper
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * A {@link Connection} that will be used to execute commands
@@ -36,18 +36,19 @@ final public class SchemaHelper
    */
   public SchemaHelper(Connection conn)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mConnection = conn;
   }
   
   /**
    * Check if the schema exists
    * 
-   * @return {@code true} if the schema exists, {@code false} otherwise
+   * @return
+   *   {@code true} if the schema exists, {@code false} otherwise
    */
   public boolean isExist()
   {
-    mLogger.debug("SchemaHelper::isExist() - IN");
+    mLogger.trace("SchemaHelper::isExist() - IN");
     
     boolean exists = false;
     String sql = "select column_name, data_type from information_schema.columns where table_name = 'kas_mq_parameters';";
@@ -59,21 +60,21 @@ final public class SchemaHelper
     }
     catch (SQLException e) {}
     
-    mLogger.debug("SchemaHelper::isExist() - OUT, Returns=" + exists);
+    mLogger.trace("SchemaHelper::isExist() - OUT, Returns=" + exists);
     return exists;
   }
   
   /**
-   * Initialize KAS/MQ database schema
+   * Initialize database schema
    */
   public void init()
   {
-    mLogger.debug("SchemaHelper::init() - IN");
+    mLogger.trace("SchemaHelper::init() - IN");
     
     Properties props = MainConfiguration.getInstance().getSubset(DbConfiguration.cDbConfigPrefix);
     String dbtype = props.getStringProperty(DbConfiguration.cDbConfigPrefix + "type", DbConfiguration.cDefaultDbType);
     
-    mLogger.debug("SchemaHelper::init() - Database type is " + dbtype);
+    mLogger.trace("SchemaHelper::init() - Database type is {}", dbtype);
     
     File dbInitFile = new File(RunTimeUtils.getProductHomeDir() + File.separator + "conf" + File.separator + "sql" + File.separator + "db-init-" + dbtype + ".sql");
     List<String> input = FileUtils.load(dbInitFile, "--");
@@ -83,23 +84,23 @@ final public class SchemaHelper
     for (String line : input)
     {
       line = line.trim();
-      mLogger.diag("SchemaHelper::init() - Current line: [" + line + "]");
+      mLogger.trace("SchemaHelper::init() - Current line: [{}]", line);
       
       if (newcmd)
       {
-        mLogger.diag("SchemaHelper::init() - Current line is the start of a new command");
+        mLogger.trace("SchemaHelper::init() - Current line is the start of a new command");
         sb = new StringBuilder(line);
         newcmd = false;
       }
       else
       {
-        mLogger.diag("SchemaHelper::init() - Current line is a continuation of the previous command, concatenating...");
+        mLogger.trace("SchemaHelper::init() - Current line is a continuation of the previous command, concatenating...");
         sb.append(' ').append(line);
       }
       
       if (line.endsWith(";"))
       {
-        mLogger.diag("SchemaHelper::init() - End of command detected. Execute it...");
+        mLogger.trace("SchemaHelper::init() - End of command detected. Execute it...");
         String cmd = PropertyResolver.resolve(sb.toString(), props);
         try
         {
@@ -109,6 +110,6 @@ final public class SchemaHelper
         newcmd = true;
       }
     }
-    mLogger.debug("DbUtils::init() - OUT");
+    mLogger.trace("DbUtils::init() - OUT");
   }
 }

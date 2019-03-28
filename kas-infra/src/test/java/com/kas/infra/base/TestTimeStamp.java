@@ -6,35 +6,39 @@ import com.kas.infra.base.TimeStamp;
 
 public class TestTimeStamp
 {
-  @Test
-  public void testNowAsString()
+  private TimeStamp mNow;
+  private TimeStamp mEarlier;
+  private TimeStamp mLater;
+  
+  public TestTimeStamp()
   {
-    long now = TimeStamp.nowAsLong();
-    TimeStamp ts = new TimeStamp(now);
-    Assert.assertEquals(now, ts.getAsLong());
+    mNow     = TimeStamp.now();
+    mEarlier = TimeStamp.toTimeStamp(1551165242197L);  //1551165242197 = 26 Feb 2019, 9:14:02,197
+    mLater   = TimeStamp.toTimeStamp(1551165242297L);  //1551165242297 = 26 Feb 2019, 9:14:02,297
   }
   
   @Test
-  public void testDiff()
+  public void testGetters()
   {
-    long now = TimeStamp.nowAsLong();
-    TimeStamp ts = new TimeStamp(now);
-    Assert.assertEquals(ts.diff(now), 0);
+    Assert.assertEquals( 2019 , mEarlier.getYear()    );
+    Assert.assertEquals( 2    , mEarlier.getMonth()   );
+    Assert.assertEquals( 26   , mEarlier.getDay()     );
+    Assert.assertEquals( 9    , mEarlier.getHours()   );
+    Assert.assertEquals( 14   , mEarlier.getMinutes() );
+    Assert.assertEquals( 2    , mEarlier.getSeconds() );
+    Assert.assertEquals( 197  , mEarlier.getMillis()  );
   }
   
   @Test
-  public void testCtor() throws InterruptedException
+  public void testToString()
   {
-    long now = TimeStamp.nowAsLong();
-    Thread.sleep(300);
-    TimeStamp ts = TimeStamp.now();
-    Assert.assertTrue(ts.getAsLong() > now);
+    Assert.assertEquals("2019-02-26 09:14:02,197", mEarlier.toString());
   }
   
   @Test
-  public void testName()
+  public void testToDiffs()
   {
-    TimeStamp ts = TimeStamp.now();
-    Assert.assertTrue(ts.name().equals("<TimeStamp>"));
+    Assert.assertTrue(TimeStamp.diff(mNow, mEarlier) > 0);
+    Assert.assertEquals(100, TimeStamp.diff(mLater, mEarlier));
   }
 }

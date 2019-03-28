@@ -7,10 +7,9 @@ import java.io.InputStreamReader;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.net.InetAddress;
-import com.kas.infra.utils.helpers.EOsType;
 
 /**
- * Utility functions
+ * A list of utility methods used to extract run-time information
  * 
  * @author Pippo
  */
@@ -31,7 +30,8 @@ public class RunTimeUtils
    * We first try and obtain the host name by means of {@link InetAddress#getLocalHost()}. If that doesn't work
    * we execute the {@code hostname} system command and read its output. 
    * 
-   * @return the host name
+   * @return
+   *   the host name
    */
   static public String getHostName()
   {
@@ -72,7 +72,8 @@ public class RunTimeUtils
    * NOTE: Since there are about a million ways that the method might now work as expected,
    * the {@code name} variable is initialized to a string that will produce a process ID of 0. 
    * 
-   * @return the KAS home directory
+   * @return
+   *   the ID of the current Process
    */
   static private int initProcessId()
   {
@@ -101,7 +102,8 @@ public class RunTimeUtils
   /**
    * Get the current Process ID
    * 
-   * @return the ID of the current Process
+   * @return
+   *   the ID of the current Process
    */
   static public int getProcessId()
   {
@@ -115,7 +117,8 @@ public class RunTimeUtils
   /**
    * Get the current Thread ID
    * 
-   * @return the ID of the current Thread
+   * @return
+   *   the ID of the current Thread
    */
   static public long getThreadId()
   {
@@ -125,7 +128,8 @@ public class RunTimeUtils
   /**
    * Get the current user name
    * 
-   * @return the name of the current user
+   * @return
+   *   the name of the current user
    */
   static public String getUserId()
   {
@@ -135,7 +139,8 @@ public class RunTimeUtils
   /**
    * Get the type of the Operating System
    * 
-   * @return one of the enum values defined in {@link EOsType}
+   * @return
+   *   one of the Enum values defined in {@link EOsType}
    */
   static public EOsType getOsType()
   {
@@ -155,7 +160,8 @@ public class RunTimeUtils
   /**
    * Get the Operating System name
    * 
-   * @return the Operating System name
+   * @return
+   *   the Operating System name
    */
   static public String getOsName()
   {
@@ -163,40 +169,43 @@ public class RunTimeUtils
   }
   
   /**
-   * Get the value of the property from System properties.
+   * Get the value of a specified property or environment variable
    * 
-   * @param variable the system property name
-   * @return the value of the {@code variable} property or {@code defaultValue}
-   * 
-   * @see #getProperty(String, String)
+   * @param name
+   *   the system property or environment variable name
+   * @return
+   *   the value of the system property or environment variable, or {@code null}
    */
-  static public String getProperty(String variable)
+  static public String getProperty(String name)
   {
-    return getProperty(variable, null);
+    return getProperty(name, null);
   }
   
   /**
-   * Get the value of the property from System properties.<br>
+   * Get the value of a specified property or environment variable
    * <br>
-   * If a value was found, return it, otherwise, replace the period (".") chars with underscores ("_") and
-   * try obtain the value of an environment variable with the new name. If no value was obtained, the 
-   * {@code defaultValue} is returned
+   * If a value was found, return it, otherwise, replace the period (".") chars
+   * with underscores ("_") and try obtain the value of an environment variable
+   * with the new name. If no value was obtained, the {@code defaultValue} is returned.
    * 
-   * @param variable The system property name
-   * @param defaultValue The default value to be returned if no value was obtained
-   * @return the value of the {@code variable} property or {@code defaultValue}
+   * @param name
+   *   The system property or environment variable name
+   * @param defaultValue
+   *   The default value to be returned if no value was obtained
+   * @return
+   *   the value of the {@code variable} property or {@code defaultValue}
    */
-  static public String getProperty(String variable, String defaultValue)
+  static public String getProperty(String name, String defaultValue)
   {
     // try obtaining it from system variable ("-D")
-    String result = System.getProperty(variable);
+    String result = System.getProperty(name);
     if ((result != null) && (result.trim().length() > 0))
     {
       return result;
     }
     
     // try obtaining it from environment variable
-    String envvar = variable.replace('.', '_');
+    String envvar = name.replace('.', '_');
     result = System.getenv(envvar);
     if ((result != null) && (result.trim().length() > 0))
     {
@@ -207,16 +216,20 @@ public class RunTimeUtils
   }
   
   /**
-   * Set the value {@code value} of the property named {@code variable} to System properties.<br>
+   * Sets a new system property<br>
    * <br>
-   * If a variable with the name {@code variable} already exists, then the value of {@code force} determines
-   * how to process the request. If it's {@code true}, the new value will override the old one. If it's
-   * {@code false}, the old value will be retained.
+   * If a variable named {@code name} already exists, then the value of {@code force}
+   * determines how to process the request. If it's {@code true}, the new value will
+   * override the old one. If it's {@code false}, the old value will be retained.
    * 
-   * @param variable The system property name
-   * @param value The value to assign to the property
-   * @param force Indicator whether to override old value or retain it
-   * @return the value of the system property {@code variable}
+   * @param variable
+   *   The system property name
+   * @param value
+   *   The value to assign to the property
+   * @param force
+   *   Indicator whether to override old value or retain it
+   * @return
+   *   the value of the system property {@code variable}
    */
   static public String setProperty(String variable, String value, boolean force)
   {
@@ -243,7 +256,8 @@ public class RunTimeUtils
    * <br>
    * This method is called upon static initialization to be used by {@link #getProductHomeDir()}
    * 
-   * @return the KAS home directory
+   * @return
+   *   the KAS home directory
    */
   static private String initProductHomeDir()
   {
@@ -259,7 +273,8 @@ public class RunTimeUtils
   /**
    * Return the KAS home directory
    * 
-   * @return the KAS home directory
+   * @return
+   *   the KAS home directory
    */
   static public String getProductHomeDir()
   {
@@ -274,7 +289,8 @@ public class RunTimeUtils
    * Suspend current Thread execution for {@code seconds} seconds.<br>
    * If the number of seconds is lower or equal than 0, this method does nothing.
    * 
-   * @param seconds The number of seconds to delay the current Thread
+   * @param seconds
+   *   The number of seconds to delay the current Thread
    */
   static public void sleepForSeconds(int seconds)
   {
@@ -292,7 +308,8 @@ public class RunTimeUtils
    * Suspend current Thread execution for {@code milliseconds} milliseconds.<br>
    * If the number of milliseconds is lower or equal than 0, this method does nothing.
    * 
-   * @param milliseconds The number of milliseconds to delay the current Thread
+   * @param milliseconds
+   *   The number of milliseconds to delay the current Thread
    */
   static public void sleepForMilliSeconds(long milliseconds)
   {

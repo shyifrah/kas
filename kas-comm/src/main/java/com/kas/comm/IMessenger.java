@@ -14,34 +14,37 @@ public interface IMessenger extends IObject
   /**
    * Get the messenger connectivity status
    * 
-   * @return {@code true} if connected, {@code false} otherwise
+   * @return
+   *   {@code true} if connected, {@code false} otherwise
    */
   public abstract boolean isConnected();
   
   /**
    * Get the messenger remote address
    * 
-   * @return The {@link NetworkAddress} that represents the remote host
+   * @return
+   *   the {@link NetworkAddress} that represents the remote host
    */
   public abstract NetworkAddress getAddress();
   
   /**
    * Sends a {@link IPacket} object.
    * 
-   * @param message The packet to send
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param message
+   *   The packet to send
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract void send(IPacket packet) throws IOException;
   
   /**
    * Receive a {@link IPacket} object.<br>
-   * <br>
    * If a {@link IPacket} is not available, the call will block until one is.
    * 
-   * @return read packet
-   * 
-   * @throws IOException if an I/O error occurs
+   * @return
+   *   read packet
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract IPacket receive() throws IOException;
   
@@ -50,40 +53,43 @@ public interface IMessenger extends IObject
    * <br>
    * If a {@link IPacket} is not available, wait for {@code timeout} milliseconds for one to be available.
    * 
-   * @param timeout Milliseconds to wait for the {@link IPacket} before returning {@code null}
-   * 
-   * @return the read packet or {@code null} if one is not available
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param timeout
+   *   Milliseconds to wait for the {@link IPacket} before returning {@code null}
+   * @return
+   *   the read packet or {@code null} if one is not available
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract IPacket receive(int timeout) throws IOException;
   
   /**
    * Sends a {@link IPacket} and wait indefinitely for a reply.
    * 
-   * @param request A request packet
-   * 
-   * @return a response packet
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param request
+   *   A request packet
+   * @return
+   *   a response packet
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract IPacket sendAndReceive(IPacket request) throws IOException;
   
   /**
    * Sends a {@link IPacket} and wait for a reply.
    * 
-   * @param request A request packet
-   * @param timeout Milliseconds to wait for the reply
-   * 
-   * @return response packet or null if timeout expires
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param request
+   *   A request packet
+   * @param timeout
+   *   Milliseconds to wait for the reply
+   * @return
+   *   response packet or null if timeout expires
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
   
   /**
    * Perform messenger's cleanup:<br>
-   * <br>
    * Flush streams, close streams, close the socket etc.
    */
   public abstract void cleanup();

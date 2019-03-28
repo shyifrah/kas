@@ -4,19 +4,17 @@ import com.kas.infra.utils.StringUtils;
 
 /**
  * A KAS managed object.<br>
- * <br>
  * This class implements some of the methods that described in {@link IObject} 
  * 
  * @author Pippo
- * 
- * @see com.kas.infra.base.IObject
  */
 public abstract class AKasObject implements IObject
 {
   /**
    * Override Object's toString() method with the {@link #name()} method.
    * 
-   * @return Object's string representation.
+   * @return
+   *   Object's string representation.
    */
   public String toString()
   {
@@ -26,7 +24,10 @@ public abstract class AKasObject implements IObject
   /**
    * Generate a padding for members layout to be used by {@link #toPrintableString(int)}.
    * 
-   * @return padding string
+   * @param level
+   *   The required padding level
+   * @return
+   *   padding string
    */
   protected String pad(int level)
   {
@@ -36,25 +37,19 @@ public abstract class AKasObject implements IObject
   /**
    * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
   
   /**
    * Returns the {@link IObject} string representation with 0-padding level
    * 
-   * @return the string representation with 0-padding level
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @return
+   *   the string representation with 0-padding level
    */
   public String toPrintableString()
   {
@@ -64,10 +59,10 @@ public abstract class AKasObject implements IObject
   /**
    * Returns the {@link IObject} string representation.
    * 
-   * @param level the required level padding
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public abstract String toPrintableString(int level);
 }

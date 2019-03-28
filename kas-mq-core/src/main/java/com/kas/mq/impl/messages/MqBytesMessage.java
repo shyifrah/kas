@@ -5,12 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ABaseBytesMessage;
 
 /**
  * A KAS/MQ message with a byte array payload.<br>
- * <br>
  * The message body is a byte []
  * 
  * @author Pippo
@@ -29,9 +29,10 @@ public final class MqBytesMessage extends ABaseBytesMessage
   /**
    * Constructs a {@link MqBytesMessage} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public MqBytesMessage(ObjectInputStream istream) throws IOException
   {
@@ -41,11 +42,10 @@ public final class MqBytesMessage extends ABaseBytesMessage
   /**
    * Serialize the {@link MqBytesMessage} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
-   * 
-   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the message will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -55,7 +55,8 @@ public final class MqBytesMessage extends ABaseBytesMessage
   /**
    * Set the message body
    * 
-   * @param body The message body
+   * @param body
+   *   The message body
    */
   public void setBody(byte [] body)
   {
@@ -65,7 +66,8 @@ public final class MqBytesMessage extends ABaseBytesMessage
   /**
    * Get the message body
    * 
-   * @return the message body
+   * @return
+   *   the message body
    */
   public byte [] getBody()
   {
@@ -75,7 +77,8 @@ public final class MqBytesMessage extends ABaseBytesMessage
   /**
    * Create the {@link PacketHeader} describing this {@link MqBytesMessage}
    * 
-   * @return the packet header
+   * @return
+   *   the packet header
    */
   public PacketHeader createHeader()
   {
@@ -83,12 +86,12 @@ public final class MqBytesMessage extends ABaseBytesMessage
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

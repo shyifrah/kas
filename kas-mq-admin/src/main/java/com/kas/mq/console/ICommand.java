@@ -13,14 +13,16 @@ public interface ICommand
   /**
    * Main method: parsing the command text
    * 
-   * @param text The command text
+   * @param text
+   *   The command text
    */
   public abstract void parse(String text);
   
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
-   * @param conn The {@link MqContextConnection} that will be used to execute the command
+   * @param conn
+   *   The {@link MqContextConnection} that will be used to execute the command
    */
   public abstract void exec(MqContextConnection conn);
 
@@ -32,7 +34,8 @@ public interface ICommand
   /**
    * Get the list of command verbs acceptable by this command
    * 
-   * @return the list of command verbs acceptable by this command
+   * @return
+   *   the list of command verbs acceptable by this command
    */
   public abstract List<String> getCommandVerbs();
 }

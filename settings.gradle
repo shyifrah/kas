@@ -1,1 +1,1 @@
-include ":kas-infra",":kas-config", ":kas-logging", ":kas-comm", ":kas-appl", ":kas-mq-core", ":kas-db", ":kas-mq-admin", ":kas-sec-core", ":kas-mq-samples", ":kas-mq-server"
+include ":kas-infra",":kas-config", ":kas-comm", ":kas-appl", ":kas-mq-core", ":kas-db", ":kas-mq-admin", ":kas-sec-core", ":kas-mq-samples", ":kas-mq-server"

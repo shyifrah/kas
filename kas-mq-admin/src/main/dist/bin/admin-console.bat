@@ -15,4 +15,6 @@ call %SCRIPT_DIR%/setup.bat
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Run command
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" %CLASS_NAME% %PASSED_ARGS%
+"%JAVA_EXEC%" %DEBUG_OPTS% -classpath "%CLASS_PATH%" com.kas.appl.AppLauncher ^
+  kas.class=%CLASS_NAME% ^
+  %PASSED_ARGS%

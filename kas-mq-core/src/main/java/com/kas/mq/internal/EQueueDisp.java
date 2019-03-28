@@ -21,8 +21,10 @@ public enum EQueueDisp
   /**
    * Get the disposition value that matches {@code disp}
    * 
-   * @param disp The string value
-   * @return The {@link EQueueDisp}
+   * @param disp
+   *   The string value
+   * @return
+   *   the {@link EQueueDisp}
    */
   static public EQueueDisp fromString(String disp)
   {

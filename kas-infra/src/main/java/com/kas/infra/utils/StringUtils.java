@@ -3,10 +3,9 @@ package com.kas.infra.utils;
 import java.util.Collection;
 import java.util.Map;
 import com.kas.infra.base.IObject;
-import com.kas.infra.utils.helpers.ThrowableFormatter;
 
 /**
- * Utility functions
+ * A list of utility methods used to manipulate strings
  * 
  * @author Pippo
  */
@@ -17,7 +16,8 @@ public class StringUtils
   /**
    * Return {@link Object#toString()} value, or "null" if object is null
    * 
-   * @param obj the object
+   * @param obj
+   *   The object
    * @return Object's toString() value, or "null"
    */
   static public String asString(Object obj)
@@ -28,8 +28,10 @@ public class StringUtils
   /**
    * Return {@link IObject#toPrintableString(int)} value, or "null" if object is null
    * 
-   * @param obj The IObject
-   * @return IObject's toPrintableString() value, or "null"
+   * @param obj
+   *   The IObject
+   * @return
+   *   IObject's toPrintableString() value, or "null"
    */
   static public String asPrintableString(IObject obj)
   {
@@ -39,9 +41,12 @@ public class StringUtils
   /**
    * Return {@link IObject#toPrintableString(int)} value, or "null" if object is null
    * 
-   * @param obj The IObject
-   * @param level The padding level
-   * @return IObject's toPrintableString() value, or "null"
+   * @param obj
+   *   The IObject
+   * @param level
+   *   The padding level
+   * @return
+   *   IObject's toPrintableString() value, or "null"
    */
   static public String asPrintableString(IObject obj, int level)
   {
@@ -51,9 +56,12 @@ public class StringUtils
   /**
    * Return a "key=value" string for a map entry
    * 
-   * @param key Entry's key
-   * @param value Entry's value
-   * @return "key=value" string
+   * @param key
+   *   Entry's key
+   * @param value
+   *   Entry's value
+   * @return
+   *   "key=value" string
    */
   static public String asString(Object key, Object value)
   {
@@ -68,9 +76,12 @@ public class StringUtils
    * Return the printable String value for a Map object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
-   * @param map The {@link Map}
-   * @param level Padding level
-   * @return the object's printable string representation 
+   * @param map
+   *   The {@link Map}
+   * @param level
+   *   Padding level
+   * @return
+   *   the object's printable string representation 
    */
   static public String asPrintableString(Map<?, ?> map, int level)
   {
@@ -81,10 +92,14 @@ public class StringUtils
    * Return the printable String value for a Map object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int) toPrintable(int)} method as part of it.
    * 
-   * @param map The {@link Map}
-   * @param level Padding level
-   * @param iobj When {@code true}, {@code map} values hold objects that implement {@link IObject}
-   * @return the object's printable string representation 
+   * @param map
+   *   The {@link Map}
+   * @param level
+   *   Padding level
+   * @param iobj
+   *   When {@code true}, {@code map} values hold objects that implement {@link IObject}
+   * @return
+   *   the object's printable string representation 
    */
   static public String asPrintableString(Map<?, ?> map, int level, boolean iobj)
   {
@@ -118,9 +133,12 @@ public class StringUtils
    * Return the printable String value for a Collection object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int)} method as part of it.
    * 
-   * @param collection The {@link Collection}
-   * @param level Padding level
-   * @return the object's printable string representation 
+   * @param collection
+   *   The {@link Collection}
+   * @param level
+   *   Padding level
+   * @return
+   *   the object's printable string representation 
    */
   static public String asPrintableString(Collection<?> collection, int level)
   {
@@ -131,10 +149,14 @@ public class StringUtils
    * Return the printable String value for a Collection object, just as if it had the 
    * {@link com.kas.infra.base.IObject#toPrintableString(int)} method as part of it.
    * 
-   * @param collection The {@link Collection}
-   * @param level Padding level
-   * @param iobj When {@code true}, {@code collection} holds {@link IObject} 
-   * @return the object's printable string representation 
+   * @param collection
+   *   The {@link Collection}
+   * @param level
+   *   Padding level
+   * @param iobj
+   *   When {@code true}, {@code collection} holds {@link IObject} 
+   * @return
+   *   the object's printable string representation 
    */
   static public String asPrintableString(Collection<?> collection, int level, boolean iobj)
   {
@@ -163,7 +185,8 @@ public class StringUtils
   /**
    * Format a throwable object and print it
    * 
-   * @param e The throwable object
+   * @param e
+   *   The throwable object
    */
   static public String format(Throwable e)
   {
@@ -173,8 +196,10 @@ public class StringUtils
   /**
    * Calculate the padding String base on the specified level
    * 
-   * @param level padding level
-   * @return the padding string 
+   * @param level
+   *   Padding level
+   * @return
+   *   the padding string 
    */
   static public String getPadding(int level)
   {
@@ -186,6 +211,21 @@ public class StringUtils
   }
   
   /**
+   * Returns the class name enclosed with chevrons.
+   * 
+   * @return
+   *   class name enclosed with chevrons.
+   */
+  static public String getClassName(Class<?> cls)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<")
+      .append(cls.getSimpleName())
+      .append(">");
+    return sb.toString();
+  }
+  
+  /**
    * Duplicate {@code str} a specified {@code number} of times.<br>
    * <br>
    * If {@code number} has a negative value, a {@code null} string is returned.<br>
@@ -193,9 +233,12 @@ public class StringUtils
    * If {@code number} is 1, no duplication takes place, and {@code str} is returned as is.<br>
    * For all other {@code number} values, {@code str} is duplicated {@code number} of times and returned.
    * 
-   * @param str The string to be duplicated
-   * @param number The number of times to duplicate it
-   * @return the duplicated string 
+   * @param str
+   *   The string to be duplicated
+   * @param number
+   *   The number of times to duplicate it
+   * @return
+   *   the duplicated string 
    */
   static public String duplicate(String str, int number)
   {
@@ -219,8 +262,10 @@ public class StringUtils
   /**
    * Frame a text with equal signs
    * 
-   * @param str The string to be framed
-   * @return the duplicated string 
+   * @param str
+   *   The string to be framed
+   * @return
+   *   the duplicated string 
    */
   static public String title(String str)
   {
@@ -240,22 +285,39 @@ public class StringUtils
   
   /**
    * Truncate a string to a specified length.<br>
-   * <br>
-   * If the given string is longer than the requested length, it is truncated, and if it is shorter, it is
-   * padded with the specified padding character. If one is not specified, space is used.<br>
+   * If the given string is longer than the requested length, it is truncated,
+   * and if it is shorter, it is padded with blanks.
    * 
-   * @param str The string to be truncated/padded
-   * @param len The requested length of the new string
-   * @param pad The padding character
-   * @return the truncated string
-   * 
-   * @throws IllegalArgumentException if {@code len} is negative or if {@code str} is null
+   * @param str
+   *   The string to be truncated/padded
+   * @param len
+   *   The requested length of the new string
+   * @return
+   *   the truncated string
+   * @throws IllegalArgumentException
+   *   if {@code len} is negative or if {@code str} is null
    */
   static public String trunc(String str, int len)
   {
     return trunc(str, len, ' ');
   }
   
+  /**
+   * Truncate a string to a specified length.<br>
+   * If the given string is longer than the requested length, it is truncated,
+   * and if it is shorter, it is padded with the specified padding character.
+   * 
+   * @param str
+   *   The string to be truncated/padded
+   * @param len
+   *   The requested length of the new string
+   * @param pad
+   *   The padding character
+   * @return
+   *   the truncated string
+   * @throws IllegalArgumentException
+   *   if {@code len} is negative or if {@code str} is null
+   */
   static public String trunc(String str, int len, char pad)
   {
     if (str == null)
@@ -282,8 +344,10 @@ public class StringUtils
   /**
    * Return the byte array contents as hex string
    * 
-   * @param bytearray The byte array
-   * @return the hex-string
+   * @param bytearray
+   *   The byte array
+   * @return
+   *   the hex-string
    */
   static public String asHexString(byte [] bytearray)
   {
@@ -302,10 +366,14 @@ public class StringUtils
   }
   
   /**
-   * Return the byte array contents as hex string
+   * Clear all blanks from a string.<br>
+   * Example<br>
+   * The string {@code " banana     apple    "} will yield a return value of {@code "banana apple"}
    * 
-   * @param bytearray The byte array
-   * @return the hex-string
+   * @param bytearray
+   *   The byte array
+   * @return
+   *   the cleared string
    */
   static public String clearBlanks(String str)
   {

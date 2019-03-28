@@ -1,6 +1,7 @@
 package com.kas.sec.entities;
 
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 
 /**
  * An {@link Entity} is an object that can be permitted to a resource
@@ -27,9 +28,12 @@ public class Entity extends AKasObject
   /**
    * Construct an entity using the specified name
    * 
-   * @param id The entity ID
-   * @param name Name of the entity
-   * @param desc Description
+   * @param id
+   *   The entity ID
+   * @param name
+   *   Name of the entity
+   * @param desc
+   *   Description
    */
   protected Entity(int id, String name, String desc)
   {
@@ -41,7 +45,8 @@ public class Entity extends AKasObject
   /**
    * Get the entity ID
    * 
-   * @return the entity ID
+   * @return
+   *   the entity ID
    */
   public int getId()
   {
@@ -51,7 +56,8 @@ public class Entity extends AKasObject
   /**
    * Get the entity name
    * 
-   * @return the entity name
+   * @return
+   *   the entity name
    */
   public String getName()
   {
@@ -61,7 +67,8 @@ public class Entity extends AKasObject
   /**
    * Get the entity description
    * 
-   * @return the entity description
+   * @return
+   *   the entity description
    */
   public String getDescription()
   {
@@ -71,7 +78,8 @@ public class Entity extends AKasObject
   /**
    * Get the entity's string representation
    * 
-   * @return the entity's string representation
+   * @return
+   *   the entity's string representation
    */
   public String toString()
   {
@@ -81,12 +89,12 @@ public class Entity extends AKasObject
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

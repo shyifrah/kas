@@ -4,15 +4,16 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.comm.IMessenger;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.IMqConnection;
 import com.kas.mq.impl.messages.IMqMessage;
 
@@ -27,7 +28,7 @@ public class MqConnection extends AKasObject implements IMqConnection
   /**
    * A logger
    */
-  protected ILogger mLogger;
+  protected Logger mLogger;
   
   /**
    * Messenger
@@ -63,11 +64,12 @@ public class MqConnection extends AKasObject implements IMqConnection
   /**
    * Constructing the connection
    * 
-   * @param clientName A name used by the client application
+   * @param clientName
+   *   A name used by the client application
    */
   public MqConnection(String clientName)
   {
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mConnectionId = UniqueId.generate();
     mMessenger = null;
     mClientName = clientName.toUpperCase();
@@ -75,15 +77,16 @@ public class MqConnection extends AKasObject implements IMqConnection
   
   /**
    * Connect client to the KAS/MQ server.<br>
-   * <br>
    * If the {@link MqConnection} is already connected, it will be disconnected first.
    * 
-   * @param host The host name or IP address (uppercased)
-   * @param port The port number
+   * @param host
+   *   The host name or IP address (uppercased)
+   * @param port
+   *   The port number
    */
   public void connect(String host, int port)
   {
-    mLogger.debug("MqConnection::connect() - IN");
+    mLogger.trace("MqConnection::connect() - IN");
     
     if (isConnected()) disconnect();
     
@@ -109,7 +112,7 @@ public class MqConnection extends AKasObject implements IMqConnection
         mMessenger.cleanup();
     }
     
-    mLogger.debug("MqConnection::connect() - OUT");
+    mLogger.trace("MqConnection::connect() - OUT");
   }
 
   /**
@@ -121,7 +124,7 @@ public class MqConnection extends AKasObject implements IMqConnection
    */
   public void disconnect()
   {
-    mLogger.debug("MqConnection::disconnect() - IN");
+    mLogger.trace("MqConnection::disconnect() - IN");
     
     if (!isConnected())
     {
@@ -138,15 +141,15 @@ public class MqConnection extends AKasObject implements IMqConnection
       mSessionId = null;
     }
     
-    mLogger.debug("MqConnection::disconnect() - OUT");
+    mLogger.trace("MqConnection::disconnect() - OUT");
   }
 
   /**
    * Get the connection status.<br>
-   * <br>
    * A connected socket is one that is marked as connected AND not closed.
    * 
-   * @return {@code true} if socket is connected and not closed, {@code false} otherwise
+   * @return
+   *   {@code true} if socket is connected and not closed, {@code false} otherwise
    * 
    * @see java.net.Socket#isConnected()
    */
@@ -158,13 +161,16 @@ public class MqConnection extends AKasObject implements IMqConnection
   /**
    * login to KAS/MQ server.
    * 
-   * @param user The user's name
-   * @param pwd The user's password
-   * @return {@code true} if {@code password} matches the user's password
+   * @param user
+   *   The user's name
+   * @param pwd
+   *   The user's password
+   * @return
+   *   {@code true} if {@code password} matches the user's password
    */
   public boolean login(String user, String pwd)
   {
-    mLogger.debug("MqConnection::login() - IN");
+    mLogger.trace("MqConnection::login() - IN");
     
     boolean success = false;
     if (!isConnected())
@@ -175,11 +181,11 @@ public class MqConnection extends AKasObject implements IMqConnection
     {
       String username = user.toUpperCase();
       IMqMessage request = MqRequestFactory.createLoginRequest(username, pwd, mClientName);
-      mLogger.debug("MqConnection::login() - sending login request: " + StringUtils.asPrintableString(request));
+      mLogger.trace("MqConnection::login() - sending login request: " + StringUtils.asPrintableString(request));
       try
       {
         IMqMessage reply = (IMqMessage)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqConnection::login() - received response: " + StringUtils.asPrintableString(reply));
+        mLogger.trace("MqConnection::login() - received response: " + StringUtils.asPrintableString(reply));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
           String sid = reply.getStringProperty(IMqConstants.cKasPropertyLoginSession, UniqueId.cNullUniqueIdAsString);
@@ -200,21 +206,25 @@ public class MqConnection extends AKasObject implements IMqConnection
       }
     }
     
-    mLogger.debug("MqConnection::login() - OUT, Returns=" + success);
+    mLogger.trace("MqConnection::login() - OUT, Returns=" + success);
     return success;
   }
   
   /**
    * Get a message from queue.
    * 
-   * @param queue The target queue name
-   * @param timeout The number of milliseconds to wait until a message available
-   * @param interval The number in milliseconds the thread execution is suspended between each polling operation
-   * @return the {@link IMqMessage} object or {@code null} if a message is unavailable
+   * @param queue
+   *   The target queue name
+   * @param timeout
+   *   The number of milliseconds to wait until a message available
+   * @param interval
+   *   The number in milliseconds the thread execution is suspended between each polling operation
+   * @return
+   *   the {@link IMqMessage} object or {@code null} if a message is unavailable
    */
   public IMqMessage get(String queue, long timeout, long interval)
   {
-    mLogger.debug("MqConnection::get() - IN");
+    mLogger.trace("MqConnection::get() - IN");
     
     IMqMessage result = null;
     if (!isConnected())
@@ -227,13 +237,13 @@ public class MqConnection extends AKasObject implements IMqConnection
       {
         String qname = queue.toUpperCase();
         IMqMessage request = MqRequestFactory.createGetRequest(qname, timeout, interval);
-        mLogger.debug("MqConnection::get() - sending get request: " + StringUtils.asPrintableString(request));
+        mLogger.trace("MqConnection::get() - sending get request: " + StringUtils.asPrintableString(request));
         IMqMessage reply = (IMqMessage)mMessenger.sendAndReceive(request);
-        mLogger.debug("MqConnection::get() - received response: " + StringUtils.asPrintableString(reply));
+        mLogger.trace("MqConnection::get() - received response: " + StringUtils.asPrintableString(reply));
         if (reply.getResponse().getCode() == EMqCode.cOkay)
         {
           reply.setStringProperty(IMqConstants.cKasPropertyGetUserName, mUser);
-          reply.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.nowAsString());
+          reply.setStringProperty(IMqConstants.cKasPropertyGetTimeStamp, TimeStamp.now().toString());
           result = reply;
           setResponse("Successfully got a message from queue " + queue + ", MessageID: " + reply.getMessageId());
         }
@@ -251,20 +261,23 @@ public class MqConnection extends AKasObject implements IMqConnection
       }
     }
     
-    mLogger.debug("MqConnection::get() - OUT");
+    mLogger.trace("MqConnection::get() - OUT");
     return result;
   }
   
   /**
    * Put a message into the specified queue.
    * 
-   * @param queue The target queue name
-   * @param message The message to be put
-   * @return the {@link IMqMessage} returned by the messenger
+   * @param queue
+   *   The target queue name
+   * @param message
+   *   The message to be put
+   * @return
+   *   the {@link IMqMessage} returned by the messenger
    */
   public IMqMessage put(String queue, IMqMessage message)
   {
-    mLogger.debug("MqConnection::put() - IN");
+    mLogger.trace("MqConnection::put() - IN");
     
     IMqMessage reply = null;
     if (!isConnected())
@@ -278,11 +291,11 @@ public class MqConnection extends AKasObject implements IMqConnection
         String qname = queue.toUpperCase();
         message.setStringProperty(IMqConstants.cKasPropertyPutQueueName, qname);
         message.setStringProperty(IMqConstants.cKasPropertyPutUserName, mUser.toUpperCase());
-        message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.nowAsString());
+        message.setStringProperty(IMqConstants.cKasPropertyPutTimeStamp, TimeStamp.now().toString());
         
-        mLogger.debug("MqConnection::put() - sending message: " + StringUtils.asPrintableString(message));
+        mLogger.trace("MqConnection::put() - sending message: " + StringUtils.asPrintableString(message));
         reply = (IMqMessage)mMessenger.sendAndReceive(message);
-        mLogger.debug("MqConnection::put() - received response: " + StringUtils.asPrintableString(reply));
+        mLogger.trace("MqConnection::put() - received response: " + StringUtils.asPrintableString(reply));
         setResponse(reply.getResponse().getDesc());
       }
       catch (IOException e)
@@ -294,14 +307,15 @@ public class MqConnection extends AKasObject implements IMqConnection
       }
     }
     
-    mLogger.debug("MqConnection::put() - OUT");
+    mLogger.trace("MqConnection::put() - OUT");
     return reply;
   }
   
   /**
    * Get the connection ID
    * 
-   * @return the connection ID
+   * @return
+   *   the connection ID
    */
   public UniqueId getConnectionId()
   {
@@ -309,9 +323,10 @@ public class MqConnection extends AKasObject implements IMqConnection
   }
   
   /**
-   * Get last response from last {@link IClient} call.
+   * Get last response from last {@link IMqConnection} call.
    * 
-   * @return the last message the {@link IClient} issued for a call.
+   * @return
+   *   the last message the {@link IMqConnection} issued for a call.
    */
   public String getResponse()
   {
@@ -319,9 +334,10 @@ public class MqConnection extends AKasObject implements IMqConnection
   }
   
   /**
-   * Set response from last {@link IClient} call.
+   * Set response from last {@link IMqConnection} call.
    * 
-   * @param response The response from last {@link IClient} call
+   * @param response
+   *   The response from last {@link IMqConnection} call
    */
   public void setResponse(String response)
   {
@@ -331,7 +347,8 @@ public class MqConnection extends AKasObject implements IMqConnection
   /**
    * Log INFO and set a message as the connection's response
    * 
-   * @param message The message to log and set as the connection's response
+   * @param message
+   *   The message to log and set as the connection's response
    */
   protected void logInfoAndSetResponse(String message)
   {
@@ -342,7 +359,8 @@ public class MqConnection extends AKasObject implements IMqConnection
   /**
    * Log ERROR and set a message as the connection's response
    * 
-   * @param message The message to log and set as the connection's response
+   * @param message
+   *   The message to log and set as the connection's response
    */
   protected void logErrorAndSetResponse(String message)
   {
@@ -351,12 +369,12 @@ public class MqConnection extends AKasObject implements IMqConnection
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

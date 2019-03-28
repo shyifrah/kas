@@ -6,7 +6,7 @@ import com.kas.mq.console.ACommand;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
- * DELET USER command
+ * DELETE USER command
  * 
  * @author Pippo
  */
@@ -38,7 +38,8 @@ public class DeleteUserCommand extends ACommand
   /**
    * Execute the command using the specified {@link MqContextConnection}
    * 
-   * @param conn The {@link MqContextConnection} that will be used to execute the command
+   * @param conn
+   *   The {@link MqContextConnection} that will be used to execute the command
    */
   public void exec(MqContextConnection conn)
   {
@@ -77,7 +78,8 @@ public class DeleteUserCommand extends ACommand
   /**
    * Get the command text
    * 
-   * @return the command text
+   * @return
+   *   the command text
    */
   public String toString()
   {

@@ -6,17 +6,18 @@ import java.util.concurrent.ThreadFactory;
  * A general-purpose thread factory
  * 
  * @author Pippo
- *  
  */
 public class KasThreadFactory implements ThreadFactory
 {
   /**
    * Create a general-purpose {@code Thread} for the specified command with the specified name
    * 
-   * @param cmd the {@code Runnable} object which will be executed by this thread
-   * @param name the name of the newly created thread
-   * 
-   * @return a newly created thread with the specified name 
+   * @param cmd
+   *   The {@code Runnable} object which will be executed by this thread
+   * @param name
+   *   The name of the newly created thread
+   * @return
+   *   a newly created thread with the specified name 
    */
   public static Thread createThread(Runnable cmd, String name)
   {
@@ -42,7 +43,8 @@ public class KasThreadFactory implements ThreadFactory
    * Construct a thread factory which will create threads with a name starting with the specified prefix
    * and a sequence number.
    * 
-   * @param pref the name prefix 
+   * @param pref
+   *   The name prefix 
    */
   public KasThreadFactory(String pref)
   {
@@ -54,8 +56,10 @@ public class KasThreadFactory implements ThreadFactory
   /**
    * Factory method.
    * 
-   * @param cmd The {@link Runnable} object to be executed by the newly created {@code Thread}
-   * @return a newly created {@code Thread}
+   * @param cmd
+   *   The {@link Runnable} object to be executed by the newly created {@code Thread}
+   * @return
+   *   a newly created {@code Thread}
    * 
    * @see java.util.concurrent.ThreadFactory#newThread(Runnable)
    */

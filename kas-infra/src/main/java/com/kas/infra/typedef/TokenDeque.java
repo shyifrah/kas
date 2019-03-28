@@ -16,7 +16,8 @@ public class TokenDeque extends ArrayDeque<String>
   /**
    * Construct a {@link TokenDeque} with the specified string {@code str}
    * 
-   * @param str The string to tokenize
+   * @param str
+   *   The string to tokenize
    */
   public TokenDeque(String str)
   {
@@ -29,7 +30,8 @@ public class TokenDeque extends ArrayDeque<String>
   /**
    * Get the original string
    * 
-   * @return the original string
+   * @return
+   *   the original string
    */
   public String getOriginalString()
   {

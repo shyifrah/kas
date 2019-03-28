@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import com.kas.infra.utils.ConsoleUtils;
-import com.kas.infra.utils.helpers.ThrowableFormatter;
+import com.kas.infra.utils.ThrowableFormatter;
 
 /**
  * A base factory for commands
@@ -76,8 +76,10 @@ public class CommandFactory implements ICommandFactory
   /**
    * Test if {@code cls} is a driven, non-abstract instance of {@link ICommand}
    * 
-   * @param cls The class object to test
-   * @return {@code true} if {@code cls} is an {@link ICommand}, {@code false} otherwise
+   * @param cls
+   *   The class object to test
+   * @return
+   *   {@code true} if {@code cls} is an {@link ICommand}, {@code false} otherwise
    */
   public boolean isCommandDrivenClass(Class<?> cls)
   {
@@ -94,8 +96,10 @@ public class CommandFactory implements ICommandFactory
   /**
    * Register a command verb with a specified command object
    * 
-   * @param verb The command verb
-   * @param cmd The command object that will handle commands beginning with {@code verb}
+   * @param verb
+   *   The command verb
+   * @param cmd
+   *   The command object that will handle commands beginning with {@code verb}
    */
   public void register(String verb, ICommand cmd)
   {
@@ -111,8 +115,10 @@ public class CommandFactory implements ICommandFactory
    * but the arguments should remain untouched. This is because some arguments
    * are case sensitive (e.g. PASSWORD).
    * 
-   * @param cmdText The command text
-   * @return the {@link ICommand} that will handle the command text
+   * @param cmdText
+   *   The command text
+   * @return
+   *   the {@link ICommand} that will handle the command text
    */
   public ICommand newCommand(String cmdText)
   {

@@ -1,5 +1,10 @@
-package com.kas.infra.utils.helpers;
+package com.kas.infra.utils;
 
+/**
+ * Enumerate operating systems
+ * 
+ * @author Pippo
+ */
 public enum EOsType
 {
   /**

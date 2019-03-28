@@ -20,7 +20,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Generate a random {@link UniqueId}
    * 
-   * @return the generated {@link UniqueId}
+   * @return
+   *   the generated {@link UniqueId}
    */
   static public UniqueId generate()
   {
@@ -30,8 +31,10 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Create a {@link UniqueId} from a byte array
    * 
-   * @param array The UUID represented as array of bytes
-   * @return the generated {@link UniqueId}
+   * @param array
+   *   The UUID represented as array of bytes
+   * @return
+   *   the generated {@link UniqueId}
    */
   static public UniqueId fromByteArray(byte [] array)
   {
@@ -45,8 +48,10 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Create a {@link UniqueId} from a string
    * 
-   * @param str The UUID as a string
-   * @return the generated {@link UniqueId}
+   * @param str
+   *   The UUID as a string
+   * @return
+   *   the generated {@link UniqueId}
    * 
    * @see java.util.UUID#fromString(String)
    */
@@ -74,7 +79,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Create a {@link UniqueId} based on a different {@link UUID}
    * 
-   * @param uuid a {@link UUID}
+   * @param uuid
+   *   A {@link UUID}
    */
   public UniqueId(UUID uuid)
   {
@@ -84,7 +90,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Create a {@link UniqueId} based on a different {@link UniqueId}
    * 
-   * @param other a {@link UniqueId}
+   * @param other
+   *   A {@link UniqueId}
    */
   public UniqueId(UniqueId other)
   {
@@ -94,7 +101,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Get the {@link UUID} as array of bytes
    * 
-   * @return a 16-bytes array
+   * @return
+   *   a 16-bytes array
    */
   public byte [] toByteArray()
   {
@@ -109,7 +117,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Get the {@link UUID}
    * 
-   * @return the {@link UUID}
+   * @return
+   *   the {@link UUID}
    */
   public UUID getUuid()
   {
@@ -119,7 +128,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Compares two {@link UniqueId} for ordering
    * 
-   * @return the value of {@link java.util.UUID#compareTo(UUID)}
+   * @return
+   *   the value of {@link java.util.UUID#compareTo(UUID)}
    * 
    * @see java.util.UUID#compareTo(UUID)
    * @see java.lang.Comparable
@@ -132,7 +142,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Compares two {@link UniqueId}
    * 
-   * @return the value of {@link java.util.UUID#equals(Object)}
+   * @return
+   *   the value of {@link java.util.UUID#equals(Object)}
    * 
    * @see java.util.UUID#equals(Object)
    */
@@ -144,7 +155,8 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Returns a Hash Code value of the object
    * 
-   * @return the value of {@link java.util.UUID#hashCode()}
+   * @return
+   *   the value of {@link java.util.UUID#hashCode()}
    * 
    * @see java.util.UUID#hashCode()
    */
@@ -168,10 +180,11 @@ public class UniqueId extends AKasObject implements Serializable, Comparable<Uni
   /**
    * Get the object's detailed string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
+   * @param level
+   *   The string padding level
+   * @return
+   *   the string representation with the specified level of padding
    * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
    * @see #toString()
    */
   public String toPrintableString(int level)

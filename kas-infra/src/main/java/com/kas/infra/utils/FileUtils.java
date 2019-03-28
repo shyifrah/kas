@@ -11,19 +11,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility functions
+ * A list of utility methods used to help with file accesses
  * 
  * @author Pippo
  */
 public class FileUtils
 {
   /**
-   * Read file contents and return its lines as a {@link List} of {@link String}s.<br>
+   * Read file contents and return it as a list of lines.<br>
+   * <br>
+   * Blank lines (consisting of null, or white spaces) and lines starting
+   * with '#' character are considered comments and ignored.
    * 
-   * @param file The file to read
-   * @return A {@link List} of strings. Each entry is a non-comment, non-blank line in the file
-   * 
-   * @see #load(File, char)
+   * @param file
+   *   The file to read
+   * @return
+   *   a {@link List} of strings. Each entry is a non-comment, non-blank line in the file
    */
   static public List<String> load(File file)
   {
@@ -31,14 +34,17 @@ public class FileUtils
   }
   
   /**
-   * Read file contents and return its lines as a {@link List} of {@link String}s.<br>
+   * Read file contents and return it as a list of lines.<br>
    * <br>
-   * Lines are first trimmed to omit all lines that consist of only blank spaces. Then, all lines
-   * that begin with {@code comment} char are ignored.
+   * Blank lines (consisting of null, or white spaces) and lines starting
+   * with {@code comment} string are considered comments and ignored.
    * 
-   * @param file The file to read
-   * @param comment The character that designates commented lines
-   * @return A {@link List} of strings. Each entry is a non-comment, non-blank line in the file
+   * @param file
+   *   The file to read
+   * @param comment
+   *   The character that designates commented lines
+   * @return
+   *   a {@link List} of strings. Each entry is a non-comment, non-blank line in the file
    */
   static public List<String> load(File file, String comment)
   {
@@ -75,8 +81,10 @@ public class FileUtils
   /**
    * Test if a path is a directory and exists.<br>
    * 
-   * @param path The path to test
-   * @return {@code true} if and only if {@code path} designates an existing directory
+   * @param path
+   *   The path to test
+   * @return
+   *   {@code true} if and only if {@code path} designates an existing directory
    */
   static public boolean isDirAndExist(String path)
   {
@@ -93,8 +101,10 @@ public class FileUtils
    * If the file doesn't exist, the method makes sure the directory exists - creating it if necessary,
    * then creates the file.
    * 
-   * @param file The file to verify its existence
-   * @return {@code true} if the file exists, {@code false} otherwise
+   * @param file
+   *   The file to verify its existence
+   * @return
+   *   {@code true} if the file exists, {@code false} otherwise
    */
   static public boolean verifyExists(File file)
   {
@@ -122,8 +132,10 @@ public class FileUtils
   /**
    * Create a file.
    * 
-   * @param name The fully-pathed file name
-   * @return {@code true} if file created successfully, {@code false} otherwise
+   * @param name
+   *   The fully-pathed file name
+   * @return
+   *   {@code true} if file created successfully, {@code false} otherwise
    */
   static public boolean createFile(String name)
   {
@@ -140,8 +152,10 @@ public class FileUtils
   /**
    * Delete a file.
    * 
-   * @param name The fully-pathed file name
-   * @return {@code true} if file created successfully, {@code false} otherwise
+   * @param name
+   *   The fully-pathed file name
+   * @return
+   *   {@code true} if file created successfully, {@code false} otherwise
    */
   static public boolean deleteFile(String name)
   {

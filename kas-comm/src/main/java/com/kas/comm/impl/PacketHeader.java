@@ -3,10 +3,10 @@ package com.kas.comm.impl;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.ISerializable;
 import com.kas.infra.base.KasException;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.comm.IPacket;
 import com.kas.comm.serializer.Deserializer;
 import com.kas.comm.serializer.EClassId;
@@ -22,7 +22,7 @@ public class PacketHeader extends AKasObject implements ISerializable
 {
   static public final String cEyeCatcher = "KAS";
   
-  static private ILogger sLogger = LoggerFactory.getLogger(PacketHeader.class);
+  static private Logger sLogger = LogManager.getLogger(PacketHeader.class);
   
   /**
    * A packet header is marked with an eye-catcher that contains the string "KAS"
@@ -42,7 +42,8 @@ public class PacketHeader extends AKasObject implements ISerializable
   /**
    * Construct a {@link PacketHeader}, specifying only the class ID
    *  
-   * @param id The class ID of the packet
+   * @param id
+   *   The class ID of the packet
    */
   public PacketHeader(EClassId id)
   {
@@ -53,9 +54,10 @@ public class PacketHeader extends AKasObject implements ISerializable
   /**
    * Constructs a {@link PacketHeader} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public PacketHeader(ObjectInputStream istream) throws IOException
   {
@@ -78,41 +80,43 @@ public class PacketHeader extends AKasObject implements ISerializable
   /**
    * Serialize the {@link PacketHeader} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the header will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the header will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
-    sLogger.diag("PacketHeader::serialize() - IN");
+    sLogger.trace("PacketHeader::serialize() - IN");
     
     ostream.writeObject(mEyeCatcher);
     ostream.reset();
     ostream.writeInt(mClassId.ordinal());
     ostream.reset();
     
-    sLogger.diag("PacketHeader::serialize() - OUT");
+    sLogger.trace("PacketHeader::serialize() - OUT");
   }
   
   /**
    * Read a packet from {@code istream}.<br>
-   * <br>
-   * The {@link PacketHeader packet header} contains a class ID. This class ID is defined inside
-   * the {@link SerializerConfiguration} with an assigned class name. We dynamically (via reflection)
-   * call this class' constructor, passing it the input stream.
+   * The {@link PacketHeader packet header} contains a class ID. This class ID is defined
+   * inside the {@link SerializerConfiguration} with an assigned class name. We dynamically
+   * (via reflection) call this class' constructor, passing it the input stream.
    * 
-   * @param istream The {@link ObjectInputStream} from which the packet will be deserialized
-   * @return The created {@link IPacket}
-   * 
-   * @throws KasException if any reflection error occurs. The original exception is set as causer. 
+   * @param istream
+   *   The {@link ObjectInputStream} from which the packet will be deserialized
+   * @return
+   *   the created {@link IPacket}
+   * @throws KasException
+   *   if any reflection error occurs. The original exception is set as causer. 
    */
   public IPacket read(ObjectInputStream istream) throws KasException
   {
-    sLogger.diag("PacketHeader::read() - IN");
+    sLogger.trace("PacketHeader::read() - IN");
     
     if (!mVerified) verify();
     
-    sLogger.diag("PacketHeader::read() - De-serializing object from input stream...");
+    sLogger.trace("PacketHeader::read() - De-serializing object from input stream...");
     IObject iObject = Deserializer.deserialize(mClassId.ordinal(), istream);
     
     IPacket iPacket = null;
@@ -125,14 +129,15 @@ public class PacketHeader extends AKasObject implements ISerializable
       throw new KasException("Created object is not a valid IPacket");
     }
     
-    sLogger.diag("PacketHeader::read() - OUT");
+    sLogger.trace("PacketHeader::read() - OUT");
     return iPacket;
   }
   
   /**
    * Get the eye-catcher
    *  
-   * @return the eye-catcher
+   * @return
+   *   the eye-catcher
    */
   public String getEyeCatcher()
   {
@@ -142,7 +147,8 @@ public class PacketHeader extends AKasObject implements ISerializable
   /**
    * Get the class ID of the appended packet
    *  
-   * @return the class ID
+   * @return
+   *   the class ID
    */
   public EClassId getClassId()
   {
@@ -151,10 +157,10 @@ public class PacketHeader extends AKasObject implements ISerializable
   
   /**
    * Verify this {@link PacketHeader} is a valid header.<br>
-   * <br>
    * Verification is done by comparing the eye-catcher to the value "KAS"
    * 
-   * @throws KasException if this header is invalid
+   * @throws KasException
+   *   if this header is invalid
    */
   public void verify() throws KasException
   {
@@ -165,12 +171,12 @@ public class PacketHeader extends AKasObject implements ISerializable
   }
   
   /**
-   * Returns the {@link PacketHeader} detailed string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

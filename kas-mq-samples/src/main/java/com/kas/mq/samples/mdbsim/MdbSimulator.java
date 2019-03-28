@@ -1,13 +1,11 @@
 package com.kas.mq.samples.mdbsim;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
@@ -32,7 +30,6 @@ import com.kas.mq.samples.Utils;
  */
 public class MdbSimulator extends AKasApp
 {
-  static final String cKasHome      = "./build/install/kas-mq-samples";
   static final String cAppName      = "SampleMdbSim";
   static final String cConfigPrefix = "mdb.sim.";
   
@@ -41,17 +38,17 @@ public class MdbSimulator extends AKasApp
 
   static public void main(String [] args)
   {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    defaults.put(cConfigPrefix + "username", "guest");
-    defaults.put(cConfigPrefix + "password", "guest");
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    MdbSimulator app = new MdbSimulator(settings);
-    launcher.launch(app);
+    String [] argArray = {
+      "kas.class=" + MdbSimulator.class.getName(),
+      "mdb.sim.create.res=true",
+      "mdb.sim.req.queuename=mdb.req.queue",
+      "mdb.sim.rep.queuename=mdb.rep.queue",
+      "mdb.sim.username=admin",
+      "mdb.sim.password=admin",
+      "mdb.sim.host=localhost",
+      "mdb.sim.port=14560"
+    };
+    AppLauncher.main(argArray);
   }
   
   /**
@@ -66,6 +63,7 @@ public class MdbSimulator extends AKasApp
    */
   public MdbSimulator(Map<String, String> args)
   {
+    super(args);
     mParams = new MdbSimulatorParams(args);
   }
 

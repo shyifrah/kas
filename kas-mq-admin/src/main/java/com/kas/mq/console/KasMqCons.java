@@ -1,11 +1,10 @@
 package com.kas.mq.console;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.ConsoleUtils;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.console.cmds.MainCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
@@ -26,15 +25,10 @@ public class KasMqCons extends AKasApp
   
   static public void main(String [] args)
   {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    KasMqCons app = new KasMqCons(settings);
-    launcher.launch(app);
+    String [] argArray = {
+      "kas.class=" + KasMqCons.class.getName()
+    };
+    AppLauncher.main(argArray);
   }
   
   /**
@@ -48,12 +42,14 @@ public class KasMqCons extends AKasApp
   private MainCommandFactory mCommandFactory = MainCommandFactory.getInstance();
   
   /**
-   * Construct the {@link KasMqCons} passing it the startup arguments
+   * Construct main KAS/MQ admin console object
    * 
-   * @param args The startup arguments
+   * @param args
+   *   Map of arguments passed via launcher's main function
    */
   public KasMqCons(Map<String, String> args)
   {
+    super(args);
   }
   
   /**
@@ -68,11 +64,8 @@ public class KasMqCons extends AKasApp
   
   /**
    * Run KAS/MQ administrative console CLI.<br>
-   * <br>
    * The main logic is quite simple: keep reading commands from the command line until
    * it is terminated via the "exit" or SIGTERM signal.
-   * 
-   * @see AKasApp#appExec()
    */
   public void appExec()
   {
@@ -120,8 +113,10 @@ public class KasMqCons extends AKasApp
   /**
    * Process a command text
    * 
-   * @param text The text of the command entered 
-   * @return {@code true} if admin console should terminate, {@code false} otherwise
+   * @param text
+   *   The text of the command entered 
+   * @return
+   *   {@code true} if admin console should terminate, {@code false} otherwise
    */
   private boolean process(String text)
   {
@@ -164,12 +159,12 @@ public class KasMqCons extends AKasApp
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

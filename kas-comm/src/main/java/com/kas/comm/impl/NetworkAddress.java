@@ -2,6 +2,7 @@ package com.kas.comm.impl;
 
 import java.net.Socket;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.Validators;
 
 /**
@@ -24,7 +25,8 @@ public class NetworkAddress extends AKasObject
   /**
    * Construct a {@link NetworkAddress} using a {@link Socket}
    * 
-   * @param socket The socket from which to extract data
+   * @param socket
+   *   The socket from which to extract data
    */
   public NetworkAddress(Socket socket)
   {
@@ -34,11 +36,13 @@ public class NetworkAddress extends AKasObject
   /**
    * Construct a {@link NetworkAddress} using the host and port
    * 
-   * @param host Host name or IP address
-   * @param port The port number
-   * 
-   * @throws IllegalArgumentException if {@code host} doesn't designate a valid host name nor a valid IP address,
-   * or if {@code port} doesn't designate a valid port number
+   * @param host
+   *   Host name or IP address
+   * @param port
+   *   The port number
+   * @throws IllegalArgumentException
+   *   if {@code host} doesn't designate a valid host name nor a valid IP address,
+   *   or if {@code port} doesn't designate a valid port number
    */
   public NetworkAddress(String host, int port)
   {
@@ -54,7 +58,8 @@ public class NetworkAddress extends AKasObject
   /**
    * Get the host name or IP address
    * 
-   * @return the host name or IP address
+   * @return
+   *   the host name or IP address
    */
   public String getHost()
   {
@@ -64,7 +69,8 @@ public class NetworkAddress extends AKasObject
   /**
    * Get the port number
    * 
-   * @return the port number
+   * @return
+   *   the port number
    */
   public int getPort()
   {
@@ -72,9 +78,10 @@ public class NetworkAddress extends AKasObject
   }
   
   /**
-   * Get a string representation of the network address
+   * Get the string representation
    * 
-   * @return string representation of the network address
+   * @return
+   *   the string representation
    */
   public String toString()
   {
@@ -84,14 +91,12 @@ public class NetworkAddress extends AKasObject
   }
   
   /**
-   * Get a detailed string representation of the network address.<br>
-   * <br>
-   * For {@link NetworkAddress} this is the same output as the {@link #toString()} method.
+   * Returns the {@link IObject} string representation.
    * 
-   * @return string representation of the network address
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
-   * @see #toString()
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

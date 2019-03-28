@@ -28,11 +28,16 @@ public class ThreadPool
   /**
    * Schedule a {@link Runnable} object for repeated execution
    * 
-   * @param command A {@link Runnable} object to execute
-   * @param initDelay The number of time-units to delay the {@link Runnable} execution
-   * @param period The number of time-units to delay the {@link Runnable} subsequent executions
-   * @param unit A {@link TimeUnit} value which represents the time unit for {@code initDelay} and {@code period}
-   * @return a {@link ScheduledFuture} referencing to the task's return value
+   * @param command
+   *   A {@link Runnable} object to execute
+   * @param initDelay
+   *   The number of time-units to delay the {@link Runnable} execution
+   * @param period
+   *   The number of time-units to delay the {@link Runnable} subsequent executions
+   * @param unit
+   *   A {@link TimeUnit} value which represents the time unit for {@code initDelay} and {@code period}
+   * @return
+   *   a {@link ScheduledFuture} referencing to the task's return value
    * 
    * @see java.util.concurrent.ScheduledThreadPoolExecutor#schedule(Callable, long, TimeUnit)
    */
@@ -44,10 +49,14 @@ public class ThreadPool
   /**
    * Schedule a {@link Callable} object
    * 
-   * @param command A {@link Callable} object to execute
-   * @param delay The number of time-units to delay the {@link Callable} execution
-   * @param unit A {@link TimeUnit} value which represents the time unit for {@code delay}
-   * @return a {@link ScheduledFuture} referencing to the task's return value
+   * @param command
+   *   A {@link Callable} object to execute
+   * @param delay
+   *   The number of time-units to delay the {@link Callable} execution
+   * @param unit
+   *   A {@link TimeUnit} value which represents the time unit for {@code delay}
+   * @return
+   *   a {@link ScheduledFuture} referencing to the task's return value
    * 
    * @see java.util.concurrent.ScheduledThreadPoolExecutor#schedule(Callable, long, TimeUnit)
    */
@@ -59,7 +68,8 @@ public class ThreadPool
   /**
    * Execute a {@link Runnable} object
    * 
-   * @param command A {@link Runnable} object to execute
+   * @param command
+   *   A {@link Runnable} object to execute
    * 
    * @see java.util.concurrent.ThreadPoolExecutor#execute(Runnable)
    */
@@ -71,8 +81,10 @@ public class ThreadPool
   /**
    * Remove a {@link Runnable} object from the {@link ScheduledThreadPoolExecutor} work queue
    * 
-   * @param command A {@link Runnable} object to remove
-   * @return The value returned from {@link java.util.concurrent.ThreadPoolExecutor#remove(Runnable)}
+   * @param command
+   *   A {@link Runnable} object to remove
+   * @return
+   *   the value returned from {@link java.util.concurrent.ThreadPoolExecutor#remove(Runnable)}
    * 
    * @see java.util.concurrent.ThreadPoolExecutor#remove(Runnable)
    */
@@ -84,8 +96,10 @@ public class ThreadPool
   /**
    * Remove a {@link Runnable} object from the {@link ThreadPoolExecutor} work queue
    * 
-   * @param command A {@link Runnable} object to remove
-   * @return The value returned from {@link java.util.concurrent.ThreadPoolExecutor#remove(Runnable)}
+   * @param command
+   *   A {@link Runnable} object to remove
+   * @return
+   *   the value returned from {@link java.util.concurrent.ThreadPoolExecutor#remove(Runnable)}
    * 
    * @see java.util.concurrent.ThreadPoolExecutor#remove(Runnable)
    */

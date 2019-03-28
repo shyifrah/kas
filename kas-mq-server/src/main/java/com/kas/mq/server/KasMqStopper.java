@@ -1,14 +1,10 @@
 package com.kas.mq.server;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.kas.appl.AKasApp;
 import com.kas.appl.AppLauncher;
-import com.kas.infra.base.ConsoleLogger;
-import com.kas.infra.logging.IBaseLogger;
-import com.kas.infra.utils.RunTimeUtils;
+import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 
@@ -19,27 +15,18 @@ import com.kas.mq.server.internal.MqServerConnectionPool;
  */
 public class KasMqStopper extends AKasApp 
 {
-  static private final String cKasHome = "./build/install/kas-mq-server";
   static private final String cAppName = "KAS/MQ server-stopper";
   static private final String cKasUser = "kas.user";
   static private final String cKasPass = "kas.pass";
   
-  static IBaseLogger sStartupLogger = new ConsoleLogger(KasMqStopper.class.getName());
-  
   static public void main(String [] args)
   {
-    Map<String, String> defaults = new HashMap<String, String>();
-    String kasHome = RunTimeUtils.getProperty(RunTimeUtils.cProductHomeDirProperty, System.getProperty("user.dir") + cKasHome);
-    defaults.put(RunTimeUtils.cProductHomeDirProperty, kasHome);
-    
-    defaults.put(cKasUser, IMqConstants.cSystemUserName);
-    defaults.put(cKasPass, IMqConstants.cSystemPassWord);
-    
-    AppLauncher launcher = new AppLauncher(args, defaults);
-    Map<String, String> settings = launcher.getSettings();
-    
-    KasMqStopper app = new KasMqStopper(settings);
-    launcher.launch(app);
+    String [] argArray = {
+      "kas.class=" + KasMqStopper.class.getName(),
+      cKasUser + "=" + "system",
+      cKasPass + "=" + "system"
+    };
+    AppLauncher.main(argArray);
   }
   
   /**
@@ -54,20 +41,23 @@ public class KasMqStopper extends AKasApp
   private String mPassword;
   
   /**
-   * Construct the {@link KasMqStopper} passing it the startup arguments
+   * Construct main KAS/MQ server's stopper
    * 
-   * @param settings The startup arguments
+   * @param args
+   *   Map of arguments passed via launcher's main function
    */
-  protected KasMqStopper(Map<String, String> settings)
+  public KasMqStopper(Map<String, String> args)
   {
-    mUserName = settings.get(cKasUser);
-    mPassword = settings.get(cKasPass);
+    super(args);
+    mUserName = args.get(cKasUser);
+    mPassword = args.get(cKasPass);
   }
   
   /**
    * Get the application name
    * 
-   * @return the application name
+   * @return
+   *   the application name
    */
   public String getAppName()
   {
@@ -77,7 +67,8 @@ public class KasMqStopper extends AKasApp
   /**
    * Initializing the KAS/MQ stopper
    * 
-   * @return {@code true} if initialization completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if initialization completed successfully, {@code false} otherwise 
    */
   public boolean appInit()
   {
@@ -93,7 +84,8 @@ public class KasMqStopper extends AKasApp
   /**
    * Terminating the KAS/MQ stopper
    * 
-   * @return {@code true} if termination completed successfully, {@code false} otherwise 
+   * @return
+   *   {@code true} if termination completed successfully, {@code false} otherwise 
    */
   public boolean appTerm()
   {
@@ -103,7 +95,6 @@ public class KasMqStopper extends AKasApp
   
   /**
    * Run KAS/MQ stopper.<br>
-   * <br>
    * The main logic is quite simple: open a new session to the KAS/MQ server and send it
    * a shutdown request. 
    */
@@ -119,7 +110,7 @@ public class KasMqStopper extends AKasApp
     }
     catch (Throwable e)
     {
-      sStartupLogger.error("Exception caught: ", e);
+      sStdout.error("Exception caught: ", e);
       shouldContinue = false;
     }
     
@@ -130,13 +121,13 @@ public class KasMqStopper extends AKasApp
         boolean authed = conn.login(mUserName, mPassword);
         if (!authed)
         {
-          sStartupLogger.error(conn.getResponse());
+          sStdout.error(conn.getResponse());
           shouldContinue = false;
         }
       }
       catch (Throwable e)
       {
-        sStartupLogger.error("Exception caught: ", e);
+        sStdout.error("Exception caught: ", e);
         shouldContinue = false;
       }
     }
@@ -148,17 +139,17 @@ public class KasMqStopper extends AKasApp
         boolean termed = conn.termServer();
         if (!termed)
         {
-          sStartupLogger.error(conn.getResponse());
+          sStdout.error(conn.getResponse());
           shouldContinue = false;
         }
         else
         {
-          sStartupLogger.info(conn.getResponse());
+          sStdout.info(conn.getResponse());
         }
       }
       catch (Throwable e)
       {
-        sStartupLogger.error("Exception caught: ", e);
+        sStdout.error("Exception caught: ", e);
         shouldContinue = false;
       }
     }
@@ -167,12 +158,12 @@ public class KasMqStopper extends AKasApp
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

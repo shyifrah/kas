@@ -7,13 +7,13 @@ import java.util.Enumeration;
 import java.util.Map;
 import com.kas.comm.impl.PacketHeader;
 import com.kas.comm.serializer.EClassId;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.internal.ABaseMessage;
 
 /**
  * A KAS/MQ message with a map payload.<br>
- * <br>
  * The message body is a single {@link Map} object
  * 
  * @author Pippo
@@ -46,9 +46,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Constructs a {@link MqMapMessage} object from {@link ObjectInputStream}
    * 
-   * @param istream The {@link ObjectInputStream}
-   * 
-   * @throws IOException if I/O error occurs
+   * @param istream
+   *   The {@link ObjectInputStream}
+   * @throws IOException
+   *   if I/O error occurs
    */
   public MqMapMessage(ObjectInputStream istream) throws IOException
   {
@@ -60,11 +61,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Serialize the {@link MqMapMessage} to the specified {@link ObjectOutputStream}
    * 
-   * @param ostream The {@link ObjectOutputStream} to which the message will be serialized
-   * 
-   * @throws IOException if an I/O error occurs
-   * 
-   * @see com.kas.infra.base.ISerializable#serialize(ObjectOutputStream)
+   * @param ostream
+   *   The {@link ObjectOutputStream} to which the message will be serialized
+   * @throws IOException
+   *   if an I/O error occurs
    */
   public void serialize(ObjectOutputStream ostream) throws IOException
   {
@@ -76,7 +76,8 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get an {@link Enumeration} of all keys
    * 
-   * @return an {@link Enumeration} of all keys
+   * @return
+   *   an {@link Enumeration} of all keys
    */
   public Enumeration<?> getMapNames()
   {
@@ -86,8 +87,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Check if {@code name} is a key in the map
    * 
-   * @param name The key to be checked
-   * @return {@code true} if {@code name} is a key in the map, {@code false} otherwise
+   * @param name
+   *   The key to be checked
+   * @return
+   *   {@code true} if {@code name} is a key in the map, {@code false} otherwise
    */
   public boolean itemExists(String name)
   {
@@ -97,8 +100,11 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Boolean property.
    * 
-   * @param key The name of the property
-   * @return {@code true} if the value is not null and is equal, ignoring case, to the string "true". {@code false} otherwise
+   * @param key
+   *   The name of the property
+   * @return
+   *   {@code true} if the value is not null and is equal, ignoring case,
+   *   to the string "true". {@code false} otherwise
    */
   public boolean getBoolean(String key)
   {
@@ -108,8 +114,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a Boolean property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setBoolean(String key, boolean value)
   {
@@ -117,10 +125,12 @@ public final class MqMapMessage extends ABaseMessage
   }
   
   /**
-   * Get a Integer property.
+   * Get an Integer property.
    * 
-   * @param key The name of the property
-   * @return the {@link Integer} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Integer} value or -1 if {@code key} is not mapped
    */
   public int getInt(String key)
   {
@@ -130,8 +140,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set an Integer property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setInt(String key, int value)
   {
@@ -141,19 +153,23 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Character property.
    * 
-   * @param key The name of the property
-   * @return the {@link Char} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Char} value or 0 if {@code key} is not mapped
    */
   public char getChar(String key)
   {
-    return mBody.getCharProperty(key, ' ');
+    return mBody.getCharProperty(key, (char)0);
   }
   
   /**
    * Set a Character property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setChar(String key, char value)
   {
@@ -163,8 +179,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a String property.
    * 
-   * @param key The name of the property
-   * @return the {@link String} value or the {@link Object}'s {@link java.lang.Object#toString()} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link String} value or {@code null} if {@code key} is not mapped
    */
   public String getString(String key)
   {
@@ -174,8 +192,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a String property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setString(String key, String value)
   {
@@ -185,8 +205,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Long property
    * 
-   * @param key The name of the property
-   * @return the {@link Long} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Long} value or -1 if {@code key} is not mapped
    */
   public long getLong(String key)
   {
@@ -196,8 +218,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a Long property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setLong(String key, long value)
   {
@@ -207,8 +231,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Byte property.
    * 
-   * @param key The name of the property
-   * @return the {@link Byte} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Byte} value or 0 if {@code key} is not mapped
    */
   public byte getByte(String key)
   {
@@ -218,8 +244,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a Byte property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setByte(String key, byte value)
   {
@@ -229,8 +257,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a byte [] property.
    * 
-   * @param key The name of the property
-   * @return the byte array value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the byte array value or {@code null} if {@code key} is not mapped
    */
   public byte [] getBytes(String key)
   {
@@ -240,8 +270,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a byte [] property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setBytes(String key, byte [] value)
   {
@@ -251,8 +283,14 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a byte [] property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
+   * @param offset
+   *   The offset to the begining of the array
+   * @param length
+   *   The length of the array
    */
   public void setBytes(String key, byte [] value, int offset, int length)
   {
@@ -262,8 +300,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Double property.
    * 
-   * @param key The name of the property
-   * @return the {@link Double} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Double} value or -1 if {@code key} is not mapped
    */
   public double getDouble(String key)
   {
@@ -273,8 +313,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a Double property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setDouble(String key, double value)
   {
@@ -282,10 +324,12 @@ public final class MqMapMessage extends ABaseMessage
   }
   
   /**
-   * Get a Float property.<
+   * Get a Float property.
    * 
-   * @param key The name of the property
-   * @return the {@link Float} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Float} value or -1 if {@code key} is not mapped
    */
   public float getFloat(String key)
   {
@@ -295,8 +339,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a Float property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setFloat(String key, float value)
   {
@@ -306,8 +352,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Object property.
    * 
-   * @param key The name of the property
-   * @return the {@link Object} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Object} value or {@code null} if {@code key} is not mapped
    */
   public Object getObject(String key)
   {
@@ -317,8 +365,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set an Object property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setObject(String key, Object value)
   {
@@ -328,8 +378,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Get a Short property.
    * 
-   * @param key The name of the property
-   * @return the {@link Short} value
+   * @param key
+   *   The name of the property
+   * @return
+   *   the {@link Short} value or -1 if {@code key} is not mapped
    */
   public short getShort(String key)
   {
@@ -339,8 +391,10 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Set a Short property.
    * 
-   * @param key The name of the property
-   * @param value The value of the property
+   * @param key
+   *   The name of the property
+   * @param value
+   *   The value of the property
    */
   public void setShort(String key, short value)
   {
@@ -350,7 +404,8 @@ public final class MqMapMessage extends ABaseMessage
   /**
    * Create the {@link PacketHeader} describing this {@link MqMapMessage}
    * 
-   * @return the packet header
+   * @return
+   *   the packet header
    */
   public PacketHeader createHeader()
   {
@@ -358,12 +413,12 @@ public final class MqMapMessage extends ABaseMessage
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

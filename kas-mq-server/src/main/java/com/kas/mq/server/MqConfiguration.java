@@ -3,17 +3,16 @@ package com.kas.mq.server;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.config.impl.AConfiguration;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.Properties;
 import com.kas.infra.config.IBaseListener;
 import com.kas.infra.config.IBaseRegistrar;
-import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.internal.IMqConstants;
-//import com.kas.mq.server.db.DbConfiguration;
 
 /**
  * This {@link AConfiguration} object holds all KAS/MQ related configuration properties
@@ -26,7 +25,6 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    * Configuration prefixes
    */
   static private final String  cMqConfigPrefix  = "kas.mq.";
-  static private final String  cMqUserConfigPrefix        = cMqConfigPrefix + "user.";
   static private final String  cMqConnConfigPrefix        = cMqConfigPrefix + "conn.";
   static private final String  cMqHskpConfigPrefix        = cMqConfigPrefix + "hskp.";
   static private final String  cMqRemoteConfigPrefix      = cMqConfigPrefix + "remoteManager.";
@@ -47,7 +45,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Logger
    */
-  private ILogger mLogger = LoggerFactory.getLogger(this.getClass());
+  private Logger mLogger = LogManager.getLogger(getClass());
   
   /**
    * Indicator whether KAS/MQ is enabled
@@ -90,11 +88,6 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   private long mHskpInterval = cDefaultHskpInterval; 
   
   /**
-   * A map of users to passwords (base64 encrypted)
-   */
-  private Map<String, byte []> mUserMap = new ConcurrentHashMap<String, byte []>();
-  
-  /**
    * A map of remote destination managers to associated network addresses
    */
   private Map<String, NetworkAddress> mRemoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
@@ -103,11 +96,6 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    * A map of predefined queues
    */
   private Map<String, Integer> mPredefQueuesMap = new ConcurrentHashMap<String, Integer>();
-  
-//  /**
-//   * DB related configuration
-//   */
-//  private DbConfiguration mDbConfig = new DbConfiguration();
   
   /**
    * A set of configuration listener objects.<br>
@@ -120,7 +108,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    */
   public void refresh()
   {
-    mLogger.debug("MqConfiguration::refresh() - IN");
+    mLogger.trace("MqConfiguration::refresh() - IN");
     
     mEnabled            = mMainConfig.getBoolProperty    ( cMqConfigPrefix + "enabled"           , mEnabled           );
     mPort               = mMainConfig.getIntProperty     ( cMqConfigPrefix + "port"              , mPort              );
@@ -131,42 +119,14 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
     mHskpEnabled        = mMainConfig.getBoolProperty    ( cMqHskpConfigPrefix + "enabled"       , mHskpEnabled       );
     mHskpInterval       = mMainConfig.getLongProperty    ( cMqHskpConfigPrefix + "interval"      , mHskpInterval      );
     
-    refreshUserMap();
     refreshRemoteManagersMap();
     refreshPredefQueuesMap();
     
-//    mDbConfig.refresh();
-    
-    mLogger.debug("MqConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
+    mLogger.trace("MqConfiguration::refresh() - Notifying listeners that configuration has been refreshed");
     for (IBaseListener listener : mListeners)
       listener.refresh();
     
-    mLogger.debug("MqConfiguration::refresh() - OUT");
-  }
-  
-  /**
-   * Refresh the user's map
-   */
-  private void refreshUserMap()
-  {
-    mLogger.debug("MqConfiguration::refreshUserMap() - IN");
-    
-    Map<String, byte[]> usermap = new ConcurrentHashMap<String, byte[]>();
-    Properties props = mMainConfig.getSubset(cMqUserConfigPrefix);
-    for (Map.Entry<Object, Object> entry : props.entrySet())
-    {
-      String user = ((String)entry.getKey()).substring(cMqUserConfigPrefix.length());
-      user = user.toUpperCase();
-      String pass = (String)entry.getValue();
-      byte [] encpass = Base64Utils.encode(pass.getBytes());
-      usermap.put(user, encpass);
-    }
-    
-    // add system user
-    usermap.put(IMqConstants.cSystemUserName, Base64Utils.encode(IMqConstants.cSystemPassWord.getBytes()));
-    mUserMap = usermap;
-    
-    mLogger.debug("MqConfiguration::refreshUserMap() - OUT");
+    mLogger.trace("MqConfiguration::refresh() - OUT");
   }
   
   /**
@@ -174,7 +134,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    */
   private void refreshRemoteManagersMap()
   {
-    mLogger.debug("MqConfiguration::refreshRemoteManagersMap() - IN");
+    mLogger.trace("MqConfiguration::refreshRemoteManagersMap() - IN");
     
     Map<String, NetworkAddress> remoteManagersMap = new ConcurrentHashMap<String, NetworkAddress>();
     
@@ -191,7 +151,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
     }
     mRemoteManagersMap = remoteManagersMap;
     
-    mLogger.debug("MqConfiguration::refreshRemoteManagersMap() - OUT");
+    mLogger.trace("MqConfiguration::refreshRemoteManagersMap() - OUT");
   }
   
   /**
@@ -199,7 +159,7 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
    */
   private void refreshPredefQueuesMap()
   {
-    mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - IN");
+    mLogger.trace("MqConfiguration::refreshQueueDefinitionsMap() - IN");
     
     Map<String, Integer> queueDefsMap = new ConcurrentHashMap<String, Integer>();
     
@@ -215,15 +175,14 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
     }
     mPredefQueuesMap = queueDefsMap;
     
-    mLogger.debug("MqConfiguration::refreshQueueDefinitionsMap() - OUT");
+    mLogger.trace("MqConfiguration::refreshQueueDefinitionsMap() - OUT");
   }
   
   /**
    * Register an object as a listener to to configuration changes
    * 
-   * @param listener The listener
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#register(IBaseListener)
+   * @param listener
+   *   The listener
    */
   public synchronized void register(IBaseListener listener)
   {
@@ -233,9 +192,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Register an object as a listener to to configuration changes
    * 
-   * @param listener The listener
-   * 
-   * @see com.kas.infra.config.IBaseRegistrar#unregister(IBaseListener)
+   * @param listener
+   *   The listener
    */
   public synchronized void unregister(IBaseListener listener)
   {
@@ -245,7 +203,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Get whether the KAS/MQ is enabled or disabled
    * 
-   * @return {@code true} if KAS/MQ is enabled, {@code false} otherwise
+   * @return
+   *   {@code true} if KAS/MQ is enabled, {@code false} otherwise
    */
   public boolean isEnabled()
   {
@@ -255,7 +214,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the port number on which the KAS/MQ manager listens for new connections
    * 
-   * @return KAS/MQ listen port number
+   * @return
+   *   KAS/MQ listen port number
    */
   public int getPort()
   {
@@ -265,7 +225,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the name associated with the current manager
    * 
-   * @return the manager's name
+   * @return
+   *   the manager's name
    */
   public String getManagerName()
   {
@@ -275,7 +236,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the name of the dead queue
    * 
-   * @return the name of the dead queue
+   * @return
+   *   the name of the dead queue
    */
   public String getDeadQueueName()
   {
@@ -285,7 +247,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the maximum number of connection errors
    * 
-   * @return the maximum number of connection errors
+   * @return
+   *   the maximum number of connection errors
    */
   public int getConnMaxErrors()
   {
@@ -295,7 +258,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Gets the socket timeout
    * 
-   * @return the socket timeout
+   * @return
+   *   the socket timeout
    */
   public int getConnSocketTimeout()
   {
@@ -305,7 +269,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Get whether the KAS/MQ housekeeping is enabled or disabled
    * 
-   * @return {@code true} if KAS/MQ housekeeping is enabled, {@code false} otherwise
+   * @return
+   *   {@code true} if KAS/MQ housekeeping is enabled, {@code false} otherwise
    */
   public boolean isHousekeeperEnabled()
   {
@@ -315,7 +280,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Get the housekeeper interval length in milliseconds
    * 
-   * @return the housekeeper interval length in milliseconds
+   * @return
+   *   the housekeeper interval length in milliseconds
    */
   public long getHousekeeperInterval()
   {
@@ -323,25 +289,10 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   }
   
   /**
-   * Gets a user's password
-   * 
-   * @param user The user's name
-   * @return the user's password or {@code null} if user's name isn't defined
-   */
-  public byte [] getUserPassword(String user)
-  {
-    if (user == null)
-      return null;
-    
-    String u = user.toUpperCase();
-    
-    return mUserMap.get(u);
-  }
-  
-  /**
    * Get the remote managers map
    * 
-   * @return the remote managers map
+   * @return
+   *   the remote managers map
    */
   public Map<String, NetworkAddress> getRemoteManagers()
   {
@@ -351,7 +302,8 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   /**
    * Get the predefined queues map
    * 
-   * @return the predefined queues map
+   * @return
+   *   the predefined queues map
    */
   public Map<String, Integer> getQueueDefinitions()
   {
@@ -359,12 +311,12 @@ public class MqConfiguration extends AConfiguration implements IBaseRegistrar
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

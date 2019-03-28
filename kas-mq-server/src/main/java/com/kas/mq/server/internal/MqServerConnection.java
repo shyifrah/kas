@@ -17,7 +17,8 @@ public class MqServerConnection extends MqContextConnection
   /**
    * Constructing the connection
    * 
-   * @param clientName The client application name
+   * @param clientName
+   *   The client application name
    */
   MqServerConnection(String clientName)
   {
@@ -27,35 +28,41 @@ public class MqServerConnection extends MqContextConnection
   /**
    * Notify KAS/MQ server that the sender wishes to update its state
    * 
-   * @param request The system-state change request. The message contains the new state of the sender.
-   * @return the reply message from the receiver.
+   * @param request
+   *   The system-state change request. The message contains the new state of the sender.
+   * @return
+   *   the reply message from the receiver.
    */
   public IMqMessage notifySysState(IMqMessage request)
   {
-    mLogger.debug("MqServerConnection::notifySysState() - IN");
+    mLogger.trace("MqServerConnection::notifySysState() - IN");
     
     IMqMessage reply = requestReply(request);
     
-    mLogger.debug("MqServerConnection::notifySysState() - OUT");
+    mLogger.trace("MqServerConnection::notifySysState() - OUT");
     return reply;
   }
   
   /**
    * Notify remote KAS/MQ server that the sender updated its repository
    * 
-   * @param qmgr The name of the KAS/MQ server whose repository was updated
-   * @param queue The name of the queue that was subject to update
-   * @param added If {@code true}, the queue was added, else it was removed
-   * @return {@code true} if remote KAS/MQ server was successfully notified, otherwise {@code false}
+   * @param qmgr
+   *   The name of the KAS/MQ server whose repository was updated
+   * @param queue
+   *   The name of the queue that was subject to update
+   * @param added
+   *   If {@code true}, the queue was added, else it was removed
+   * @return
+   *   {@code true} if remote KAS/MQ server was successfully notified, otherwise {@code false}
    */
   public boolean notifyRepoUpdate(String qmgr, String queue, boolean added)
   {
-    mLogger.debug("MqServerConnection::notifyRepoUpdate() - IN");
+    mLogger.trace("MqServerConnection::notifyRepoUpdate() - IN");
     
     IMqMessage request = MqRequestFactory.createRepositoryUpdateMessage(qmgr, queue, added);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.debug("MqServerConnection::notifyRepoUpdate() - OUT");
+    mLogger.trace("MqServerConnection::notifyRepoUpdate() - OUT");
     return success;
   }
 }

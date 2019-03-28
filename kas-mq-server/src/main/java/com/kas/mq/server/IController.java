@@ -29,22 +29,26 @@ public interface IController extends IBaseListener, IObject
   /**
    * Get the handler serving session ID with {@code id}
    * 
-   * @param id The {@link UniqueId} of the session
-   * @return The {@link SessionHandler handler} associated with the specified session ID
+   * @param id
+   *   The {@link UniqueId} of the session
+   * @return
+   *   the {@link SessionHandler handler} associated with the specified session ID
    */
   public abstract SessionHandler getHandler(UniqueId id);
   
   /**
    * Get all handlers
    * 
-   * @return a collection of all handlers
+   * @return
+   *   a collection of all handlers
    */
   public abstract Collection<SessionHandler> getHandlers();
   
   /**
    * Get the controller's MQ configuration
    * 
-   * @return the controller's MQ configuration
+   * @return
+   *   the controller's MQ configuration
    */
   public abstract MqConfiguration getConfig();
   
@@ -57,7 +61,8 @@ public interface IController extends IBaseListener, IObject
    * A callback that is invoked under the handler's thread right before
    * the handler starts its run() method.
    * 
-   * @param handler The handler that invoked the callback
+   * @param handler
+   *   The handler that invoked the callback
    */
   public abstract void onHandlerStart(SessionHandler handler);
   
@@ -65,7 +70,8 @@ public interface IController extends IBaseListener, IObject
    * A callback that is invoked under the handler's thread right before
    * the handler ends its run() method.
    * 
-   * @param handler The handler that invoked the callback
+   * @param handler
+   *   The handler that invoked the callback
    */
   public abstract void onHandlerEnd(SessionHandler handler);
 }

@@ -2,6 +2,7 @@ package com.kas.mq.typedef;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import com.kas.infra.base.IObject;
+import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.messages.IMqMessage;
 
 /**
@@ -14,25 +15,21 @@ public class MessageQueue extends ConcurrentLinkedQueue<IMqMessage> implements I
   private static final long serialVersionUID = 1L;
   
   /**
-   * Returns the {@link MessageQueue} simple class name enclosed with chevrons.
+   * Returns the {@link IObject} simple class name enclosed with chevrons.
    * 
-   * @return class name enclosed with chevrons.
-   * 
-   * @see com.kas.infra.base.IObject#name()
+   * @return
+   *   class name enclosed with chevrons.
    */
   public String name()
   {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<")
-      .append(this.getClass().getSimpleName())
-      .append(">");
-    return sb.toString();
+    return StringUtils.getClassName(getClass());
   }
   
   /**
-   * Returns the object's string representation.
+   * Returns the string representation.
    * 
-   * @return the object's string representation.
+   * @return
+   *   the string representation.
    */
   public String toString()
   {
@@ -42,12 +39,12 @@ public class MessageQueue extends ConcurrentLinkedQueue<IMqMessage> implements I
   }
   
   /**
-   * Returns the object's detailed string representation.
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level the required level padding
-   * @return the object's printable string representation
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

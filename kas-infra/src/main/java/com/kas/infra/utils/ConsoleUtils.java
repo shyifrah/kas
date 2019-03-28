@@ -3,7 +3,6 @@ package com.kas.infra.utils;
 import java.io.Console;
 import java.io.PrintStream;
 import java.util.Scanner;
-import com.kas.infra.utils.helpers.EOsType;
 
 /**
  * Console related utilities
@@ -118,7 +117,8 @@ public class ConsoleUtils
   /**
    * Formatting and writing a message to STDOUT.
    * 
-   * @param message The message to print
+   * @param message
+   *   The message to print
    */
   static public void write(String message, Object ... args)
   {
@@ -128,7 +128,8 @@ public class ConsoleUtils
   /**
    * Formatting and writing a message to STDOUT. The message will be followed by a Newline character.
    * 
-   * @param message The message to print
+   * @param message
+   *   The message to print
    */
   static public void writeln(String message, Object ... args)
   {
@@ -138,7 +139,8 @@ public class ConsoleUtils
   /**
    * Formatting and writing a message to STDOUT.
    * 
-   * @param message The message to print
+   * @param message
+   *   The message to print
    */
   static public void writeRed(String message, Object ... args)
   {
@@ -148,7 +150,8 @@ public class ConsoleUtils
   /**
    * Formatting and writing a message to STDOUT. The message will be followed by a Newline character.
    * 
-   * @param message The message to print
+   * @param message
+   *   The message to print
    */
   static public void writelnRed(String message, Object ... args)
   {
@@ -158,7 +161,8 @@ public class ConsoleUtils
   /**
    * Formatting and writing a message to STDOUT.
    * 
-   * @param message The message to print
+   * @param message
+   *   The message to print
    */
   static public void writeGreen(String message, Object ... args)
   {
@@ -168,7 +172,8 @@ public class ConsoleUtils
   /**
    * Formatting and writing a message to STDOUT. The message will be followed by a Newline character.
    * 
-   * @param message The message to print
+   * @param message
+   *   The message to print
    */
   static public void writelnGreen(String message, Object ... args)
   {
@@ -178,8 +183,10 @@ public class ConsoleUtils
   /**
    * Print the prompt message and read a string from STDIN
    *  
-   * @param prompt The message to print before reading the string
-   * @return The read string
+   * @param prompt
+   *   The message to print before reading the string
+   * @return
+   *   the read string
    */
   static public String readClearText(String prompt)
   {
@@ -200,8 +207,10 @@ public class ConsoleUtils
    * Print the prompt message and read a string from STDIN, while suppressing
    * the input characters.
    *  
-   * @param prompt The message to print before reading the string
-   * @return The read string
+   * @param prompt
+   *   The message to print before reading the string
+   * @return
+   *   the read string
    */
   static public String readMaskedText(String prompt)
   {

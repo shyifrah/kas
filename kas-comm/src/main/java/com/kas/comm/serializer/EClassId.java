@@ -39,8 +39,10 @@ public enum EClassId implements IObject
   /**
    * Get the enum value by its ordinal.
    * 
-   * @param id The ordinal of the enum
-   * @return the enum value
+   * @param id
+   *   The ordinal of the enum
+   * @return
+   *   the enum value
    */
   static public EClassId fromInt(int id)
   {
@@ -54,12 +56,12 @@ public enum EClassId implements IObject
   }
   
   /**
-   * Get the enum detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {

@@ -5,15 +5,16 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import com.kas.comm.IMessenger;
 import com.kas.comm.IPacket;
 import com.kas.comm.impl.MessengerFactory;
 import com.kas.comm.impl.NetworkAddress;
 import com.kas.infra.base.AKasObject;
+import com.kas.infra.base.IObject;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.utils.StringUtils;
-import com.kas.logging.ILogger;
-import com.kas.logging.LoggerFactory;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.ERequestType;
 import com.kas.mq.server.IController;
@@ -32,7 +33,7 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Logger
    */
-  private ILogger mLogger;
+  private Logger mLogger;
   
   /**
    * The sessions controller
@@ -66,12 +67,16 @@ public class SessionHandler extends AKasObject implements Runnable
   
   /**
    * Construct a {@link SessionHandler} to handle all incoming and outgoing traffic from a remote client.<br>
-   * <br>
    * Client's transmits messages and received by this handler over the specified {@code socket}.
    *  
-   * @param socket The client's socket
-   * 
-   * @throws IOException if {@link Socket#setSoTimeout()} throws
+   * @param socket
+   *   The client's socket
+   * @param controller
+   *   The {@link IController}
+   * @param
+   *   The {@link IRepository}
+   * @throws IOException
+   *   if {@link Socket#setSoTimeout()} throws
    */
   SessionHandler(Socket socket, IController controller, IRepository repository) throws IOException
   {
@@ -80,7 +85,7 @@ public class SessionHandler extends AKasObject implements Runnable
     socket.setSoTimeout(0);
     mMessenger = MessengerFactory.create(socket);
     
-    mLogger = LoggerFactory.getLogger(this.getClass());
+    mLogger = LogManager.getLogger(getClass());
     mSessionId = UniqueId.generate();
     mActiveUser = null;
   }
@@ -91,28 +96,28 @@ public class SessionHandler extends AKasObject implements Runnable
    */
   public void run()
   {
-    mLogger.debug("SessionHandler::run() - IN");
+    mLogger.trace("SessionHandler::run() - IN");
     mController.onHandlerStart(this);
     
     NetworkAddress remoteAddress = mMessenger.getAddress();
     
     while (isRunning())
     {
-      mLogger.debug("SessionHandler::run() - Waiting for messages from client...");
+      mLogger.trace("SessionHandler::run() - Waiting for messages from client...");
       try
       {
         IPacket packet = mMessenger.receive();
-        mLogger.debug("SessionHandler::run() - Received packet: " + StringUtils.asPrintableString(packet));
+        mLogger.trace("SessionHandler::run() - Received packet: {}", StringUtils.asPrintableString(packet));
         if (packet != null)
         {
           IMqMessage request = (IMqMessage)packet;
           ERequestType requestType = request.getRequestType();
-          mLogger.debug("SessionHandler::run() - Received request of type: " + StringUtils.asPrintableString(requestType));
+          mLogger.trace("SessionHandler::run() - Received request of type: {}", StringUtils.asPrintableString(requestType));
           
           IProcessor processor = ProcessorFactory.newProcessor(request, this, mRepository);
           IMqMessage reply = processor.process();
           
-          mLogger.debug("SessionHandler::run() - Responding with the message: " + StringUtils.asPrintableString(reply));
+          mLogger.trace("SessionHandler::run() - Responding with the message: {}", StringUtils.asPrintableString(reply));
           mMessenger.send(reply);
           
           boolean stopped = isRunning() & processor.postprocess(reply);
@@ -121,11 +126,11 @@ public class SessionHandler extends AKasObject implements Runnable
       }
       catch (SocketTimeoutException e)
       {
-        mLogger.diag("SessionHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
+        mLogger.trace("SessionHandler::run() - Socket Timeout occurred. Resume waiting for a new packet from client...");
       }
       catch (SocketException | EOFException e)
       {
-        mLogger.info("Connection to remote host at " + remoteAddress + " was lost");
+        mLogger.info("Connection to remote host at {} was lost", remoteAddress);
         stop();
       }
       catch (IOException e)
@@ -141,13 +146,14 @@ public class SessionHandler extends AKasObject implements Runnable
     }
     
     mController.onHandlerEnd(this);
-    mLogger.debug("SessionHandler::run() - OUT");
+    mLogger.trace("SessionHandler::run() - OUT");
   }
   
   /**
    * Get the sessions controller
    * 
-   * @return the sessions controller
+   * @return
+   *   the sessions controller
    */
   public IController getController()
   {
@@ -157,7 +163,8 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Set the active user to {@code userEntity}
    * 
-   * @param user The new active user name
+   * @param user
+   *   The new active user name
    */
   public void setActiveUser(UserEntity userEntity)
   {
@@ -167,7 +174,8 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Get the active user
    * 
-   * @return the active user
+   * @return
+   *   the active user
    */
   public UserEntity getActiveUser()
   {
@@ -177,7 +185,8 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Set the session's unique ID
    * 
-   * @param sessId The session's unique ID to set
+   * @param sessId
+   *   The session's unique ID to set
    */
   public void setSessionId(UniqueId sessId)
   {
@@ -187,7 +196,8 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Get the session's unique ID
    * 
-   * @return the session's unique ID
+   * @return
+   *   the session's unique ID
    */
   public UniqueId getSessionId()
   {
@@ -197,7 +207,8 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Check if the handler is still running
    * 
-   * @return {@code true} if handler is still running, {@code false} otherwise
+   * @return
+   *   {@code true} if handler is still running, {@code false} otherwise
    */
   public synchronized boolean isRunning()
   {
@@ -215,7 +226,8 @@ public class SessionHandler extends AKasObject implements Runnable
   /**
    * Set the handler's running state
    * 
-   * @param isRunning A boolean indicating whether the handler should run ({@code true}) or stop ({@code false})
+   * @param isRunning
+   *   a boolean indicating whether the handler should run ({@code true}) or stop ({@code false})
    */
   private synchronized void setRunningState(boolean isRunning)
   {
@@ -231,12 +243,12 @@ public class SessionHandler extends AKasObject implements Runnable
   }
   
   /**
-   * Get the object's detailed string representation
+   * Returns the {@link IObject} string representation.
    * 
-   * @param level The string padding level
-   * @return the string representation with the specified level of padding
-   * 
-   * @see com.kas.infra.base.IObject#toPrintableString(int)
+   * @param level
+   *   The required padding level
+   * @return
+   *   the string representation with the specified level of padding
    */
   public String toPrintableString(int level)
   {
