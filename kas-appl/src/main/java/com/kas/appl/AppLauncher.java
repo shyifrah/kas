@@ -35,7 +35,7 @@ public class AppLauncher
     }
     
     String [] temp = kasAppClassName.split("\\.");
-    String log4jLogFile = temp[temp.length-1].toLowerCase();
+    String log4jLogFileName = temp[temp.length-1].toLowerCase();
     
     String kasHome = RunTimeUtils.getProperty(cKasHomeSystemProperty, ".");
     String log4jConfigFile = kasHome + "/conf/log4j2.xml";
@@ -43,7 +43,7 @@ public class AppLauncher
     
     RunTimeUtils.setProperty(IAppConstants.cLog4jConfigFileProperty, log4jConfigFile, true);
     RunTimeUtils.setProperty(IAppConstants.cLog4jLogDirectoryProperty, log4jLogDirectory, true);
-    RunTimeUtils.setProperty(IAppConstants.cLog4jLogFileProperty, log4jLogFile, true);
+    RunTimeUtils.setProperty(IAppConstants.cLog4jLogFileProperty, log4jLogFileName, true);
     
     AKasApp app = null;
     
