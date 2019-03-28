@@ -69,7 +69,6 @@ public class AppLauncher
       return;
     }
     
-    // third: if here, application was successfully loaded. launch it
     launch(app);
   }
   
@@ -166,6 +165,6 @@ public class AppLauncher
     long min = diff % 60;
     diff = diff / 60;
     long hr = diff; 
-    ConsoleUtils.writeln("Total run time: %s%s%d.%03d", (hr > 0 ? hr + " hours, " : ""), (min > 0 ? min + " minutes, " : ""), sec, ms);
+    ConsoleUtils.writeln("Total run time: %s%s%d.%03d seconds", (hr > 0 ? hr + " hours, " : ""), (min > 0 ? min + " minutes, " : ""), sec, ms);
   }
 }
