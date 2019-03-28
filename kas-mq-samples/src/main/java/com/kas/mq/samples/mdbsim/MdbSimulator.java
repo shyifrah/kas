@@ -2,6 +2,7 @@ package com.kas.mq.samples.mdbsim;
 
 import java.util.Map;
 import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.infra.base.UniqueId;
@@ -35,6 +36,21 @@ public class MdbSimulator extends AKasApp
   static final long cConsumerPollingInterval = 1000L;
   static final long cConsumerGetTimeout      = 60000L;
 
+  static public void main(String [] args)
+  {
+    String [] argArray = {
+      "kas.class=" + MdbSimulator.class.getName(),
+      "mdb.sim.create.res=true",
+      "mdb.sim.req.queuename=mdb.req.queue",
+      "mdb.sim.rep.queuename=mdb.rep.queue",
+      "mdb.sim.username=admin",
+      "mdb.sim.password=admin",
+      "mdb.sim.host=localhost",
+      "mdb.sim.port=14560"
+    };
+    AppLauncher.main(argArray);
+  }
+  
   /**
    * MDB simulator data members
    */

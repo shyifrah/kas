@@ -2,6 +2,7 @@ package com.kas.mq.server;
 
 import java.util.Map;
 import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.server.internal.MqServerConnection;
@@ -17,6 +18,16 @@ public class KasMqStopper extends AKasApp
   static private final String cAppName = "KAS/MQ server-stopper";
   static private final String cKasUser = "kas.user";
   static private final String cKasPass = "kas.pass";
+  
+  static public void main(String [] args)
+  {
+    String [] argArray = {
+      "kas.class=" + KasMqStopper.class.getName(),
+      cKasUser + "=" + "system",
+      cKasPass + "=" + "system"
+    };
+    AppLauncher.main(argArray);
+  }
   
   /**
    * KAS/MQ server's configuration

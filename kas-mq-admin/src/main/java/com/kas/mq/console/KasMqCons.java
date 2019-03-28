@@ -2,6 +2,7 @@ package com.kas.mq.console;
 
 import java.util.Map;
 import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.StringUtils;
@@ -21,6 +22,14 @@ public class KasMqCons extends AKasApp
   static final String cContPrompt = ConsoleUtils.RED + "            > " + ConsoleUtils.RESET;
   static final String cExitCommand = "EXIT";
   static final String cCommandTerminator = ";";
+  
+  static public void main(String [] args)
+  {
+    String [] argArray = {
+      "kas.class=" + KasMqCons.class.getName()
+    };
+    AppLauncher.main(argArray);
+  }
   
   /**
    * A {@link MqContextConnection} which will act as the client

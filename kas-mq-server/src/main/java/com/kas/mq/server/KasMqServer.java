@@ -7,6 +7,7 @@ import java.net.SocketTimeoutException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.db.DbConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.db.DbUtils;
@@ -27,6 +28,14 @@ import com.kas.mq.server.internal.ServerNotifier;
 public class KasMqServer extends AKasApp implements IMqServer
 {
   static private final String cAppName = "KAS/MQ server";
+  
+  static public void main(String [] args)
+  {
+    String [] argArray = {
+      "kas.class=" + KasMqServer.class.getName()                    
+    };
+    AppLauncher.main(argArray);
+  }
   
   /**
    * Server socket

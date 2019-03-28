@@ -2,6 +2,7 @@ package com.kas.mq.samples.clientapp;
 
 import java.util.Map;
 import com.kas.appl.AKasApp;
+import com.kas.appl.AppLauncher;
 import com.kas.infra.base.KasException;
 import com.kas.infra.base.TimeStamp;
 import com.kas.mq.impl.MqContext;
@@ -28,6 +29,24 @@ public class ClientApp extends AKasApp
 {
   static final String cAppName      = "SampleClientApp";
   static final String cConfigPrefix = "client.app.";
+  
+  static public void main(String [] args)
+  {
+    String [] argArray = {
+      "kas.class=" + ClientApp.class.getName(),
+      "client.app.message.type=0",
+      "client.app.put.queuename=mdb.req.queue",
+      "client.app.get.queuename=mdb.rep.queue",
+      "client.app.total.messages=10000",
+      "client.app.total.producers=1",
+      "client.app.total.consumers=1",
+      "client.app.username=admin",
+      "client.app.password=admin",
+      "client.app.host=localhost",
+      "client.app.port=14560"
+    };
+    AppLauncher.main(argArray);
+  }
   
   /**
    * ClientApp data members
