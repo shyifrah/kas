@@ -86,7 +86,7 @@ public abstract class AKasApp extends AKasObject implements IKasApp
     
     boolean init = appInit();    
     String message = getAppName() + " V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    ConsoleUtils.writeln(message);
+    mStdout.info(message);
     mLogger.info(message);
     
     return init;
