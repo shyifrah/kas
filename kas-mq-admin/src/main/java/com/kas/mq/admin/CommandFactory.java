@@ -65,7 +65,10 @@ public class CommandFactory implements ICommandFactory
     
     String pkgPath = mPackageName.replace('.', '/');
     URL url = classLoader.getResource(pkgPath);
-    File urlFile = new File(url.getFile());
+    String path = url.getPath().substring("file:/".length(), url.getPath().lastIndexOf('!'));
+    
+    File urlFile = new File(path);
+    sLogger.trace("CommandFactory::init() - URL file path is: [{}]", urlFile.getAbsolutePath());
     
     List<Class<?>> cmdClasses = null;
     if (urlFile.isDirectory())
@@ -94,19 +97,18 @@ public class CommandFactory implements ICommandFactory
   
   private List<Class<?>> getJarClasses(File jar)
   {
-    sLogger.trace("CommandFactory::getJasClasses() - IN, JAR=[{}]", jar.getAbsolutePath());
+    sLogger.trace("CommandFactory::getJarClasses() - IN, JAR=[{}]", jar.getAbsolutePath());
     
     List<Class<?>> result = new ArrayList<Class<?>>();
     
     ZipInputStream zip = null;
     try
     {
-      String jarPath = jar.getAbsolutePath().substring(0, jar.getAbsolutePath().indexOf('!'));
-      zip = new ZipInputStream(new FileInputStream(jarPath));
+      zip = new ZipInputStream(new FileInputStream(jar.getAbsolutePath()));
     
       for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry())
       {
-        sLogger.trace("CommandFactory::getJasClasses() - Current entry=[{}] Dir=[{}]", entry.getName(), entry.isDirectory());
+        sLogger.trace("CommandFactory::getJarClasses() - Current entry=[{}] Dir=[{}]", entry.getName(), entry.isDirectory());
         
         if ((!entry.isDirectory()) && (entry.getName().endsWith(".class")))
         {
@@ -123,7 +125,10 @@ public class CommandFactory implements ICommandFactory
         }
       }
     }
-    catch (IOException e) {}
+    catch (Throwable e)
+    {
+      sLogger.error("Exceptiuon caught: ", e);
+    }
     finally
     {
       if (zip != null)
@@ -134,7 +139,7 @@ public class CommandFactory implements ICommandFactory
       }
     }
     
-    sLogger.trace("CommandFactory::getJasClasses() - OUT, JAR contains [{}] classes", result.size());
+    sLogger.trace("CommandFactory::getJarClasses() - OUT, JAR contains [{}] classes", result.size());
     return result;
   }
   
