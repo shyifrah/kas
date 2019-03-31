@@ -95,7 +95,7 @@ public class AppLauncher
     }
     catch (Throwable e)
     {
-      ConsoleUtils.writelnRed("Exception caught: ", e);
+      ConsoleUtils.writelnRed("Exception caught: Class=[%s], Message=[%s]", e.getClass().getName(), e.getMessage());
     }
     finally
     {

@@ -2,7 +2,6 @@ package com.kas.mq.admin;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.net.URL;
@@ -65,7 +64,9 @@ public class CommandFactory implements ICommandFactory
     
     String pkgPath = mPackageName.replace('.', '/');
     URL url = classLoader.getResource(pkgPath);
-    String path = url.getPath().substring("file:/".length(), url.getPath().lastIndexOf('!'));
+    String path = url.getPath().substring("file:/".length());
+    if (path.lastIndexOf('!') != -1)
+      path = path.substring(0, path.lastIndexOf('!'));
     
     File urlFile = new File(path);
     sLogger.trace("CommandFactory::init() - URL file path is: [{}]", urlFile.getAbsolutePath());
