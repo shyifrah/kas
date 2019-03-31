@@ -27,8 +27,8 @@ public class QueryQueueCommand extends ACommand
    */
   QueryQueueCommand()
   {
-    mCommandVerbs.add("QUEUE");
-    mCommandVerbs.add("Q");
+    mCommandVerbs.add("QUERY QUEUE");
+    mCommandVerbs.add("QUERY Q");
   }
   
   /**

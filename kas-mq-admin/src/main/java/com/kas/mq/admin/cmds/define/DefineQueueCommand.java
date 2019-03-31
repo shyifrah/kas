@@ -26,8 +26,8 @@ public class DefineQueueCommand extends ACommand
    */
   DefineQueueCommand()
   {
-    mCommandVerbs.add("QUEUE");
-    mCommandVerbs.add("Q");
+    mCommandVerbs.add("DEFINE QUEUE");
+    mCommandVerbs.add("DEFINE Q");
   }
   
   /**

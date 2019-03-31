@@ -22,9 +22,9 @@ public class DeleteGroupCommand extends ACommand
    */
   DeleteGroupCommand()
   {
-    mCommandVerbs.add("GROUP");
-    mCommandVerbs.add("GRP");
-    mCommandVerbs.add("G");
+    mCommandVerbs.add("DELETE GROUP");
+    mCommandVerbs.add("DELETE GRP");
+    mCommandVerbs.add("DELETE G");
   }
   
   /**

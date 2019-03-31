@@ -22,8 +22,8 @@ public class TermSessCommand extends ACommand
    */
   TermSessCommand()
   {
-    mCommandVerbs.add("SESSION");
-    mCommandVerbs.add("SESS");
+    mCommandVerbs.add("TERMINATE SESSION");
+    mCommandVerbs.add("TERMINATE SESS");
   }
   
   /**

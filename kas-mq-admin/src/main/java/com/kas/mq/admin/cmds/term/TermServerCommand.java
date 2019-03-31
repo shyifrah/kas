@@ -16,10 +16,10 @@ public class TermServerCommand extends ACommand
    */
   TermServerCommand()
   {
-    mCommandVerbs.add("SERVER");
-    mCommandVerbs.add("SERV");
-    mCommandVerbs.add("SRVR");
-    mCommandVerbs.add("SRV");
+    mCommandVerbs.add("TERMINATE SERVER");
+    mCommandVerbs.add("TERMINATE SERV");
+    mCommandVerbs.add("TERMINATE SRVR");
+    mCommandVerbs.add("TERMINATE SRV");
   }
   
   /**

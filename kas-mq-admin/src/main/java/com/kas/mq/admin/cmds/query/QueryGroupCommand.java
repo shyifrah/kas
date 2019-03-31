@@ -26,9 +26,9 @@ public class QueryGroupCommand extends ACommand
    */
   QueryGroupCommand()
   {
-    mCommandVerbs.add("GROUP");
-    mCommandVerbs.add("GRP");
-    mCommandVerbs.add("G");
+    mCommandVerbs.add("QUERY GROUP");
+    mCommandVerbs.add("QUERY GRP");
+    mCommandVerbs.add("QUERY G");
   }
   
   /**
