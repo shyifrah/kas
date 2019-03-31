@@ -4,7 +4,6 @@ import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.admin.ACommand;
 import com.kas.mq.admin.ICommand;
 import com.kas.mq.admin.ICommandFactory;
-import com.kas.mq.admin.cmds.term.TermCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -28,8 +27,7 @@ public class TermCommand extends ACommand
     mCommandVerbs.add("TERM");
     mCommandVerbs.add("TRM");
     
-    mFactory = new TermCommandFactory();
-    mFactory.init();
+    mFactory = MainCommandFactory.getInstance();
   }
   
   /**

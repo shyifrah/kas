@@ -77,7 +77,7 @@ configure([ project(':kas-mq-admin') , project(':kas-mq-samples') , project(':ka
     }
   }
   
-  mainClassName = 'com.kas.appl.KasApplLauncher'
+  mainClassName = 'com.kas.appl.ApplLauncher'
   
   startScripts.enabled = false
   

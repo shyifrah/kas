@@ -2,10 +2,8 @@ package com.kas.mq.admin;
 
 import java.util.Map;
 import com.kas.appl.AKasApp;
-import com.kas.appl.AppLauncher;
 import com.kas.infra.base.IObject;
 import com.kas.infra.utils.ConsoleUtils;
-import com.kas.infra.utils.RunTimeUtils;
 import com.kas.infra.utils.StringUtils;
 import com.kas.mq.admin.cmds.MainCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
@@ -23,16 +21,6 @@ public class KasMqAdmin extends AKasApp
   static final String cContPrompt = ConsoleUtils.RED + "            > " + ConsoleUtils.RESET;
   static final String cExitCommand = "EXIT";
   static final String cCommandTerminator = ";";
-  
-  static public void main(String [] args)
-  {
-    RunTimeUtils.setProperty("kas.home", "./build/install/kas-mq-admin", true);
-    
-    String [] argArray = {
-      "kas.class=" + KasMqAdmin.class.getName()
-    };
-    AppLauncher.main(argArray);
-  }
   
   /**
    * A {@link MqContextConnection} which will act as the client

@@ -26,8 +26,8 @@ public class QueryConnCommand extends ACommand
    */
   QueryConnCommand()
   {
-    mCommandVerbs.add("CONNECTION");
-    mCommandVerbs.add("CONN");
+    mCommandVerbs.add("QUERY CONNECTION");
+    mCommandVerbs.add("QUERY CONN");
   }
   
   /**

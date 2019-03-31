@@ -25,8 +25,8 @@ public class AlterQueueCommand extends ACommand
    */
   AlterQueueCommand()
   {
-    mCommandVerbs.add("QUEUE");
-    mCommandVerbs.add("Q");
+    mCommandVerbs.add("ALTER QUEUE");
+    mCommandVerbs.add("ALTER Q");
   }
   
   /**
