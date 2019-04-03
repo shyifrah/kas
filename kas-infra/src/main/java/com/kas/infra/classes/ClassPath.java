@@ -6,10 +6,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * {@link ClassPath} is a tool that can be used to query your class path.
@@ -18,31 +16,6 @@ import java.util.function.Predicate;
  */
 public class ClassPath
 {
-  /**
-   * A predicate to remove from a {@link Set} all classes
-   * that should not be in it. In this case, all classes that
-   * are contained in subpackages of a designated package
-   * are filtered out.
-   */
-  static class SubPackageClassFilter implements Predicate<String>
-  {
-    private String mPackagePrefix;
-    private int    mLastPeriodIndex;
-    
-    SubPackageClassFilter(String pkg)
-    {
-      mPackagePrefix = pkg + '.';
-      mLastPeriodIndex = pkg.length();
-    }
-    
-    public boolean test(String className)
-    {
-      if ((className.startsWith(mPackagePrefix)) && (className.lastIndexOf('.') == mLastPeriodIndex))
-        return false;
-      return true;
-    }
-  }
-  
   /**
    * Map of URLs to {@link ClassPathUrl} objects
    */
@@ -70,67 +43,67 @@ public class ClassPath
   }
   
   /**
-   * Get a set of all classes names found in all the URLs.<br>
+   * Get a map of all classes found in all the URLs.<br>
    * A call to this method will basically return the list of all classes in
    * the class path.
    *  
    * @return
-   *   a set of all classes names
+   *   a map of all class names to respective classes
    */
-  public Set<String> getClasses()
+  public Map<String, Class<?>> getClasses()
   {
-    Set<String> classes = new HashSet<String>();
+    Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
     for (Map.Entry<String, ClassPathUrl> entry : mUrls.entrySet())
-      classes.addAll(entry.getValue().getClassMap().keySet());
+      classes.putAll(entry.getValue().getClassMap());
     
     return classes;
   }
   
   /**
-   * Get a set of all class names found in the url designated by the argument.
+   * Get a map of all classes found in the URL designated by the argument.
    *  
    * @return
-   *   a set of all classes names in {@code url}
+   *   a map of all class names to classes located in {@code url}
    */
-  public Set<String> getUrlClasses(String url)
+  public Map<String, Class<?>> getUrlClasses(String url)
   {
     ClassPathUrl cpurl = mUrls.get(url);
     if (cpurl == null)
       cpurl = ClassPathUrlFactory.createClassPathUrl(url);
     
-    return cpurl.getClassMap().keySet();
+    return cpurl.getClassMap();
   }
   
   /**
-   * Get a set of all class names declared in package {@code pkg}
-   * and its subpackages.
+   * Get a map of all classes declared in package {@code pkg} and its subpackages.
    *  
    * @param pkg
    *   The name of the package
    * @return
-   *   a set of all classes names in package {@code pkg}
+   *   a map of all class names to classes declared in package {@code pkg} or its subpackages
+   *   
+   * @see #getPackageClasses(String, boolean)
    */
-  public Set<String> getPackageClasses(String pkg)
+  public Map<String, Class<?>> getPackageClasses(String pkg)
   {
     return getPackageClasses(pkg, true);
   }
   
   /**
-   * Get a set of all class names declared in package {@code pkg}.
-   * Since the package can be defined in various JARs/directories,
-   * we need to scan all of them.
+   * Get a map of all classes declared in package {@code pkg}.<br>
+   * Since the package can be defined in various JARs/directories, we need to scan all of them.
    *  
    * @param pkg
    *   The name of the package
    * @param includeSubPackages
-   *   Whether the set of class names will include classes defined
+   *   Whether the map of class names should include classes declared
    *   in {@code pkg} subpackages
    * @return
-   *   a set of all classes names in package {@code pkg}
+   *   a map of all class names to classes declared in package {@code pkg}
    */
-  public Set<String> getPackageClasses(String pkg, boolean includeSubPackages)
+  public Map<String, Class<?>> getPackageClasses(String pkg, boolean includeSubPackages)
   {
-    Set<String> result = new HashSet<String>();
+    Map<String, Class<?>> result = new HashMap<String, Class<?>>();
     
     String path = pkg.replace('.', '/');
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -151,16 +124,22 @@ public class ClassPath
         if (urlPath != null)
         {
           File f = new File(urlPath);
-          Set<String> thisUrlSet = getUrlClasses(f.getAbsolutePath());
-          result.addAll(thisUrlSet);
+          Map<String, Class<?>> thisUrlMap = getUrlClasses(f.getAbsolutePath());
+          result.putAll(thisUrlMap);
         }
       }
     }
     
     if (!includeSubPackages)
     {
-      Predicate<String> filter = new SubPackageClassFilter(pkg);
-      result.removeIf(filter);
+      Iterator<Map.Entry<String, Class<?>>> iter = result.entrySet().iterator();
+      while (iter.hasNext())
+      {
+          Map.Entry<String, Class<?>> entry = iter.next();
+          String cn = entry.getKey();
+          if ((cn.startsWith(pkg)) && (cn.lastIndexOf('.') == pkg.length()))
+              iter.remove();
+      }
     }
     return result;
   }
