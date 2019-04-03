@@ -137,7 +137,7 @@ public class ClassPath
       {
           Map.Entry<String, Class<?>> entry = iter.next();
           String cn = entry.getKey();
-          if ((cn.startsWith(pkg)) && (cn.lastIndexOf('.') == pkg.length()))
+          if (cn.lastIndexOf('.') > pkg.length())
               iter.remove();
       }
     }
