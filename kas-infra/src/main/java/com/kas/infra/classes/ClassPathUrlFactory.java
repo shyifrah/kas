@@ -7,9 +7,9 @@ public class ClassPathUrlFactory
   static public ClassPathUrl createClassPathUrl(String url)
   {
     File f = new File(url);
-    if (f.isFile())
-      return new ClassPathJarUrl(url);
-    else
+    if (f.isDirectory())
       return new ClassPathDirUrl(url);
+    else
+      return new ClassPathJarUrl(url);
   }
 }

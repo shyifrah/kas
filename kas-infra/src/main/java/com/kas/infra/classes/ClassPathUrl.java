@@ -9,7 +9,12 @@ public abstract class ClassPathUrl implements IUrl
   
   ClassPathUrl(String url)
   {
-    mUrl = url;
+    int jarPackagePos = url.lastIndexOf(".jar!");
+    if (jarPackagePos > 0)
+      mUrl = url.substring(0, jarPackagePos+4); // cut everything follows the ! including
+    else
+      mUrl = url;
+    
     load();
   }
   

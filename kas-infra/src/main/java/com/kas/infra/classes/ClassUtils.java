@@ -2,6 +2,10 @@ package com.kas.infra.classes;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -136,5 +140,29 @@ public class ClassUtils
     }
     catch (Throwable e) {}
     return thisClass;
+  }
+  
+  static public String getUrlPath(URL url)
+  {
+    if (url == null)
+      return null;
+    
+    String urlPath = url.getPath();
+    String urlProtocol = url.getProtocol();
+    if ("jar".equals(urlProtocol))
+      urlPath = urlPath.substring(0, urlPath.lastIndexOf('!'));
+    try
+    {
+      URL newUrl = new URL(urlPath);
+      return getUrlPath(newUrl);
+    }
+    catch (MalformedURLException e) {}
+    
+    try
+    {
+      urlPath = URLDecoder.decode(urlPath, "UTF-8");
+    }
+    catch (UnsupportedEncodingException e) {}
+    return urlPath;
   }
 }

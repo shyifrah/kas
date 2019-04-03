@@ -12,29 +12,37 @@ public class TestClassPath
   public void testGetClasses()
   {
     Set<String> classes = mClassPath.getClasses();
+    Assert.assertTrue(classes.contains("com.kas.infra.base.AKasObject"));
     Assert.assertTrue(classes.contains("org.apache.logging.log4j.Logger"));
   }
   
   @Test
   public void testGetUrlClasses()
   {
-    Set<String> classes = mClassPath.getUrlClasses("d:/dev/src/java/kas/kas-infra/bin/main");
+    Set<String> classes = mClassPath.getUrlClasses("./bin/main");
     Assert.assertTrue(classes.contains("com.kas.infra.base.AKasObject"));
+    Assert.assertTrue(classes.contains("com.kas.infra.base.ProductVersion"));
+    Assert.assertFalse(classes.contains(this.getClass().getName()));
   }
   
   @Test
   public void testGetPackageClasses()
   {
-    Set<String> classes = mClassPath.getPackageClasses("org.apache.logging.log4j");
-    Assert.assertTrue(classes.contains("org.apache.logging.log4j.CloseableThreadContext"));
+    Set<String> classes = null;
+    classes = mClassPath.getPackageClasses("org.apache.logging.log4j");
     Assert.assertTrue(classes.contains("org.apache.logging.log4j.EventLogger"));
     Assert.assertTrue(classes.contains("org.apache.logging.log4j.Level"));
     Assert.assertTrue(classes.contains("org.apache.logging.log4j.Logger"));
-    Assert.assertTrue(classes.contains("org.apache.logging.log4j.LoggingException"));
     Assert.assertTrue(classes.contains("org.apache.logging.log4j.LogManager"));
-    Assert.assertTrue(classes.contains("org.apache.logging.log4j.Marker"));
-    Assert.assertTrue(classes.contains("org.apache.logging.log4j.MarkerManager"));
-    Assert.assertTrue(classes.contains("org.apache.logging.log4j.ThreadContext"));
-    Assert.assertEquals(9, classes.size());
+    Assert.assertTrue(classes.contains("org.apache.logging.log4j.core.Logger"));
+    Assert.assertFalse(classes.contains("org.apache.logging.log4j.ClassToFailSearch"));
+    
+    classes = mClassPath.getPackageClasses("org.apache.logging.log4j", false);
+    Assert.assertTrue(classes.contains("org.apache.logging.log4j.EventLogger"));
+    Assert.assertTrue(classes.contains("org.apache.logging.log4j.Level"));
+    Assert.assertTrue(classes.contains("org.apache.logging.log4j.Logger"));
+    Assert.assertTrue(classes.contains("org.apache.logging.log4j.LogManager"));
+    Assert.assertFalse(classes.contains("org.apache.logging.log4j.core.Logger"));
+    Assert.assertFalse(classes.contains("org.apache.logging.log4j.ClassToFailSearch"));
   }
 }
