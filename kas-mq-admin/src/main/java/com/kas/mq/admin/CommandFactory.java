@@ -1,18 +1,13 @@
 package com.kas.mq.admin;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import com.kas.infra.classes.ClassPath;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.ThrowableFormatter;
 
@@ -39,11 +34,17 @@ public class CommandFactory implements ICommandFactory
   protected String mPackageName;
   
   /**
+   * Class path data extractor
+   */
+  protected ClassPath mClassPath;
+  
+  /**
    * Construct this command factory
    */
   protected CommandFactory()
   {
     mPackageName = this.getClass().getPackage().getName();
+    mClassPath = new ClassPath();
   }
   
   /**
@@ -61,121 +62,29 @@ public class CommandFactory implements ICommandFactory
       return;
     
     sLogger.trace("CommandFactory::init() - Current package is: [{}]", mPackageName);
+    Map<String, Class<?>> classes = mClassPath.getPackageClasses(mPackageName);
     
-    String pkgPath = mPackageName.replace('.', '/');
-    URL url = classLoader.getResource(pkgPath);
-    String path = url.getPath().substring("file:/".length());
-    if (path.lastIndexOf('!') != -1)
-      path = path.substring(0, path.lastIndexOf('!'));
-    
-    File urlFile = new File(path);
-    sLogger.trace("CommandFactory::init() - URL file path is: [{}]", urlFile.getAbsolutePath());
-    
-    List<Class<?>> cmdClasses = null;
-    if (urlFile.isDirectory())
+    for (Map.Entry<String, Class<?>> entry : classes.entrySet())
     {
-      sLogger.trace("CommandFactory::init() - URL file is a directory");
-      cmdClasses = getDirClasses(urlFile);
-    }
-    else
-    {
-      sLogger.trace("CommandFactory::init() - URL file is a JAR file");
-      cmdClasses = getJarClasses(urlFile);
-    }
-    
-    
-    for (Class<?> cmdClass : cmdClasses)
-    {
-      sLogger.trace("CommandFactory::init() - Processing class [{}]", cmdClass.getName());
-      if (isCommandDrivenClass(cmdClass))
-      {
-        registerCommandClass(cmdClass);
-      }
+      String cn = entry.getKey();
+      Class<?> cls = entry.getValue();
+      
+      sLogger.trace("CommandFactory::init() - Processing class [{}]", cn);
+      if (isCommandDrivenClass(cls))
+        registerCommandClass(cls);
     }
     
     sLogger.trace("CommandFactory::init() - OUT");
   }
   
-  private List<Class<?>> getJarClasses(File jar)
-  {
-    sLogger.trace("CommandFactory::getJarClasses() - IN, JAR=[{}]", jar.getAbsolutePath());
-    
-    List<Class<?>> result = new ArrayList<Class<?>>();
-    
-    ZipInputStream zip = null;
-    try
-    {
-      zip = new ZipInputStream(new FileInputStream(jar.getAbsolutePath()));
-    
-      for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry())
-      {
-        sLogger.trace("CommandFactory::getJarClasses() - Current entry=[{}] Dir=[{}]", entry.getName(), entry.isDirectory());
-        
-        if ((!entry.isDirectory()) && (entry.getName().endsWith(".class")))
-        {
-          String cn = entry.getName().replace('/', '.');
-          cn = cn.substring(0, cn.length()-".class".length());
-          
-          Class<?> cls = null;
-          try
-          {
-            cls = Class.forName(cn);
-            result.add(cls);
-          }
-          catch (Throwable e) {}
-        }
-      }
-    }
-    catch (Throwable e)
-    {
-      sLogger.error("Exceptiuon caught: ", e);
-    }
-    finally
-    {
-      if (zip != null)
-      {
-        try {
-          zip.close();
-        } catch (Throwable e) {}
-      }
-    }
-    
-    sLogger.trace("CommandFactory::getJarClasses() - OUT, JAR contains [{}] classes", result.size());
-    return result;
-  }
-  
-  private List<Class<?>> getDirClasses(File dir)
-  {
-    sLogger.trace("CommandFactory::getDirClasses() - IN, DIR=[{}]", dir.getAbsolutePath());
-    
-    List<Class<?>> result = new ArrayList<Class<?>>();
-    
-    File [] list = dir.listFiles();
-    for (File file : list)
-    {
-      if (file.isDirectory())
-      {
-        List<Class<?>> subDirClasses = getDirClasses(file);
-        result.addAll(subDirClasses);
-      }
-      else if (file.getAbsolutePath().endsWith(".class"))
-      {
-        String currPackage = dir.getAbsolutePath().replace('\\', '.');
-        currPackage = currPackage.substring(currPackage.indexOf(mPackageName));
-        String cn = currPackage + '.' + file.getName().substring(0, file.getName().lastIndexOf(".class"));
-        try
-        {
-          Class<?> cls = Class.forName(cn);
-          result.add(cls);
-        }
-        catch (Throwable e) {}
-      }
-    }
-    
-    sLogger.trace("CommandFactory::getDirClasses() - OUT, DIR contains [{}] classes", result.size());
-    return result;
-  }
-  
+  /**
+   * Registering a {@code cls} with its verbs
+   * 
+   * @param cls
+   *   The command class implementing {@link ICommand} interface
+   * @return
+   *   {@code true} if command registered successfully, {@code false} otherwise
+   */
   private boolean registerCommandClass(Class<?> cls)
   {
     sLogger.trace("CommandFactory::registerCommandClass() - IN, Class=[{}]", cls.getName());

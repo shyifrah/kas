@@ -4,6 +4,7 @@ import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.admin.ACommand;
 import com.kas.mq.admin.ICommand;
 import com.kas.mq.admin.ICommandFactory;
+import com.kas.mq.admin.cmds.alter.AlterCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -27,7 +28,8 @@ public class AlterCommand extends ACommand
     mCommandVerbs.add("ALT");
     mCommandVerbs.add("AL");
     
-    mFactory = MainCommandFactory.getInstance();
+    mFactory = new AlterCommandFactory();
+    mFactory.init();
   }
   
   /**

@@ -4,6 +4,7 @@ import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.admin.ACommand;
 import com.kas.mq.admin.ICommand;
 import com.kas.mq.admin.ICommandFactory;
+import com.kas.mq.admin.cmds.query.QueryCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -26,7 +27,8 @@ public class QueryCommand extends ACommand
     mCommandVerbs.add("QUERY");
     mCommandVerbs.add("Q");
     
-    mFactory = MainCommandFactory.getInstance();
+    mFactory = new QueryCommandFactory();
+    mFactory.init();
   }
   
   /**

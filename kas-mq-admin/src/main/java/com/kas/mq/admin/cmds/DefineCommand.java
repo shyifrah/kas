@@ -4,6 +4,7 @@ import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.admin.ACommand;
 import com.kas.mq.admin.ICommand;
 import com.kas.mq.admin.ICommandFactory;
+import com.kas.mq.admin.cmds.define.DefineCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -26,7 +27,8 @@ public class DefineCommand extends ACommand
     mCommandVerbs.add("DEFINE");
     mCommandVerbs.add("DEF");
     
-    mFactory = MainCommandFactory.getInstance();
+    mFactory = new DefineCommandFactory();
+    mFactory.init();
   }
   
   /**
