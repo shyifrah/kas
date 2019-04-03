@@ -85,9 +85,11 @@ public class ClassPath
    */
   public Set<String> getPackageClasses(String pkg)
   {
-    String path = pkg.replace('.', File.separatorChar);
+    String path = pkg.replace('.', '/');
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     URL url = loader.getResource(path);
+    if (url == null)
+      return new HashSet<String>();
     return getUrlClasses(url.getFile());
   }
   
