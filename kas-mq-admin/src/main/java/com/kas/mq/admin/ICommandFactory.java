@@ -9,16 +9,6 @@ package com.kas.mq.admin;
 public interface ICommandFactory
 {
   /**
-   * Map {@code verb} to a specific {@link ICommand}
-   * 
-   * @param verb
-   *   The command verb
-   * @param cmd
-   *   The command object that will handle the specified verb
-   */
-  public abstract void register(String verb, ICommand cmd);
-  
-  /**
    * Initialize the command factory
    */
   public abstract void init();

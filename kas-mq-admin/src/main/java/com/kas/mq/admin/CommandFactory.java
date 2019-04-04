@@ -44,7 +44,7 @@ public class CommandFactory implements ICommandFactory
   protected CommandFactory()
   {
     mPackageName = this.getClass().getPackage().getName();
-    mClassPath = new ClassPath();
+    mClassPath = ClassPath.getInstance();
   }
   
   /**
@@ -57,19 +57,15 @@ public class CommandFactory implements ICommandFactory
   {
     sLogger.trace("CommandFactory::init() - IN");
     
-    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-    if (classLoader == null)
-      return;
-    
-    sLogger.trace("CommandFactory::init() - Current package is: [{}]", mPackageName);
-    Map<String, Class<?>> classes = mClassPath.getPackageClasses(mPackageName);
+    sLogger.trace("CommandFactory::init() - Getting list of classes in current package: {}", mPackageName);
+    Map<String, Class<?>> classes = mClassPath.getPackageClasses(mPackageName, false);
     
     for (Map.Entry<String, Class<?>> entry : classes.entrySet())
     {
       String cn = entry.getKey();
       Class<?> cls = entry.getValue();
       
-      sLogger.trace("CommandFactory::init() - Processing class [{}]", cn);
+      sLogger.debug("CommandFactory::init() - Processing class [{}]", cn);
       if (isCommandDrivenClass(cls))
         registerCommandClass(cls);
     }
@@ -101,7 +97,13 @@ public class CommandFactory implements ICommandFactory
       
       List<String> verbs = cmd.getCommandVerbs();
       for (String verb : verbs)
-        register(verb, cmd);
+      {
+        sLogger.debug("CommandFactory::registerCommandClass() - Registering Verb=[{}] with Command=[{}]", verb, cls.getName());
+        synchronized (mCommandVerbs)
+        {
+          mCommandVerbs.put(verb, cmd);
+        }
+      }
       
       success = true;
     }
@@ -141,10 +143,7 @@ public class CommandFactory implements ICommandFactory
    */
   public void register(String verb, ICommand cmd)
   {
-    synchronized (mCommandVerbs)
-    {
-      mCommandVerbs.put(verb, cmd);
-    }
+    
   }
   
   /**
