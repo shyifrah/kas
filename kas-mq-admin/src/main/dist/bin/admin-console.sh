@@ -1,7 +1,7 @@
 #!/bin/sh
 
 PASSED_ARGS="${@}"
-CLASS_NAME="com.kas.mq.console.KasMqCons"
+CLASS_NAME="com.kas.mq.admin.KasMqAdmin"
 
 #::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 # Setup

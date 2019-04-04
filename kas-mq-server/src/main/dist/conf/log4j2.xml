@@ -18,7 +18,7 @@
     <Console name="stdout">
       <PatternLayout pattern="${logPattern}" />
     </Console>
-    <RollingFile name="file" fileName="${logDirectory}/${logFile}.log" filePattern="${logDirectory}/${logFile}.log.%d{yyyy-MM-dd-hh.mm.ss}.%i">
+    <RollingFile name="file" fileName="${logDirectory}/${logFile}.log" filePattern="${logDirectory}/${logFile}.log.%d{yyyy-MM-dd}.%i">
       <PatternLayout pattern="${logPattern}" />
       <Policies>
         <OnStartupTriggeringPolicy />

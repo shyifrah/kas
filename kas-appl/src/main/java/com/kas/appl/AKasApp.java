@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import com.kas.infra.base.AKasObject;
 import com.kas.infra.base.ProductVersion;
 import com.kas.infra.base.threads.ThreadPool;
+import com.kas.infra.utils.ConsoleUtils;
 
 /**
  * A KAS/MQ application
@@ -14,17 +15,16 @@ import com.kas.infra.base.threads.ThreadPool;
  */
 public abstract class AKasApp extends AKasObject implements IKasApp
 {
-  static protected Logger sStdout = LogManager.getLogger("stdout");
-  
   /**
    * Map of arguments
    */
   protected Map<String, String> mArgMap;
   
   /**
-   * Logger
+   * Loggers
    */
   protected Logger mLogger = null;
+  protected Logger mStdout = null;
   
   /**
    * Indicator for termination
@@ -74,18 +74,19 @@ public abstract class AKasApp extends AKasObject implements IKasApp
    */
   public boolean init()
   {
-    sStdout.info("KAS base application startup in progress...");
+    ConsoleUtils.writeln("KAS base application startup in progress...");
     
     mVersion = new ProductVersion(getClass());
     mLogger = LogManager.getLogger(getClass());
+    mStdout = LogManager.getLogger("stdout");
     
     mShutdownHook = new AppShutdownHook(this);
     Runtime.getRuntime().addShutdownHook(mShutdownHook);
-    sStdout.info("Logging services are now active, switching to log file");
+    ConsoleUtils.writeln("Logging services are now active, switching to log file");
     
     boolean init = appInit();    
     String message = getAppName() + " V" + mVersion.toString() + (init ? " started successfully" : " failed to start");
-    sStdout.info(message);
+    mStdout.info(message);
     mLogger.info(message);
     
     return init;
@@ -143,17 +144,17 @@ public abstract class AKasApp extends AKasObject implements IKasApp
    */
   public synchronized boolean term()
   {
-    sStdout.info("KAS base application termination in progress...");
+    ConsoleUtils.writeln("KAS base application termination in progress...");
     mTerminated = true;
     
     boolean term = appTerm();
     if (!term)
     {
-      sStdout.warn("An error occurred during KAS base application termination");
+      ConsoleUtils.writeln("An error occurred during KAS base application termination");
     }
     
     ThreadPool.shutdownNow();
-    sStdout.info("{} shutdown complete", getAppName());
+    ConsoleUtils.writeln("%s shutdown complete", getAppName());
     return term;
   }
   

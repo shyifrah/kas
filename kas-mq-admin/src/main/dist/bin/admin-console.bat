@@ -4,7 +4,7 @@
 
 title KAS/MQ Admin console
 set "PASSED_ARGS=%*"
-set "CLASS_NAME=com.kas.mq.console.KasMqCons"
+set "CLASS_NAME=com.kas.mq.admin.KasMqAdmin"
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Setup
