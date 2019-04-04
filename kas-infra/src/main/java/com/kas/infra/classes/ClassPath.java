@@ -6,8 +6,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * {@link ClassPath} is a tool that can be used to query your class path.
@@ -17,29 +18,69 @@ import java.util.Map;
 public class ClassPath
 {
   /**
-   * Map of URLs to {@link ClassPathUrl} objects
+   * Logger
    */
-  private Map<String, ClassPathUrl> mUrls;
+  static private Logger sLogger = LogManager.getLogger(ClassPath.class);
   
   /**
-   * Construct the {@link ClassPath}.<br>
-   * Note that the current implementation won't work on JDK9 and above
-   * as {@link ClassLoader#getSystemClassLoader()} does not return a
-   * {@link URLClassLoader} in these implementation of JDK.
+   * The singleton instance
    */
-  public ClassPath()
+  static private ClassPath sInstance = new ClassPath();
+  
+  /**
+   * Get the singleton instance
+   * 
+   * @return
+   *   the singleton instance
+   */
+  static public ClassPath getInstance()
   {
+    return sInstance;
+  }
+  
+  /**
+   * Map of URLs to {@link ClassPathUrl} objects
+   */
+  private Map<String, ClassPathUrl> mUrls = null;
+  
+  /**
+   * Private constructor
+   */
+  private ClassPath()
+  {
+  }
+  
+  /**
+   * Initialize the ClassPath object
+   */
+  private void init()
+  {
+    sLogger.trace("ClassPath::init() - IN");
+    
     mUrls = new HashMap<String, ClassPathUrl>();
     ClassLoader cl = ClassLoader.getSystemClassLoader();
     URL [] urls = ((URLClassLoader)cl).getURLs();
     for (URL url : urls)
     {
+      sLogger.trace("ClassPath::init() - Processing URL=[{}]", url);
+      
       String path = ClassUtils.getUrlPath(url);
       
       File f = new File(path);
-      String absPath = f.getAbsolutePath();
-      mUrls.put(absPath, ClassPathUrlFactory.createClassPathUrl(absPath));
+      if (!f.exists())
+      {
+        sLogger.trace("ClassPath::init() - URL points to a non-existent resource, skipping");
+      }
+      else
+      {
+        String absPath = f.getAbsolutePath();
+        sLogger.trace("ClassPath::init() - URL points to {}", absPath);
+        
+        mUrls.put(absPath, ClassPathUrlFactory.createClassPathUrl(absPath));
+      }
     }
+    
+    sLogger.trace("ClassPath::init() - OUT");
   }
   
   /**
@@ -52,26 +93,67 @@ public class ClassPath
    */
   public Map<String, Class<?>> getClasses()
   {
+    sLogger.trace("ClassPath::getClasses() - IN");
+    
+    if (mUrls == null) init();
+    
     Map<String, Class<?>> classes = new HashMap<String, Class<?>>();
     for (Map.Entry<String, ClassPathUrl> entry : mUrls.entrySet())
       classes.putAll(entry.getValue().getClassMap());
     
+    sLogger.trace("ClassPath::getClasses() - OUT, loaded {} classes", classes.size());
     return classes;
   }
   
   /**
-   * Get a map of all classes found in the URL designated by the argument.
+   * Get a map of all classes found in {@code path}.
+   * <br>
+   * If the path is a valid key to the URLs map, then that ClassPathUrl's map is returned.
+   * <br>
+   * If the path is not a valid key, it's possible that one of the ancestors of the path
+   * is a key, so we start trimming qualifiers from the path until we find a valid key.
+   * We take the ClassPathUrl's class map mapped to that key, and filtering all classes
+   * not belong to {@code path}.
+   * <br> 
+   * If we still can't find a valid entry in the URLs map, we simply create a brand new
+   * ClassPathUrl and return its map.
    *  
    * @return
-   *   a map of all class names to classes located in {@code url}
+   *   a map of all class names to classes located in {@code path} or one of its
+   *   parent directories.
    */
-  public Map<String, Class<?>> getUrlClasses(String url)
+  public Map<String, Class<?>> getPathClasses(String path)
   {
-    ClassPathUrl cpurl = mUrls.get(url);
-    if (cpurl == null)
-      cpurl = ClassPathUrlFactory.createClassPathUrl(url);
+    sLogger.trace("ClassPath::getPathClasses() - IN, Path=[{}]", path);
+    if (mUrls == null) init();
     
-    return cpurl.getClassMap();
+    Map<String, Class<?>> map;
+    
+    String currPath = path;
+    ClassPathUrl cpurl = mUrls.get(currPath);
+    if (cpurl != null)
+    {
+      map = cpurl.getClassMap();
+    }
+    else
+    {
+      while (cpurl == null)
+      {
+        int dirSepIndex = currPath.lastIndexOf(File.separatorChar);
+        if (dirSepIndex == -1)
+          break;
+        currPath = currPath.substring(0, dirSepIndex);
+        cpurl = mUrls.get(currPath);
+      }
+      
+      if (cpurl == null)
+        cpurl = ClassPathUrlFactory.createClassPathUrl(path);
+      
+      map = cpurl.getClassMap();
+    }
+    
+    sLogger.trace("ClassPath::getPathClasses() - OUT, Total of {} classes", map.size());
+    return map;
   }
   
   /**
@@ -86,6 +168,8 @@ public class ClassPath
    */
   public Map<String, Class<?>> getPackageClasses(String pkg)
   {
+    if (mUrls == null) init();
+    
     return getPackageClasses(pkg, true);
   }
   
@@ -103,9 +187,13 @@ public class ClassPath
    */
   public Map<String, Class<?>> getPackageClasses(String pkg, boolean includeSubPackages)
   {
+    sLogger.trace("ClassPath::getPackageClasses() - IN, Pkg=[{}], IncludeSub=[{}]", pkg, includeSubPackages);
+    if (mUrls == null) init();
+    
     Map<String, Class<?>> result = new HashMap<String, Class<?>>();
     
     String path = pkg.replace('.', '/');
+    sLogger.trace("ClassPath::getPackageClasses() - Pkg=[{}] mapped to Resource Path=[{}]", pkg, path);
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     Enumeration<URL> enumurls = null;
     
@@ -121,26 +209,33 @@ public class ClassPath
       {
         URL url = enumurls.nextElement();
         String urlPath = ClassUtils.getUrlPath(url);
-        if (urlPath != null)
+        
+        File f = new File(urlPath);
+        String urlAbsPath = f.getAbsolutePath();
+        sLogger.trace("ClassPath::getPackageClasses() - URL=[{}] absolute path [{}]", url, urlAbsPath);
+        
+        Map<String, Class<?>> thisUrlMap = getPathClasses(urlAbsPath);
+        
+        for (Map.Entry<String, Class<?>> entry : thisUrlMap.entrySet())
         {
-          File f = new File(urlPath);
-          Map<String, Class<?>> thisUrlMap = getUrlClasses(f.getAbsolutePath());
-          result.putAll(thisUrlMap);
+          String key = entry.getKey();
+          Class<?> val = entry.getValue();
+          
+          if (includeSubPackages)
+          {
+            if ((key.lastIndexOf('.') >= pkg.length()) && (key.startsWith(pkg)))
+              result.put(key, val);
+          }
+          else
+          {
+            if ((key.lastIndexOf('.') == pkg.length()) && (key.startsWith(pkg)))
+              result.put(key, val);
+          }
         }
       }
     }
     
-    if (!includeSubPackages)
-    {
-      Iterator<Map.Entry<String, Class<?>>> iter = result.entrySet().iterator();
-      while (iter.hasNext())
-      {
-          Map.Entry<String, Class<?>> entry = iter.next();
-          String cn = entry.getKey();
-          if (cn.lastIndexOf('.') > pkg.length())
-              iter.remove();
-      }
-    }
+    sLogger.trace("ClassPath::getPackageClasses() - OUT, loaded {} classes", result.size());
     return result;
   }
   
@@ -152,6 +247,8 @@ public class ClassPath
    */
   public String toString()
   {
+    if (mUrls == null) init();
+    
     StringBuffer sb = new StringBuffer();
     sb.append("ClassPath:\n");
     for (ClassPathUrl cpurl : mUrls.values())

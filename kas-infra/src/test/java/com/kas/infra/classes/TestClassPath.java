@@ -6,7 +6,7 @@ import junit.framework.Assert;
 
 public class TestClassPath
 {
-  private ClassPath mClassPath = new ClassPath();
+  private ClassPath mClassPath = ClassPath.getInstance();
   
   @Test
   public void testGetClasses()
@@ -17,9 +17,9 @@ public class TestClassPath
   }
   
   @Test
-  public void testGetUrlClasses()
+  public void testGetPathClasses()
   {
-    Map<String, Class<?>> classes = mClassPath.getUrlClasses("./bin/main");
+    Map<String, Class<?>> classes = mClassPath.getPathClasses("./bin/main");
     Assert.assertTrue  ( classes.containsKey("com.kas.infra.base.AKasObject")     );
     Assert.assertTrue  ( classes.containsKey("com.kas.infra.base.ProductVersion") );
     Assert.assertFalse ( classes.containsKey(this.getClass().getName())           );
