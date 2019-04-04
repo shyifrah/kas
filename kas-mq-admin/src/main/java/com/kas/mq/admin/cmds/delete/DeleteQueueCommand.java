@@ -23,8 +23,8 @@ public class DeleteQueueCommand extends ACommand
    */
   DeleteQueueCommand()
   {
-    mCommandVerbs.add("DELETE QUEUE");
-    mCommandVerbs.add("DELETE Q");
+    mCommandVerbs.add("QUEUE");
+    mCommandVerbs.add("Q");
   }
   
   /**

@@ -26,9 +26,9 @@ public class QueryUserCommand extends ACommand
    */
   QueryUserCommand()
   {
-    mCommandVerbs.add("QUERY USER");
-    mCommandVerbs.add("QUERY USR");
-    mCommandVerbs.add("QUERY U");
+    mCommandVerbs.add("USER");
+    mCommandVerbs.add("USR");
+    mCommandVerbs.add("U");
   }
   
   /**

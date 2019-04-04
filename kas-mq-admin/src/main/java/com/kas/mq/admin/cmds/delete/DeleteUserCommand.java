@@ -22,9 +22,9 @@ public class DeleteUserCommand extends ACommand
    */
   DeleteUserCommand()
   {
-    mCommandVerbs.add("DELETE USER");
-    mCommandVerbs.add("DELETE USR");
-    mCommandVerbs.add("DELETE U");
+    mCommandVerbs.add("USER");
+    mCommandVerbs.add("USR");
+    mCommandVerbs.add("U");
   }
   
   /**

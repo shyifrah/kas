@@ -26,8 +26,8 @@ public class QuerySessCommand extends ACommand
    */
   QuerySessCommand()
   {
-    mCommandVerbs.add("QUERY SESSION");
-    mCommandVerbs.add("QUERY SESS");
+    mCommandVerbs.add("SESSION");
+    mCommandVerbs.add("SESS");
   }
   
   /**

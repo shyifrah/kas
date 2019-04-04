@@ -27,9 +27,9 @@ public class AlterUserCommand extends ACommand
    */
   AlterUserCommand()
   {
-    mCommandVerbs.add("ALTER USER");
-    mCommandVerbs.add("ALTER USR");
-    mCommandVerbs.add("ALTER U");
+    mCommandVerbs.add("USER");
+    mCommandVerbs.add("USR");
+    mCommandVerbs.add("U");
   }
   
   /**

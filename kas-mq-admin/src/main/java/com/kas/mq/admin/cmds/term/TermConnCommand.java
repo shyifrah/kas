@@ -22,8 +22,8 @@ public class TermConnCommand extends ACommand
    */
   TermConnCommand()
   {
-    mCommandVerbs.add("TERMINATE CONNECTION");
-    mCommandVerbs.add("TERMINATE CONN");
+    mCommandVerbs.add("CONNECTION");
+    mCommandVerbs.add("CONN");
   }
   
   /**

@@ -23,9 +23,9 @@ public class AlterGroupCommand extends ACommand
    */
   AlterGroupCommand()
   {
-    mCommandVerbs.add("ALTER GROUP");
-    mCommandVerbs.add("ALTER GRP");
-    mCommandVerbs.add("ALTER G");
+    mCommandVerbs.add("GROUP");
+    mCommandVerbs.add("GRP");
+    mCommandVerbs.add("G");
   }
   
   /**

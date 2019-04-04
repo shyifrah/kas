@@ -23,9 +23,9 @@ public class DefineGroupCommand extends ACommand
    */
   DefineGroupCommand()
   {
-    mCommandVerbs.add("DEFINE GROUP");
-    mCommandVerbs.add("DEFINE GRP");
-    mCommandVerbs.add("DEFINE G");
+    mCommandVerbs.add("GROUP");
+    mCommandVerbs.add("GRP");
+    mCommandVerbs.add("G");
   }
   
   /**

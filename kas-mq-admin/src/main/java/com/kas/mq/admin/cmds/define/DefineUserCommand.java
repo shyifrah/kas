@@ -26,9 +26,9 @@ public class DefineUserCommand extends ACommand
    */
   DefineUserCommand()
   {
-    mCommandVerbs.add("DEFINE USER");
-    mCommandVerbs.add("DEFINE USR");
-    mCommandVerbs.add("DEFINE U");
+    mCommandVerbs.add("USER");
+    mCommandVerbs.add("USR");
+    mCommandVerbs.add("U");
   }
   
   /**

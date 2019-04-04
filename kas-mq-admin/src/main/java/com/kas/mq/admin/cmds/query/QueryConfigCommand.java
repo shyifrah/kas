@@ -26,10 +26,10 @@ public class QueryConfigCommand extends ACommand
    */
   QueryConfigCommand()
   {
-    mCommandVerbs.add("QUERY CONFIGURATION");
-    mCommandVerbs.add("QUERY CONFIG");
-    mCommandVerbs.add("QUERY CONF");
-    mCommandVerbs.add("QUERY CFG");
+    mCommandVerbs.add("CONFIGURATION");
+    mCommandVerbs.add("CONFIG");
+    mCommandVerbs.add("CONF");
+    mCommandVerbs.add("CFG");
   }
   
   /**
