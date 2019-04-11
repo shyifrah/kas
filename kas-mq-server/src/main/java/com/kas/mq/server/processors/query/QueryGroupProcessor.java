@@ -20,7 +20,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-public class QueryGroupSubProcessor extends AProcessor
+public class QueryGroupProcessor extends AProcessor
 {
   /**
    * Input
@@ -29,7 +29,7 @@ public class QueryGroupSubProcessor extends AProcessor
   private boolean mIsPrefix;
   
   /**
-   * Construct a {@link QueryGroupSubProcessor}
+   * Construct a {@link QueryGroupProcessor}
    * 
    * @param request
    *   The request message
@@ -38,7 +38,7 @@ public class QueryGroupSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  public QueryGroupSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryGroupProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

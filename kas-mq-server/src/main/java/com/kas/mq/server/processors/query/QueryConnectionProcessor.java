@@ -20,7 +20,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-public class QueryConnectionSubProcessor extends AProcessor
+public class QueryConnectionProcessor extends AProcessor
 {
   /**
    * Input
@@ -28,7 +28,7 @@ public class QueryConnectionSubProcessor extends AProcessor
   private UniqueId mConnectionId;
   
   /**
-   * Construct a {@link QueryConnectionSubProcessor}
+   * Construct a {@link QueryConnectionProcessor}
    * 
    * @param request
    *   The request message
@@ -37,7 +37,7 @@ public class QueryConnectionSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  public QueryConnectionSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryConnectionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

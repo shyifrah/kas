@@ -21,7 +21,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-public class QueryQueueSubProcessor extends AProcessor
+public class QueryQueueProcessor extends AProcessor
 {
   /**
    * Input
@@ -33,7 +33,7 @@ public class QueryQueueSubProcessor extends AProcessor
   private boolean  mIsFormatted;
   
   /**
-   * Construct a {@link QueryQueueSubProcessor}
+   * Construct a {@link QueryQueueProcessor}
    * 
    * @param request
    *   The request message
@@ -42,7 +42,7 @@ public class QueryQueueSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  public QueryQueueSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

@@ -19,7 +19,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-class QueryConfigSubProcessor extends AProcessor
+public class QueryConfigProcessor extends AProcessor
 {
   /**
    * Input
@@ -27,7 +27,7 @@ class QueryConfigSubProcessor extends AProcessor
   private EQueryConfigType mConfigType;
   
   /**
-   * Construct a {@link QueryConfigSubProcessor}
+   * Construct a {@link QueryConfigProcessor}
    * 
    * @param request
    *   The request message
@@ -36,7 +36,7 @@ class QueryConfigSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  public QueryConfigSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryConfigProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

@@ -10,7 +10,6 @@ import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.mq.server.processors.AProcessor;
-import com.kas.mq.server.processors.QueryServerProcessor;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.entities.GroupEntity;
 import com.kas.sec.entities.GroupEntityDao;
@@ -23,7 +22,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-public class QueryUserSubProcessor extends AProcessor
+public class QueryUserProcessor extends AProcessor
 {
   /**
    * Input
@@ -41,7 +40,7 @@ public class QueryUserSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  public QueryUserSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }
