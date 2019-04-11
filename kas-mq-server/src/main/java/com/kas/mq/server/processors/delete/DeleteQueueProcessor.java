@@ -37,7 +37,7 @@ public class DeleteQueueProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DeleteQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DeleteQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

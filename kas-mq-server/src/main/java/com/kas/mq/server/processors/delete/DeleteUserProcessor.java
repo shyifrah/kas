@@ -32,7 +32,7 @@ public class DeleteUserProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DeleteUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DeleteUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

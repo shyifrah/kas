@@ -32,7 +32,7 @@ public class DeleteGroupProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DeleteGroupProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DeleteGroupProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

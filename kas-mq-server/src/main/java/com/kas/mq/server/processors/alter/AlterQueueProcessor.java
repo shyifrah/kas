@@ -35,7 +35,7 @@ public class AlterQueueProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  AlterQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public AlterQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

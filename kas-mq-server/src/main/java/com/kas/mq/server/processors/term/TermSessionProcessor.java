@@ -31,7 +31,7 @@ public class TermSessionProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  TermSessionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public TermSessionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

@@ -37,7 +37,7 @@ public class QueryConnectionSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QueryConnectionSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryConnectionSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

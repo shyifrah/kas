@@ -41,7 +41,7 @@ public class DefineQueueProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DefineQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DefineQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

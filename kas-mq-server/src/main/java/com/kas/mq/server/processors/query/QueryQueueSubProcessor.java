@@ -42,7 +42,7 @@ public class QueryQueueSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QueryQueueSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryQueueSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

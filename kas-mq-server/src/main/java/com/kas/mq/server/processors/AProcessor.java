@@ -75,7 +75,7 @@ public abstract class AProcessor extends AKasObject implements IProcessor
    * @param repository
    *   The server's repository
    */
-  AProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  protected AProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     mLogger = LogManager.getLogger(getClass());
     mRequest = request;

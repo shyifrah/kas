@@ -35,7 +35,7 @@ public class DefineGroupProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DefineGroupProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DefineGroupProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

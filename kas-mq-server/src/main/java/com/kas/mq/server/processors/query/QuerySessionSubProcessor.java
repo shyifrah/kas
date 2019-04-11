@@ -35,7 +35,7 @@ public class QuerySessionSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QuerySessionSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QuerySessionSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

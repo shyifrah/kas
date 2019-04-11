@@ -36,7 +36,7 @@ class QueryConfigSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QueryConfigSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryConfigSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

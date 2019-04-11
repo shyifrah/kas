@@ -38,7 +38,7 @@ public class DefineUserProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DefineUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DefineUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }
