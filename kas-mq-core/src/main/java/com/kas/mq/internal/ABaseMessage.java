@@ -610,7 +610,6 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
     sb.append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
       .append(pad).append("  Reference Id=").append(StringUtils.asPrintableString(mReferenceId)).append("\n")
       .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
-      .append(pad).append("  Request SubType=").append(StringUtils.asPrintableString(mRequestSubType)).append("\n")
       .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  TimeStamp=").append(mTimeStamp).append("\n")
       .append(pad).append("  Expiration=").append(mExpiration).append("\n")
