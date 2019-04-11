@@ -9,4 +9,13 @@ import com.kas.mq.admin.CommandFactory;
  */
 public class DeleteCommandFactory extends CommandFactory
 {
+  public DeleteCommandFactory()
+  {
+    super(DeleteCommandFactory.class.getPackage().getName());
+  }
+  
+  protected DeleteCommandFactory(String pkg)
+  {
+    super(pkg);
+  }
 }

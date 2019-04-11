@@ -3,20 +3,18 @@ package com.kas.mq.admin;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import com.kas.infra.classes.ClassPath;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.ThrowableFormatter;
+import com.kas.mq.internal.PackageRegistrar;
 
 /**
  * A base factory for commands
  * 
  * @author Pippo
  */
-public class CommandFactory implements ICommandFactory
+public class CommandFactory extends PackageRegistrar<String, ICommand> implements ICommandFactory
 {
   /**
    * Logger
@@ -24,53 +22,50 @@ public class CommandFactory implements ICommandFactory
   static private Logger sLogger = LogManager.getLogger(CommandFactory.class);
   
   /**
-   * A {@link TreeMap} to map command verbs with {@link ICommand} that handles it
-   */
-  protected Map<String, ICommand> mCommandVerbs = new TreeMap<String, ICommand>();
-  
-  /**
-   * The name of this package
-   */
-  protected String mPackageName;
-  
-  /**
-   * Class path data extractor
-   */
-  protected ClassPath mClassPath;
-  
-  /**
    * Construct this command factory
+   * 
+   * @param pkg
+   *   The name of the package
    */
-  protected CommandFactory()
+  protected CommandFactory(String pkg)
   {
-    mPackageName = this.getClass().getPackage().getName();
-    mClassPath = ClassPath.getInstance();
+    super(pkg);
   }
   
   /**
-   * Initialize the command factory.<br>
-   * We scan the contents of the directory represented by this package.
-   * If a class file is found that designates a {@link ICommand}, we instantiate it
-   * and then call this class' {@link ICommand#init(ICommandFactory)} method.
+   * Register class {@code cls}.
+   * <br>
+   * We test {@code cls} to be a {@link ICommand}. If it is, we register it within the factory.
+   * 
+   * @param cls
+   *   The class that needs initialization.
    */
-  public void init()
+  protected void register(Class<?> cls)
   {
-    sLogger.trace("CommandFactory::init() - IN");
-    
-    sLogger.trace("CommandFactory::init() - Getting list of classes in current package: {}", mPackageName);
-    Map<String, Class<?>> classes = mClassPath.getPackageClasses(mPackageName, false);
-    
-    for (Map.Entry<String, Class<?>> entry : classes.entrySet())
+    if (isCommandDrivenClass(cls))
     {
-      String cn = entry.getKey();
-      Class<?> cls = entry.getValue();
-      
-      sLogger.debug("CommandFactory::init() - Processing class [{}]", cn);
-      if (isCommandDrivenClass(cls))
-        registerCommandClass(cls);
+      registerCommandClass(cls);
     }
-    
-    sLogger.trace("CommandFactory::init() - OUT");
+  }
+  
+  /**
+   * Test if {@code cls} is a driven, non-abstract instance of {@link ICommand}
+   * 
+   * @param cls
+   *   The class object to test
+   * @return
+   *   {@code true} if {@code cls} is an {@link ICommand}, {@code false} otherwise
+   */
+  public boolean isCommandDrivenClass(Class<?> cls)
+  {
+    int mods = cls.getModifiers();
+    if (!ICommand.class.isAssignableFrom(cls))
+      return false;
+    if (Modifier.isAbstract(mods))
+      return false;
+    if (Modifier.isInterface(mods))
+      return false;
+    return true;
   }
   
   /**
@@ -99,10 +94,7 @@ public class CommandFactory implements ICommandFactory
       for (String verb : verbs)
       {
         sLogger.debug("CommandFactory::registerCommandClass() - Registering Verb=[{}] with Command=[{}]", verb, cls.getName());
-        synchronized (mCommandVerbs)
-        {
-          mCommandVerbs.put(verb, cmd);
-        }
+        register(verb, cmd);
       }
       
       success = true;
@@ -113,39 +105,6 @@ public class CommandFactory implements ICommandFactory
     return success;
   }
 
-  /**
-   * Test if {@code cls} is a driven, non-abstract instance of {@link ICommand}
-   * 
-   * @param cls
-   *   The class object to test
-   * @return
-   *   {@code true} if {@code cls} is an {@link ICommand}, {@code false} otherwise
-   */
-  public boolean isCommandDrivenClass(Class<?> cls)
-  {
-    int mods = cls.getModifiers();
-    if (!ICommand.class.isAssignableFrom(cls))
-      return false;
-    if (Modifier.isAbstract(mods))
-      return false;
-    if (Modifier.isInterface(mods))
-      return false;
-    return true;
-  }
-  
-  /**
-   * Register a command verb with a specified command object
-   * 
-   * @param verb
-   *   The command verb
-   * @param cmd
-   *   The command object that will handle commands beginning with {@code verb}
-   */
-  public void register(String verb, ICommand cmd)
-  {
-    
-  }
-  
   /**
    * Get a {@link ICommand} object to handle the new command text.<br>
    * Note that the only the verb upper-cased to locate the specific class,
@@ -167,7 +126,7 @@ public class CommandFactory implements ICommandFactory
     }
     
     String verb = tokens[0].toUpperCase();
-    ICommand cmd = mCommandVerbs.get(verb);
+    ICommand cmd = mRegistration.get(verb);
     if (cmd != null)
     {
       String reminder = cmdText.substring(verb.length()).trim();

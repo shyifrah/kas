@@ -9,4 +9,13 @@ import com.kas.mq.admin.CommandFactory;
  */
 public class TermCommandFactory extends CommandFactory
 {
+  public TermCommandFactory()
+  {
+    super(TermCommandFactory.class.getPackage().getName());
+  }
+  
+  protected TermCommandFactory(String pkg)
+  {
+    super(pkg);
+  }
 }

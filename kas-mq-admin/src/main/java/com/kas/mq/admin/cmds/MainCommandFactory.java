@@ -12,7 +12,7 @@ public class MainCommandFactory extends CommandFactory
   /**
    * Singleton instance
    */
-  static private MainCommandFactory sInstance = new MainCommandFactory();
+  static private MainCommandFactory sInstance = new MainCommandFactory(MainCommandFactory.class.getPackage().getName());
   
   /**
    * Get the singleton
@@ -28,7 +28,8 @@ public class MainCommandFactory extends CommandFactory
   /**
    * Private Constructor
    */
-  private MainCommandFactory()
+  private MainCommandFactory(String pkg)
   {
+    super(pkg);
   }
 }
