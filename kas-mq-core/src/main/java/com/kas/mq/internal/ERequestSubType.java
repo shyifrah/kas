@@ -7,55 +7,43 @@ import com.kas.infra.base.IObject;
  * 
  * @author Pippo
  */
-public enum ERequestType implements IObject
+public enum ERequestSubType implements IObject
 {
   /**
-   * Unknown request type. Just put the message in the designated queue
+   * Unknown sub-request type
    */
   cUnknown,
   
   /**
-   * Login
+   * Group operations
    */
-  cLogin,
+  cGroup,
   
   /**
-   * Get message
+   * User operations
    */
-  cGet,
+  cUser,
   
   /**
-   * Define
+   * Queue operations
    */
-  cDefine,
+  cQueue,
   
   /**
-   * Delete
+   * Terminate operations
    */
-  cDelete,
-  
-  /**
-   * Alter
-   */
-  cAlter,
-  
-  /**
-   * Query
-   */
-  cQuery,
-  
-  /**
-   * Terminate
-   */
-  cTerminate,
+  cConnection,
+  cSession,
+  cServer,
   
   /**
    * Notifications
    */
-  cNotify,
+  cSysState,
+  cRepoUpdate,
   ;
   
-  static final private ERequestType [] cValues = ERequestType.values();
+  static final private ERequestSubType [] cValues = ERequestSubType.values();
   
   /**
    * Get the enum value by its ordinal.
@@ -65,7 +53,7 @@ public enum ERequestType implements IObject
    * @return
    *   the enum value
    */
-  static public ERequestType fromInt(int id)
+  static public ERequestSubType fromInt(int id)
   {
     return cValues[id];
   }
