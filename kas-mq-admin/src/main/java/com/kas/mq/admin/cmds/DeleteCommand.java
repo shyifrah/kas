@@ -3,7 +3,7 @@ package com.kas.mq.admin.cmds;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.admin.ACommand;
 import com.kas.mq.admin.ICommand;
-import com.kas.mq.admin.ICommandFactory;
+import com.kas.mq.admin.CommandFactory;
 import com.kas.mq.admin.cmds.delete.DeleteCommandFactory;
 import com.kas.mq.internal.MqContextConnection;
 
@@ -17,7 +17,7 @@ public class DeleteCommand extends ACommand
   /**
    * A factory responsible for creating {@link ICommand} according to sub-verb
    */
-  private ICommandFactory mFactory;
+  private CommandFactory mFactory;
   
   /**
    * Construct the command and setting its verbs
