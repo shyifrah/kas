@@ -1,4 +1,4 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.define;
 
 import java.util.Map;
 import com.kas.comm.impl.NetworkAddress;
@@ -12,6 +12,7 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 

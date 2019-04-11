@@ -1,4 +1,4 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.alter;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.utils.StringUtils;
@@ -8,6 +8,7 @@ import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 

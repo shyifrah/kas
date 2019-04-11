@@ -5,6 +5,12 @@ import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.query.QueryConfigSubProcessor;
+import com.kas.mq.server.processors.query.QueryConnectionSubProcessor;
+import com.kas.mq.server.processors.query.QueryGroupSubProcessor;
+import com.kas.mq.server.processors.query.QueryQueueSubProcessor;
+import com.kas.mq.server.processors.query.QuerySessionSubProcessor;
+import com.kas.mq.server.processors.query.QueryUserSubProcessor;
 
 /**
  * Processor for querying server's information
