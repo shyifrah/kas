@@ -1,12 +1,9 @@
 package com.kas.mq.admin.cmds.query;
 
-import com.kas.infra.base.Properties;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.mq.admin.ACommand;
 import com.kas.mq.impl.EQueryConfigType;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
-import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -48,10 +45,7 @@ public class QueryConfigCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
-    Properties qprops = new Properties();
-    qprops.setStringProperty(IMqConstants.cKasPropertyQueryConfigType, mType.name());
-    
-    MqStringMessage result = conn.queryServer(EQueryType.QUERY_CONFIG, qprops);
+    MqStringMessage result = conn.queryConfig(mType);
     if (result != null)
       ConsoleUtils.writeln("%s", result.getBody());
     ConsoleUtils.writeln("%s", conn.getResponse());

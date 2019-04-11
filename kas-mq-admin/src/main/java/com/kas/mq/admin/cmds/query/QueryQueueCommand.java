@@ -1,12 +1,9 @@
 package com.kas.mq.admin.cmds.query;
 
-import com.kas.infra.base.Properties;
 import com.kas.infra.utils.ConsoleUtils;
 import com.kas.infra.utils.Validators;
 import com.kas.mq.admin.ACommand;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.MqStringMessage;
-import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqContextConnection;
 
 /**
@@ -49,21 +46,17 @@ public class QueryQueueCommand extends ACommand
    */
   public void exec(MqContextConnection conn)
   {
-    Properties qprops = new Properties();
-    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryFormatOutput, true);
+    boolean prefix = false;
     if (mName.endsWith("*"))
     {
       mName = mName.substring(0, mName.length()-1);
-      qprops.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, true);
+      prefix = true;
     }
     
     if ((mName.length() > 0) && (!Validators.isQueueName(mName)))
       throw new IllegalArgumentException("NAME was not specified or invalid: [" + mName + ']');
     
-    qprops.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, mName);
-    qprops.setBoolProperty(IMqConstants.cKasPropertyQueryAllData, mAllData);
-    
-    MqStringMessage result = conn.queryServer(EQueryType.QUERY_QUEUE, qprops);
+    MqStringMessage result = conn.queryQueue(mName, prefix, mAllData, true);
     if (result != null)
       ConsoleUtils.writeln("%s", result.getBody());
     ConsoleUtils.writeln("%s", conn.getResponse());
