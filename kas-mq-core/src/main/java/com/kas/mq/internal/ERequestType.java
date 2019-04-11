@@ -27,32 +27,46 @@ public enum ERequestType implements IObject
   /**
    * Define
    */
-  cDefine,
+  cDefineGroup,
+  cDefineUser,
+  cDefineQueue,
   
   /**
    * Delete
    */
-  cDelete,
+  cDeleteGroup,
+  cDeleteUser,
+  cDeleteQueue,
   
   /**
    * Alter
    */
-  cAlter,
+  cAlterGroup,
+  cAlterUser,
+  cAlterQueue,
   
   /**
    * Query
    */
-  cQuery,
+  cQueryGroup,
+  cQueryUser,
+  cQueryQueue,
+  cQueryConnection,
+  cQuerySession,
+  cQueryConfig,
   
   /**
    * Terminate
    */
-  cTerminate,
+  cTerminateServer,
+  cTerminateConnection,
+  cTerminateSession,
   
   /**
    * Notifications
    */
-  cNotify,
+  cNotifySysState,
+  cNotifyRepoUpdate,
   ;
   
   static final private ERequestType [] cValues = ERequestType.values();

@@ -31,7 +31,7 @@ public class RepoUpdateProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  RepoUpdateProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public RepoUpdateProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }
