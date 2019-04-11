@@ -44,12 +44,7 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Request type
    */
-  protected ERequestType mRequestType = ERequestType.cUnknown;;
-  
-  /**
-   * Sub-Request type
-   */
-  protected ERequestSubType mRequestSubType = ERequestSubType.cUnknown;
+  protected ERequestType mRequestType = ERequestType.cUnknown;
   
   /**
    * When message was created
@@ -252,29 +247,6 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   public ERequestType getRequestType()
   {
     return mRequestType;
-  }
-  
-  /**
-   * Set the request's sub-type.<br>
-   * Note that this property must be set for administrative messages.
-   * 
-   * @param subtype
-   *   The {@link ERequestSubType} of the message
-   */
-  public void setRequestSubType(ERequestSubType subtype)
-  {
-    mRequestSubType = subtype;
-  }
-  
-  /**
-   * Get the message's request sub-type
-   * 
-   * @return
-   *   the message's request sub-type
-   */
-  public ERequestSubType getRequestSubType()
-  {
-    return mRequestSubType;
   }
   
   /**

@@ -2,7 +2,6 @@ package com.kas.mq.server.processors.query;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.StringList;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -11,6 +10,7 @@ import com.kas.mq.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.mq.server.processors.AProcessor;
+import com.kas.mq.server.processors.EQueryType;
 import com.kas.mq.server.processors.IProcessor;
 import com.kas.mq.server.processors.SysStateProcessor;
 import com.kas.sec.access.AccessLevel;

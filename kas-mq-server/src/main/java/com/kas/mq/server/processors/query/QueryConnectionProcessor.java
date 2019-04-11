@@ -3,7 +3,6 @@ package com.kas.mq.server.processors.query;
 import java.util.Collection;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -12,6 +11,7 @@ import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
 import com.kas.mq.server.processors.AProcessor;
+import com.kas.mq.server.processors.EQueryType;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 
