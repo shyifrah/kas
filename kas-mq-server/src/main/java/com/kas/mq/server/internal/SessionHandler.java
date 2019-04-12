@@ -73,7 +73,7 @@ public class SessionHandler extends AKasObject implements Runnable
    *   The client's socket
    * @param controller
    *   The {@link IController}
-   * @param
+   * @param repository
    *   The {@link IRepository}
    * @throws IOException
    *   if {@link Socket#setSoTimeout()} throws
@@ -82,8 +82,7 @@ public class SessionHandler extends AKasObject implements Runnable
   {
     mController = controller;
     mRepository = repository;
-    socket.setSoTimeout(0);
-    mMessenger = MessengerFactory.create(socket);
+    mMessenger = MessengerFactory.create(socket, mController.getConfig().getConnSocketTimeout());
     
     mLogger = LogManager.getLogger(getClass());
     mSessionId = UniqueId.generate();
@@ -120,8 +119,8 @@ public class SessionHandler extends AKasObject implements Runnable
           mLogger.trace("SessionHandler::run() - Responding with the message: {}", StringUtils.asPrintableString(reply));
           mMessenger.send(reply);
           
-          boolean stopped = isRunning() & processor.postprocess(reply);
-          setRunningState(stopped);
+          boolean running = isRunning() & processor.postprocess(reply);
+          setRunningState(running);
         }
       }
       catch (SocketTimeoutException e)

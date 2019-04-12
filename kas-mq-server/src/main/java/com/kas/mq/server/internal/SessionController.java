@@ -202,8 +202,8 @@ public class SessionController extends AKasObject implements IController
       UniqueId uid = entry.getKey();
       SessionHandler handler = entry.getValue();
       
-      mLogger.debug("Handler {} was signaled to terminate processing...", uid);
       handler.stop();
+      mLogger.debug("Handler {} was signaled to terminate processing...", uid);
     }
     
     logBoth("Closing all opened connections...");
