@@ -49,20 +49,6 @@ public interface IMessenger extends IObject
   public abstract IPacket receive() throws IOException;
   
   /**
-   * Receive a {@link IPacket} object.<br>
-   * <br>
-   * If a {@link IPacket} is not available, wait for {@code timeout} milliseconds for one to be available.
-   * 
-   * @param timeout
-   *   Milliseconds to wait for the {@link IPacket} before returning {@code null}
-   * @return
-   *   the read packet or {@code null} if one is not available
-   * @throws IOException
-   *   if an I/O error occurs
-   */
-  public abstract IPacket receive(int timeout) throws IOException;
-  
-  /**
    * Sends a {@link IPacket} and wait indefinitely for a reply.
    * 
    * @param request
@@ -73,20 +59,6 @@ public interface IMessenger extends IObject
    *   if an I/O error occurs
    */
   public abstract IPacket sendAndReceive(IPacket request) throws IOException;
-  
-  /**
-   * Sends a {@link IPacket} and wait for a reply.
-   * 
-   * @param request
-   *   A request packet
-   * @param timeout
-   *   Milliseconds to wait for the reply
-   * @return
-   *   response packet or null if timeout expires
-   * @throws IOException
-   *   if an I/O error occurs
-   */
-  public abstract IPacket sendAndReceive(IPacket request, int timeout) throws IOException;
   
   /**
    * Perform messenger's cleanup:<br>

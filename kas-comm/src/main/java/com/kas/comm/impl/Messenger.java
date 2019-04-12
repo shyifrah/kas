@@ -42,7 +42,7 @@ public class Messenger extends AKasObject implements IMessenger
   protected NetworkAddress mAddress;
   
   /**
-   * Constructs a {@link Messenger} object using the specified socket, host and port.
+   * Constructs a {@link Messenger} object using the specified host and port.
    * 
    * @param host
    *   The remote host
@@ -57,7 +57,24 @@ public class Messenger extends AKasObject implements IMessenger
   }
   
   /**
-   * Constructs a {@link Messenger} object using the specified socket, host and port.
+   * Constructs a {@link Messenger} object using the specified host, port and timeout.
+   * 
+   * @param host
+   *   The remote host
+   * @param port
+   *   Remote host listening port
+   * @param timeout
+   *   The socket read timeout
+   * @throws IOException
+   *   if I/O error occurs during streams creation
+   */
+  Messenger(String host, int port, int timeout) throws IOException
+  {
+    this(new Socket(host, port), timeout);
+  }
+  
+  /**
+   * Constructs a {@link Messenger} object using the specified socket.
    * 
    * @param socket
    *   The socket that will serve this {@link Messenger}
@@ -65,6 +82,21 @@ public class Messenger extends AKasObject implements IMessenger
    *   if I/O error occurs during streams creation
    */
   Messenger(Socket socket) throws IOException
+  {
+    this(socket, 0);
+  }
+  
+  /**
+   * Constructs a {@link Messenger} object using the specified socket and timeout.
+   * 
+   * @param socket
+   *   The socket that will serve this {@link Messenger}
+   * @param timeout
+   *   The socket read timeout
+   * @throws IOException
+   *   if I/O error occurs during streams creation
+   */
+  Messenger(Socket socket, int timeout) throws IOException
   {
     if (socket == null) throw new IOException("Null socket");
     
@@ -75,7 +107,7 @@ public class Messenger extends AKasObject implements IMessenger
     
     mOutputStream = new ObjectOutputStream(mSocket.getOutputStream());
     mInputStream = new ObjectInputStream(mSocket.getInputStream());
-    mSocket.setSoTimeout(0);
+    mSocket.setSoTimeout(timeout);
   }
   
   /**
@@ -148,25 +180,6 @@ public class Messenger extends AKasObject implements IMessenger
    */
   public IPacket receive() throws IOException
   {
-    return receive(0);
-  }
-
-  /**
-   * Receive a {@link IPacket} object.<br>
-   * If a {@link IPacket} is not available, wait for {@code timeout} milliseconds
-   * for one to be available.
-   * 
-   * @param timeout
-   *   Milliseconds to wait for the {@link IPacket} before returning {@code null}.
-   *   A value of {@code 0} means there is no timeout.
-   * @return
-   *   the read packet or {@code null} if one is not available
-   * 
-   * @throws IOException
-   *   if an I/O error occurs
-   */
-  public IPacket receive(int timeout) throws IOException
-  {
     mLogger.trace("Messenger::receive() - IN");
     
     if (mInputStream == null) throw new IOException("Null input stream; Messenger is probably not connected");
@@ -174,7 +187,6 @@ public class Messenger extends AKasObject implements IMessenger
     IPacket packet = null;
     try
     {
-      mSocket.setSoTimeout(timeout);
       PacketHeader header = new PacketHeader(mInputStream);
       packet = header.read(mInputStream);
     }
@@ -209,25 +221,6 @@ public class Messenger extends AKasObject implements IMessenger
   {
     send(request);
     return receive();
-  }
-
-  /**
-   * Sends a {@link IPacket} and wait for a reply.
-   * 
-   * @param request
-   *   A request packet
-   * @param timeout
-   *   Milliseconds to wait for the reply
-   * @return
-   *   response packet or null if timeout expires
-   * 
-   * @throws IOException
-   *   if an I/O error occurs
-   */
-  public IPacket sendAndReceive(IPacket request, int timeout) throws IOException
-  {
-    send(request);
-    return receive(timeout);
   }
   
   /**
