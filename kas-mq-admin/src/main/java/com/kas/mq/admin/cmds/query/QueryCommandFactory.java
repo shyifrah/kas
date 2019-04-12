@@ -9,4 +9,13 @@ import com.kas.mq.admin.CommandFactory;
  */
 public class QueryCommandFactory extends CommandFactory
 {
+  public QueryCommandFactory()
+  {
+    super(QueryCommandFactory.class.getPackage().getName());
+  }
+  
+  protected QueryCommandFactory(String pkg)
+  {
+    super(pkg);
+  }
 }

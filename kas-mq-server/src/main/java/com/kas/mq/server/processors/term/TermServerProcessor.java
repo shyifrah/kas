@@ -1,9 +1,10 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.term;
 
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -23,7 +24,7 @@ public class TermServerProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  TermServerProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public TermServerProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

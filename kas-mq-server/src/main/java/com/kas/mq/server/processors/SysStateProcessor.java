@@ -33,7 +33,7 @@ public class SysStateProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  SysStateProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public SysStateProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

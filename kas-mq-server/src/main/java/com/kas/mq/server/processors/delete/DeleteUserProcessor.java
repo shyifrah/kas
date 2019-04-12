@@ -1,10 +1,11 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.delete;
 
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.entities.UserEntityDao;
 import com.kas.sec.resources.EResourceClass;
@@ -31,7 +32,7 @@ public class DeleteUserProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DeleteUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DeleteUserProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

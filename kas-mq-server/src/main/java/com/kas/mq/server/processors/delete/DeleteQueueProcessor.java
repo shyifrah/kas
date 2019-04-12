@@ -1,37 +1,34 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.delete;
 
 import java.util.Map;
 import com.kas.comm.impl.NetworkAddress;
-import com.kas.infra.utils.StringUtils;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
-import com.kas.mq.internal.EQueueDisp;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.internal.MqLocalQueue;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 
 /**
- * Processor for defining queues
+ * Processor for deleting queues
  * 
  * @author Pippo
  */
-public class DefineQueueProcessor extends AProcessor
+public class DeleteQueueProcessor extends AProcessor
 {
   /**
    * Input
    */
   private String mQueue;
-  private String mDescription;
-  private int mThreshold;
-  private EQueueDisp mDisposition;
+  private boolean mForce;
   
   /**
-   * Construct a {@link DefineQueueProcessor}
+   * Construct a {@link DeleteQueueProcessor}
    * 
    * @param request
    *   The request message
@@ -40,7 +37,7 @@ public class DefineQueueProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  DefineQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public DeleteQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }
@@ -53,55 +50,66 @@ public class DefineQueueProcessor extends AProcessor
    */
   public IMqMessage process()
   {
-    mLogger.trace("DefineQueueProcessor::process() - IN");
+    mLogger.trace("DeleteQueueProcessor::process() - IN");
     
     if (!mConfig.isEnabled())
     {
       mDesc = "KAS/MQ server is disabled";
-      mLogger.trace("DefineQueueProcessor::process() - {}", mDesc);
+      mLogger.trace("DeleteQueueProcessor::process() - {}", mDesc);
     }
     else
     {
-      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDefQueueName, null);
-      mDescription = mRequest.getStringProperty(IMqConstants.cKasPropertyDefQueueDesc, "");
-      mThreshold = mRequest.getIntProperty(IMqConstants.cKasPropertyDefThreshold, IMqConstants.cDefaultQueueThreshold);
-      String disp = mRequest.getStringProperty(IMqConstants.cKasPropertyDefDisposition, EQueueDisp.TEMPORARY.name());
-      mDisposition = EQueueDisp.fromString(disp);
-      mLogger.trace("DefineQueueProcessor::process() - Queue={}; Threshold={}; Disposition={}", mQueue, mThreshold, disp);
+      mQueue = mRequest.getStringProperty(IMqConstants.cKasPropertyDelQueueName, null);
+      mForce = mRequest.getBoolProperty(IMqConstants.cKasPropertyDelForce, false);
+      mLogger.trace("DeleteQueueProcessor::process() - Queue={}; Force={}", mQueue, mForce);
       
       MqLocalQueue mqlq = mRepository.getLocalQueue(mQueue);
       
-      if (mqlq != null)
+      if (mqlq == null)
       {
-        mDesc = "Queue with name \"" + mQueue + "\" already exists";
-        mLogger.trace("DefineQueueProcessor::process() - {}", mDesc);
+        mDesc = "Queue with name \"" + mQueue + "\" doesn't exist";
+        mLogger.trace("DeleteQueueProcessor::process() - {}", mDesc);
       }
-      else if (!isAccessPermitted(EResourceClass.COMMAND, String.format("DEFINE_QUEUE_%s", mQueue)))
+      else if (!isAccessPermitted(EResourceClass.COMMAND, String.format("DELETE_QUEUE_%s", mQueue)))
       {
-        mDesc = "User is not permitted to issue DEFINE_QUEUE command";
+        mDesc = "User is not permitted to issue DELETE_QUEUE command";
         mLogger.warn(mDesc);
       }
       else if (!isAccessPermitted(EResourceClass.QUEUE, mQueue, AccessLevel.ALTER_ACCESS))
       {
-        mDesc = "User is not permitted to define queues";
+        mDesc = "User is not permitted to delete queues";
         mLogger.warn(mDesc);
+      }
+      else if (mqlq.size() == 0)
+      {
+        mRepository.deleteLocalQueue(mQueue);
+        mCode = EMqCode.cOkay;
+        mDesc = "Queue with name \"" + mQueue + "\" was successfully deleted";
+        mLogger.trace("DeleteQueueProcessor::process() - {}", mDesc);
+      }
+      else if (mForce)
+      {
+        int size = mqlq.size();
+        mRepository.deleteLocalQueue(mQueue);
+        mCode = EMqCode.cOkay;
+        mDesc = "Queue with name \"" + mQueue + "\" was successfully deleted (" + size + " messages discarded)";
+        mLogger.trace("DeleteQueueProcessor::process() - {}", mDesc);
       }
       else
       {
-        mqlq = mRepository.defineLocalQueue(mQueue, mDescription, mThreshold, mDisposition);
-        mLogger.trace("DefineQueueProcessor::process() - Created queue {}", StringUtils.asPrintableString(mqlq));
-        mDesc = "Queue with name " + mQueue + " and threshold of " + mThreshold + " was successfully defined";
-        mCode = EMqCode.cOkay;
+        int size = mqlq.size();
+        mDesc = "Queue is not empty (" + size + " messages) and FORCE was not specified";
+        mLogger.trace("DeleteQueueProcessor::process() - {}", mDesc);
       }
     }
     
-    mLogger.trace("DefineQueueProcessor::process() - OUT");
+    mLogger.trace("DeleteQueueProcessor::process() - OUT");
     return respond();
   }
   
   /**
-   * Post-process queue definition request.<br>
-   * If queue definition was successful, we need to inform remote KAS/MQ managers
+   * Post-process queue deletion request.<br>
+   * If queue deletion was successful, we need to inform remote KAS/MQ managers
    * that the local repository was updated and that they should update their repository
    * to reflect these changes.
    * 
@@ -113,7 +121,7 @@ public class DefineQueueProcessor extends AProcessor
    */
   public boolean postprocess(IMqMessage reply)
   {
-    mLogger.trace("DefineQueueProcessor::postprocess() - IN");
+    mLogger.trace("DeleteQueueProcessor::postprocess() - IN");
     
     if (mCode == EMqCode.cOkay)
     {
@@ -127,7 +135,7 @@ public class DefineQueueProcessor extends AProcessor
         String remoteQmgrName  = entry.getKey();
         NetworkAddress address = entry.getValue();
         
-        mLogger.trace("DefineQueueProcessor::postprocess() - Notifying KAS/MQ server \"{}\" ({}) on repository update", remoteQmgrName, address);
+        mLogger.trace("DeleteQueueProcessor::postprocess() - Notifying KAS/MQ server \"{}\" ({}) on repository update", remoteQmgrName, address);
         
         conn.connect(address.getHost(), address.getPort());
         if (conn.isConnected())
@@ -135,12 +143,12 @@ public class DefineQueueProcessor extends AProcessor
           boolean logged = conn.login(IMqConstants.cSystemUserName, IMqConstants.cSystemPassWord);
           if (!logged)
           {
-            mLogger.trace("DefineQueueProcessor::postprocess() - Failed to login to remote KAS/MQ server at {}", address);
+            mLogger.trace("DeleteQueueProcessor::postprocess() - Failed to login to remote KAS/MQ server at {}", address);
             continue;
           }
           
-          boolean success = conn.notifyRepoUpdate(localQmgr, mQueue, true);
-          mLogger.trace("DefineQueueProcessor::postprocess() - Notification returned: {}", success);
+          boolean success = conn.notifyRepoUpdate(localQmgr, mQueue, false);
+          mLogger.trace("DeleteQueueProcessor::postprocess() - Notification returned: {}", success);
           
           conn.disconnect();
         }
@@ -149,7 +157,7 @@ public class DefineQueueProcessor extends AProcessor
       MqServerConnectionPool.getInstance().release(conn);
     }
     
-    mLogger.trace("DefineQueueProcessor::postprocess() - OUT");
+    mLogger.trace("DeleteQueueProcessor::postprocess() - OUT");
     return true;
   }
 }

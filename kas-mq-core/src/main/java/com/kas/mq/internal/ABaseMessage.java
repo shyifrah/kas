@@ -44,7 +44,7 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
   /**
    * Request type
    */
-  protected ERequestType mRequestType = ERequestType.cUnknown;;
+  protected ERequestType mRequestType = ERequestType.cUnknown;
   
   /**
    * When message was created
@@ -609,8 +609,8 @@ public abstract class ABaseMessage extends AKasObject implements IMqMessage
     StringBuilder sb = new StringBuilder();
     sb.append(pad).append("  Message Id=").append(mMessageId.toPrintableString()).append("\n")
       .append(pad).append("  Reference Id=").append(StringUtils.asPrintableString(mReferenceId)).append("\n")
-      .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  Request Type=").append(StringUtils.asPrintableString(mRequestType)).append("\n")
+      .append(pad).append("  Priority=").append(mPriority).append("\n")
       .append(pad).append("  TimeStamp=").append(mTimeStamp).append("\n")
       .append(pad).append("  Expiration=").append(mExpiration).append("\n")
       .append(pad).append("  Response=").append(mResponse.toPrintableString(level+1)).append("\n")

@@ -1,4 +1,4 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.term;
 
 import com.kas.infra.base.UniqueId;
 import com.kas.mq.impl.messages.IMqMessage;
@@ -8,6 +8,7 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
 import com.kas.sec.resources.EResourceClass;
 
 /**
@@ -32,7 +33,7 @@ public class TermConnectionProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  TermConnectionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public TermConnectionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

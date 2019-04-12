@@ -5,7 +5,7 @@ import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.StringList;
 import com.kas.infra.utils.Base64Utils;
 import com.kas.infra.utils.StringUtils;
-import com.kas.mq.impl.EQueryType;
+import com.kas.mq.impl.EQueryConfigType;
 import com.kas.mq.impl.messages.MqMessage;
 import com.kas.mq.impl.messages.MqMessageFactory;
 
@@ -16,42 +16,6 @@ import com.kas.mq.impl.messages.MqMessageFactory;
  */
 public class MqRequestFactory
 {
-  static public MqMessage createDefineGroupRequest(String group, String desc)
-  {
-    MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cDefineGroup);
-    message.setStringProperty(IMqConstants.cKasPropertyDefGroupName, group);
-    message.setStringProperty(IMqConstants.cKasPropertyDefGroupDesc, desc);
-    return message;
-  }
-  
-  static public MqMessage createDeleteGroupRequest(String group)
-  {
-    MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cDeleteGroup);
-    message.setStringProperty(IMqConstants.cKasPropertyDelGroupName, group);
-    return message;
-  }
-  
-  static public MqMessage createDefineUserRequest(String user, String pass, String desc, StringList groups)
-  {
-    MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cDefineUser);
-    message.setStringProperty(IMqConstants.cKasPropertyDefUserName, user);
-    message.setStringProperty(IMqConstants.cKasPropertyDefUserPass, pass);
-    message.setStringProperty(IMqConstants.cKasPropertyDefUserDesc, desc);
-    message.setStringProperty(IMqConstants.cKasPropertyDefUserGrps, groups.toString());
-    return message;
-  }
-  
-  static public MqMessage createDeleteUserRequest(String user)
-  {
-    MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cDeleteUser);
-    message.setStringProperty(IMqConstants.cKasPropertyDelUserName, user);
-    return message;
-  }
-  
   static public MqMessage createLoginRequest(String user, String pass, String appName)
   {
     MqMessage message = MqMessageFactory.createMessage();
@@ -73,6 +37,26 @@ public class MqRequestFactory
     return message;
   }
   
+  static public MqMessage createDefineGroupRequest(String group, String desc)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDefineGroup);
+    message.setStringProperty(IMqConstants.cKasPropertyDefGroupName, group);
+    message.setStringProperty(IMqConstants.cKasPropertyDefGroupDesc, desc);
+    return message;
+  }
+  
+  static public MqMessage createDefineUserRequest(String user, String pass, String desc, StringList groups)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDefineUser);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserName, user);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserPass, pass);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserDesc, desc);
+    message.setStringProperty(IMqConstants.cKasPropertyDefUserGrps, groups.toString());
+    return message;
+  }
+  
   static public MqMessage createDefineQueueRequest(String queue, String desc, int threshold, EQueueDisp disp)
   {
     MqMessage message = MqMessageFactory.createMessage();
@@ -84,12 +68,19 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqMessage createAlterQueueRequest(String queue, Properties qProps)
+  static public MqMessage createDeleteGroupRequest(String group)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cAlterQueue);
-    message.setStringProperty(IMqConstants.cKasPropertyAltQueueName, queue);
-    message.setSubset(qProps);
+    message.setRequestType(ERequestType.cDeleteGroup);
+    message.setStringProperty(IMqConstants.cKasPropertyDelGroupName, group);
+    return message;
+  }
+  
+  static public MqMessage createDeleteUserRequest(String user)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cDeleteUser);
+    message.setStringProperty(IMqConstants.cKasPropertyDelUserName, user);
     return message;
   }
   
@@ -102,19 +93,72 @@ public class MqRequestFactory
     return message;
   }
   
-  static public MqMessage createQueryServerRequest(EQueryType qType, Properties qProps)
+  static public MqMessage createAlterQueueRequest(String queue, Properties qProps)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cQueryServer);
-    message.setIntProperty(IMqConstants.cKasPropertyQueryType, qType.ordinal());
+    message.setRequestType(ERequestType.cAlterQueue);
+    message.setStringProperty(IMqConstants.cKasPropertyAltQueueName, queue);
     message.setSubset(qProps);
+    return message;
+  }
+  
+  static public MqMessage createQueryGroupRequest(String group, boolean isPrefix)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cQueryGroup);
+    message.setStringProperty(IMqConstants.cKasPropertyQueryGroupName, group);
+    message.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, isPrefix);
+    return message;
+  }
+  
+  static public MqMessage createQueryUserRequest(String user, boolean isPrefix)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cQueryUser);
+    message.setStringProperty(IMqConstants.cKasPropertyQueryUserName, user);
+    message.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, isPrefix);
+    return message;
+  }
+  
+  static public MqMessage createQueryQueueRequest(String queue, boolean isPrefix, boolean isAllData, boolean isFormatRequested)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cQueryQueue);
+    message.setStringProperty(IMqConstants.cKasPropertyQueryQueueName, queue);
+    message.setBoolProperty(IMqConstants.cKasPropertyQueryPrefix, isPrefix);
+    message.setBoolProperty(IMqConstants.cKasPropertyQueryAllData, isAllData);
+    message.setBoolProperty(IMqConstants.cKasPropertyQueryFormatOutput, isFormatRequested);
+    return message;
+  }
+  
+  static public MqMessage createQueryConnRequest(String id)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cQueryConnection);
+    message.setStringProperty(IMqConstants.cKasPropertyQueryConnId, id);
+    return message;
+  }
+  
+  static public MqMessage createQuerySessRequest(String id)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cQuerySession);
+    message.setStringProperty(IMqConstants.cKasPropertyQuerySessId, id);
+    return message;
+  }
+  
+  static public MqMessage createQueryConfigRequest(EQueryConfigType type)
+  {
+    MqMessage message = MqMessageFactory.createMessage();
+    message.setRequestType(ERequestType.cQueryConfig);
+    message.setStringProperty(IMqConstants.cKasPropertyQueryConfigType, type.name());
     return message;
   }
   
   static public MqMessage createTermConnRequest(UniqueId id)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cTermConn);
+    message.setRequestType(ERequestType.cTerminateConnection);
     message.setStringProperty(IMqConstants.cKasPropertyTermConnId, id.toString());
     return message;
   }
@@ -122,7 +166,7 @@ public class MqRequestFactory
   static public MqMessage createTermSessRequest(UniqueId id)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cTermSess);
+    message.setRequestType(ERequestType.cTerminateSession);
     message.setStringProperty(IMqConstants.cKasPropertyTermSessId, id.toString());
     return message;
   }
@@ -130,7 +174,7 @@ public class MqRequestFactory
   static public MqMessage createTermServerRequest(String user)
   {
     MqMessage message = MqMessageFactory.createMessage();
-    message.setRequestType(ERequestType.cTermServer);
+    message.setRequestType(ERequestType.cTerminateServer);
     message.setStringProperty(IMqConstants.cKasPropertyTermUserName, user);
     return message;
   }

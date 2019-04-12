@@ -1,15 +1,16 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.query;
 
 import com.kas.config.MainConfiguration;
 import com.kas.db.DbConnectionPool;
 import com.kas.infra.base.Properties;
 import com.kas.mq.impl.EQueryConfigType;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
+import com.kas.mq.server.processors.EQueryType;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 
@@ -18,7 +19,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-class QueryConfigSubProcessor extends AProcessor
+public class QueryConfigProcessor extends AProcessor
 {
   /**
    * Input
@@ -26,7 +27,7 @@ class QueryConfigSubProcessor extends AProcessor
   private EQueryConfigType mConfigType;
   
   /**
-   * Construct a {@link QueryConfigSubProcessor}
+   * Construct a {@link QueryConfigProcessor}
    * 
    * @param request
    *   The request message
@@ -35,7 +36,7 @@ class QueryConfigSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QueryConfigSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryConfigProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

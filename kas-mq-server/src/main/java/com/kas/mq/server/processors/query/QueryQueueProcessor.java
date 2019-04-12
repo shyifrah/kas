@@ -1,8 +1,7 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.query;
 
 import com.kas.infra.base.Properties;
 import com.kas.infra.typedef.StringList;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -10,6 +9,10 @@ import com.kas.mq.internal.MqManager;
 import com.kas.mq.internal.MqRequestFactory;
 import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
+import com.kas.mq.server.processors.EQueryType;
+import com.kas.mq.server.processors.IProcessor;
+import com.kas.mq.server.processors.SysStateProcessor;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 
@@ -18,7 +21,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-public class QueryQueueSubProcessor extends AProcessor
+public class QueryQueueProcessor extends AProcessor
 {
   /**
    * Input
@@ -30,7 +33,7 @@ public class QueryQueueSubProcessor extends AProcessor
   private boolean  mIsFormatted;
   
   /**
-   * Construct a {@link QueryQueueSubProcessor}
+   * Construct a {@link QueryQueueProcessor}
    * 
    * @param request
    *   The request message
@@ -39,7 +42,7 @@ public class QueryQueueSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QueryQueueSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryQueueProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

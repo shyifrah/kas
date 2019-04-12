@@ -1,18 +1,14 @@
 package com.kas.mq.admin;
 
 /**
- * There are various command factories - a global one, one for define command,
- * one for alter command, one for delete command etc.
+ * There are various command factories - one for each command that manages
+ * sub-verbs (such as DEFINE, as there are several DEFINE commands: QUEUE,
+ * GROUP, USER etc.) - and a global one which manages all command verbs.
  * 
  * @author Pippo
  */
 public interface ICommandFactory
 {
-  /**
-   * Initialize the command factory
-   */
-  public abstract void init();
-  
   /**
    * Factory method
    * 

@@ -144,27 +144,6 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Alter a queue.
-   * 
-   * @param queue
-   *   The queue name to alter
-   * @param qProps
-   *   The properties to alter for this queue 
-   * @return
-   *   the {@code true} if queue was altered, {@code false} otherwise
-   */
-  public boolean alterQueue(String queue, Properties qProps)
-  {
-    mLogger.trace("MqContext::alterQueue() - IN, Queue={}", queue);
-    
-    boolean success = false;  
-    success = mConnection.alterQueue(queue, qProps);
-      
-    mLogger.trace("MqContext::alterQueue() - OUT, Returns={}", success);
-    return success;
-  }
-  
-  /**
    * Delete an existing queue.
    * 
    * @param queue
@@ -193,22 +172,45 @@ public final class MqContext extends AKasObject
   }
   
   /**
-   * Query KAS/MQ server for information
+   * Alter a queue.
    * 
-   * @param qType
-   *   A {@link EQueryType} value that describes the type of query
+   * @param queue
+   *   The queue name to alter
    * @param qProps
-   *   A {@link Properties} object used as query parameters for refining the query
+   *   The properties to alter for this queue 
+   * @return
+   *   the {@code true} if queue was altered, {@code false} otherwise
+   */
+  public boolean alterQueue(String queue, Properties qProps)
+  {
+    mLogger.trace("MqContext::alterQueue() - IN, Queue={}", queue);
+    
+    boolean success = false;  
+    success = mConnection.alterQueue(queue, qProps);
+      
+    mLogger.trace("MqContext::alterQueue() - OUT, Returns={}", success);
+    return success;
+  }
+  
+  /**
+   * Query KAS/MQ server for queue information
+   * 
+   * @param queue
+   *   The queue name
+   * @param prefix
+   *   Whether {@code queue} is a prefixed name
+   * @param alldata
+   *   Whether to report all data or summary
    * @return
    *   the message returned by the KAS/MQ server
    */
-  public MqStringMessage queryServer(EQueryType qType, Properties qProps)
+  public MqStringMessage queryQueue(String queue, boolean prefix, boolean alldata)
   {
-    mLogger.trace("MqContext::queryServer() - IN, QueryType={}", qType);
+    mLogger.trace("MqContext::queryQueue() - IN, Queue={}, Prefx={}, All={}", queue, prefix, alldata);
     
-    MqStringMessage result = mConnection.queryServer(qType, qProps);
+    MqStringMessage result = mConnection.queryQueue(queue, prefix, alldata, true);
     
-    mLogger.trace("MqContext::queryServer() - OUT, Returns={}", result);
+    mLogger.trace("MqContext::queryQueue() - OUT, Returns={}", result);
     return result;
   }
   

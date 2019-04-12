@@ -1,9 +1,8 @@
-package com.kas.mq.server.processors;
+package com.kas.mq.server.processors.query;
 
 import java.util.Collection;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
-import com.kas.mq.impl.EQueryType;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.internal.EMqCode;
 import com.kas.mq.internal.IMqConstants;
@@ -11,6 +10,8 @@ import com.kas.mq.server.IRepository;
 import com.kas.mq.server.internal.MqServerConnection;
 import com.kas.mq.server.internal.MqServerConnectionPool;
 import com.kas.mq.server.internal.SessionHandler;
+import com.kas.mq.server.processors.AProcessor;
+import com.kas.mq.server.processors.EQueryType;
 import com.kas.sec.access.AccessLevel;
 import com.kas.sec.resources.EResourceClass;
 
@@ -19,7 +20,7 @@ import com.kas.sec.resources.EResourceClass;
  * 
  * @author Pippo
  */
-public class QueryConnectionSubProcessor extends AProcessor
+public class QueryConnectionProcessor extends AProcessor
 {
   /**
    * Input
@@ -27,7 +28,7 @@ public class QueryConnectionSubProcessor extends AProcessor
   private UniqueId mConnectionId;
   
   /**
-   * Construct a {@link QueryConnectionSubProcessor}
+   * Construct a {@link QueryConnectionProcessor}
    * 
    * @param request
    *   The request message
@@ -36,7 +37,7 @@ public class QueryConnectionSubProcessor extends AProcessor
    * @param repository
    *   The server's repository
    */
-  QueryConnectionSubProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
+  public QueryConnectionProcessor(IMqMessage request, SessionHandler handler, IRepository repository)
   {
     super(request, handler, repository);
   }

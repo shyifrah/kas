@@ -25,37 +25,42 @@ public enum ERequestType implements IObject
   cGet,
   
   /**
-   * Group operations
+   * Define
    */
   cDefineGroup,
-  cDeleteGroup,
-  cAlterGroup,
-  
-  /**
-   * User operations
-   */
   cDefineUser,
-  cDeleteUser,
-  cAlterUser,
+  cDefineQueue,
   
   /**
-   * Queue operations
+   * Delete
    */
-  cDefineQueue,
+  cDeleteGroup,
+  cDeleteUser,
   cDeleteQueue,
+  
+  /**
+   * Alter
+   */
+  cAlterGroup,
+  cAlterUser,
   cAlterQueue,
   
   /**
-   * Query server info
+   * Query
    */
-  cQueryServer,
+  cQueryGroup,
+  cQueryUser,
+  cQueryQueue,
+  cQueryConnection,
+  cQuerySession,
+  cQueryConfig,
   
   /**
-   * Terminate operations
+   * Terminate
    */
-  cTermConn,
-  cTermSess,
-  cTermServer,
+  cTerminateServer,
+  cTerminateConnection,
+  cTerminateSession,
   
   /**
    * Notifications

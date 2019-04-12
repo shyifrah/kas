@@ -3,7 +3,7 @@ package com.kas.mq.internal;
 import com.kas.infra.base.Properties;
 import com.kas.infra.base.UniqueId;
 import com.kas.infra.typedef.StringList;
-import com.kas.mq.impl.EQueryType;
+import com.kas.mq.impl.EQueryConfigType;
 import com.kas.mq.impl.MqContext;
 import com.kas.mq.impl.messages.IMqMessage;
 import com.kas.mq.impl.messages.MqStringMessage;
@@ -49,26 +49,6 @@ public class MqContextConnection extends MqConnection
   }
   
   /**
-   * Delete an existing group.
-   * 
-   * @param group
-   *   The name of the group to delete
-   * @return
-   *   {@code true} if group was deleted, {@code false} otherwise
-   */
-  public boolean deleteGroup(String group)
-  {
-    mLogger.trace("MqContextConnection::deleteGroup() - IN");
-    
-    String name = group.toUpperCase();
-    IMqMessage request = MqRequestFactory.createDeleteGroupRequest(name);
-    boolean success = requestReplyAndAnalyze(request);
-    
-    mLogger.trace("MqContextConnection::deleteGroup() - OUT");
-    return success;
-  }
-  
-  /**
    * Define a new user
    * 
    * @param user
@@ -91,26 +71,6 @@ public class MqContextConnection extends MqConnection
     boolean success = requestReplyAndAnalyze(request);
     
     mLogger.trace("MqContextConnection::defineUser() - OUT");
-    return success;
-  }
-  
-  /**
-   * Delete an existing user
-   * 
-   * @param user
-   *   The name of the user to delete
-   * @return
-   *   {@code true} if user was deleted, {@code false} otherwise
-   */
-  public boolean deleteUser(String user)
-  {
-    mLogger.trace("MqContextConnection::deleteUser() - IN");
-    
-    String name = user.toUpperCase();
-    IMqMessage request = MqRequestFactory.createDeleteUserRequest(name);
-    boolean success = requestReplyAndAnalyze(request);
-    
-    mLogger.trace("MqContextConnection::deleteUser() - OUT");
     return success;
   }
   
@@ -141,29 +101,47 @@ public class MqContextConnection extends MqConnection
   }
   
   /**
-   * Alter a new queue.
+   * Delete an existing group.
    * 
-   * @param queue
-   *   The queue name to be altered.
-   * @param qProps
-   *   The queue properties to be altered
+   * @param group
+   *   The name of the group to delete
    * @return
-   *   {@code true} if queue was altered, {@code false} otherwise
+   *   {@code true} if group was deleted, {@code false} otherwise
    */
-  public boolean alterQueue(String queue, Properties qProps)
+  public boolean deleteGroup(String group)
   {
-    mLogger.trace("MqContextConnection::alterQueue() - IN");
+    mLogger.trace("MqContextConnection::deleteGroup() - IN");
     
-    String qname = queue.toUpperCase();
-    IMqMessage request = MqRequestFactory.createAlterQueueRequest(qname, qProps);
+    String name = group.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDeleteGroupRequest(name);
     boolean success = requestReplyAndAnalyze(request);
     
-    mLogger.trace("MqContextConnection::alterQueue() - OUT");
+    mLogger.trace("MqContextConnection::deleteGroup() - OUT");
     return success;
   }
   
   /**
-   * Define a new queue.
+   * Delete an existing user
+   * 
+   * @param user
+   *   The name of the user to delete
+   * @return
+   *   {@code true} if user was deleted, {@code false} otherwise
+   */
+  public boolean deleteUser(String user)
+  {
+    mLogger.trace("MqContextConnection::deleteUser() - IN");
+    
+    String name = user.toUpperCase();
+    IMqMessage request = MqRequestFactory.createDeleteUserRequest(name);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.trace("MqContextConnection::deleteUser() - OUT");
+    return success;
+  }
+  
+  /**
+   * Delete a new queue.
    * 
    * @param queue
    *   The queue name to delete.
@@ -185,18 +163,19 @@ public class MqContextConnection extends MqConnection
   }
 
   /**
-   * Query KAS/MQ server for information
+   * Query KAS/MQ server for information on group
    * 
-   * @param qType
-   *   A {@link EQueryType} value that describes the type of query
-   * @param qProps
-   *   A {@link Properties} object used as query parameters for refining the query
+   * @param group
+   *   The name of the group to query
+   * @param prefix
+   *   If {@code true}, then {@code group} identifies a prefix of group names,
+   *   otherwise, it is a group name.
    * @return
    *   the message returned by the KAS/MQ server
    */
-  public MqStringMessage queryServer(EQueryType qType, Properties qProps)
+  public MqStringMessage queryGroup(String group, boolean prefix)
   {
-    mLogger.trace("MqContextConnection::queryServer() - IN");
+    mLogger.trace("MqContextConnection::queryGroup() - IN");
     
     IMqMessage reply = null;
     if (!isConnected())
@@ -205,7 +184,7 @@ public class MqContextConnection extends MqConnection
     }
     else
     {
-      IMqMessage request = MqRequestFactory.createQueryServerRequest(qType, qProps);
+      IMqMessage request = MqRequestFactory.createQueryGroupRequest(group, prefix);
       reply = put(IMqConstants.cAdminQueueName, request);
       String resp;
       if (reply != null)
@@ -215,8 +194,206 @@ public class MqContextConnection extends MqConnection
       logInfoAndSetResponse(resp);
     }
     
-    mLogger.trace("MqContextConnection::queryServer() - OUT");
+    mLogger.trace("MqContextConnection::queryGroup() - OUT");
     return (MqStringMessage)reply;
+  }
+
+  /**
+   * Query KAS/MQ server for information on user
+   * 
+   * @param user
+   *   The name of the user to query
+   * @param prefix
+   *   If {@code true}, then {@code user} identifies a prefix of user names,
+   *   otherwise, it is a user name.
+   * @return
+   *   the message returned by the KAS/MQ server
+   */
+  public MqStringMessage queryUser(String group, boolean prefix)
+  {
+    mLogger.trace("MqContextConnection::queryUser() - IN");
+    
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage request = MqRequestFactory.createQueryUserRequest(group, prefix);
+      reply = put(IMqConstants.cAdminQueueName, request);
+      String resp;
+      if (reply != null)
+        resp = reply.getResponse().getDesc();
+      else
+        resp = "Connection to remote host was lost";
+      logInfoAndSetResponse(resp);
+    }
+    
+    mLogger.trace("MqContextConnection::queryUser() - OUT");
+    return (MqStringMessage)reply;
+  }
+
+  /**
+   * Query KAS/MQ server for information on queue
+   * 
+   * @param queue
+   *   The name of the queue to query
+   * @param prefix
+   *   If {@code true}, then {@code queue} identifies a prefix of queue names,
+   *   otherwise, it is a queue name.
+   * @param allData
+   *   If {@code true}, then all data is returned regarding the queue,
+   *   otherwise, the queue name.
+   * @param format
+   *   If {@code true}, then output is formatted, otherwise it is returned as is.
+   * @return
+   *   the message returned by the KAS/MQ server
+   */
+  public MqStringMessage queryQueue(String queue, boolean prefix, boolean allData, boolean format)
+  {
+    mLogger.trace("MqContextConnection::queryQueue() - IN");
+    
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage request = MqRequestFactory.createQueryQueueRequest(queue, prefix, allData, format);
+      reply = put(IMqConstants.cAdminQueueName, request);
+      String resp;
+      if (reply != null)
+        resp = reply.getResponse().getDesc();
+      else
+        resp = "Connection to remote host was lost";
+      logInfoAndSetResponse(resp);
+    }
+    
+    mLogger.trace("MqContextConnection::queryQueue() - OUT");
+    return (MqStringMessage)reply;
+  }
+
+  /**
+   * Query KAS/MQ server for information on connections
+   * 
+   * @param id
+   *   The connection ID or {@code "ALL"}
+   * @return
+   *   the message returned by the KAS/MQ server
+   */
+  public MqStringMessage queryConn(String id)
+  {
+    mLogger.trace("MqContextConnection::queryConn() - IN");
+    
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage request = MqRequestFactory.createQueryConnRequest(id);
+      reply = put(IMqConstants.cAdminQueueName, request);
+      String resp;
+      if (reply != null)
+        resp = reply.getResponse().getDesc();
+      else
+        resp = "Connection to remote host was lost";
+      logInfoAndSetResponse(resp);
+    }
+    
+    mLogger.trace("MqContextConnection::queryConn() - OUT");
+    return (MqStringMessage)reply;
+  }
+
+  /**
+   * Query KAS/MQ server for information on sessions
+   * 
+   * @param id
+   *   The session ID or {@code "ALL"}
+   * @return
+   *   the message returned by the KAS/MQ server
+   */
+  public MqStringMessage querySess(String id)
+  {
+    mLogger.trace("MqContextConnection::querySess() - IN");
+    
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage request = MqRequestFactory.createQuerySessRequest(id);
+      reply = put(IMqConstants.cAdminQueueName, request);
+      String resp;
+      if (reply != null)
+        resp = reply.getResponse().getDesc();
+      else
+        resp = "Connection to remote host was lost";
+      logInfoAndSetResponse(resp);
+    }
+    
+    mLogger.trace("MqContextConnection::querySess() - OUT");
+    return (MqStringMessage)reply;
+  }
+
+  /**
+   * Query KAS/MQ server for information on configuration
+   * 
+   * @param type
+   *   The configuration type
+   * @return
+   *   the message returned by the KAS/MQ server
+   */
+  public MqStringMessage queryConfig(EQueryConfigType type)
+  {
+    mLogger.trace("MqContextConnection::queryConfig() - IN");
+    
+    IMqMessage reply = null;
+    if (!isConnected())
+    {
+      logErrorAndSetResponse("Not connected to host");
+    }
+    else
+    {
+      IMqMessage request = MqRequestFactory.createQueryConfigRequest(type);
+      reply = put(IMqConstants.cAdminQueueName, request);
+      String resp;
+      if (reply != null)
+        resp = reply.getResponse().getDesc();
+      else
+        resp = "Connection to remote host was lost";
+      logInfoAndSetResponse(resp);
+    }
+    
+    mLogger.trace("MqContextConnection::queryConfig() - OUT");
+    return (MqStringMessage)reply;
+  }
+  
+  /**
+   * Alter a new queue.
+   * 
+   * @param queue
+   *   The queue name to be altered.
+   * @param qProps
+   *   The queue properties to be altered
+   * @return
+   *   {@code true} if queue was altered, {@code false} otherwise
+   */
+  public boolean alterQueue(String queue, Properties qProps)
+  {
+    mLogger.trace("MqContextConnection::alterQueue() - IN");
+    
+    String qname = queue.toUpperCase();
+    IMqMessage request = MqRequestFactory.createAlterQueueRequest(qname, qProps);
+    boolean success = requestReplyAndAnalyze(request);
+    
+    mLogger.trace("MqContextConnection::alterQueue() - OUT");
+    return success;
   }
 
   /**
