@@ -5,7 +5,7 @@
   <!-- Properties                                                                              -->
   <!-- ======================================================================================= -->
   <Properties>
-    <Property name="logPattern">%d{DEFAULT} %-5p %-5T (%c{1}) - %m%n</Property>
+    <Property name="logPattern">%d{DEFAULT} %-5p %5pid:%-5T (%c{1}) %m%n</Property>
     <Property name="logMaxSize">10 MB</Property>
     <Property name="logDirectory">${sys:kas.log.dir}</Property>
     <Property name="logFile">${sys:kas.log.file}</Property>
