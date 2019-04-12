@@ -35,16 +35,16 @@ CREATE TABLE kas_mq_users (
 );
 
 INSERT INTO kas_mq_users (user_name, user_description, user_password)
-  VALUES('root', 'system root', 'root');
+  VALUES('ROOT', 'SYSTEM ROOT', 'root');
   
 INSERT INTO kas_mq_users (user_name, user_description, user_password)
-  VALUES('oper', 'system operator', 'oper');
+  VALUES('OPER', 'SYSTEM OPERATOR', 'oper');
   
 INSERT INTO kas_mq_users (user_name, user_description, user_password)
-  VALUES('system', 'system user', 'system');
+  VALUES('SYSTEM', 'SYSTEM USER', 'system');
 
 INSERT INTO kas_mq_users (user_name, user_description, user_password)
-  VALUES('guest', 'guest user', 'guest');
+  VALUES('GUEST', 'GUEST USER', 'guest');
   
 --
 -- groups
@@ -56,13 +56,13 @@ CREATE TABLE kas_mq_groups (
 );
 
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('admins', 'administrators');
+  VALUES('ADMINS', 'ADMINISTRATORS');
   
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('mods', 'moderators');
+  VALUES('MODS', 'MODERATORS');
 
 INSERT INTO kas_mq_groups (group_name, group_description)
-  VALUES('samples', 'sample applications');
+  VALUES('SAMPLES', 'SAMPLE APPLICATIONS');
 
 --
 -- group assignment
@@ -80,12 +80,12 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT user_id
     FROM kas_mq_users
-    WHERE user_name = 'root'
+    WHERE user_name = 'ROOT'
   ) users,
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'admins'
+    WHERE group_name = 'ADMINS'
   ) groups;
   
 INSERT INTO kas_mq_users_to_groups
@@ -93,12 +93,12 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT user_id
     FROM kas_mq_users
-    WHERE user_name = 'oper'
+    WHERE user_name = 'OPER'
   ) users,
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'mods'
+    WHERE group_name = 'MODS'
   ) groups;
 
 INSERT INTO kas_mq_users_to_groups
@@ -106,12 +106,12 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT user_id
     FROM kas_mq_users
-    WHERE user_name = 'system'
+    WHERE user_name = 'SYSTEM'
   ) users,
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'admins'
+    WHERE group_name = 'ADMINS'
   ) groups;
 
 INSERT INTO kas_mq_users_to_groups
@@ -119,12 +119,12 @@ INSERT INTO kas_mq_users_to_groups
   (
     SELECT user_id
     FROM kas_mq_users
-    WHERE user_name = 'guest'
+    WHERE user_name = 'GUEST'
   ) users,
   (
     SELECT group_id
     FROM kas_mq_groups 
-    WHERE group_name = 'samples'
+    WHERE group_name = 'SAMPLES'
   ) groups;
 
 --
@@ -143,27 +143,27 @@ CREATE TABLE kas_mq_command_permissions (
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name IN ('admins', 'mods');
+  WHERE group_name IN ('ADMINS', 'MODS');
   
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT 'DEFINE_QUEUE_MDB.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT 'DEFINE_QUEUE_CLIENT.APP.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
   
 INSERT INTO kas_mq_command_permissions (pattern, group_id, access_level)
   SELECT 'DELETE_QUEUE_MDB.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT 'DELETE_QUEUE_CLIENT.APP.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
 
 --
 -- application permissions:
@@ -181,17 +181,17 @@ CREATE TABLE kas_mq_application_permissions (
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'admins';
+  WHERE group_name = 'ADMINS';
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT 'KAS.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'mods';
+  WHERE group_name = 'MODS';
 
 INSERT INTO kas_mq_application_permissions (pattern, group_id, access_level)
   SELECT 'SAMPLE.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
 
 --
 -- queue permissions:
@@ -209,22 +209,22 @@ CREATE TABLE kas_mq_queue_permissions (
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'admins';
+  WHERE group_name = 'ADMINS';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 4
   FROM   kas_mq_groups
-  WHERE group_name = 'mods';
+  WHERE group_name = 'MODS';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT 'MDB.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
 
 INSERT INTO kas_mq_queue_permissions (pattern, group_id, access_level)
   SELECT 'CLIENT.APP.*', group_id, 7
   FROM   kas_mq_groups
-  WHERE group_name = 'samples';
+  WHERE group_name = 'SAMPLES';
 
 --
 -- user permissions:
@@ -242,12 +242,12 @@ CREATE TABLE kas_mq_user_permissions (
 INSERT INTO kas_mq_user_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 3
   FROM   kas_mq_groups
-  WHERE group_name = 'admins';
+  WHERE group_name = 'ADMINS';
 
 INSERT INTO kas_mq_user_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'mods';
+  WHERE group_name = 'MODS';
 
 --
 -- group permissions:
@@ -265,12 +265,12 @@ CREATE TABLE kas_mq_group_permissions (
 INSERT INTO kas_mq_group_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 3
   FROM   kas_mq_groups
-  WHERE group_name = 'admins';
+  WHERE group_name = 'ADMINS';
 
 INSERT INTO kas_mq_group_permissions (pattern, group_id, access_level)
   SELECT '.*', group_id, 1
   FROM   kas_mq_groups
-  WHERE group_name = 'mods';
+  WHERE group_name = 'MODS';
 
   
 COMMIT;
